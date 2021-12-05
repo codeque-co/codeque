@@ -9,14 +9,20 @@ const debugMode = false;
 type Mode = 'exact' | 'include' | 'include-with-order'
 
 // const mode:Mode = 'exact' 
-const mode: Mode = 'include'
+const mode: Mode = 'exact'
 
+/**
+ * TODO: handle TemplateElement.value which is an object. It should work, but the below example finds too much in include mode, but works in exact mode
+ */
 const _query = `
-<$
-              wrapperProps={{
-                mb: 4,
-              }}
-            />
+({
+  prId: number,
+  message: \`
+Pipeline ("\${name}")[\${getPipeline({
+    workflowId,
+    pipelineId,
+  })}] was cancelled\`,
+})
 `
 
 const mockFile = `

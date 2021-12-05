@@ -13,6 +13,10 @@ const mode: Mode = 'exact'
 
 /**
  * TODO: handle TemplateElement.value which is an object. It should work, but the below example finds too much in include mode, but works in exact mode
+ * 
+ * We need both $$ and $ wildcards, otherwise we might match more than just an identifier
+ * 
+ * Do benchmark
  */
 const _query = `
 ({

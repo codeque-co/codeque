@@ -12,22 +12,145 @@ type Mode = 'exact' | 'include' | 'include-with-order'
 const mode: Mode = 'include'
 
 const _query = `
-interface $ {
-  userId: string;
-}
+<$
+              wrapperProps={{
+                mb: 4,
+              }}
+            />
 `
 
 const mockFile = `
-<Field
-                  variant="filled"
-                  label="Tell us why you recommend them to us?"
-                  component={FinalFormTextarea}
-                  name={getFieldName('reason')}
-                  wrapperProps={{
-                    w: '100%',
-                  }}
-                  data-testid="refer-professional-reason-input"
-                />
+
+
+export class ModifiedValues extends RecommendationReference {
+  recommenderJobTitle?: string;
+
+  constructor({ recommenderJobTitle, ...props }: ModifiedValues) {
+    super(props);
+
+    this.recommenderJobTitle = recommenderJobTitle;
+  }
+}
+
+export class RecommendationEmails {
+  hasSentThankYou?: boolean;
+  hasSentReminder?: boolean;
+
+  constructor(props: RecommendationEmails) {
+    Object.entries(props).map(([k, v]) => {
+      this[k] = v;
+    });
+  }
+}
+
+export class Recommendation extends RecommendationReference {
+  id?: string;
+  recommender: Recommender;
+  hasDiscrepancy?: boolean;
+  comments?: string;
+  createdAt?: Date;
+  isCurrentJob?: boolean;
+  messageToRecommender?: string;
+  modifiedValues?: ModifiedValues;
+  reHire?: 'Yes' | 'No' | 'Other';
+  response?: RecomResponse;
+  stage?: RecommendationStage;
+  status: RecommendationStatus;
+  testimonial?: Testimonial;
+  updatedAt?: Date;
+  lastUpdatedStatus?: Date;
+  isHidden?: boolean;
+  hasTrackedCompleted?: boolean;
+  emails?: RecommendationEmails;
+  workHistoryId?: string;
+
+  constructor(props: Partial<Recommendation>) {
+    const {
+      id,
+      response,
+      hasDiscrepancy,
+      comments,
+      createdAt,
+      isCurrentJob,
+      messageToRecommender,
+      modifiedValues,
+      reHire,
+      recommender,
+      status,
+      stage,
+      testimonial,
+      updatedAt,
+      lastUpdatedStatus,
+      isHidden,
+      hasTrackedCompleted,
+      emails,
+      workHistoryId,
+    } = props;
+
+    super(props);
+
+    this.id = id;
+    this.workHistoryId = workHistoryId;
+    this.hasDiscrepancy = hasDiscrepancy;
+    this.comments = comments;
+    this.createdAt = createdAt;
+    this.isCurrentJob = isCurrentJob;
+    this.messageToRecommender = messageToRecommender;
+    this.modifiedValues = modifiedValues;
+    this.reHire = reHire;
+    this.status = status;
+    this.stage = stage;
+    this.updatedAt = updatedAt;
+    this.lastUpdatedStatus = lastUpdatedStatus;
+    this.isHidden = isHidden;
+    this.hasTrackedCompleted = hasTrackedCompleted;
+
+    if (testimonial) {
+      this.testimonial = new Testimonial(testimonial);
+    }
+
+    if (response) {
+      this.response = new RecomResponse(response);
+    }
+
+    if (modifiedValues) {
+      this.modifiedValues = new ModifiedValues(modifiedValues);
+    }
+
+    if (recommender) {
+      this.recommender = new Recommender(recommender);
+    }
+
+    if (emails) {
+      this.emails = emails;
+    }
+  }
+}
+
+export interface GetRecommendationResponse {
+  consultant: {
+    firstName: string;
+    lastName: string;
+    profilePicture?: string;
+  };
+  recommendation: Recommendation;
+}
+
+export interface PublicRecommendation
+  extends Pick<
+    Recommendation,
+    | 'id'
+    | 'workHistoryId'
+    | 'company'
+    | 'jobTitle'
+    | 'relationship'
+    | 'createdAt'
+  > {
+  recommenderJobTitle?: string;
+  recommendation?: string;
+  name?: string;
+}
+
 
 `
 
@@ -71,9 +194,16 @@ const getFilesList2 = (root: string) => {
 
 const filesList = getFilesList2(root)
 
-type Location = {
-  start: number, end: number
+type Position = {
+  line: number, column: number
 }
+
+type Match = {
+  start: Position,
+  end: Position,
+  code: string
+}
+
 type PoorNodeType = {
   [key: string]: string | number | PoorNodeType[] | PoorNodeType
 }
@@ -92,6 +222,7 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
 const arrayAttributes = new Set()
 
 const search = () => {
+  const allMatches: Array<Match & { filePath: string }> = []
   const isExact = mode === ('exact' as Mode)
   /**
    * Assumption - query has only one top-level expression
@@ -99,10 +230,10 @@ const search = () => {
   const parseOptions = { sourceType: 'module', plugins: ['typescript', 'jsx', 'decorators-legacy'] } as ParserOptions
   log('Parse query')
   const queryFileNode = parse(_query, parseOptions) as unknown as PoorNodeType
-  const inputQueryNode = unwrapExpressionStatement(getBody(queryFileNode)[0])
-  log('inputQueryNode', inputQueryNode)
+  const inputQueryNodes = getBody(queryFileNode).map(unwrapExpressionStatement)
+  log('inputQueryNode', inputQueryNodes)
 
-  const astPropsToSkip = ['loc', 'start', 'end', 'extra']
+  const astPropsToSkip = ['loc', 'start', 'end', 'extra', 'trailingComments', 'leadingComments']
   const IdentifierTypes = ['Identifier', 'JSXIdentifier']
 
   const NodeConstructor = parse('').constructor
@@ -143,18 +274,18 @@ const search = () => {
 
     })
 
-    if (queryKeys.length !== fileKeys.length || fileNode.type !== queryNode.type) {
-      return {
-        levelMatch: false,
-        queryKeysToTraverse: [],
-        fileKeysToTraverse
-      }
-    }
-
     if (IdentifierTypes.includes(queryNode.type as string) && queryNode.name === '$') {
       return {
         levelMatch: true,
         queryKeysToTraverse: queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
+        fileKeysToTraverse
+      }
+    }
+
+    if (queryKeys.length !== fileKeys.length || fileNode.type !== queryNode.type) {
+      return {
+        levelMatch: false,
+        queryKeysToTraverse: [],
         fileKeysToTraverse
       }
     }
@@ -165,7 +296,7 @@ const search = () => {
     queryKeys.forEach((key) => {
       const queryValue = queryNode[key]
       const fileValue = fileNode[key]
-      if (isNode(queryValue as PoorNodeType) || isNodeArray(queryValue as PoorNodeType[])) {
+      if (isNode(queryValue as PoorNodeType) || isNodeArray(queryValue as PoorNodeType[]) || isNodeArray(fileValue as PoorNodeType[])) {
         queryKeysToTraverse.push(key)
       }
       else {
@@ -217,15 +348,16 @@ const search = () => {
                 const newCurrentNode = nodesArr[i]
                 const newCurrentQueryNode = queryNodesArr[i]
 
-                if (newCurrentNode === undefined || newCurrentQueryNode === undefined || !validateMatch(newCurrentNode, newCurrentQueryNode)) {
+                if (!newCurrentNode || !newCurrentQueryNode || !validateMatch(newCurrentNode, newCurrentQueryNode)) {
                   return false
                 }
               }
             }
             else {
-              if (queryFileNode.length > nodesArr.length) {
+              if (queryNodesArr.length > nodesArr.length) {
                 return false
               }
+
               let matchedIndexes = []
 
               for (let i = 0; i < queryNodesArr.length; i++) {
@@ -268,7 +400,7 @@ const search = () => {
             const newCurrentNode = currentNode[keyToTraverse] as PoorNodeType
             const newCurrentQueryNode = currentQueryNode[keyToTraverse] as PoorNodeType
 
-            if (newCurrentNode === undefined || newCurrentQueryNode === undefined || !validateMatch(newCurrentNode, newCurrentQueryNode)) {
+            if (!newCurrentNode || !newCurrentQueryNode || !validateMatch(newCurrentNode, newCurrentQueryNode)) {
               return false
             }
 
@@ -299,12 +431,15 @@ const search = () => {
      */
 
     if (foundMatchStart) {
-      log('foundMatchStart:\n', generate(currentNode as any).code, '\n', generate(queryNode as any).code, '\n'.padEnd(10, '_'))
+      const code = generate(currentNode as any).code
+      log('foundMatchStart:\n', code, '\n', generate(queryNode as any).code, '\n'.padEnd(10, '_'))
       const match = validateMatch(currentNode, queryNode)
       if (match) {
-        matches.push(
-          currentNode.loc as unknown as Location
-        )
+        matches.push({
+          start: (currentNode as any).loc.start as Position,
+          end: (currentNode as any).loc.end as Position,
+          code: code.toString()
+        })
       }
     }
 
@@ -324,29 +459,34 @@ const search = () => {
         }
       }
       return []
-    }).flat(2) as Location[]
+    }).flat(2) as Match[]
 
     logStepEnd('traverse')
 
     return [...matches, ...nestedMatches].flat()
 
   }
-  let matchesCount = 0;
+
   for (const filePath of filesList) {
     try {
       log('Parse file')
-
-      const fileNode = (!debugMode ? parse(fs.readFileSync(filePath).toString(), parseOptions)
+      const fileContent = fs.readFileSync(filePath).toString()
+      const fileNode = (!debugMode ? parse(fileContent, parseOptions)
         : parse(mockFile, parseOptions)) as unknown as PoorNodeType
 
       const programBody = getBody(fileNode)
 
       programBody.forEach((bodyPart) => {
-        const matches = traverseAndMatch(bodyPart, inputQueryNode)
-        matchesCount += matches.length
+        for (const inputQueryNode of inputQueryNodes) {
+          const matches = traverseAndMatch(bodyPart, inputQueryNode)
+          allMatches.push(...matches.map((match) => ({
+            filePath,
+            ...match
+          })))
 
-        if (matches.length > 0) {
-          log(filePath, 'matches', matches)
+          if (matches.length > 0) {
+            log(filePath, 'matches', matches)
+          }
         }
       })
       if (debugMode) {
@@ -358,7 +498,8 @@ const search = () => {
       break;
     }
   }
-  console.log('Matches count', matchesCount)
+  console.log(allMatches)
+  console.log('Matches count', allMatches.length)
   // console.log(arrayAttributes)
 }
 search()

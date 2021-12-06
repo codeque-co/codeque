@@ -1,23 +1,11 @@
-import path from 'path'
-import fs from 'fs';
-import { parse, ParserOptions } from '@babel/parser'
-import generate from '@babel/generator'
-import ignore from 'ignore';
-
-const root = path.resolve('../../Dweet/web')
-const debugMode = false;
-type Mode = 'exact' | 'include' | 'include-with-order'
-
-// const mode:Mode = 'exact' 
-const mode: Mode = 'exact'
-
 /**
- * TODO: handle TemplateElement.value which is an object. It should work, but the below example finds too much in include mode, but works in exact mode
  * 
- * We need both $$ and $ wildcards, otherwise we might match more than just an identifier
+ * Refactor + Implement tests!!! & Test single & double wildcards
  * 
- * Add more accurate match localization
- *  - probably it already is as accurate as it can be
+ * Add literal wildcards
+ * 
+ * improve query parsing
+ *  - first try to parse without brackets, then add brackets and parse once again
  * 
  * Do benchmark (done)
  *  - mac 1.4s
@@ -53,52 +41,30 @@ const mode: Mode = 'exact'
  *  - implement parts of the algorithm in WASM
  *  - implemented parts do not work if license is not verified
  */
-const _query = `
 
-console.log($,$)
+import path from 'path'
+import fs from 'fs';
+import { parse, ParserOptions } from '@babel/parser'
+import generate from '@babel/generator'
+import ignore from 'ignore';
 
+const root = path.resolve('../../Dweet/web')
+const debugMode = true;
+type Mode = 'exact' | 'include' | 'include-with-order'
+
+const mode: Mode = 'exact'
+// const mode: Mode = 'include'
+
+
+const queries = [
+  `
+({
+  a : $$
+})
 `
+]
 
-const mockFile = `
-import React, { memo } from 'react';
-import { useForm } from 'react-final-form';
-import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-
-import { Button, ButtonProps } from '@/ui/button';
-import { Spinner } from '@/ui/spinner';
-
-export const NextBtn = ({
-  isLastStep,
-  isLoading,
-  ...props
-}: ButtonProps & { isLastStep: boolean }) => {
-  const { submit } = useForm();
-
-  return (
-    <Button
-      onClick={submit}
-      colorScheme="sapphire"
-      rightIcon={isLoading ? Spinner : isLastStep ? FaCheck : FaChevronRight}
-      {...props}
-    >
-      {isLastStep ? 'Done' : 'Next'}
-    </Button>
-  );
-};
-
-export const PrevBtn = memo(({ isLoading, ...props }: ButtonProps) => {
-  return (
-    <Button
-      marginRight="auto"
-      colorScheme="sapphire"
-      leftIcon={isLoading ? Spinner : FaChevronLeft}
-      {...props}
-    >
-      Back
-    </Button>
-  );
-});
-`
+const mockFile = fs.readFileSync('./mockFile').toString()
 
 const log = (...args: any[]) => {
   if (debugMode) {
@@ -174,8 +140,11 @@ const search = () => {
    * Assumption - query has only one top-level expression
    */
   const parseOptions = { sourceType: 'module', plugins: ['typescript', 'jsx', 'decorators-legacy'] } as ParserOptions
+
+  const queriesWrapped = queries.join('\n\n')//queries.map((q) => `(${q.trim()});`).join('\n\n')
+
   log('Parse query')
-  const queryFileNode = parse(_query, parseOptions) as unknown as PoorNodeType
+  const queryFileNode = parse(queriesWrapped, parseOptions) as unknown as PoorNodeType
   const inputQueryNodes = getBody(queryFileNode).map(unwrapExpressionStatement)
   log('inputQueryNode', inputQueryNodes)
 
@@ -192,7 +161,7 @@ const search = () => {
     return Array.isArray(maybeNodeArr) && maybeNodeArr.length > 0 && isNode(maybeNodeArr[0])
   }
 
-  console.log("query:", _query)
+  console.log("queries:", queriesWrapped)
 
   const getKeysToCompare = (node: PoorNodeType) => {
     return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
@@ -211,7 +180,7 @@ const search = () => {
 
     const queryKeysToTraverse: string[] = []
     const fileKeysToTraverse: string[] = []
-
+    let earlyLevelMatch
     fileKeys.forEach((key) => {
       const fileValue = fileNode[key]
       if (isNode(fileValue as PoorNodeType) || isNodeArray(fileValue as PoorNodeType[])) {
@@ -220,10 +189,10 @@ const search = () => {
 
     })
 
-    if (IdentifierTypes.includes(queryNode.type as string) && queryNode.name === '$') {
+    if (IdentifierTypes.includes(queryNode.type as string) && (queryNode.name as string).includes('$')) {
       return {
-        levelMatch: true,
-        queryKeysToTraverse: queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
+        levelMatch: queryNode.name === '$$' || fileNode.type === queryNode.type,
+        queryKeysToTraverse: queryNode.name !== '$$' && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
         fileKeysToTraverse
       }
     }

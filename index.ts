@@ -1,6 +1,6 @@
 /**
  * 
- * Refactor + Implement tests!!! & Test single & double wildcards
+ * Refactor + Implement tests!!! & Test single & double wildcards - double wildcards probably only make sense with recursive structures of the same type like objects
  * 
  * Add literal wildcards
  * 
@@ -52,7 +52,7 @@ const root = path.resolve('../../Dweet/web')
 const debugMode = true;
 type Mode = 'exact' | 'include' | 'include-with-order'
 
-const mode: Mode = 'exact'
+const mode: Mode = 'include'
 // const mode: Mode = 'include'
 
 

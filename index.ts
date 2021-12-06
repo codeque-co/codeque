@@ -9,7 +9,7 @@ const debugMode = false;
 type Mode = 'exact' | 'include' | 'include-with-order'
 
 // const mode:Mode = 'exact' 
-const mode: Mode = 'include'
+const mode: Mode = 'exact'
 
 /**
  * TODO: handle TemplateElement.value which is an object. It should work, but the below example finds too much in include mode, but works in exact mode
@@ -19,12 +19,17 @@ const mode: Mode = 'include'
  * Add more accurate match localization
  *  - probably it already is as accurate as it can be
  * 
- * Do benchmark
+ * Do benchmark (done)
  *  - mac 1.4s
  *  - desktop 2.6s 
  *  - laptop 4.5s
  * 
  * Do profiling
+ * 
+ * Think of negation syntax and sense (just to make if future proof for now)
+ *  - could be something like: $not('asd')
+ * Think of and, or syntax and sense (just to make if future proof for now)
+ *  - could be something like: $and('asd', () => {}) 
  * 
  * Think of other use cases for the matching functionality (call the whole product code-magic)
  *  - should the product be an licensed cli ?
@@ -42,16 +47,16 @@ const mode: Mode = 'include'
  * Add support for suggestions based on equivalent/similar syntax
  *  - user input: <$ prop={"5"} />,  suggestion: <$ prop="5" />
  *  - user input: <$ prop={$+$} />,  suggestion: <$ prop={$-$} />
+ * 
+ * To secure the code we should 
+ *  - verify license in WASM
+ *  - implement parts of the algorithm in WASM
+ *  - implemented parts do not work if license is not verified
  */
 const _query = `
 
-(<$
-  $={$+$}
-></$>);
+console.log($,$)
 
-(<$
-  $={$+$}
-></$>);
 `
 
 const mockFile = `

@@ -9,159 +9,90 @@ const debugMode = false;
 type Mode = 'exact' | 'include' | 'include-with-order'
 
 // const mode:Mode = 'exact' 
-const mode: Mode = 'exact'
+const mode: Mode = 'include'
 
 /**
  * TODO: handle TemplateElement.value which is an object. It should work, but the below example finds too much in include mode, but works in exact mode
  * 
  * We need both $$ and $ wildcards, otherwise we might match more than just an identifier
  * 
+ * Add more accurate match localization
+ *  - probably it already is as accurate as it can be
+ * 
  * Do benchmark
+ *  - mac 1.4s
+ *  - desktop 2.6s 
+ *  - laptop 4.5s
+ * 
+ * Do profiling
+ * 
+ * Think of other use cases for the matching functionality (call the whole product code-magic)
+ *  - should the product be an licensed cli ?
+ *  - vscode search extension
+ *      - other editors extensions (how to, which languages)
+ *  - cli search - why not
+ *  - standalone desktop app
+ *  - eslint plugin restricted syntax 
+ *    - check in autozone if custom plugins could be replaced
+ *    - check which of the existing plugins could be replaced
+ *  - automated codemod - this one needs a PoC
+ *  - for codemod and eslint we need to be able to reference a variable by indentifier, to be able to track references for more complex cases
+ *  - track duplicated code - how 
+ * 
+ * Add support for suggestions based on equivalent/similar syntax
+ *  - user input: <$ prop={"5"} />,  suggestion: <$ prop="5" />
+ *  - user input: <$ prop={$+$} />,  suggestion: <$ prop={$-$} />
  */
 const _query = `
-({
-  prId: number,
-  message: \`
-Pipeline ("\${name}")[\${getPipeline({
-    workflowId,
-    pipelineId,
-  })}] was cancelled\`,
-})
+
+(<$
+  $={$+$}
+></$>);
+
+(<$
+  $={$+$}
+></$>);
 `
 
 const mockFile = `
+import React, { memo } from 'react';
+import { useForm } from 'react-final-form';
+import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+import { Button, ButtonProps } from '@/ui/button';
+import { Spinner } from '@/ui/spinner';
 
-export class ModifiedValues extends RecommendationReference {
-  recommenderJobTitle?: string;
+export const NextBtn = ({
+  isLastStep,
+  isLoading,
+  ...props
+}: ButtonProps & { isLastStep: boolean }) => {
+  const { submit } = useForm();
 
-  constructor({ recommenderJobTitle, ...props }: ModifiedValues) {
-    super(props);
+  return (
+    <Button
+      onClick={submit}
+      colorScheme="sapphire"
+      rightIcon={isLoading ? Spinner : isLastStep ? FaCheck : FaChevronRight}
+      {...props}
+    >
+      {isLastStep ? 'Done' : 'Next'}
+    </Button>
+  );
+};
 
-    this.recommenderJobTitle = recommenderJobTitle;
-  }
-}
-
-export class RecommendationEmails {
-  hasSentThankYou?: boolean;
-  hasSentReminder?: boolean;
-
-  constructor(props: RecommendationEmails) {
-    Object.entries(props).map(([k, v]) => {
-      this[k] = v;
-    });
-  }
-}
-
-export class Recommendation extends RecommendationReference {
-  id?: string;
-  recommender: Recommender;
-  hasDiscrepancy?: boolean;
-  comments?: string;
-  createdAt?: Date;
-  isCurrentJob?: boolean;
-  messageToRecommender?: string;
-  modifiedValues?: ModifiedValues;
-  reHire?: 'Yes' | 'No' | 'Other';
-  response?: RecomResponse;
-  stage?: RecommendationStage;
-  status: RecommendationStatus;
-  testimonial?: Testimonial;
-  updatedAt?: Date;
-  lastUpdatedStatus?: Date;
-  isHidden?: boolean;
-  hasTrackedCompleted?: boolean;
-  emails?: RecommendationEmails;
-  workHistoryId?: string;
-
-  constructor(props: Partial<Recommendation>) {
-    const {
-      id,
-      response,
-      hasDiscrepancy,
-      comments,
-      createdAt,
-      isCurrentJob,
-      messageToRecommender,
-      modifiedValues,
-      reHire,
-      recommender,
-      status,
-      stage,
-      testimonial,
-      updatedAt,
-      lastUpdatedStatus,
-      isHidden,
-      hasTrackedCompleted,
-      emails,
-      workHistoryId,
-    } = props;
-
-    super(props);
-
-    this.id = id;
-    this.workHistoryId = workHistoryId;
-    this.hasDiscrepancy = hasDiscrepancy;
-    this.comments = comments;
-    this.createdAt = createdAt;
-    this.isCurrentJob = isCurrentJob;
-    this.messageToRecommender = messageToRecommender;
-    this.modifiedValues = modifiedValues;
-    this.reHire = reHire;
-    this.status = status;
-    this.stage = stage;
-    this.updatedAt = updatedAt;
-    this.lastUpdatedStatus = lastUpdatedStatus;
-    this.isHidden = isHidden;
-    this.hasTrackedCompleted = hasTrackedCompleted;
-
-    if (testimonial) {
-      this.testimonial = new Testimonial(testimonial);
-    }
-
-    if (response) {
-      this.response = new RecomResponse(response);
-    }
-
-    if (modifiedValues) {
-      this.modifiedValues = new ModifiedValues(modifiedValues);
-    }
-
-    if (recommender) {
-      this.recommender = new Recommender(recommender);
-    }
-
-    if (emails) {
-      this.emails = emails;
-    }
-  }
-}
-
-export interface GetRecommendationResponse {
-  consultant: {
-    firstName: string;
-    lastName: string;
-    profilePicture?: string;
-  };
-  recommendation: Recommendation;
-}
-
-export interface PublicRecommendation
-  extends Pick<
-    Recommendation,
-    | 'id'
-    | 'workHistoryId'
-    | 'company'
-    | 'jobTitle'
-    | 'relationship'
-    | 'createdAt'
-  > {
-  recommenderJobTitle?: string;
-  recommendation?: string;
-  name?: string;
-}
-
-
+export const PrevBtn = memo(({ isLoading, ...props }: ButtonProps) => {
+  return (
+    <Button
+      marginRight="auto"
+      colorScheme="sapphire"
+      leftIcon={isLoading ? Spinner : FaChevronLeft}
+      {...props}
+    >
+      Back
+    </Button>
+  );
+});
 `
 
 const log = (...args: any[]) => {

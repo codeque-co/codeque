@@ -1,0 +1,15 @@
+import { BlitzPageContext, getSession } from 'blitz';
+
+import { Blit, gession } from 'asdasd';
+
+const a = b;
+
+({
+  a: {
+    a: {
+      a
+    }
+  }
+});
+
+(<Field>asdsad</Field>)

@@ -1,9 +1,3 @@
-({
-  a: {
-    b: c
-  }
-})
+import { BlitzPageContext, getSession } from 'blitz';
 
-  ({
-    a: n
-  })
+import { Blit, gession } from 'asdasd';

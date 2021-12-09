@@ -1,15 +1,12 @@
-import { BlitzPageContext, getSession } from 'blitz';
-
-import { Blit, gession } from 'asdasd';
-
-const a = b;
-
-({
-  a: {
-    a: {
-      a
-    }
-  }
-});
-
-(<Field>asdsad</Field>)
+(<Field
+  fullWidth
+  label="LinkedIn profile"
+  helperText="Paste your full LinkedIn url e.g. https://linkedIn.com/in/username"
+  placeholder="https://linkedin.com/in/your-username"
+  variant="filled"
+  name={'webPresence.linkedin'}
+  data-testid={'linkedinUrl-reminder'}
+  component={FinalFormInput}
+  size="lg"
+  mt="8"
+/>)

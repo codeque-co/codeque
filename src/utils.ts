@@ -19,3 +19,14 @@ export const createLogger = (debugMode = false) => {
     logStepEnd
   }
 }
+export type Mode = 'exact' | 'include' | 'include-with-order'
+
+export const getMode = (mode: Mode = 'include') => {
+  const modes: Mode[] = ['include', 'exact', 'include-with-order']
+
+  if (!modes.includes(mode)) {
+    console.error('Invalid mode: ', mode, '\nValid modes: ', ...modes)
+    process.exit(0)
+  }
+  return mode
+}

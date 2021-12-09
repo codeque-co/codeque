@@ -1,19 +1,13 @@
 import path from 'path'
 import fs from 'fs'
-import { search, Mode } from './src/search'
+import { search } from './src/search'
 import { getFilesList } from './src/getFilesList'
 import { green, white, bold } from "colorette"
-
+import { Mode, getMode } from './src/utils'
 const root = path.resolve('../../Dweet/web')
 const query = fs.readFileSync(path.resolve('./cliQuery')).toString()
 
-const mode = process.argv[2] as Mode || 'include'
-
-const modes: Mode[] = ['include', 'exact', 'include-with-order']
-
-if (!modes.includes(mode)) {
-  console.error('Invalid mode: ', mode, '\nValid modes: ', ...modes)
-}
+const mode = getMode(process.argv[2] as Mode)
 
 console.log('\nMode: ', mode, '\n')
 

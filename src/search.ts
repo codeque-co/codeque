@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { createLogger } from './utils';
+import { createLogger, Mode } from './utils';
 
 import {
   getBody,
@@ -17,7 +17,6 @@ import {
   parseOptions
 } from './astUtils'
 
-export type Mode = 'exact' | 'include' | 'include-with-order'
 
 type SearchArgs = {
   filePaths: string[],
@@ -77,8 +76,22 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     })
 
     if (IdentifierTypes.includes(queryNode.type as string) && (queryNode.name as string).includes('$')) {
+      let levelMatch;
+
+      if (queryNode.name === '$') {
+        levelMatch = fileNode.type === queryNode.type
+
+        if (isExact) {
+          levelMatch = levelMatch && typeof queryNode.typeAnnotation === typeof fileNode.typeAnnotation
+        }
+      }
+
+      if (queryNode.name === '$$') {
+        levelMatch = true
+      }
+
       return {
-        levelMatch: queryNode.name === '$$' || fileNode.type === queryNode.type,
+        levelMatch,
         queryKeysToTraverse: queryNode.name !== '$$' && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
         fileKeysToTraverse
       }

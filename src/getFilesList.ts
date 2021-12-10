@@ -1,17 +1,23 @@
 import path from 'path'
 import fs from 'fs';
 import ignore from 'ignore';
+import { measureStart } from './utils';
 
 export const getFilesList = (root: string) => {
-  let gitignore = ''
-  try {
-    gitignore = fs.readFileSync(path.join(root, '.gitignore')).toString()
-  }
-  catch (e) {
-    console.log('gitignore not found')
-  }
-  const ignoreInstance = ignore().add(gitignore)
+  const stop = measureStart('getFiles')
+  const ignoreInstance = ignore()
   const scan = (dir: string): string[] => {
+    let gitignore = ''
+
+    try {
+      gitignore = fs.readFileSync(path.join(dir, '.gitignore')).toString()
+    }
+    catch (e) {
+      // console.log('gitignore not found')
+    }
+
+    ignoreInstance.add(gitignore)
+
     const entriesList = fs.readdirSync(dir, {
       // withFileTypes: true // This should work but throws an error, so we have to workaround
     }) as string[]
@@ -30,5 +36,8 @@ export const getFilesList = (root: string) => {
   }
 
   const filesList = scan(root)
+
+  stop()
+
   return filesList
 }

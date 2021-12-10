@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { createLogger, Mode } from './utils';
+import { createLogger, Mode, measureStart } from './utils';
 
 import {
   getBody,
@@ -30,6 +30,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
   const allMatches: Array<Match & { filePath: string }> = []
   const isExact = mode === ('exact' as Mode)
   log('Parse query')
+  const measureParseQuery = measureStart('parseQuery')
 
   const inputQueryNodes = queries.map((queryText) => {
     try {
@@ -43,9 +44,11 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     .map((bodyArr) => bodyArr[0])
     .map(unwrapExpressionStatement)
 
+  measureParseQuery()
   log('inputQueryNode', inputQueryNodes)
 
   const compareNodes = (fileNode: PoorNodeType, queryNode: PoorNodeType) => {
+    const measureCompare = measureStart('compare')
     logStepStart('compare')
 
     const queryKeys = getKeysToCompare(queryNode)
@@ -89,7 +92,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
       if (queryNode.name === '$$') {
         levelMatch = true
       }
-
+      measureCompare()
       return {
         levelMatch,
         queryKeysToTraverse: queryNode.name !== '$$' && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
@@ -98,6 +101,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     }
 
     if (queryKeys.length !== fileKeys.length || fileNode.type !== queryNode.type) {
+      measureCompare()
       return {
         levelMatch: false,
         queryKeysToTraverse: [],
@@ -125,7 +129,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     log('compare: queryKeysToTraverse', queryKeysToTraverse)
     log('compare: fileKeysToTraverse', fileKeysToTraverse)
     logStepEnd('compare')
-
+    measureCompare()
     return {
       levelMatch: primitivePropsCount !== 0 && primitivePropsCount === matchingPrimitivePropsCount && queryKeys.every((key) => fileKeys.includes(key)),
       queryKeysToTraverse,
@@ -250,7 +254,9 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     if (foundMatchStart) {
       const code = generate(currentNode as any).code
       log('foundMatchStart:\n', code, '\n', generate(queryNode as any).code, '\n'.padEnd(10, '_'))
+      const measureValidate = measureStart('validate')
       const match = validateMatch(currentNode, queryNode)
+      measureValidate()
       if (match) {
         matches.push({
           start: (currentNode as any).loc.start as Position,
@@ -286,10 +292,16 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
   for (const filePath of filePaths) {
     try {
       log('Parse file')
-      const fileContent = fs.readFileSync(filePath).toString()
-      const fileNode = (parse(fileContent, parseOptions)) as unknown as PoorNodeType
+      const measureReadFile = measureStart('readFile')
 
+      const fileContent = fs.readFileSync(filePath).toString()
+      measureReadFile()
+      const measureParseFile = measureStart('parseFile')
+
+      const fileNode = (parse(fileContent, parseOptions)) as unknown as PoorNodeType
+      measureParseFile()
       const programBody = getBody(fileNode)
+      const measureSearch = measureStart('search')
 
       programBody.forEach((bodyPart) => {
         for (const inputQueryNode of inputQueryNodes) {
@@ -304,6 +316,9 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
           }
         }
       })
+
+      measureSearch()
+
       if (debug) {
         break;
       }

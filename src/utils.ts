@@ -30,3 +30,17 @@ export const getMode = (mode: Mode = 'include') => {
   }
   return mode
 }
+
+let metrics = {} as Record<string, number>
+
+export const measureStart = (name: string) => {
+  const timestamp = performance.now()
+  return () => {
+    const previousTime = metrics[name] || 0
+    metrics[name] = previousTime + (performance.now() - timestamp)
+  }
+}
+
+export const logMetrics = () => {
+  Object.entries(metrics).forEach((kv) => console.log(...kv))
+}

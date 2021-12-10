@@ -3,7 +3,7 @@ import fs from 'fs'
 import { search } from './src/search'
 import { getFilesList } from './src/getFilesList'
 import { green, white, bold } from "colorette"
-import { Mode, getMode } from './src/utils'
+import { Mode, getMode, logMetrics } from './src/utils'
 const root = path.resolve('../../Dweet/web')
 const query = fs.readFileSync(path.resolve('./cliQuery')).toString()
 
@@ -34,3 +34,4 @@ else {
   console.log('No results found :c\n')
 }
 
+logMetrics()

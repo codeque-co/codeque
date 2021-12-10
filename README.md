@@ -55,6 +55,10 @@ Think of other use cases for the matching functionality (call the whole product 
       - implement transformed query
       -> generate AST diff and use it as a transform (try use json-diff with removed misc keys)
       - show example result
+  - predefined codemode snipets to apply on file
+    - eg. transform props into {prop1, prop2} based on which keys are used
+    - a) it could be eslint plugin / no need for code-magic for that 
+    - b) it might be impossible to implement with current approach to codemod
   - for codemod and eslint we need to be able to reference a variable by indentifier, to be able to track references for more complex cases
   - track duplicated code - how (eg. pattern to match all DB queries, then exact compare of AST)
   - metrics: project has 1000 DB queries, project has 3000 react components
@@ -68,6 +72,7 @@ Think of other use cases for the matching functionality (call the whole product 
     - eg. your test failed
     - you search for test based on name
       - you specify a query to find failing code patterns in files imported by test
+  - Feature - get unique values of $_ref/$$_ref in query
 
 Add support for suggestions based on equivalent/similar syntax
   - user input: <$ prop={"5"} />,  suggestion: <$ prop="5" />

@@ -47,6 +47,31 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
   measureParseQuery()
   log('inputQueryNode', inputQueryNodes)
 
+  const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set()) => {
+    if (IdentifierTypes.includes(queryNode.type as string)) {
+      tokens.add(queryNode.name as string)
+    }
+
+    if (['StringLiteral', 'NumericLiteral'].includes(queryNode.type as string)) {
+      tokens.add(queryNode.value as string)
+    }
+
+    const nodeKeys = getKeysToCompare(queryNode).filter((key) =>
+      isNode(queryNode[key] as PoorNodeType) || isNodeArray(queryNode[key] as PoorNodeType[])
+    )
+
+    nodeKeys.forEach((key) => {
+      const nodeVal = queryNode[key]
+      if (isNodeArray(nodeVal as PoorNodeType[])) {
+        (nodeVal as PoorNodeType[]).forEach((node) => getUniqueTokens(node, tokens))
+      }
+      else {
+        getUniqueTokens(nodeVal as PoorNodeType, tokens)
+      }
+    })
+    return tokens
+  }
+
   const compareNodes = (fileNode: PoorNodeType, queryNode: PoorNodeType) => {
     const measureCompare = measureStart('compare')
     logStepStart('compare')
@@ -288,6 +313,14 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     return [...matches, ...nestedMatches].flat()
 
   }
+  const measureGetUniqueTokens = measureStart('getUniqueTokens')
+
+  const uniqueTokens = [...inputQueryNodes.reduce((set: Set<string>, queryNode: PoorNodeType) => {
+    const tokens = getUniqueTokens(queryNode)
+    return new Set([...set, ...tokens])
+  }, new Set())].filter((token) => !token.includes('$'))
+
+  measureGetUniqueTokens()
 
   for (const filePath of filePaths) {
     try {
@@ -296,31 +329,40 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
 
       const fileContent = fs.readFileSync(filePath).toString()
       measureReadFile()
-      const measureParseFile = measureStart('parseFile')
 
-      const fileNode = (parse(fileContent, parseOptions)) as unknown as PoorNodeType
-      measureParseFile()
-      const programBody = getBody(fileNode)
-      const measureSearch = measureStart('search')
+      const measureShallowSearch = measureStart('shallowSearch')
 
-      programBody.forEach((bodyPart) => {
-        for (const inputQueryNode of inputQueryNodes) {
-          const matches = traverseAndMatch(bodyPart, inputQueryNode)
-          allMatches.push(...matches.map((match) => ({
-            filePath,
-            ...match
-          })))
+      const includesUniqueTokens = uniqueTokens.every((token) => fileContent.includes(token))
+      measureShallowSearch()
 
-          if (matches.length > 0) {
-            log(filePath, 'matches', matches)
+      if (includesUniqueTokens) {
+
+        const measureParseFile = measureStart('parseFile')
+
+        const fileNode = (parse(fileContent, parseOptions)) as unknown as PoorNodeType
+        measureParseFile()
+        const programBody = getBody(fileNode)
+        const measureSearch = measureStart('search')
+
+        programBody.forEach((bodyPart) => {
+          for (const inputQueryNode of inputQueryNodes) {
+            const matches = traverseAndMatch(bodyPart, inputQueryNode)
+            allMatches.push(...matches.map((match) => ({
+              filePath,
+              ...match
+            })))
+
+            if (matches.length > 0) {
+              log(filePath, 'matches', matches)
+            }
           }
+        })
+
+        measureSearch()
+
+        if (debug) {
+          break;
         }
-      })
-
-      measureSearch()
-
-      if (debug) {
-        break;
       }
     }
     catch (e) {

@@ -1,11 +1,11 @@
 import path from 'path'
 import fs from 'fs'
-// import { search } from './src/search'
-import { search } from './src/searchMultiThread'
+// import { search } from '/search'
+import { search } from '/searchMultiThread'
 
-import { getFilesList } from './src/getFilesList'
+import { getFilesList } from '/getFilesList'
 import { green, white, bold } from "colorette"
-import { Mode, getMode, logMetrics } from './src/utils'
+import { Mode, getMode, logMetrics } from '/utils'
 
 (async () => {
 

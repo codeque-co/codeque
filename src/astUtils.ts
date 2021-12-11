@@ -1,4 +1,5 @@
 import { parse, ParserOptions } from '@babel/parser'
+import omit from 'object.omit';
 
 export type Position = {
   line: number, column: number
@@ -53,3 +54,28 @@ export const sanitizeJSXText = (node: PoorNodeType) => {
 }
 
 export const parseOptions = { sourceType: 'module', plugins: ['typescript', 'jsx', 'decorators-legacy'] } as ParserOptions
+
+export const cleanupAst = (ast: PoorNodeType) => {
+  const cleanedAst = omit(ast, astPropsToSkip) as PoorNodeType
+
+  Object.keys(cleanedAst).forEach((key) => {
+    if (isNode(cleanedAst[key] as PoorNodeType)) {
+      cleanedAst[key] = cleanupAst(cleanedAst[key] as PoorNodeType)
+    }
+    if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
+      (cleanedAst[key] as PoorNodeType[]).map((subAst) => cleanupAst(subAst))
+    }
+  })
+
+  return cleanedAst
+}
+
+export const compareCode = (codeA: string, codeB: string) => {
+  const astA = parse(codeA, parseOptions).program as unknown as PoorNodeType
+  const astB = parse(codeB, parseOptions).program as unknown as PoorNodeType
+
+  const cleanedA = cleanupAst(astA)
+  const cleanedB = cleanupAst(astB)
+
+  return JSON.stringify(cleanedA) === JSON.stringify(cleanedB)
+}

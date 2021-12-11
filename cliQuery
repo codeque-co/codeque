@@ -1,4 +1,4 @@
-<Button
-  colorScheme="sapphire"
+<$
+  {...$}
 >
-</Button>
+</$>

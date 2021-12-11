@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks'
+
 export const createLogger = (debugMode = false) => {
 
   const log = (...args: any[]) => {

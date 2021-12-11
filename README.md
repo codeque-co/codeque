@@ -1,46 +1,48 @@
 
-Implement tests!!!
+❌ Implement tests!!!
 
-Add literal wildcards
+❌ Add literal wildcards
   - string literal cannot be replaced with identifier in some scenarios eg import
   - we should be able to always use identifier wildcard in place of number
   - we still need number wildcard for some cases
 
-improve query parsing
+✅ improve query parsing
   - first try to parse without brackets, then add brackets and parse once again
 
-Add support for regexp identifier matches (on$ -> onClick, onHover etc)
+❌ Add support for regexp identifier matches (on$ -> onClick, onHover etc)
 
-Add support for nested gitignore
+❌ Add support for nested gitignore
 
-Feature import-based search
+❌ Feature import-based search
   - search in file and all files imported by a file
   - eg. your test failed
     - you search for test based on name
     - you specify a query to find failing code patterns in files imported by test
 
-Do benchmark (done)
+✅ Do benchmark (done)
   - mac 1.4s
   - desktop 2.6s 
   - laptop 4.5s
 
-Do profiling
+✅ Do profiling
   - maybe we can optimize by identifiers search
     - probably there is amount of identifiers that we can search to gain time,but if we search for too many, we will lose time
     - just one identifier is a good starting point
 
-Think of negation syntax and sense (just to make if future proof for now)
+❌ Think of negation syntax and sense (just to make if future proof for now)
   - could be something like: $not('asd')
-Think of and, or syntax and sense (just to make if future proof for now)
+❌ Think of and, or syntax and sense (just to make if future proof for now)
   - could be something like: $and('asd', () => {}) 
-Think of support for ref matching
+❌ Think of support for ref matching
   - user should be able to indicate that two wildcards are the same identifier 
   - eg. const $_ref1 = 'string'; call($_ref1)
 
-Think of other use cases for the matching functionality (call the whole product code-magic)
+⌛ Think of other use cases for the matching functionality (call the whole product code-magic)
   - should the product be an licensed cli ?
   - vscode search extension
       - other editors extensions (how to, which languages)
+      - Webstorm 
+        - Java, but can execute JS somehow - need more reading
   - cli search - why not
   - standalone desktop app
   - eslint plugin restricted syntax 
@@ -74,10 +76,10 @@ Think of other use cases for the matching functionality (call the whole product 
       - you specify a query to find failing code patterns in files imported by test
   - Feature - get unique values of $_ref/$$_ref in query
 
-Add support for suggestions based on equivalent/similar syntax
+❌ Add support for suggestions based on equivalent/similar syntax
   - user input: <$ prop={"5"} />,  suggestion: <$ prop="5" />
   - user input: <$ prop={$+$} />,  suggestion: <$ prop={$-$} />
-Add hints based on first node
+❌ Add hints based on first node
   - user input: {a:b}, hint: You probably needs ({a:b}), right now it is a block statement
 
 To secure the code we should 
@@ -85,3 +87,6 @@ To secure the code we should
   - implement parts of the algorithm in WASM
   - implemented parts do not work if license is not verified
  
+✅
+❌
+⌛

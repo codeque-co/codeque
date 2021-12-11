@@ -5,5 +5,8 @@ const tsConfig = JSON.parse(fs.readFileSync('./tsconfig.json').toString().replac
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, { prefix: '<rootDir>' })
+  moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, { prefix: '<rootDir>' }),
+  "testPathIgnorePatterns": [
+    "__fixtures__"
+  ]
 };

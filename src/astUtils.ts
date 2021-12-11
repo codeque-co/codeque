@@ -1,5 +1,5 @@
 import { parse, ParserOptions } from '@babel/parser'
-import omit from 'object.omit';
+// import omit from 'object.omit';
 
 export type Position = {
   line: number, column: number
@@ -55,7 +55,24 @@ export const sanitizeJSXText = (node: PoorNodeType) => {
 
 export const parseOptions = { sourceType: 'module', plugins: ['typescript', 'jsx', 'decorators-legacy'] } as ParserOptions
 
+const omit = (obj: Record<string, unknown>, keys: string[]) => {
+  const newObj = {} as Record<string, unknown>
+
+  Object.entries(obj).forEach(([key, val]) => {
+    if (!keys.includes(key)) {
+      newObj[key] = val
+    }
+  })
+
+  return newObj
+}
+
 export const cleanupAst = (ast: PoorNodeType) => {
+
+  if (ast.type === 'JSXText') {
+    sanitizeJSXText(ast)
+  }
+
   const cleanedAst = omit(ast, astPropsToSkip) as PoorNodeType
 
   Object.keys(cleanedAst).forEach((key) => {
@@ -63,7 +80,8 @@ export const cleanupAst = (ast: PoorNodeType) => {
       cleanedAst[key] = cleanupAst(cleanedAst[key] as PoorNodeType)
     }
     if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
-      (cleanedAst[key] as PoorNodeType[]).map((subAst) => cleanupAst(subAst))
+
+      cleanedAst[key] = (cleanedAst[key] as PoorNodeType[]).map((subAst) => cleanupAst(subAst))
     }
   })
 

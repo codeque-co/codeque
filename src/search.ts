@@ -125,6 +125,26 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
       }
     }
 
+    if ((queryNode.type as string) === 'ImportDefaultSpecifier' && (queryNode.local as PoorNodeType).name === '$$') {
+      // treat "import $$ from '...'" as wildcard for any import
+      measureCompare()
+      return {
+        levelMatch: true,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
+    if ((queryNode.type as string) === 'TSTypeReference' && (queryNode.typeName as PoorNodeType).name === '$$') {
+      // treat "const a: $$; const a: () => $$" $$ as wildcard for any type annotation
+      measureCompare()
+      return {
+        levelMatch: true,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
     if (queryKeys.length !== fileKeys.length || fileNode.type !== queryNode.type) {
       measureCompare()
       return {

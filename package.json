@@ -33,12 +33,12 @@
     "ignore": "^5.1.9"
   },
   "scripts": {
-    "build": "babel ./ --extensions \".ts,.tsx\" -d dist",
+    "build": "rm -rf dist && babel ./ --extensions \".ts,.tsx\" -d dist",
     "build:watch": "babel ./ --extensions \".ts,.tsx\" -d dist --watch",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",
     "cli": "node ./dist/cli.js",
-    "test": "jest --passWithNoTests",
+    "test": "yarn build && jest --passWithNoTests",
     "test:setup": "node ./dist/getFixtures.js"
   }
 }

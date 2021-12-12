@@ -10,7 +10,6 @@ const fixtures = [{
 }]
 
 const downloadFile = (async (url: string, path: string) => {
-  // const fetch = await import('node-fetch').then(mod => mod.default)
   const res = await fetch(url);
   const fileStream = fs.createWriteStream(path);
   await new Promise((resolve, reject) => {
@@ -22,8 +21,7 @@ const downloadFile = (async (url: string, path: string) => {
 
 
 const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) => {
-  let copied = false
-  fs.createReadStream(zipPath)
+  return fs.createReadStream(zipPath)
     .pipe(unzipper.Parse())
     .on('entry', function (entry) {
       const fileName = entry.path as string;
@@ -32,7 +30,6 @@ const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) 
 
       if (cleanPath.includes(codePath)) {
         console.log(cleanPath)
-        copied = true
         const targetPath = path.join(fixturesDir, cleanPath.replace(codePath, ''))
         console.log(targetPath)
         try {
@@ -50,7 +47,8 @@ const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) 
       } else {
         entry.autodrain();
       }
-    });
+    })
+    .promise()
 }
 
 (async () => {
@@ -60,7 +58,7 @@ const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) 
 
   await downloadFile(fixture.codeLink, tempZipFileName)
 
-  processCodeZip(tempZipFileName, fixture.codePath, fixture.fixturesDir)
+  await processCodeZip(tempZipFileName, fixture.codePath, fixture.fixturesDir)
 
   fs.unlinkSync(tempZipFileName)
 

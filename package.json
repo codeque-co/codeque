@@ -39,6 +39,6 @@
     "dev": "node ./dist/dev.js",
     "cli": "node ./dist/cli.js",
     "test": "jest --passWithNoTests",
-    "test:fixtures": "node ./dist/getFixtures.js"
+    "test:setup": "node ./dist/getFixtures.js"
   }
 }

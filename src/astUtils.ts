@@ -9,6 +9,7 @@ export type Match = {
   start: Position,
   end: Position,
   code: string
+  query: string
 }
 
 export type PoorNodeType = {

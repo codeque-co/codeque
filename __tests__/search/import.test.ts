@@ -77,4 +77,33 @@ describe('JSX', () => {
     expect(results.length).toBe(2)
   })
 
+  it('Should find all imports with both default and named', () => {
+    //TODO: add wildcard string
+    const query = `
+      import $, { $$ } from './ExampleList'; 
+    `
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries: [query],
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it.skip('Should find all aliased reexports ', () => {
+    //TODO: add wildcard string
+    const query = `
+      export { $ as $ } from '$'; 
+    `
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries: [query],
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+
 })

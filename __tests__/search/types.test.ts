@@ -6,7 +6,18 @@ import { getFilesList } from '/getFilesList'
 const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('Types', () => {
-  it.todo('should match different types constructs', () => {
+  it('should match type that concatenates other type', () => {
+    const queries = [`
+      type $ = ScrollViewProps & $
+      `,
+    ]
 
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries,
+    })
+
+    expect(results.length).toBe(1)
   })
 })

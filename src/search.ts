@@ -25,9 +25,34 @@ type SearchArgs = {
   debug?: boolean
 }
 
+type Matches = Array<Match & { filePath: string }>
+
+const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false) => {
+  const deduped: Matches = []
+
+  matches.forEach((match) => {
+    const alreadyIn = deduped.some((_match) => {
+      return match.filePath === _match.filePath
+        && match.start.column === _match.start.column
+        && match.start.line === _match.start.line
+        && match.end.column === _match.end.column
+        && match.end.line === _match.end.line
+    })
+
+    if (!alreadyIn) {
+      deduped.push(match)
+    }
+    else if (debug) {
+      log('already in', match.code, match.query)
+    }
+  })
+
+  return deduped
+}
+
 export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) => {
   const { log, logStepEnd, logStepStart } = createLogger(debug)
-  const allMatches: Array<Match & { filePath: string }> = []
+  const allMatches: Matches = []
   const isExact = mode === ('exact' as Mode)
   log('Parse query')
   const measureParseQuery = measureStart('parseQuery')
@@ -297,6 +322,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
      */
 
     if (foundMatchStart) {
+      const query = generate(queryNode as any).code
       const code = generate(currentNode as any).code
       log('foundMatchStart:\n', code, '\n', generate(queryNode as any).code, '\n'.padEnd(10, '_'))
       const measureValidate = measureStart('validate')
@@ -306,7 +332,8 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
         matches.push({
           start: (currentNode as any).loc.start as Position,
           end: (currentNode as any).loc.end as Position,
-          code: code.toString()
+          code: code.toString(),
+          query: query.toString()
         })
       }
     }
@@ -338,7 +365,8 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
   const uniqueTokens = [...inputQueryNodes.reduce((set: Set<string>, queryNode: PoorNodeType) => {
     const tokens = getUniqueTokens(queryNode)
     return new Set([...set, ...tokens])
-  }, new Set())].filter((token) => !token.includes('$'))
+  }, new Set())].filter((token) => typeof token !== 'string' || !token.includes('$'))
+
 
   measureGetUniqueTokens()
 
@@ -393,6 +421,6 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     }
   }
 
-  return allMatches
+  return dedupMatches(allMatches, log, debug)
 }
 

@@ -6,17 +6,55 @@ import { getFilesList } from '/getFilesList'
 const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('Other', () => {
-  it('should find all console logs', () => {
-    const query = `
-      console.log()
-    `
+  it('should not include the same result twice', () => {
+    const queries = [`
+      type $ = ScrollViewProps & $
+      `,
+      `
+       type $ = $ & ScrollViewProps
+      `
+    ]
+
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queries,
     })
 
-    expect(results.length).toBe(3)
-    expect(results[2].code).toBe("console.log('Pressed')")
+    expect(results.length).toBe(1)
+  })
+
+  it('should not include the same result twice 2', () => {
+    const queries = [`
+      <$$
+        $={() => {}}
+      />
+    `,
+      `
+      <$$
+        $={() => $$}
+      />
+    `,
+      `
+      <$$
+        $={() => {}}
+      >
+      </$$>
+    `,
+      `
+      <$$
+        $={() => $$}
+      >
+      </$$>
+    `
+    ]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries,
+    })
+
+    expect(results.length).toBe(140)
   })
 })

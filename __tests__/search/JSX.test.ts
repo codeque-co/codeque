@@ -48,7 +48,7 @@ describe('JSX', () => {
       </Drawer.Section>
     `
 
-    expect(compareCode(results[0].code, resultCode)).toBe(true)
+    expect(compareCode(results[0].code, resultCode)).toBeTruthy()
   })
 
   it('Should find JSX by prop name', () => {
@@ -89,7 +89,7 @@ describe('JSX', () => {
       queries: [query],
     })
 
-    expect(compareCode(results[0].code, query)).toBe(true)
+    expect(compareCode(results[0].code, query)).toBeTruthy()
   })
 
   it('Should find components using useTheme() hook', () => {
@@ -144,21 +144,11 @@ describe('JSX', () => {
   })
 
   it('Should find all anonymous functions passed as a prop', () => {
-    const queries = [`
-      <$$
-        $={() => {}}
-      />
-    `,
+    const queries = [
       `
       <$$
         $={() => $$}
       />
-    `,
-      `
-      <$$
-        $={() => {}}
-      >
-      </$$>
     `,
       `
       <$$
@@ -183,7 +173,7 @@ describe('JSX', () => {
       />
     `
 
-    expect(results.length).toBe(183)
-    expect(compareCode(results[0].code, firstResultCode)).toBe(true)
+    expect(results.length).toBe(140)
+    expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
   })
 })

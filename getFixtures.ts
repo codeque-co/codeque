@@ -5,7 +5,8 @@ import path from 'path';
 
 const fixtures = [{
   fixturesDir: './__tests__/search/__fixtures__',
-  codeLink: 'https://github.com/callstack/react-native-paper/archive/abf631a4d595831fcd12be03008be059bb5aeeec.zip',
+  archiveLink: 'https://github.com/callstack/react-native-paper/archive/abf631a4d595831fcd12be03008be059bb5aeeec.zip',
+  codeLink: 'https://github.com/callstack/react-native-paper/tree/abf631a4d595831fcd12be03008be059bb5aeeec',
   codePath: 'example/src'
 }]
 
@@ -56,7 +57,7 @@ const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) 
   const fixture = fixtures[0]
   const tempZipFileName = `${Date.now()}.zip`
 
-  await downloadFile(fixture.codeLink, tempZipFileName)
+  await downloadFile(fixture.archiveLink, tempZipFileName)
 
   await processCodeZip(tempZipFileName, fixture.codePath, fixture.fixturesDir)
 

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { createLogger, Mode, measureStart } from './utils';
+import { createLogger, Mode, measureStart, patternToRegex } from './utils';
 
 import {
   getBody,
@@ -68,17 +68,31 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     .map(getBody)
     .map((bodyArr) => bodyArr[0])
     .map(unwrapExpressionStatement)
+    .filter(Boolean)
 
   measureParseQuery()
   log('inputQueryNode', inputQueryNodes)
+
+  const numericWildcard = '0x0'
+  const wildcard = '$'
+  const stringWildcard = wildcard
+  const singleIdentifierWildcard = wildcard
+  const doubleIdentifierWildcard = `${wildcard}${wildcard}`
 
   const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set()) => {
     if (IdentifierTypes.includes(queryNode.type as string)) {
       tokens.add(queryNode.name as string)
     }
 
-    if (['StringLiteral', 'NumericLiteral'].includes(queryNode.type as string)) {
+    if ((queryNode.type as string) === 'StringLiteral' && !(queryNode.value as string).includes(stringWildcard)) {
       tokens.add(queryNode.value as string)
+    }
+
+    if ((queryNode.type as string) === 'NumericLiteral') {
+      const raw = (queryNode.extra as any).raw as string
+      if (raw !== numericWildcard) {
+        tokens.add(raw)
+      }
     }
 
     const nodeKeys = getKeysToCompare(queryNode).filter((key) =>
@@ -128,29 +142,44 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
 
     })
 
-    if (IdentifierTypes.includes(queryNode.type as string) && (queryNode.name as string).includes('$')) {
+    if (
+      (fileNode.type as string).includes('TS')
+      && (fileNode.type as string).includes('Keyword')
+      && (queryNode.type as string) === 'TSTypeReference'
+      && ((queryNode.typeName as any).name as string) === singleIdentifierWildcard
+      && ((queryNode.typeParameters as any)) === undefined
+
+    ) {
+      return {
+        levelMatch: true,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
+    if (IdentifierTypes.includes(queryNode.type as string) && (queryNode.name as string).includes(singleIdentifierWildcard)) {
       let levelMatch;
 
-      if (queryNode.name === '$') {
-        levelMatch = fileNode.type === queryNode.type
+      if (queryNode.name === doubleIdentifierWildcard) {
+        levelMatch = true
+      } else {
+        const regex = patternToRegex(queryNode.name as string);
+        levelMatch = fileNode.type === queryNode.type && regex.test(fileNode.name as string)
 
         if (isExact) {
           levelMatch = levelMatch && typeof queryNode.typeAnnotation === typeof fileNode.typeAnnotation
         }
       }
 
-      if (queryNode.name === '$$') {
-        levelMatch = true
-      }
       measureCompare()
       return {
         levelMatch,
-        queryKeysToTraverse: queryNode.name !== '$$' && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
+        queryKeysToTraverse: queryNode.name !== doubleIdentifierWildcard && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
         fileKeysToTraverse
       }
     }
 
-    if ((queryNode.type as string) === 'ImportDefaultSpecifier' && (queryNode.local as PoorNodeType).name === '$$') {
+    if ((queryNode.type as string) === 'ImportDefaultSpecifier' && (queryNode.local as PoorNodeType).name === doubleIdentifierWildcard) {
       // treat "import $$ from '...'" as wildcard for any import
       measureCompare()
       return {
@@ -160,8 +189,28 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
       }
     }
 
-    if ((queryNode.type as string) === 'TSTypeReference' && (queryNode.typeName as PoorNodeType).name === '$$') {
+    if ((queryNode.type as string) === 'TSTypeReference' && (queryNode.typeName as PoorNodeType).name === doubleIdentifierWildcard) {
       // treat "const a: $$; const a: () => $$" $$ as wildcard for any type annotation
+      measureCompare()
+      return {
+        levelMatch: true,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
+    if ((queryNode.type as string) === 'StringLiteral' && (fileNode.type as string) === 'StringLiteral' && (queryNode.value as string).includes(stringWildcard)) {
+      const regex = patternToRegex(queryNode.value as string)
+      const levelMatch = regex.test(fileNode.value as string)
+      measureCompare()
+      return {
+        levelMatch: levelMatch,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
+    if ((queryNode.type as string) === 'NumericLiteral' && (fileNode.type as string) === 'NumericLiteral' && ((queryNode.extra as any).raw as string) === numericWildcard) {
       measureCompare()
       return {
         levelMatch: true,

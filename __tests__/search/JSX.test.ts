@@ -176,4 +176,87 @@ describe('JSX', () => {
     expect(results.length).toBe(140)
     expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
   })
+
+  it('Should find all anonymous functions passed as event listener handler', () => {
+    const queries = [
+      `
+      <$$
+        on$={() => $$}
+      />
+    `,
+      `
+      <$$
+        on$={() => $$}
+      >
+      </$$>
+    `
+    ]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries,
+    })
+
+    const firstResultCode = `
+      <Drawer.Item {...props} key={props.key} theme={props.key === 3 ? {
+        colors: {
+          primary: Colors.tealA200
+        }
+      } : undefined} active={drawerItemIndex === index} onPress={() => _setDrawerItem(index)} 
+      />
+    `
+
+    expect(results.length).toBe(114)
+    expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
+  })
+
+  it('Should find all Elements pretending to be a wrapper', () => {
+    const queries = [
+      `
+      <$Wrapper/>
+    `,
+      `
+      <$Wrapper>
+      </$Wrapper>
+    `
+    ]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries,
+    })
+
+    expect(results.length).toBe(34)
+  })
+
+  it('Should find all title prop values which are strings', () => {
+    const queries = [
+      `
+      <$$ title="$" />
+    `,
+      `
+      <$$ title="$">
+      </$$>
+    `,
+      `
+      <$$ title={"$"} />
+    `,
+      `
+      <$$ title={"$"}>
+      </$$>
+    `
+    ]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queries,
+    })
+
+    expect(results.length).toBe(78)
+  })
+
+
 })

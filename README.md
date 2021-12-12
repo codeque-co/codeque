@@ -1,10 +1,12 @@
 
 ✅ Implement tests
 
-❌ Add literal wildcards
+✅ Add literal wildcards
   - string literal cannot be replaced with identifier in some scenarios eg import
   - we should be able to always use identifier wildcard in place of number
-  - we still need number wildcard for some cases
+  - we still need number wildcard for some cases (we want to have number, not any identifier)
+
+⌛ Explore types matching and types literals -> tests on custom file
 
 ❌ Add support for regexp identifier matches (on$ -> onClick, onHover etc)
 
@@ -98,6 +100,7 @@
   - user input: <$ prop={$+$} />,  suggestion: <$ prop={$-$} />
 💡 Add hints based on first node
   - user input: {a:b}, hint: You probably needs ({a:b}), right now it is a block statement
+  - use input `"some string"`: You probably needs `("some string")`, right now it is a directive
 
 💡 To secure the code we should 
   - verify license in WASM

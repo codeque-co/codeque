@@ -46,3 +46,11 @@ export const measureStart = (name: string) => {
 export const logMetrics = () => {
   Object.entries(metrics).forEach((kv) => console.log(...kv))
 }
+
+export const patternToRegex = (str: string) => {
+  if (/(\$){3,}/.test(str)) {
+    throw new Error(`More than 2 wildcards chars are not allowed "${str}"`)
+  }
+  const strWithReplacedWildcards = str.replace(/\$\$/g, '.+?').replace(/\$/g, '.*?')
+  return new RegExp(`^${strWithReplacedWildcards}$`)
+}

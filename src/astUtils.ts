@@ -21,9 +21,14 @@ export const getBody = (fileNode: PoorNodeType) => {
 }
 
 export const unwrapExpressionStatement = (node: PoorNodeType) => {
+  if (typeof node !== "object") {
+    return node
+  }
+
   if (node.type === 'ExpressionStatement') {
     return node.expression as PoorNodeType
   }
+
   return node as PoorNodeType
 }
 

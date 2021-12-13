@@ -116,7 +116,19 @@
   - playground
   - examples
 
-
+⌛ Marketing use-cases for search
+  - You want to find how a component is used across the codebase to see examples without going to docs
+  - You want to track where the piece of code is duplicated across the codebase
+  - You spot a code pattern that can cause issues (eg. react falsy event listener) and you want to check where else it is used
+  - You want to check places where a component with specific set of props is used while refactoring to test changes properly
+  - You are curious about usage statistics of some patterns in the codebase (count of components, functions)
+    - there could be predefined set of measurements to run
+  - More specific
+    - You are adding i18n and you want to check where in codebase a specific text string is used
+⌛ Marketing use-cases for eslint rule
+  - 
+⌛ Marketing use-cases for eslint codemod
+ - 
 
 ✅
 ❌

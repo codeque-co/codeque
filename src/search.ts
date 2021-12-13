@@ -416,7 +416,6 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
     return new Set([...set, ...tokens])
   }, new Set())].filter((token) => typeof token !== 'string' || !token.includes('$'))
 
-
   measureGetUniqueTokens()
 
   for (const filePath of filePaths) {

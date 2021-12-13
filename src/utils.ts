@@ -1,4 +1,6 @@
 import { performance } from 'perf_hooks'
+import { codeFrameColumns } from '@babel/code-frame'
+import { format } from 'prettier'
 
 export const createLogger = (debugMode = false) => {
 
@@ -53,4 +55,23 @@ export const patternToRegex = (str: string) => {
   }
   const strWithReplacedWildcards = str.replace(/\$\$/g, '.+?').replace(/\$/g, '.*?')
   return new RegExp(`^${strWithReplacedWildcards}$`)
+}
+
+export const getFormattedCodeFrame = (code: string, startLine: number) => {
+  const formatted = format(code, { parser: 'babel-ts' })
+  const linesCount = formatted.match(/\n/g)?.length || 0
+  const maxLineLength = (startLine + linesCount).toString().length
+
+  let codeFrame = codeFrameColumns(formatted, { start: { line: 0 } }, {
+    highlightCode: true,
+    linesBelow: linesCount
+  })
+
+  for (let i = linesCount; i > 0; i--) {
+    const frameLineNum = i
+    const originalPaddingLen = (frameLineNum).toString().length
+    codeFrame = codeFrame.replace(` ${frameLineNum} |`, ` ${startLine + i - 1} |`.padStart(maxLineLength + 2 + originalPaddingLen, ' '))
+  }
+
+  return codeFrame
 }

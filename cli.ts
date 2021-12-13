@@ -1,11 +1,10 @@
 import path from 'path'
 import fs from 'fs'
-// import { search } from '/search'
 import { search } from '/searchMultiThread'
-
+// import { search } from '/search'
 import { getFilesList } from '/getFilesList'
-import { green, white, bold } from "colorette"
-import { Mode, getMode, logMetrics } from '/utils'
+import { green, magenta, cyan, bold } from "colorette"
+import { Mode, getMode, getFormattedCodeFrame } from '/utils'
 
 (async () => {
 
@@ -14,9 +13,9 @@ import { Mode, getMode, logMetrics } from '/utils'
 
   const mode = getMode(process.argv[2] as Mode)
 
-  console.log('\nMode: ', mode, '\n')
+  console.log(cyan(bold('\nMode: ')), green(mode), '\n')
 
-  console.log('Query:\n\n' + query + '\n')
+  console.log(cyan(bold('Query:\n\n')) + getFormattedCodeFrame(query, 1) + '\n')
 
   const results = await search({
     mode,
@@ -27,17 +26,19 @@ import { Mode, getMode, logMetrics } from '/utils'
   if (results.length > 0) {
     const first20 = results.slice(0, 20)
 
+    console.log(cyan(bold('Results:\n')))
+
     first20.forEach((result) => {
-      console.log(green(result.filePath), ':')
-      console.log('')
-      console.log(white(bold(result.code.split('\n').map((line) => ` ${line}`).join('\n'))), '\n')
+      const startLine = result.start.line
+      const codeFrame = getFormattedCodeFrame(result.code, startLine)
+      console.log(`${green(result.filePath)}:${magenta(startLine)}`)
+      console.log('\n' + codeFrame + '\n')
     })
 
-    console.log('Total count:', results.length)
+    console.log(cyan(bold('Total count:')), magenta(results.length))
   }
   else {
-    console.log('No results found :c\n')
+    console.log(cyan(bold('No results found :c\n')))
   }
 
-  logMetrics()
 })()

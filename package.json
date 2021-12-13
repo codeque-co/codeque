@@ -10,6 +10,7 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/babel__code-frame": "^7.0.3",
     "@types/babel__generator": "^7.6.3",
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.0.3",
@@ -26,11 +27,13 @@
     "unzipper": "^0.10.11"
   },
   "dependencies": {
+    "@babel/code-frame": "^7.16.0",
     "@babel/generator": "7.16.0",
     "@babel/parser": "7.16.4",
     "@babel/plugin-syntax-typescript": "7.16.0",
     "colorette": "^2.0.16",
-    "ignore": "^5.1.9"
+    "ignore": "^5.1.9",
+    "prettier": "^2.5.1"
   },
   "scripts": {
     "build": "rm -rf dist && babel ./ --extensions \".ts,.tsx\" -d dist",

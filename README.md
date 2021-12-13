@@ -8,12 +8,23 @@
 
 ⌛ Explore types matching and types literals -> tests on custom file
 
-❌ Add support for regexp identifier matches (on$ -> onClick, onHover etc)
+✅ Add support for regexp identifier matches (on$ -> onClick, onHover etc)
 
 ❌ Add support for multiple wildcards
   - ($$, $$) => {} is invalid while parsing function
   - $_refN // currently without ref analysis
   - $$_refN // currently without ref analysis
+
+❌ Add support for proposal syntaxes
+
+❗ Regex matching of identifier seems to be slow 
+  - double the time on mac for "import { $Plus } from 'react-icons$'" 
+  - maybe instead of "." regex we could be more specific
+  - it might be caused by lack of keywords for initial search
+    - try to use keywords regexes in tokens search
+    - try to escape "$" from tokens - should be faster than several regex
+    - try to use language keywords like import, for,as
+      - might not help much
 
 ✅ improve query parsing
   - first try to parse without brackets, then add brackets and parse once again
@@ -35,9 +46,14 @@
 
 ❌ Invent / Implement license mechanism
 
-❌ Make CLI a product
-   - codeframe from babel
-   - see how monako is tokenizeing and coloring  
+⌛ Make CLI a product
+   ✅ codeframe from babel
+   - commander
+   - spinner while search
+   - results limit param
+   - inline input 
+   - file path input
+   - runs in cwd
 
 💡 Feature import-based search
   - search in file and all files imported by a file
@@ -107,6 +123,9 @@
   - implement parts of the algorithm in WASM
   - implemented parts do not work if license is not verified
 
+💡 Add support for flow
+  - Probably needs a refactor similar to different language refactor
+
 💡 Product website
   - home
     - landing
@@ -134,3 +153,4 @@
 ❌
 ⌛
 💡
+⚠️

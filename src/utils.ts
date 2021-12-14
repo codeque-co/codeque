@@ -77,3 +77,5 @@ export const getCodeFrame = (code: string, startLine: number, formatting = false
 
   return codeFrame
 }
+
+export const print = console.log // to distinguish intended logs

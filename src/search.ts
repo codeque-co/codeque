@@ -2,10 +2,9 @@ import fs from 'fs';
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
 import { createLogger, Mode, measureStart, patternToRegex } from './utils';
-
+import { parseQueries } from './parseQuery';
 import {
   getBody,
-  unwrapExpressionStatement,
   getKeysToCompare,
   sanitizeJSXText,
   isNode,
@@ -14,13 +13,16 @@ import {
   Match,
   PoorNodeType,
   Position,
-  parseOptions
+  parseOptions,
+  numericWildcard,
+  stringWildcard,
+  singleIdentifierWildcard,
+  doubleIdentifierWildcard,
 } from './astUtils'
-
 
 type SearchArgs = {
   filePaths: string[],
-  queries: string[],
+  queryCodes: string[],
   mode: Mode,
   debug?: boolean
 }
@@ -50,66 +52,22 @@ const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = f
   return deduped
 }
 
-export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) => {
+export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArgs) => {
   const { log, logStepEnd, logStepStart } = createLogger(debug)
   const allMatches: Matches = []
   const isExact = mode === ('exact' as Mode)
   log('Parse query')
   const measureParseQuery = measureStart('parseQuery')
 
-  const inputQueryNodes = queries.map((queryText) => {
-    try {
-      return parse(queryText, parseOptions) as unknown as PoorNodeType
-    }
-    catch (e) {
-      return parse(`(${queryText})`, parseOptions) as unknown as PoorNodeType
-    }
-  })
-    .map(getBody)
-    .map((bodyArr) => bodyArr[0])
-    .map(unwrapExpressionStatement)
-    .filter(Boolean)
+  const [queries, parseOk] = parseQueries(queryCodes)
+
+  if (!parseOk) {
+    return []
+  }
 
   measureParseQuery()
-  log('inputQueryNode', inputQueryNodes)
 
-  const numericWildcard = '0x0'
-  const wildcard = '$'
-  const stringWildcard = wildcard
-  const singleIdentifierWildcard = wildcard
-  const doubleIdentifierWildcard = `${wildcard}${wildcard}`
-
-  const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set()) => {
-    if (IdentifierTypes.includes(queryNode.type as string)) {
-      tokens.add(queryNode.name as string)
-    }
-
-    if ((queryNode.type as string) === 'StringLiteral' && !(queryNode.value as string).includes(stringWildcard)) {
-      tokens.add(queryNode.value as string)
-    }
-
-    if ((queryNode.type as string) === 'NumericLiteral') {
-      const raw = (queryNode.extra as any).raw as string
-      if (raw !== numericWildcard) {
-        tokens.add(raw)
-      }
-    }
-
-    const nodeKeys = getKeysToCompare(queryNode).filter((key) =>
-      isNode(queryNode[key] as PoorNodeType) || isNodeArray(queryNode[key] as PoorNodeType[])
-    )
-
-    nodeKeys.forEach((key) => {
-      const nodeVal = queryNode[key]
-      if (isNodeArray(nodeVal as PoorNodeType[])) {
-        (nodeVal as PoorNodeType[]).forEach((node) => getUniqueTokens(node, tokens))
-      }
-      else {
-        getUniqueTokens(nodeVal as PoorNodeType, tokens)
-      }
-    })
-    return tokens
-  }
+  log('inputQueryNode', queries.map(({ queryNode }) => queryNode))
 
   const compareNodes = (fileNode: PoorNodeType, queryNode: PoorNodeType) => {
     const measureCompare = measureStart('compare')
@@ -411,11 +369,6 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
   }
   const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
-  const uniqueTokens = [...inputQueryNodes.reduce((set: Set<string>, queryNode: PoorNodeType) => {
-    const tokens = getUniqueTokens(queryNode)
-    return new Set([...set, ...tokens])
-  }, new Set())].filter((token) => typeof token !== 'string' || !token.includes('$'))
-
   measureGetUniqueTokens()
 
   for (const filePath of filePaths) {
@@ -428,7 +381,7 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
 
       const measureShallowSearch = measureStart('shallowSearch')
 
-      const includesUniqueTokens = uniqueTokens.every((token) => fileContent.includes(token))
+      const includesUniqueTokens = queries.some(({ uniqueTokens }) => uniqueTokens.every((token) => fileContent.includes(token)))
       measureShallowSearch()
 
       if (includesUniqueTokens) {
@@ -441,8 +394,8 @@ export const search = ({ mode, filePaths, queries, debug = false }: SearchArgs) 
         const measureSearch = measureStart('search')
 
         programBody.forEach((bodyPart) => {
-          for (const inputQueryNode of inputQueryNodes) {
-            const matches = traverseAndMatch(bodyPart, inputQueryNode)
+          for (const { queryNode } of queries) {
+            const matches = traverseAndMatch(bodyPart, queryNode)
             allMatches.push(...matches.map((match) => ({
               filePath,
               ...match

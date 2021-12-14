@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks'
 import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
-
+import { Position } from './astUtils'
 export const createLogger = (debugMode = false) => {
 
   const log = (...args: any[]) => {
@@ -57,16 +57,26 @@ export const patternToRegex = (str: string) => {
   return new RegExp(`^${strWithReplacedWildcards}$`)
 }
 
-export const getCodeFrame = (code: string, startLine: number, formatting = false) => {
+export const getCodeFrame = (code: string, startLine: number, formatting = false, errorPos?: Position) => {
   const formatted = formatting ? format(code, { parser: 'babel-ts' }) : code
 
   const linesCount = (formatted.match(/\n/g)?.length || 0) + (!formatting ? 1 : 0)
 
   const maxLineLength = (startLine + linesCount).toString().length
 
-  let codeFrame = codeFrameColumns(formatted, { start: { line: 0 } }, {
+  const indicateError = errorPos !== undefined
+  const linesBelow = indicateError ? linesCount - errorPos.line : linesCount;
+  const linesAbove = indicateError ? errorPos.line : undefined
+
+  const errorLocation = indicateError ? {
+    start: errorPos,
+    end: errorPos
+  } : { start: { line: 0 } }
+
+  let codeFrame = codeFrameColumns(formatted, errorLocation, {
     highlightCode: true,
-    linesBelow: linesCount
+    linesBelow,
+    linesAbove
   })
 
   for (let i = linesCount; i > 0; i--) {

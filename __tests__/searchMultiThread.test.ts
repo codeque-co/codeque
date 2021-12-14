@@ -27,13 +27,13 @@ it('should search using multiple threads and give the same results count as sing
   const resultsSingle = search({
     mode: 'exact',
     filePaths: filesList,
-    queries: [query]
+    queryCodes: [query]
   })
 
   const resultsMulti = await searchMultiThread({
     mode: 'exact',
     filePaths: filesList,
-    queries: [query]
+    queryCodes: [query]
   })
 
   expect(resultsMulti.length).toBe(204)

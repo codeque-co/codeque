@@ -11,7 +11,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
     expect(results.length).toBe(148)
   })
@@ -24,7 +24,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     const resultCode = `
@@ -56,7 +56,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
     expect(results.length).toBe(41)
   })
@@ -66,7 +66,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
     expect(results.length).toBe(1)
   })
@@ -86,7 +86,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(compareCode(results[0].code, query)).toBeTruthy()
@@ -107,13 +107,13 @@ describe('JSX', () => {
     const resultsUsage = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [usageQuery],
+      queryCodes: [usageQuery],
     })
 
     const resultsImport = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [importQuery],
+      queryCodes: [importQuery],
     })
     expect(resultsImport.length).not.toBe(0)
 
@@ -137,7 +137,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query1, query2],
+      queryCodes: [query1, query2],
     })
 
     expect(results.length).toBe(2)
@@ -161,7 +161,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     const firstResultCode = `
@@ -195,7 +195,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     const firstResultCode = `
@@ -225,7 +225,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(34)
@@ -252,7 +252,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(78)

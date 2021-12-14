@@ -9,7 +9,7 @@ const query = fs.readFileSync(path.resolve('./devQuery')).toString()
 const mockFilePath = path.resolve('./devFile')
 
 const matches = search({
-  queries: [query],
+  queryCodes: [query],
   filePaths: [mockFilePath],
   mode: getMode(process.argv[2] as Mode),
   debug: true,

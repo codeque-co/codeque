@@ -1,10 +1,10 @@
 import path from 'path'
 import fs from 'fs'
 import { search } from '/searchMultiThread'
-// import { search } from '/search'
 import { getFilesList } from '/getFilesList'
-import { green, magenta, cyan, bold } from "colorette"
+import { green, magenta, cyan, bold, red, yellow } from "colorette"
 import { Mode, getMode, getCodeFrame, print } from '/utils'
+import { parseQueries } from '/parseQuery'
 
 (async () => {
   const resultsLimitCount = 20
@@ -15,12 +15,22 @@ import { Mode, getMode, getCodeFrame, print } from '/utils'
 
   print(cyan(bold('\nMode: ')), green(mode), '\n')
 
-  print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
+  const [[{ error }], parseOk] = parseQueries([query])
+
+  if (parseOk) {
+    print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
+  }
+  else {
+    print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
+    print(red(bold('Error:')), error?.text, '\n')
+
+    process.exit(1)
+  }
 
   const results = await search({
     mode,
     filePaths: getFilesList(root),
-    queries: [query]
+    queryCodes: [query]
   })
 
   if (results.length > 0) {
@@ -32,7 +42,7 @@ import { Mode, getMode, getCodeFrame, print } from '/utils'
     first20.forEach((result) => {
       const startLine = result.start.line
       const codeFrame = getCodeFrame(result.code, startLine)
-      print(`${green(result.filePath)}:${magenta(startLine)}`)
+      print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.start.column)}`)
       print('\n' + codeFrame + '\n')
     })
 

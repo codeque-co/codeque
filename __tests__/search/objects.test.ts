@@ -60,7 +60,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -79,7 +79,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -96,7 +96,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -113,7 +113,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     const firstMatch = `
@@ -148,7 +148,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(0)
@@ -166,7 +166,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -189,7 +189,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
 

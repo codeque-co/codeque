@@ -22,13 +22,13 @@
   - await outside async fn
   - explore parse result errors
 
-❗ Regex matching of identifier seems to be slow 
-  - one perf issue was caused by prettier - fixed!
+✅ Regex matching of identifier seems to be slow 
+  ✅ one perf issue was caused by prettier - fixed!
   - double the time on mac for "import { $Plus } from 'react-icons$'" 
   - maybe instead of "." regex we could be more specific
-  - it might be caused by lack of keywords for initial search
+  ✅ it might be caused by lack of keywords for initial search
     - try to use keywords regexes in tokens search
-    - try to escape "$" from tokens - should be faster than several regex
+    ✅ try to escape "$" from tokens - should be faster than several regex
     - try to use language keywords like import, for,as
       - might not help much
 

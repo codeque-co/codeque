@@ -16,7 +16,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(1)
@@ -32,7 +32,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(0)
@@ -45,7 +45,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(41)
@@ -58,7 +58,7 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(33)
@@ -71,39 +71,36 @@ describe('JSX', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(2)
   })
 
   it('Should find all imports with both default and named', () => {
-    //TODO: add wildcard string
     const query = `
-      import $, { $$ } from './ExampleList'; 
+      import $, { $$ } from '$'; 
     `
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
-    expect(results.length).toBe(1)
+    expect(results.length).toBe(2)
   })
 
-  it.skip('Should find all aliased reexports ', () => {
-    //TODO: add wildcard string
+  it('Should find all aliased reexports ', () => {
+    // TODO: fix - it matches "export {default} from " but it shouldn't
     const query = `
-      export { $ as $ } from '$'; 
+      export { $ as $$ } from '$'; 
     `
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
-    expect(results.length).toBe(1)
+    expect(results.length).toBe(6)
   })
-
-
 })

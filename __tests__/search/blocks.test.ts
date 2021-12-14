@@ -20,7 +20,7 @@ describe('blocks', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)

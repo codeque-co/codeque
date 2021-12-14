@@ -15,6 +15,8 @@ describe('Types', () => {
       "'other";
       '\\'other';
 
+      'react-native';
+
       123 + 321 ;
     `)
   })
@@ -32,7 +34,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -47,7 +49,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -59,7 +61,7 @@ describe('Types', () => {
     const results1 = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: queries1,
+      queryCodes: queries1,
     })
 
     expect(results1.length).toBe(2)
@@ -69,7 +71,7 @@ describe('Types', () => {
     const results2 = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: queries2,
+      queryCodes: queries2,
     })
 
     expect(results2.length).toBe(2)
@@ -81,7 +83,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -93,10 +95,22 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: queries,
+      queryCodes: queries,
     })
 
-    expect(results.length).toBe(4)
+    expect(results.length).toBe(5)
+  })
+
+  it('should match string with wildcard inside string', () => {
+    const queries = [`('react$native');`]
+
+    const results = search({
+      mode: 'exact',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
   })
 
   it('should match numeric literal', () => {
@@ -105,7 +119,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries: queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(3)

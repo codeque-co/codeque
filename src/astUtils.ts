@@ -103,3 +103,9 @@ export const compareCode = (codeA: string, codeB: string) => {
 
   return JSON.stringify(cleanedA) === JSON.stringify(cleanedB)
 }
+
+export const numericWildcard = '0x0'
+export const wildcard = '$'
+export const stringWildcard = wildcard
+export const singleIdentifierWildcard = wildcard
+export const doubleIdentifierWildcard = `${wildcard}${wildcard}`

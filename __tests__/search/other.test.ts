@@ -18,7 +18,7 @@ describe('Other', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -52,7 +52,7 @@ describe('Other', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(140)

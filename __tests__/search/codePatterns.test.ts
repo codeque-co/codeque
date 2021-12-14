@@ -21,7 +21,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
 
@@ -53,7 +53,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -75,7 +75,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(19)
@@ -132,7 +132,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(74)
@@ -146,7 +146,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
     expect(results.length).toBe(1)
   })
@@ -159,7 +159,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -172,7 +172,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries: [query],
+      queryCodes: [query],
     })
 
     expect(results.length).toBe(3)
@@ -189,7 +189,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(6)
@@ -205,7 +205,7 @@ describe('code patterns', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(0)

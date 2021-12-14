@@ -30,7 +30,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -45,7 +45,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -60,7 +60,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(3)
@@ -77,7 +77,7 @@ describe('Types', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(4)
@@ -94,7 +94,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -111,7 +111,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -128,7 +128,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -145,7 +145,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(2)
@@ -160,7 +160,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: mockFilesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -175,7 +175,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: mockFilesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -190,7 +190,7 @@ describe('Types', () => {
     const results = search({
       mode: 'exact',
       filePaths: mockFilesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)

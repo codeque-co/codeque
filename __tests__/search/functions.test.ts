@@ -26,7 +26,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(4)
@@ -51,7 +51,7 @@ describe('functions', () => {
     const results = search({
       mode: 'exact',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -79,7 +79,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
     expect(results.length).toBe(1)
   })
@@ -103,7 +103,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -129,7 +129,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(0)
@@ -154,7 +154,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(0)
@@ -180,7 +180,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)
@@ -205,7 +205,7 @@ describe('functions', () => {
     const results = search({
       mode: 'include',
       filePaths: filesList,
-      queries,
+      queryCodes: queries,
     })
 
     expect(results.length).toBe(1)

@@ -1,1 +1,4 @@
-import { $Plus$ } from 'react-icons$'
+({
+  title: 'Please confirm',
+  message: '$',
+})

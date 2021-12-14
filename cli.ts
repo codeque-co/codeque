@@ -4,7 +4,7 @@ import { search } from '/searchMultiThread'
 // import { search } from '/search'
 import { getFilesList } from '/getFilesList'
 import { green, magenta, cyan, bold } from "colorette"
-import { Mode, getMode, getFormattedCodeFrame } from '/utils'
+import { Mode, getMode, getCodeFrame } from '/utils'
 
 (async () => {
 
@@ -15,7 +15,7 @@ import { Mode, getMode, getFormattedCodeFrame } from '/utils'
 
   console.log(cyan(bold('\nMode: ')), green(mode), '\n')
 
-  console.log(cyan(bold('Query:\n\n')) + getFormattedCodeFrame(query, 1) + '\n')
+  console.log(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
 
   const results = await search({
     mode,
@@ -30,7 +30,7 @@ import { Mode, getMode, getFormattedCodeFrame } from '/utils'
 
     first20.forEach((result) => {
       const startLine = result.start.line
-      const codeFrame = getFormattedCodeFrame(result.code, startLine)
+      const codeFrame = getCodeFrame(result.code, startLine)
       console.log(`${green(result.filePath)}:${magenta(startLine)}`)
       console.log('\n' + codeFrame + '\n')
     })

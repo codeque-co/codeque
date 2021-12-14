@@ -57,9 +57,11 @@ export const patternToRegex = (str: string) => {
   return new RegExp(`^${strWithReplacedWildcards}$`)
 }
 
-export const getFormattedCodeFrame = (code: string, startLine: number) => {
-  const formatted = format(code, { parser: 'babel-ts' })
-  const linesCount = formatted.match(/\n/g)?.length || 0
+export const getCodeFrame = (code: string, startLine: number, formatting = false) => {
+  const formatted = formatting ? format(code, { parser: 'babel-ts' }) : code
+
+  const linesCount = (formatted.match(/\n/g)?.length || 0) + (!formatting ? 1 : 0)
+
   const maxLineLength = (startLine + linesCount).toString().length
 
   let codeFrame = codeFrameColumns(formatted, { start: { line: 0 } }, {

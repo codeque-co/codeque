@@ -17,7 +17,13 @@
 
 ❌ Add support for proposal syntaxes
 
+❌ Better handling of query errors 
+  - return outside a function
+  - await outside async fn
+  - explore parse result errors
+
 ❗ Regex matching of identifier seems to be slow 
+  - one perf issue was caused by prettier - fixed!
   - double the time on mac for "import { $Plus } from 'react-icons$'" 
   - maybe instead of "." regex we could be more specific
   - it might be caused by lack of keywords for initial search

@@ -17,7 +17,7 @@
 
 ❌ Add support for proposal syntaxes
 
-❌ Better handling of query errors 
+✅ Better handling of query errors 
   - return outside a function
   - await outside async fn
   - explore parse result errors

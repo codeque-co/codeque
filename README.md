@@ -1,3 +1,41 @@
+## MVP CLI
+
+Names:
+  - magic search (more catchy for search)
+  - code query (the best for set of tools)
+  - code magic (taken :/)
+  - magic code search (kinda too long)
+
+⌛ Make CLI a product
+   - ✅ codeframe from babel
+   - ❌ investigate results formatting query :`<Text $="ellipsis" ></Text>`
+      - how we can present original code instead of generated one
+   - ❌ commander
+   - ❌ spinner while search
+   - ❌ results limit param
+   - ❌ inline input 
+   - ❌ file path input
+   - ❌ runs in cwd
+
+⌛ Explore types matching and types literals -> tests on custom file
+
+❌ Support wildcards in JSXText
+
+❌ Support for case insensitive search
+
+❌ Invent / Implement license mechanism
+
+❌ Add support for proposal syntaxes
+
+❌ Add support for multiple wildcards
+  - `($$, $$) => {}` is invalid while parsing function
+  - `$_refN` - currently without ref analysis
+  - `$$_refN` - currently without ref analysis
+  - It might be useful to search for expressions within nested structures inside functions to make it more useful
+    - it might need special operator like `$nested()`
+
+
+❌ PoC / Implement vscode extension
 
 ✅ Implement tests
 
@@ -6,16 +44,9 @@
   - we should be able to always use identifier wildcard in place of number
   - we still need number wildcard for some cases (we want to have number, not any identifier)
 
-⌛ Explore types matching and types literals -> tests on custom file
 
 ✅ Add support for regexp identifier matches (on$ -> onClick, onHover etc)
 
-❌ Add support for multiple wildcards
-  - ($$, $$) => {} is invalid while parsing function
-  - $_refN // currently without ref analysis
-  - $$_refN // currently without ref analysis
-
-❌ Add support for proposal syntaxes
 
 ✅ Better handling of query errors 
   - return outside a function
@@ -24,11 +55,11 @@
 
 ✅ Regex matching of identifier seems to be slow 
   ✅ one perf issue was caused by prettier - fixed!
-  - double the time on mac for "import { $Plus } from 'react-icons$'" 
-  - maybe instead of "." regex we could be more specific
-  ✅ it might be caused by lack of keywords for initial search
+  - double the time on mac for `"import { $Plus } from 'react-icons$'"`
+  - maybe instead of `"."` regex we could be more specific
+  - ✅ it might be caused by lack of keywords for initial search
     - try to use keywords regexes in tokens search
-    ✅ try to escape "$" from tokens - should be faster than several regex
+    - ✅ try to escape `"$"` from tokens - should be faster than several regex
     - try to use language keywords like import, for,as
       - might not help much
 
@@ -48,18 +79,11 @@
     - probably there is amount of identifiers that we can search to gain time,but if we search for too many, we will lose time
     - just one identifier is a good starting point
 
-❌ PoC / Implement vscode extension
 
-❌ Invent / Implement license mechanism
+Get files edited since last commit `echo  $(git diff --name-only HEAD)`
+___
 
-⌛ Make CLI a product
-   ✅ codeframe from babel
-   - commander
-   - spinner while search
-   - results limit param
-   - inline input 
-   - file path input
-   - runs in cwd
+## Further product development
 
 💡 Feature import-based search
   - search in file and all files imported by a file
@@ -68,12 +92,12 @@
     - you specify a query to find failing code patterns in files imported by test
 
 💡 Think of negation syntax and sense (just to make if future proof for now)
-  - could be something like: $not('asd')
+  - could be something like: `$not('asd')`
 💡 Think of and, or syntax and sense (just to make if future proof for now)
-  - could be something like: $and('asd', () => {}) 
+  - could be something like: `$and('asd', () => {})`
 💡 Think of support for ref matching
   - user should be able to indicate that two wildcards are the same identifier 
-  - eg. const $_ref1 = 'string'; call($_ref1)
+  - eg. `const $_ref1 = 'string'; call($_ref1)`
 
 💡 Think of other use cases for the matching functionality (call the whole product code-magic)
   - should the product be an licensed cli ?
@@ -86,7 +110,7 @@
   - eslint plugin restricted syntax 
     - check in autozone if custom plugins could be replaced
     - check which of the existing plugins could be replaced
-    - plugin should have reference analisys (user should be able to mark that two identifiers should be the same, eg using $_ref1)
+    - plugin should have reference analisys (user should be able to mark that two identifiers should be the same, eg using `$_ref1`)
   - automated codemod - this one needs a PoC
     - check some codemods
     - program should be able to get diff of AST
@@ -96,7 +120,7 @@
       -> generate AST diff and use it as a transform (try use json-diff with removed misc keys)
       - show example result
   - predefined codemode snipets to apply on file
-    - eg. transform props into {prop1, prop2} based on which keys are used
+    - eg. transform props into `1{prop1, prop2}` based on which keys are used
     - a) it could be eslint plugin / no need for code-magic for that 
     - b) it might be impossible to implement with current approach to codemod
   - for codemod and eslint we need to be able to reference a variable by indentifier, to be able to track references for more complex cases
@@ -115,13 +139,13 @@
     - eg. your test failed
     - you search for test based on name
       - you specify a query to find failing code patterns in files imported by test
-  - Feature - get unique values of $_ref/$$_ref in query
+  - Feature - get unique values of `$_ref/$$_ref`  in query
 
 💡 Add support for suggestions based on equivalent/similar syntax
-  - user input: <$ prop={"5"} />,  suggestion: <$ prop="5" />
-  - user input: <$ prop={$+$} />,  suggestion: <$ prop={$-$} />
+  - user input: `<$ prop={"5"} />`,  suggestion: `<$ prop="5" />`
+  - user input: `<$ prop={$+$} />`,  suggestion: `<$ prop={$-$} />`
 💡 Add hints based on first node
-  - user input: {a:b}, hint: You probably needs ({a:b}), right now it is a block statement
+  - user input: `{a:b}`, hint: You probably needs `({a:b})`, right now it is a block statement
   - use input `"some string"`: You probably needs `("some string")`, right now it is a directive
 
 💡 To secure the code we should 

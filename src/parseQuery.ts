@@ -1,29 +1,17 @@
-import {
-  getBody,
-  unwrapExpressionStatement,
-  getKeysToCompare,
-  sanitizeJSXText,
-  isNode,
-  isNodeArray,
-  IdentifierTypes,
-  Match,
-  PoorNodeType,
-  Position,
-  parseOptions,
-  numericWildcard,
-  stringWildcard,
-  singleIdentifierWildcard,
-  doubleIdentifierWildcard,
-} from './astUtils'
-
 import { parse, ParseError } from '@babel/parser'
+import {
+  getBody, getKeysToCompare, IdentifierTypes, isNode,
+  isNodeArray, numericWildcard, parseOptions, PoorNodeType,
+  Position, singleIdentifierWildcard, unwrapExpressionStatement
+} from './astUtils'
+import { measureStart } from './utils'
 
-const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set()) => {
+const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, tokens: Set<string> = new Set()) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
     const trimmedWildcards = (queryNode.name as string).split(singleIdentifierWildcard)
     trimmedWildcards.forEach((part) => {
       if (part.length > 0) {
-        tokens.add(part)
+        tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
       }
     })
   }
@@ -32,7 +20,7 @@ const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set(
     const trimmedWildcards = (queryNode.value as string).split(singleIdentifierWildcard)
     trimmedWildcards.forEach((part) => {
       if (part.length > 0) {
-        tokens.add(part)
+        tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
       }
     })
   }
@@ -51,10 +39,10 @@ const getUniqueTokens = (queryNode: PoorNodeType, tokens: Set<string> = new Set(
   nodeKeys.forEach((key) => {
     const nodeVal = queryNode[key]
     if (isNodeArray(nodeVal as PoorNodeType[])) {
-      (nodeVal as PoorNodeType[]).forEach((node) => getUniqueTokens(node, tokens))
+      (nodeVal as PoorNodeType[]).forEach((node) => getUniqueTokens(node, caseInsensitive, tokens))
     }
     else {
-      getUniqueTokens(nodeVal as PoorNodeType, tokens)
+      getUniqueTokens(nodeVal as PoorNodeType, caseInsensitive, tokens)
     }
   })
   return tokens
@@ -64,7 +52,7 @@ const extractQueryNode = (fileNode: PoorNodeType) => {
   return unwrapExpressionStatement(getBody(fileNode)[0])
 }
 
-export const parseQueries = (queryCodes: string[]): [Array<{
+export const parseQueries = (queryCodes: string[], caseInsensitive = false): [Array<{
   queryNode: PoorNodeType,
   uniqueTokens: string[],
   error: { text: string, location?: any } | null
@@ -110,7 +98,12 @@ export const parseQueries = (queryCodes: string[]): [Array<{
 
 
   const queries = inputQueryNodes.map(({ queryNode, error }) => {
-    const uniqueTokens = queryNode ? [...getUniqueTokens(queryNode)].filter((token) => typeof token !== 'string' || token.length > 0) : []
+    const measureGetUniqueTokens = measureStart('getUniqueTokens')
+
+    const uniqueTokens = queryNode ? [...getUniqueTokens(queryNode, caseInsensitive)].filter((token) => typeof token !== 'string' || token.length > 0) : []
+
+    measureGetUniqueTokens()
+
     return {
       queryNode,
       uniqueTokens,

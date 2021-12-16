@@ -12,9 +12,7 @@ export const getFilesList = (root: string) => {
     try {
       gitignore = fs.readFileSync(path.join(dir, '.gitignore')).toString()
     }
-    catch (e) {
-      // console.log('gitignore not found')
-    }
+    catch (e) { }
 
     ignoreInstance.add(gitignore)
 
@@ -27,7 +25,7 @@ export const getFilesList = (root: string) => {
     const directories = absolutePaths.filter((pathName) => fs.lstatSync(pathName).isDirectory())
     const files = absolutePaths.filter((pathName) => fs.lstatSync(pathName).isFile())
 
-    const extensionTester = /\.(js|jsx|ts|tsx)$/
+    const extensionTester = /\.(js|jsx|ts|tsx|json)$/
 
     return [
       ...files.filter((pathName) => extensionTester.test(pathName)),

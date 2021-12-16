@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { search } from './src/search';
-import { Mode, getMode } from './src/utils'
+import { Mode, getMode, logMetrics, print } from './src/utils'
 
 
 const query = fs.readFileSync(path.resolve('./devQuery')).toString()
@@ -12,7 +12,9 @@ const matches = search({
   queryCodes: [query],
   filePaths: [mockFilePath],
   mode: getMode(process.argv[2] as Mode),
+  caseInsensitive: Boolean(process.argv[3]),
   debug: true,
 })
 
-console.log(matches)
+print(matches)
+logMetrics()

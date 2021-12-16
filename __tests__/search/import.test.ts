@@ -64,6 +64,21 @@ describe('JSX', () => {
     expect(results.length).toBe(33)
   })
 
+
+  it('Should find all default imports with case insensitive query', () => {
+    const query = `
+      import $screenwrapper from '../screenwrapper';
+    `
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      caseInsensitive: true,
+      queryCodes: [query],
+    })
+
+    expect(results.length).toBe(33)
+  })
+
   it('Should find all aliased imports of a dependency', () => {
     const query = `
       import { Provider as $ } from 'react-native-paper';

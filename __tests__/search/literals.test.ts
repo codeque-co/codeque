@@ -55,6 +55,22 @@ describe('Types', () => {
     expect(results.length).toBe(2)
   })
 
+  it('should match string case insensitive', () => {
+    const queries = [`
+      ("SOMeString");
+      `,
+    ]
+
+    const results = search({
+      mode: 'exact',
+      filePaths: filesList,
+      queryCodes: queries,
+      caseInsensitive: true
+    })
+
+    expect(results.length).toBe(2)
+  })
+
   it('should match string with quite inside regardless used quotes', () => {
     const queries1 = [`('\\'other');`]
 

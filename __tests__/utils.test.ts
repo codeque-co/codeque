@@ -68,5 +68,12 @@ describe('Utils', () => {
       const pattern = 'asd$$$asd$$as$'
       expect(() => patternToRegex(pattern)).toThrow()
     })
+
+    it('should match case insensitive string wildcard', () => {
+      const pattern = 'some$file'
+      const regex = patternToRegex(pattern, true)
+
+      expect(regex.test('Some filE')).toBeTruthy()
+    })
   })
 })

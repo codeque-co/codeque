@@ -1,1 +1,3 @@
-import { WorkAvailability } from '$'
+({
+  'post-install': 'patch-package'
+})

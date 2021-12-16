@@ -2,7 +2,7 @@ import unzipper from 'unzipper';
 import fetch from 'node-fetch-commonjs';
 import fs from 'fs';
 import path from 'path';
-
+import { print } from '/utils'
 const fixtures = [{
   fixturesDir: './__tests__/search/__fixtures__',
   archiveLink: 'https://github.com/callstack/react-native-paper/archive/abf631a4d595831fcd12be03008be059bb5aeeec.zip',
@@ -30,9 +30,9 @@ const processCodeZip = (zipPath: string, codePath: string, fixturesDir: string) 
       const cleanPath = fileName.split('/').slice(1).join('/')
 
       if (cleanPath.includes(codePath)) {
-        console.log(cleanPath)
+        print(cleanPath)
         const targetPath = path.join(fixturesDir, cleanPath.replace(codePath, ''))
-        console.log(targetPath)
+        print(targetPath)
         try {
 
           if (type === 'Directory') {

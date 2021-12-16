@@ -66,6 +66,28 @@ describe('Types', () => {
     expect(results.length).toBe(1)
   })
 
+  it('should match exact object case insensitive', () => {
+    const queries = [`
+      ({
+        somekey: SomeVal,
+        someOtherKey: {
+          A:5
+        },
+        other: 'OTHER'
+      })
+      `,
+    ]
+
+    const results = search({
+      mode: 'exact',
+      filePaths: filesList,
+      caseInsensitive: true,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
   it('should match nested object property with wildcard', () => {
     const queries = [`
       ({

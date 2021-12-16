@@ -8,3 +8,4 @@ type Props = {
 type MenuVisibility = {
   [key: string]: boolean | undefined;
 };
+<Text>RTL</Text>

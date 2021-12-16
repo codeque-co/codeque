@@ -12,6 +12,7 @@ import { parseQueries } from '/parseQuery'
   const query = fs.readFileSync(path.resolve('./cliQuery')).toString()
 
   const mode = getMode(process.argv[2] as Mode)
+  const caseInsensitive = Boolean(process.argv[3])
 
   print(cyan(bold('\nMode: ')), green(mode), '\n')
 
@@ -30,6 +31,7 @@ import { parseQueries } from '/parseQuery'
   const results = await search({
     mode,
     filePaths: getFilesList(root),
+    caseInsensitive,
     queryCodes: [query]
   })
 

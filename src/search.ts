@@ -24,6 +24,7 @@ type SearchArgs = {
   filePaths: string[],
   queryCodes: string[],
   mode: Mode,
+  caseInsensitive?: boolean,
   debug?: boolean
 }
 
@@ -52,14 +53,14 @@ const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = f
   return deduped
 }
 
-export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArgs) => {
+export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, debug = false }: SearchArgs) => {
   const { log, logStepEnd, logStepStart } = createLogger(debug)
   const allMatches: Matches = []
   const isExact = mode === ('exact' as Mode)
   log('Parse query')
   const measureParseQuery = measureStart('parseQuery')
 
-  const [queries, parseOk] = parseQueries(queryCodes)
+  const [queries, parseOk] = parseQueries(queryCodes, caseInsensitive)
 
   if (!parseOk) {
     return []
@@ -121,7 +122,7 @@ export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArg
       if (queryNode.name === doubleIdentifierWildcard) {
         levelMatch = true
       } else {
-        const regex = patternToRegex(queryNode.name as string);
+        const regex = patternToRegex(queryNode.name as string, caseInsensitive);
         levelMatch = fileNode.type === queryNode.type && regex.test(fileNode.name as string)
 
         if (isExact) {
@@ -158,7 +159,7 @@ export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArg
     }
 
     if ((queryNode.type as string) === 'StringLiteral' && (fileNode.type as string) === 'StringLiteral' && (queryNode.value as string).includes(stringWildcard)) {
-      const regex = patternToRegex(queryNode.value as string)
+      const regex = patternToRegex(queryNode.value as string, caseInsensitive)
       const levelMatch = regex.test(fileNode.value as string)
       measureCompare()
       return {
@@ -197,7 +198,12 @@ export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArg
       }
       else {
         primitivePropsCount++
-        if (queryValue === fileValue || JSON.stringify(queryValue as any) === JSON.stringify(fileValue as any)) {
+        if (typeof queryValue === 'string' && typeof fileValue === 'string' && caseInsensitive) {
+          if (queryValue.toLocaleLowerCase() === fileValue.toLocaleLowerCase()) {
+            matchingPrimitivePropsCount++
+          }
+        }
+        else if (queryValue === fileValue || JSON.stringify(queryValue as any) === JSON.stringify(fileValue as any)) {
           matchingPrimitivePropsCount++
         }
       }
@@ -367,9 +373,7 @@ export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArg
     return [...matches, ...nestedMatches].flat()
 
   }
-  const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
-  measureGetUniqueTokens()
 
   for (const filePath of filePaths) {
     try {
@@ -381,14 +385,18 @@ export const search = ({ mode, filePaths, queryCodes, debug = false }: SearchArg
 
       const measureShallowSearch = measureStart('shallowSearch')
 
-      const includesUniqueTokens = queries.some(({ uniqueTokens }) => uniqueTokens.every((token) => fileContent.includes(token)))
+      const fileContentForTokensLookup = caseInsensitive ? fileContent.toLocaleLowerCase() : fileContent
+
+      const includesUniqueTokens = queries.some(({ uniqueTokens }) => uniqueTokens.every((token) => fileContentForTokensLookup.includes(token)))
       measureShallowSearch()
 
       if (includesUniqueTokens) {
 
         const measureParseFile = measureStart('parseFile')
 
-        const fileNode = (parse(fileContent, parseOptions)) as unknown as PoorNodeType
+        const maybeWrappedJSON = /\.json$/.test(filePath) ? `(${fileContent})` : fileContent
+        const fileNode = (parse(maybeWrappedJSON, parseOptions)) as unknown as PoorNodeType
+
         measureParseFile()
         const programBody = getBody(fileNode)
         const measureSearch = measureStart('search')

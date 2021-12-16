@@ -21,9 +21,14 @@ Names:
 
 ❌ Support wildcards in JSXText
 
-❌ Support for case insensitive search
+✅ Support for case insensitive search
+  - only for wildcards for now
+  - actually it might be easy, we should check if primitive value is string
+
+✅ Support json
 
 ❌ Invent / Implement license mechanism
+   - try webassembly
 
 ❌ Add support for proposal syntaxes
 
@@ -177,10 +182,9 @@ ___
 ⌛ Marketing use-cases for eslint rule
   - 
 ⌛ Marketing use-cases for eslint codemod
- - 
+ - "Pay tech debt quicker"
 
 ✅
 ❌
 ⌛
 💡
-⚠️

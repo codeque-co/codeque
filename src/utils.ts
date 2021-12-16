@@ -6,7 +6,7 @@ export const createLogger = (debugMode = false) => {
 
   const log = (...args: any[]) => {
     if (debugMode) {
-      console.log(...args)
+      print(...args)
     }
   }
 
@@ -46,15 +46,15 @@ export const measureStart = (name: string) => {
 }
 
 export const logMetrics = () => {
-  Object.entries(metrics).forEach((kv) => console.log(...kv))
+  Object.entries(metrics).forEach((kv) => print(...kv))
 }
 
-export const patternToRegex = (str: string) => {
+export const patternToRegex = (str: string, caseInsensitive = false) => {
   if (/(\$){3,}/.test(str)) {
     throw new Error(`More than 2 wildcards chars are not allowed "${str}"`)
   }
   const strWithReplacedWildcards = str.replace(/\$\$/g, '.+?').replace(/\$/g, '.*?')
-  return new RegExp(`^${strWithReplacedWildcards}$`)
+  return new RegExp(`^${strWithReplacedWildcards}$`, caseInsensitive ? 'i' : undefined)
 }
 
 export const getCodeFrame = (code: string, startLine: number, formatting = false, errorPos?: Position) => {

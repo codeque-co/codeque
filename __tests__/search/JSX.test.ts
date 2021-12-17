@@ -71,6 +71,17 @@ describe('JSX', () => {
     expect(results.length).toBe(1)
   })
 
+  it('Should find JSX by text content with wildcard case insensitive', () => {
+    const query = `<Text>r$L</Text>`
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: [query],
+      caseInsensitive:true
+    })
+    expect(results.length).toBe(1)
+  })
+
   it('Should find JSX by text content case insensitive', () => {
     const query = `<Text>rtl</Text>`
     const results = search({

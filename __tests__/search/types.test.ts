@@ -166,7 +166,7 @@ describe('Types', () => {
     expect(results.length).toBe(1)
   })
 
-  it('should match wildcard as generic param', () => {
+  it.skip('should match wildcard as generic param', () => {
     const queries = [`
       type ReturnTypeInferer<$> = $ extends (a: Record<string, string>) => infer U ? U : never; 
        `,

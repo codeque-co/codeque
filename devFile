@@ -1,11 +1,2 @@
 
-
-
-type Props = {
-  navigation: StackNavigationProp<{}>;
-};
-
-type MenuVisibility = {
-  [key: string]: boolean | undefined;
-};
 <Text>RTL</Text>

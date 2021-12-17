@@ -19,7 +19,7 @@ Names:
 
 ⌛ Explore types matching and types literals -> tests on custom file
 
-❌ Support wildcards in JSXText
+✅ Support wildcards in JSXText
 
 ✅ Support for case insensitive search
   - only for wildcards for now

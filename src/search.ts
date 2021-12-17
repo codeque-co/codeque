@@ -169,6 +169,17 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
     }
 
+    if ((queryNode.type as string) === 'JSXText' && (fileNode.type as string) === 'JSXText' && (queryNode.value as string).includes(stringWildcard)) {
+      const regex = patternToRegex(queryNode.value as string, caseInsensitive)
+      const levelMatch = regex.test(fileNode.value as string)
+      measureCompare()
+      return {
+        levelMatch: levelMatch,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
     if ((queryNode.type as string) === 'NumericLiteral' && (fileNode.type as string) === 'NumericLiteral' && ((queryNode.extra as any).raw as string) === numericWildcard) {
       measureCompare()
       return {

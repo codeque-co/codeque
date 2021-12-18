@@ -1,4 +1,4 @@
-import { compareCode } from '/astUtils';
+import { compareCode, removeIdentifierRefFromWildcard } from '/astUtils';
 
 describe('AST utils', () => {
   it('should compare code as equal', () => {
@@ -158,5 +158,14 @@ describe('AST utils', () => {
       export default DialogWithCustomColors;
     `
     expect(compareCode(code1, code2)).toBe(false)
+  })
+
+  it('should remove identifier ref from wildcard', () => {
+    expect(removeIdentifierRefFromWildcard('$$_ref1')).toBe('$$')
+    expect(removeIdentifierRefFromWildcard('$_ref1')).toBe('$')
+    expect(removeIdentifierRefFromWildcard('$something')).toBe('$something')
+    expect(removeIdentifierRefFromWildcard('$_something')).toBe('$')
+    expect(removeIdentifierRefFromWildcard('asd$_ref')).toBe('asd$_ref')
+
   })
 })

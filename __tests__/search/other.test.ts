@@ -6,12 +6,12 @@ import { getFilesList } from '/getFilesList'
 const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('Other', () => {
-  it('should not include the same result twice', () => {
+  it.only('should not include the same result twice', () => {
     const queries = [`
-      type $ = ScrollViewProps & $
+      type $ = ScrollViewProps & $$
       `,
       `
-       type $ = $ & ScrollViewProps
+       type $ = $$ & ScrollViewProps
       `
     ]
 

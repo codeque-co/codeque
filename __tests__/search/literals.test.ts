@@ -18,6 +18,8 @@ describe('Types', () => {
       'react-native';
 
       123 + 321 ;
+
+      [ab, d, 'asd', {}]
     `)
   })
 
@@ -139,6 +141,18 @@ describe('Types', () => {
     })
 
     expect(results.length).toBe(3)
+  })
+
+  it('should match array literal elements with mixed order', () => {
+    const queries = [`[$$, $, a$, 'asd']`]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
   })
 
 

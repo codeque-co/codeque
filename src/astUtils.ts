@@ -108,4 +108,54 @@ export const numericWildcard = '0x0'
 export const wildcard = '$'
 export const stringWildcard = wildcard
 export const singleIdentifierWildcard = wildcard
-export const doubleIdentifierWildcard = `${wildcard}${wildcard}`
+export const doubleIdentifierWildcard = `${singleIdentifierWildcard}${singleIdentifierWildcard}`
+
+export const removeIdentifierRefFromWildcard = (name: string) => {
+  if (/^\$/.test(name)) {
+    return name.replace(/(?<=(\$){1,2})_.*/, '')
+  }
+  return name
+}
+
+// This is what happens if you write code at 01:30 at Friday after intensive week 
+export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNodeType) => {
+  const aIsIdentifierWithWildcard = ['TSTypeReference', ...IdentifierTypes]
+    .includes(nodeA.type as string) && (
+      removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(singleIdentifierWildcard)
+      || removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)?.includes(singleIdentifierWildcard)
+    )
+  const bIsIdentifierWithWildcard = ['TSTypeReference', ...IdentifierTypes]
+    .includes(nodeB.type as string) && (
+      removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(singleIdentifierWildcard)
+      || removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)?.includes(singleIdentifierWildcard)
+    )
+
+  if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
+    const idA = removeIdentifierRefFromWildcard(nodeA.name as string) || removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)
+    const idB = removeIdentifierRefFromWildcard(nodeB.name as string) || removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)
+
+    if (idA === doubleIdentifierWildcard) {
+      return 1
+    }
+
+    if (idB === doubleIdentifierWildcard) {
+      return -1
+    }
+
+    const aNonWildcardCharsLen = idA.split(singleIdentifierWildcard).map((str) => str.length).reduce((sum, len) => sum + len, 0)
+    const bNonWildcardCharsLen = idB.split(singleIdentifierWildcard).map((str) => str.length).reduce((sum, len) => sum + len, 0)
+
+    return bNonWildcardCharsLen - aNonWildcardCharsLen
+
+  }
+
+  if (aIsIdentifierWithWildcard) {
+    return 1
+  }
+
+  if (bIsIdentifierWithWildcard) {
+    return -1
+  }
+
+  return 0
+}

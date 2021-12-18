@@ -75,5 +75,6 @@ describe('Utils', () => {
 
       expect(regex.test('Some filE')).toBeTruthy()
     })
+
   })
 })

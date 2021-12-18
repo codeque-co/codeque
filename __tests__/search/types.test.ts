@@ -23,7 +23,22 @@ describe('Types', () => {
 
   it('should match type that concatenates other type', () => {
     const queries = [`
-      type $ = ScrollViewProps & $
+      type $ = ScrollViewProps & $$
+      `,
+    ]
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it('should match type concatenation with one wildcard with not matching order', () => {
+    const queries = [`
+      type $ = $$ & ScrollViewProps
       `,
     ]
 

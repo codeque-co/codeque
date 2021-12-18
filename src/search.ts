@@ -18,6 +18,8 @@ import {
   stringWildcard,
   singleIdentifierWildcard,
   doubleIdentifierWildcard,
+  removeIdentifierRefFromWildcard,
+  sortByLeastIdentifierStrength
 } from './astUtils'
 
 type SearchArgs = {
@@ -119,10 +121,12 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     if (IdentifierTypes.includes(queryNode.type as string) && (queryNode.name as string).includes(singleIdentifierWildcard)) {
       let levelMatch;
 
-      if (queryNode.name === doubleIdentifierWildcard) {
+      const nameWithoutRef = removeIdentifierRefFromWildcard(queryNode.name as string)
+      if (nameWithoutRef === doubleIdentifierWildcard) {
         levelMatch = true
       } else {
-        const regex = patternToRegex(queryNode.name as string, caseInsensitive);
+
+        const regex = patternToRegex(nameWithoutRef, caseInsensitive);
         levelMatch = fileNode.type === queryNode.type && regex.test(fileNode.name as string)
 
         if (isExact) {
@@ -148,7 +152,7 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
     }
 
-    if ((queryNode.type as string) === 'TSTypeReference' && (queryNode.typeName as PoorNodeType).name === doubleIdentifierWildcard) {
+    if ((queryNode.type as string) === 'TSTypeReference' && removeIdentifierRefFromWildcard((queryNode.typeName as PoorNodeType).name as string) === doubleIdentifierWildcard) {
       // treat "const a: $$; const a: () => $$" $$ as wildcard for any type annotation
       measureCompare()
       return {
@@ -269,17 +273,20 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
                 return false
               }
 
-              let matchedIndexes = []
+              let matchedIndexes: number[] = []
 
-              for (let i = 0; i < queryNodesArr.length; i++) {
-                const queryNode = queryNodesArr[i]
+              const queryNodesArrSorted = [...queryNodesArr].sort(sortByLeastIdentifierStrength)
+
+              for (let i = 0; i < queryNodesArrSorted.length; i++) {
+                const queryNode = queryNodesArrSorted[i]
 
                 for (let j = 0; j < nodesArr.length; j++) {
                   const newCurrentNode = nodesArr[j]
-
-                  if (validateMatch(newCurrentNode, queryNode)) {
-                    matchedIndexes.push(j)
-                    break;
+                  if (!matchedIndexes.includes(j)) {
+                    if (validateMatch(newCurrentNode, queryNode)) {
+                      matchedIndexes.push(j)
+                      break;
+                    }
                   }
                 }
 
@@ -440,7 +447,6 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
     }
   }
-
   return dedupMatches(allMatches, log, debug)
 }
 

@@ -5,12 +5,17 @@ import { getFilesList } from '/getFilesList'
 import { green, magenta, cyan, bold, red, yellow } from "colorette"
 import { Mode, getMode, getCodeFrame, print } from '/utils'
 import { parseQueries } from '/parseQuery'
+import { openAsyncEditor } from './terminalEditor'
 
 (async () => {
   const resultsLimitCount = 20
   const root = path.resolve('../../Dweet/web')
-  const query = fs.readFileSync(path.resolve('./cliQuery')).toString()
+  const prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
 
+  const query = await openAsyncEditor({ header: 'Type your query:', code: prevQuery, footer: 'Hit Ctrl+X to exit editing, Ctrl+C to cancel' })
+  fs.writeFileSync(path.resolve('./cliQuery'), query)
+
+  const startTime = Date.now()
   const mode = getMode(process.argv[2] as Mode)
   const caseInsensitive = Boolean(process.argv[3])
 
@@ -34,7 +39,7 @@ import { parseQueries } from '/parseQuery'
     caseInsensitive,
     queryCodes: [query]
   })
-
+  const endTime = Date.now()
   if (results.length > 0) {
     const first20 = results.slice(0, resultsLimitCount)
     const resultsText = results.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
@@ -53,5 +58,5 @@ import { parseQueries } from '/parseQuery'
   else {
     print(cyan(bold('No results found :c\n')))
   }
-
+  print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
 })()

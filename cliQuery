@@ -1,3 +1,6 @@
-({
-  'post-install': 'patch-package'
-})
+() => {
+  const $ = {
+    $: $$,
+  };
+};
+

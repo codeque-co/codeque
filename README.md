@@ -6,6 +6,8 @@ Names:
   - code magic (taken :/)
   - magic code search (kinda too long)
 
+❌ Fix bug with `<$>$</$>;` matching too much
+
 ⌛ Make CLI a product
    - ✅ codeframe from babel
    - ❌ investigate results formatting query :`<Text $="ellipsis" ></Text>`
@@ -13,7 +15,7 @@ Names:
    - ❌ commander
    - ❌ spinner while search
    - ❌ results limit param
-   - ❌ inline input 
+   - ❌💡 convenient multiline input 
    - ❌ file path input
    - ❌ runs in cwd
 
@@ -32,7 +34,7 @@ Names:
 
 ❌ Add support for proposal syntaxes
 
-❌ Add support for multiple wildcards
+✅ Add support for multiple wildcards
   - `($$, $$) => {}` is invalid while parsing function
   - `$_refN` - currently without ref analysis
   - `$$_refN` - currently without ref analysis

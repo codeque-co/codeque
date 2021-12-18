@@ -6,7 +6,7 @@ Names:
   - code magic (taken :/)
   - magic code search (kinda too long)
 
-❌ Fix bug with `<$>$</$>;` matching too much
+❌ Fix bug with `<$>$</$>;` matching too much - JSX text wildcard acts like $$ o.O
 
 ⌛ Make CLI a product
    - ✅ codeframe from babel
@@ -15,7 +15,8 @@ Names:
    - ❌ commander
    - ❌ spinner while search
    - ❌ results limit param
-   - ❌💡 convenient multiline input 
+   - ✅ convenient multiline input 
+    - ❌ find better tokenizer
    - ❌ file path input
    - ❌ runs in cwd
 

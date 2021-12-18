@@ -33,7 +33,6 @@
     "@babel/plugin-syntax-typescript": "7.16.0",
     "colorette": "^2.0.16",
     "ignore": "^5.1.9",
-    "js-tokens": "^7.0.0",
     "prettier": "^2.5.1"
   },
   "scripts": {

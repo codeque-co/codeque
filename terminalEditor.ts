@@ -2,8 +2,9 @@
 var readline = require('readline');
 const fs = require('fs')
 var colors = require('colorette')
-const jsTokens = require("js-tokens");
+const jsTokens = require("./js-tokens-fork");
 import { format } from 'prettier'
+
 // fs.writeFileSync('./editor-log.txt', '');
 
 function tokenize(code) {
@@ -15,7 +16,7 @@ function tokenize(code) {
         }
         else if (token.type === 'IdentifierName') {
             const keywords = [
-                'abstract', 'arguments', 'await', 'boolean',
+                'abstract', 'arguments', 'async', 'await', 'boolean',
                 'break', 'byte', 'case', 'catch',
                 'char', 'class', 'const', 'continue',
                 'debugger', 'default', 'delete', 'do',
@@ -61,7 +62,18 @@ function tokenize(code) {
     }, '')
 }
 
-export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
+const newLineSequence = '\n'
+
+const footerDefault = [
+    'Shortcuts:',
+    '',
+    '🔍  Ctrl+s 👉 search!',
+    '💅🏾  Ctrl+f 👉 format code',
+    '🔢  Ctrl+b 👉 toggle line numbers',
+    '🚪  Ctrl+c 👉 cancel and exit',
+].join(newLineSequence)
+
+export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault }) => {
     return new Promise<string>((resolve) => {
         const log = (...strings) => {
             // fs.appendFileSync('./editor-log.txt', strings.join(' ') + '\n');
@@ -76,9 +88,10 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
             readline.clearScreenDown(outputStream)
         }
 
-        const newLineSequence = '\n'
         const cursorTopOffset = header.split(newLineSequence).length + 1
-        const cursorLeftOffset = 3 + 1 + 1 + 1 // line num + space + pipe + space
+        const defaultLeftOffset = 3 + 1 + 1 + 1 // line num + space + pipe + space
+
+        let cursorLeftOffset = defaultLeftOffset
         const cursorPos = {
             x: cursorLeftOffset,
             y: cursorTopOffset,
@@ -141,17 +154,30 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
             const tokenized = tokenize(content)
             const lines = tokenized.split(newLineSequence)
             const contentWithLineNumbers = lines.map((line, idx) => `${colors.gray(`${idx + 1}`.padStart(3)) + colors.gray(' | ')}${line}`).join(newLineSequence)
-            outputStream.write(headerFormatted + contentWithLineNumbers + footerFormatted)
+            if (cursorLeftOffset === defaultLeftOffset) {
+                outputStream.write(headerFormatted + contentWithLineNumbers + footerFormatted)
+            }
+            else {
+                outputStream.write(headerFormatted + tokenized + footerFormatted)
+            }
+
             updateCursor()
         }
 
         process.stdin.on('keypress', (char, key) => {
-            if (key.name === 'x' && key.ctrl) {
+            if (key.name === 's' && key.ctrl) {
                 log('exit')
+                flush()
                 flush()
                 rl.close()
                 resolve(content)
                 return;
+            }
+
+            if (key.name === 'b' && key.ctrl) {
+                log('line numbers')
+                cursorLeftOffset = cursorLeftOffset === defaultLeftOffset ? 0 : defaultLeftOffset
+                cursorRight(content, Infinity)
             }
 
             if (key.name === 'f' && key.ctrl) {
@@ -190,11 +216,7 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
                 const lines = content.split(newLineSequence);
                 const currentPositionInContent = lines.filter((_, idx) => idx < getCursorYWithOffset()).reduce((len, str) => len + str.length + newLineSequence.length, 0) + getCursorXWithOffset()
 
-                log('pre', content.split('').map((char) => char.charCodeAt(0)))
-
                 content = content.substring(0, currentPositionInContent) + newLineSequence + content.substring(currentPositionInContent);
-
-                log('pos', content.split('').map((char) => char.charCodeAt(0)))//
 
                 cursorPos.y++
                 cursorPos.x = cursorLeftOffset
@@ -204,16 +226,11 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
             if (key.name === 'backspace') {
 
                 const lines = content.split(newLineSequence);
-                log('lines count', lines.length)
-                log('cursorPos.y', cursorPos.y)
 
 
                 const currentPositionInContent = lines.filter((_, idx) => idx < getCursorYWithOffset()).reduce((len, str) => len + str.length + newLineSequence.length, 0) + getCursorXWithOffset()
 
                 const lastChar = content.charCodeAt(currentPositionInContent - 1)
-                log('pre', content.split('').map((char) => char.charCodeAt(0)))
-                log('currentPositionInContent', currentPositionInContent);
-                log('lastChar', lastChar)
 
                 let isNewLineChar = lastChar === 10
 
@@ -229,7 +246,6 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
                     cursorLeft()
                     content = content.substring(0, currentPositionInContent - 1) + content.substring(currentPositionInContent);
                 }
-                log('pos', content.split('').map((char) => char.charCodeAt(0)))//
             }
             log('char', char)
             log('key.name', key.name)
@@ -241,7 +257,6 @@ export const openAsyncEditor = ({ header = '', code = '', footer = '' }) => {
                 const lines = content.split(newLineSequence);
                 const line = lines[getCursorYWithOffset()]
                 const newLineChars = content.length === 0 ? char : line.substr(0, getCursorXWithOffset()) + char + line.substr(getCursorXWithOffset())
-                log('newLineChars', newLineChars)
                 lines[getCursorYWithOffset()] = newLineChars
                 content = lines.join(newLineSequence)
                 cursorRight(content, char.length)

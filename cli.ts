@@ -12,7 +12,7 @@ import { openAsyncEditor } from './terminalEditor'
   const root = path.resolve('../../Dweet/web')
   const prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
 
-  const query = await openAsyncEditor({ header: 'Type your query:', code: prevQuery, footer: 'Hit Ctrl+X to exit editing, Ctrl+C to cancel' })
+  const query = await openAsyncEditor({ header: '✨ Type query:', code: prevQuery })
   fs.writeFileSync(path.resolve('./cliQuery'), query)
 
   const startTime = Date.now()
@@ -58,5 +58,5 @@ import { openAsyncEditor } from './terminalEditor'
   else {
     print(cyan(bold('No results found :c\n')))
   }
-  print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
+  print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's', '\n')
 })()

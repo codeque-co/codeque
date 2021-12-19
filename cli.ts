@@ -10,16 +10,26 @@ import { openAsyncEditor } from './terminalEditor'
 (async () => {
   const resultsLimitCount = 20
   const root = path.resolve('../../Dweet/web')
-  const prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
+  let prevQuery = ''
 
-  const query = await openAsyncEditor({ header: '✨ Type query:', code: prevQuery })
-  fs.writeFileSync(path.resolve('./cliQuery'), query)
+  try {
+    prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
+  }
+  catch (e) { }
 
-  const startTime = Date.now()
   const mode = getMode(process.argv[2] as Mode)
   const caseInsensitive = Boolean(process.argv[3])
 
-  print(cyan(bold('\nMode: ')), green(mode), '\n')
+  const separator = '\n'.padStart(process.stdout.columns, '━')
+  const modeAndCaseText = `${separator}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
+
+  const query = await openAsyncEditor({ header: `${modeAndCaseText}\n✨ Type query:`, code: prevQuery })
+  fs.writeFileSync(path.resolve('./cliQuery'), query)
+
+
+  const startTime = Date.now()
+
+  print(modeAndCaseText)
 
   const [[{ error }], parseOk] = parseQueries([query])
 
@@ -27,7 +37,9 @@ import { openAsyncEditor } from './terminalEditor'
     print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
   }
   else {
-    print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
+    if (query.length > 0) {
+      print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
+    }
     print(red(bold('Error:')), error?.text, '\n')
 
     process.exit(1)

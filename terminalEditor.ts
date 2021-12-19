@@ -5,8 +5,6 @@ var colors = require('colorette')
 const jsTokens = require("./js-tokens-fork");
 import { format } from 'prettier'
 
-// fs.writeFileSync('./editor-log.txt', '');
-
 function tokenize(code) {
     const tokens = Array.from(jsTokens(code))
     return tokens.reduce((coloredCode, token) => {
@@ -70,13 +68,22 @@ const footerDefault = [
     '🔍  Ctrl+s 👉 search!',
     '💅🏾  Ctrl+f 👉 format code',
     '🔢  Ctrl+b 👉 toggle line numbers',
+    '🧹  2 x Ctrl+p 👉 clean query',
     '🚪  Ctrl+c 👉 cancel and exit',
 ].join(newLineSequence)
 
-export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault }) => {
+const logErrorFileName = 'editor-log.txt'
+
+export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault, debug = false }) => {
+    if (debug) {
+        fs.writeFileSync(logErrorFileName, '');
+    }
+
     return new Promise<string>((resolve) => {
         const log = (...strings) => {
-            // fs.appendFileSync('./editor-log.txt', strings.join(' ') + '\n');
+            if (debug) {
+                fs.appendFileSync(logErrorFileName, strings.join(' ') + '\n');
+            }
         }
 
         const outputStream = process.stdout
@@ -102,6 +109,7 @@ export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault
 
 
         const updateCursor = () => {
+            log(process.stdout.rows, cursorPos.y)
             readline.cursorTo(outputStream, cursorPos.x, cursorPos.y)
         }
 
@@ -163,11 +171,10 @@ export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault
 
             updateCursor()
         }
-
+        let cleanPressCounter = 0
         process.stdin.on('keypress', (char, key) => {
             if (key.name === 's' && key.ctrl) {
                 log('exit')
-                flush()
                 flush()
                 rl.close()
                 resolve(content)
@@ -178,6 +185,18 @@ export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault
                 log('line numbers')
                 cursorLeftOffset = cursorLeftOffset === defaultLeftOffset ? 0 : defaultLeftOffset
                 cursorRight(content, Infinity)
+            }
+
+            if (key.name === 'p' && key.ctrl) {
+                cleanPressCounter++
+                if (cleanPressCounter > 1) {
+                    log('clean')
+                    content = ''
+                    fixCursorOverflow(content)
+                    cleanPressCounter = 0
+                }
+            } else {
+                cleanPressCounter = 0
             }
 
             if (key.name === 'f' && key.ctrl) {

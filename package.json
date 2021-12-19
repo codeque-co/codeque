@@ -32,6 +32,7 @@
     "@babel/parser": "7.16.4",
     "@babel/plugin-syntax-typescript": "7.16.0",
     "colorette": "^2.0.16",
+    "commander": "^8.3.0",
     "ignore": "^5.1.9",
     "prettier": "^2.5.1"
   },

@@ -167,6 +167,14 @@ export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNo
 export const prepareCodeResult = ({ fileContent, start, end, loc }: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
   const frame = fileContent.substring(start - loc.start.column, end)
   const indent = loc.start.column
+  const replaceRegex = new RegExp(`^\\s{0,${indent}}`)
+  const firstLineTextRegex = new RegExp(`^\\s{${indent}}`)
 
-  return frame.split('\n').map((line) => line.replace(new RegExp(`^\\s{0,${indent}}`), '')).join('\n')
+  const lines = frame.split('\n')
+
+  if (firstLineTextRegex.test(lines[0])) {
+    return frame.split('\n').map((line) => line.replace(replaceRegex, '')).join('\n')
+  }
+
+  return frame.substr(loc.start.column)
 }

@@ -13,13 +13,13 @@ Names:
    - ✅  investigate results formatting query :`<Text $="ellipsis" ></Text>`
       - how we can present original code instead of generated one
       - ✅ fix problem with 0 padding
-   - ❌ commander
+   - ✅ commander
    - ❌ spinner while search
-   - ❌ results limit param
+   - ✅ results limit param
    - ✅ convenient multiline input 
     - ✅ find better tokenizer (fixed js-tokens)
-   - ❌ file path query
-   - ❌ runs in cwd
+   - ✅ file path query
+   - ✅ runs in cwd
 
 ⌛ Explore types matching and types literals -> tests on custom file
 

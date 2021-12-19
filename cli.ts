@@ -6,69 +6,94 @@ import { green, magenta, cyan, bold, red, yellow } from "colorette"
 import { Mode, getMode, getCodeFrame, print } from '/utils'
 import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from './terminalEditor'
+import { Command } from 'commander';
+import ora from 'ora';
+const program = new Command();
 
-(async () => {
-  const resultsLimitCount = 20
-  const root = path.resolve('../../Dweet/web')
-  let prevQuery = ''
+program
+  .option('-m, --mode [mode]', 'search mode: exact, include, include-with-order', 'include')
+  .option('-r, --root [root]', 'root directory of search (default: process.cwd())')
+  .option('-i, --case-insensitive', 'perform search with case insensitive mode', false)
+  .option('-l, --limit [limit]', 'limit of results count to display', '20')
+  .option('-q, --query [query]', 'path to file with search query')
+  .action(
+    async ({ mode, caseInsensitive, root = process.cwd(), limit = '20', query: queryPath }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string }) => {
+      const resultsLimitCount = parseInt(limit, 10)
+      const resolvedRoot = path.resolve(root)
+      let prevQuery = ''
 
-  try {
-    prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
-  }
-  catch (e) { }
+      try {
+        prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
+      }
+      catch (e) { }
 
-  const mode = getMode(process.argv[2] as Mode)
-  const caseInsensitive = Boolean(process.argv[3])
+      const separator = '\n'.padStart(process.stdout.columns, '━')
+      const modeAndCaseText = `${separator}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
+      let query = ''
 
-  const separator = '\n'.padStart(process.stdout.columns, '━')
-  const modeAndCaseText = `${separator}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
+      if (queryPath === undefined) {
+        query = await openAsyncEditor({ header: `${modeAndCaseText}\n✨ Type query:`, code: prevQuery })
+        fs.writeFileSync(path.resolve('./cliQuery'), query)
+      }
+      else {
+        try {
+          query = fs.readFileSync(path.resolve(queryPath)).toString()
+        }
+        catch (e) {
+          print('\n' + red(bold(`Query file not found:`)), path.resolve(queryPath), '\n')
+          process.exit(1)
+        }
+      }
 
-  const query = await openAsyncEditor({ header: `${modeAndCaseText}\n✨ Type query:`, code: prevQuery })
-  fs.writeFileSync(path.resolve('./cliQuery'), query)
+      const startTime = Date.now()
 
 
-  const startTime = Date.now()
+      const [[{ error }], parseOk] = parseQueries([query])
 
-  print(modeAndCaseText)
+      if (parseOk) {
+        print(modeAndCaseText)
 
-  const [[{ error }], parseOk] = parseQueries([query])
+        print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
+      }
+      else {
+        if (query.length > 0) {
+          print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
+        }
+        print(red(bold('Error:')), error?.text, '\n')
 
-  if (parseOk) {
-    print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
-  }
-  else {
-    if (query.length > 0) {
-      print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
-    }
-    print(red(bold('Error:')), error?.text, '\n')
+        process.exit(1)
+      }
+      const spinner = ora(`Searching ${root}`).start();
 
-    process.exit(1)
-  }
+      const results = await search({
+        mode,
+        filePaths: getFilesList(resolvedRoot),
+        caseInsensitive,
+        queryCodes: [query]
+      })
 
-  const results = await search({
-    mode,
-    filePaths: getFilesList(root),
-    caseInsensitive,
-    queryCodes: [query]
-  })
-  const endTime = Date.now()
-  if (results.length > 0) {
-    const first20 = results.slice(0, resultsLimitCount)
-    const resultsText = results.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
+      spinner.stop()
 
-    print(cyan(bold(resultsText)))
+      const endTime = Date.now()
+      if (results.length > 0) {
+        const first20 = results.slice(0, resultsLimitCount)
+        const resultsText = results.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
 
-    first20.forEach((result) => {
-      const startLine = result.loc.start.line
-      const codeFrame = getCodeFrame(result.code, startLine)
-      print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
-      print('\n' + codeFrame + '\n')
+        print(cyan(bold(resultsText)))
+
+        first20.forEach((result) => {
+          const startLine = result.loc.start.line
+          const codeFrame = getCodeFrame(result.code, startLine)
+          print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
+          print('\n' + codeFrame + '\n')
+        })
+
+        print(cyan(bold('Total count:')), magenta(results.length))
+      }
+      else {
+        print(cyan(bold('No results found :c\n')))
+      }
+      print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's', '\n')
     })
 
-    print(cyan(bold('Total count:')), magenta(results.length))
-  }
-  else {
-    print(cyan(bold('No results found :c\n')))
-  }
-  print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's', '\n')
-})()
+program.parse(process.argv)

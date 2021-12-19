@@ -10,13 +10,13 @@ Names:
 
 ⌛ Make CLI a product
    - ✅ codeframe from babel
-   - ❌ investigate results formatting query :`<Text $="ellipsis" ></Text>`
+   - ✅  investigate results formatting query :`<Text $="ellipsis" ></Text>`
       - how we can present original code instead of generated one
    - ❌ commander
    - ❌ spinner while search
    - ❌ results limit param
    - ✅ convenient multiline input 
-    - ❌ find better tokenizer
+    - ✅ find better tokenizer (fixed js-tokens)
    - ❌ file path input
    - ❌ runs in cwd
 
@@ -172,6 +172,19 @@ ___
   - docs
   - playground
   - examples
+
+
+⌛ Marketing Implement stats script and encourage ppl to share their results on Twitter
+  - N files
+  - N JS/TS files
+  - N import statements
+  - N require statements
+  - N string literals
+  - N empty strings
+  - N zeros
+  - N functions
+  - N arrays
+  - N objects literals
 
 ⌛ Marketing use-cases for search
   - You want to find how a component is used across the codebase to see examples without going to docs

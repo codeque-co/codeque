@@ -6,8 +6,12 @@ export type Position = {
 }
 
 export type Match = {
-  start: Position,
-  end: Position,
+  start: number,
+  end: number,
+  loc: {
+    start: Position,
+    end: Position,
+  },
   code: string
   query: string
 }
@@ -158,4 +162,11 @@ export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNo
   }
 
   return 0
+}
+
+export const prepareCodeResult = ({ fileContent, start, end, loc }: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
+  const frame = fileContent.substring(start - loc.start.column, end)
+  const indent = loc.start.column
+
+  return frame.split('\n').map((line) => line.replace(new RegExp(`^\\s{0,${indent}}`), '')).join('\n')
 }

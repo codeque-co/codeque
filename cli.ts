@@ -59,9 +59,9 @@ import { openAsyncEditor } from './terminalEditor'
     print(cyan(bold(resultsText)))
 
     first20.forEach((result) => {
-      const startLine = result.start.line
+      const startLine = result.loc.start.line
       const codeFrame = getCodeFrame(result.code, startLine)
-      print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.start.column)}`)
+      print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
       print('\n' + codeFrame + '\n')
     })
 

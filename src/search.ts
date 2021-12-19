@@ -19,7 +19,8 @@ import {
   singleIdentifierWildcard,
   doubleIdentifierWildcard,
   removeIdentifierRefFromWildcard,
-  sortByLeastIdentifierStrength
+  sortByLeastIdentifierStrength,
+  prepareCodeResult,
 } from './astUtils'
 
 type SearchArgs = {
@@ -38,10 +39,8 @@ const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = f
   matches.forEach((match) => {
     const alreadyIn = deduped.some((_match) => {
       return match.filePath === _match.filePath
-        && match.start.column === _match.start.column
-        && match.start.line === _match.start.line
-        && match.end.column === _match.end.column
-        && match.end.line === _match.end.line
+        && match.start === _match.start
+        && match.end === _match.end
     })
 
     if (!alreadyIn) {
@@ -354,16 +353,16 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
     if (foundMatchStart) {
       const query = generate(queryNode as any).code
-      const code = generate(currentNode as any).code
+      const code = generate(currentNode as any, { jsescOption: { compact: false }, retainFunctionParens: true }).code
       log('foundMatchStart:\n', code, '\n', generate(queryNode as any).code, '\n'.padEnd(10, '_'))
       const measureValidate = measureStart('validate')
       const match = validateMatch(currentNode, queryNode)
       measureValidate()
       if (match) {
         matches.push({
-          start: (currentNode as any).loc.start as Position,
-          end: (currentNode as any).loc.end as Position,
-          code: code.toString(),
+          start: currentNode.start as number,
+          end: currentNode.end as number,
+          loc: currentNode.loc as Match['loc'],
           query: query.toString()
         })
       }
@@ -424,7 +423,8 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
             const matches = traverseAndMatch(bodyPart, queryNode)
             allMatches.push(...matches.map((match) => ({
               filePath,
-              ...match
+              ...match,
+              code: prepareCodeResult({ fileContent, ...match })
             })))
 
             if (matches.length > 0) {

@@ -4,7 +4,7 @@ import ignore from 'ignore';
 import { measureStart } from './utils';
 
 export const getFilesList = (root: string) => {
-  const stop = measureStart('getFiles')
+  const measureStop = measureStart('getFiles')
   const ignoreInstance = ignore()
   const scan = (dir: string): string[] => {
     let gitignore = ''
@@ -35,7 +35,7 @@ export const getFilesList = (root: string) => {
 
   const filesList = scan(root)
 
-  stop()
+  measureStop()
 
   return filesList
 }

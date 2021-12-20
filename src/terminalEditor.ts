@@ -200,10 +200,13 @@ export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault
             }
 
             if (key.name === 'f' && key.ctrl) {
-                content = format(content, {
-                    parser: 'babel-ts'
-                })
-                fixCursorOverflow(content)
+                try {
+
+                    content = format(content, {
+                        parser: 'babel-ts'
+                    })
+                    fixCursorOverflow(content)
+                } catch (e) { }
             }
 
             if (key.name === 'up') {

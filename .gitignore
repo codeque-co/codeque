@@ -1,5 +1,6 @@
 node_modules
-dist
 __fixtures__
 editor-log.txt
 cliQuery
+dist
+babel-dist

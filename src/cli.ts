@@ -5,9 +5,9 @@ import { getFilesList } from '/getFilesList'
 import { green, magenta, cyan, bold, red, yellow } from "colorette"
 import { Mode, getMode, getCodeFrame, print } from '/utils'
 import { parseQueries } from '/parseQuery'
-import { openAsyncEditor } from './terminalEditor'
+import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander';
-import ora from 'ora';
+import ora from 'ora'
 const program = new Command();
 
 program
@@ -28,7 +28,8 @@ program
       catch (e) { }
 
       const separator = '\n'.padStart(process.stdout.columns, '━')
-      const modeAndCaseText = `${separator}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
+      const rootText = `${cyan(bold('Root:'))} ${green(resolvedRoot)}\n`
+      const modeAndCaseText = `${separator}${rootText}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
       let query = ''
 
       if (queryPath === undefined) {
@@ -63,7 +64,7 @@ program
 
         process.exit(1)
       }
-      const spinner = ora(`Searching ${root}`).start();
+      const spinner = ora(`Searching`).start();
 
       const results = await search({
         mode,
@@ -76,15 +77,16 @@ program
 
       const endTime = Date.now()
       if (results.length > 0) {
-        const first20 = results.slice(0, resultsLimitCount)
+        const limitedResults = results.slice(0, resultsLimitCount)
         const resultsText = results.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
 
         print(cyan(bold(resultsText)))
 
-        first20.forEach((result) => {
+        limitedResults.forEach((result) => {
           const startLine = result.loc.start.line
           const codeFrame = getCodeFrame(result.code, startLine)
-          print(`${green(result.filePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
+          const relativePath = root === process.cwd() ? path.relative(resolvedRoot, result.filePath) : result.filePath
+          print(`${green(relativePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
           print('\n' + codeFrame + '\n')
         })
 

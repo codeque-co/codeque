@@ -11,7 +11,8 @@ module.exports = {
         "rootPathSuffix": "./",
         "rootPathPrefix": "/"
       }
-    ]
+    ],
+    "./babel.plugins.js"
   ],
   "ignore": ["dist", "node_modules", "__tests__"]
 }

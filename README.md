@@ -8,6 +8,8 @@ Names:
 
 ❌ Fix bug with `<$>$</$>;` matching too much - JSX text wildcard acts like $$ o.O
 
+❌ restrict more than 2 wildcards on query parse level
+
 ⌛ Make CLI a product
    - ✅ codeframe from babel
    - ✅  investigate results formatting query :`<Text $="ellipsis" ></Text>`
@@ -31,7 +33,7 @@ Names:
 
 ✅ Support json
 
-❌ Bundle/minify/obfuscate
+✅ Bundle/minify/obfuscate
 
 ❌ Invent / Implement license mechanism
    - try webassembly

@@ -2,7 +2,7 @@
   "name": "magic-search",
   "version": "1.0.0",
   "description": "AST based search",
-  "bin": "dist/cli.js",
+  "bin": "bin.js",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -31,15 +31,19 @@
     "@babel/generator": "7.16.0",
     "@babel/parser": "7.16.4",
     "@babel/plugin-syntax-typescript": "7.16.0",
+    "babel-loader": "^8.2.3",
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "ignore": "^5.1.9",
     "ora": "^6.0.1",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
   },
   "scripts": {
-    "build": "rm -rf dist && babel ./ --extensions \".ts,.tsx\" -d dist",
-    "build:watch": "babel ./ --extensions \".ts,.tsx\" -d dist --watch",
+    "build:watch": "webpack --mode development",
+    "build": "webpack --mode production",
+    "babel": "rm -rf babel-dist && babel ./ --extensions \".ts,.tsx\" -d babel-dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",
     "cli": "node ./dist/cli.js",

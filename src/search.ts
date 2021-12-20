@@ -23,7 +23,7 @@ import {
   prepareCodeResult,
 } from './astUtils'
 
-type SearchArgs = {
+export type SearchArgs = {
   filePaths: string[],
   queryCodes: string[],
   mode: Mode,
@@ -31,7 +31,7 @@ type SearchArgs = {
   debug?: boolean
 }
 
-type Matches = Array<Match & { filePath: string }>
+export type Matches = Array<Match & { filePath: string }>
 
 const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false) => {
   const deduped: Matches = []

@@ -73,7 +73,7 @@ describe('code patterns', () => {
     `]
 
     const results = search({
-      mode: 'include',
+      mode: 'include', // TODO this should be 'exact', no?
       filePaths: filesList,
       queryCodes: queries,
     })

@@ -3,11 +3,11 @@ import {
 } from 'worker_threads'
 import { cpus } from 'os';
 import path from 'path';
-import { search as searchBase } from './search';
+import type { SearchArgs, Matches } from './search';
 
 const coresCount = Math.round(cpus().length / 2)
 
-export const search = async ({ filePaths, ...params }: Parameters<typeof searchBase>[0]) => {
+export const search = async ({ filePaths, ...params }: SearchArgs) => {
   const tasks = []
   const chunkSize = Math.round(filePaths.length / coresCount)
 
@@ -16,7 +16,7 @@ export const search = async ({ filePaths, ...params }: Parameters<typeof searchB
     const endIndex = i < coresCount - 1 ? startIndex + chunkSize : undefined
     const filePathsSlice = filePaths.slice(startIndex, endIndex)
     const task = new Promise((resolve, reject) => {
-      const worker = new Worker(path.resolve('dist', __dirname, './searchWorker.js'), {
+      const worker = new Worker(__dirname + '/worker.js', {
         workerData: {
           ...params,
           filePaths: filePathsSlice
@@ -35,5 +35,5 @@ export const search = async ({ filePaths, ...params }: Parameters<typeof searchB
 
   const result = await Promise.all(tasks)
 
-  return result.flat(1) as ReturnType<typeof searchBase>
+  return result.flat(1) as Matches
 };

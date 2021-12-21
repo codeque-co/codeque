@@ -73,12 +73,12 @@ describe('code patterns', () => {
     `]
 
     const results = search({
-      mode: 'include', // TODO this should be 'exact', no?
+      mode: 'include', // TODO this should be 'exact', no? - we need $exact() matcher
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(19)
+    expect(results.length).toBe(63)
   })
 
   it('should find all JSX props which always creates new reference', () => {
@@ -135,7 +135,7 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(74)
+    expect(results.length).toBe(132)
   })
 
   it('should match nested ternary operator', () => {

@@ -21,6 +21,7 @@ import {
   removeIdentifierRefFromWildcard,
   sortByLeastIdentifierStrength,
   prepareCodeResult,
+  shouldCompareNode
 } from './astUtils'
 
 export type SearchArgs = {
@@ -87,12 +88,15 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     const fileKeysToTraverse: string[] = []
 
     if (fileNode.type === 'JSXText') {
+      log('pre JSX Text', fileNode.value)
       sanitizeJSXText(fileNode)
+      log('sanitized JSX Text', fileNode.value)
     }
 
     if (queryNode.type === 'JSXText') {
       sanitizeJSXText(queryNode)
     }
+
 
     fileKeys.forEach((key) => {
       const fileValue = fileNode[key]
@@ -249,15 +253,18 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
           log('validate: key', keyToTraverse)
           log('validate: file val', currentNode[keyToTraverse])
           log('validate: query val', currentQueryNode[keyToTraverse])
-          if (isExact && Array.isArray(currentNode[keyToTraverse]) && Array.isArray(currentQueryNode[keyToTraverse]) && (currentNode[keyToTraverse] as []).length !== (currentQueryNode[keyToTraverse] as []).length) {
-            return false
-          }
+
 
           if (Array.isArray(currentNode[keyToTraverse] as PoorNodeType[])) {
             log('validate: is array')
-            const nodesArr = currentNode[keyToTraverse] as PoorNodeType[]
-            const queryNodesArr = currentQueryNode[keyToTraverse] as PoorNodeType[]
+            const nodesArr = (currentNode[keyToTraverse] as PoorNodeType[]).filter(shouldCompareNode)
+            const queryNodesArr = (currentQueryNode[keyToTraverse] as PoorNodeType[]).filter(shouldCompareNode)
+
             if (isExact) {
+              if ((nodesArr).length !== (queryNodesArr).length) {
+                return false
+              }
+
               for (let i = 0; i < nodesArr.length; i++) {
                 const newCurrentNode = nodesArr[i]
                 const newCurrentQueryNode = queryNodesArr[i]

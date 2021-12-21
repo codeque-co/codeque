@@ -22,10 +22,12 @@ program
       const resolvedRoot = path.resolve(root)
       let prevQuery = ''
       const queryCachePath = path.resolve(__dirname + '/cliQuery')
+
       try {
         prevQuery = fs.readFileSync(queryCachePath).toString()
       }
       catch (e) { }
+
       const cols = process.stdout.columns
       const separator = ''.padStart(process.stdout.columns, '━')
       const dot = ' • '
@@ -36,7 +38,7 @@ program
       const modeAndCaseText = `${cyan(bold(modeLabel))}${green(mode)}${dot}${cyan(bold(caseLabel))}${green(caseText)}\n`
 
       const remainingCharsForRoot = cols - modeLabel.length - mode.length - caseLabel.length - caseText.length - dot.length
-      console.log(remainingCharsForRoot)
+
       const rootLabel = 'Root: '
       const minLen = (dot.length + rootLabel.length + 5)
       const remainingSpaceForRootPath = remainingCharsForRoot - (dot.length + rootLabel.length)
@@ -70,7 +72,7 @@ program
       const [[{ error }], parseOk] = parseQueries([query])
 
       if (parseOk) {
-        print(modeAndCaseText)
+        print(separator + '\n' + rootText + modeAndCaseText)
 
         print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
       }

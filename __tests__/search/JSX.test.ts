@@ -2,10 +2,30 @@ import { search } from '/search'
 import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
+import fs from 'fs';
 
 const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('JSX', () => {
+  const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
+  const mockedFilesList = [tempFilePath]
+  beforeAll(() => {
+    fs.writeFileSync(tempFilePath, `
+      <Flex >
+    
+          <Button
+        >
+            Download
+          </Button>
+
+      </Flex>
+    `)
+  })
+
+  afterAll(() => {
+    fs.unlinkSync(tempFilePath)
+  })
+
   it('Should find all self-closing JSX', () => {
     const query = `<$ />`
     const results = search({
@@ -77,7 +97,7 @@ describe('JSX', () => {
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
-      caseInsensitive:true
+      caseInsensitive: true
     })
     expect(results.length).toBe(1)
   })
@@ -195,7 +215,7 @@ describe('JSX', () => {
       />
     `
 
-    expect(results.length).toBe(140)
+    expect(results.length).toBe(190)
     expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
   })
 
@@ -229,7 +249,7 @@ describe('JSX', () => {
       />
     `
 
-    expect(results.length).toBe(114)
+    expect(results.length).toBe(164)
     expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
   })
 
@@ -278,6 +298,29 @@ describe('JSX', () => {
     })
 
     expect(results.length).toBe(78)
+  })
+
+  it('Should ignore all empty JSXText in search', () => {
+    const queries = [
+      `
+        <$>
+          $
+        </$>;
+    `]
+
+    const results = search({
+      mode: 'include',
+      filePaths: mockedFilesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+    expect(compareCode(results[0].code,
+      ` <Button>
+          Download
+        </Button>
+      `
+    )).toBeTruthy()
   })
 
 

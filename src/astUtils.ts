@@ -77,6 +77,15 @@ const omit = (obj: Record<string, unknown>, keys: string[]) => {
   return newObj
 }
 
+export const shouldCompareNode = (node: PoorNodeType) => {
+  if (node.type === 'JSXText') {
+    sanitizeJSXText(node)
+    return (node.value as string).length > 0
+  }
+
+  return true
+}
+
 export const cleanupAst = (ast: PoorNodeType) => {
 
   if (ast.type === 'JSXText') {
@@ -91,7 +100,7 @@ export const cleanupAst = (ast: PoorNodeType) => {
     }
     if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
 
-      cleanedAst[key] = (cleanedAst[key] as PoorNodeType[]).map((subAst) => cleanupAst(subAst))
+      cleanedAst[key] = (cleanedAst[key] as PoorNodeType[]).filter(shouldCompareNode).map((subAst) => cleanupAst(subAst))
     }
   })
 

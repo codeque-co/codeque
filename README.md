@@ -6,13 +6,13 @@ Names:
   - code magic (taken :/)
   - magic code search (kinda too long)
 
-❌ Fix bug with `<$>$</$>;` matching too much - JSX text wildcard acts like $$ o.O
+✅ Fix bug with `<$>$</$>;` matching too much - JSX text wildcard acts like $$ o.O
 
 ❌ restrict more than 2 wildcards on query parse level
 
 ✅Adjust formatting of multiline code that is staring after some tokens
 
-⌛ Make CLI a product
+✅ Make CLI a product
    - ✅ codeframe from babel
    - ✅  investigate results formatting query :`<Text $="ellipsis" ></Text>`
       - how we can present original code instead of generated one
@@ -25,7 +25,7 @@ Names:
    - ✅ file path query
    - ✅ runs in cwd
 
-⌛ Explore types matching and types literals -> tests on custom file
+❌ Explore types matching and types literals -> tests on custom file
 
 ✅ Support wildcards in JSXText
 
@@ -50,7 +50,7 @@ Names:
     - it might need special operator like `$nested()`
 
 
-❌ PoC / Implement vscode extension
+❌ PoC / Implement vscode extension - mostly to understand how to license
 
 ✅ Implement tests
 
@@ -113,6 +113,11 @@ ___
 💡 Think of support for ref matching
   - user should be able to indicate that two wildcards are the same identifier 
   - eg. `const $_ref1 = 'string'; call($_ref1)`
+💡 Add query extensions
+   - $type() - to create type matcher
+    - can be only used top-level
+   - $exact(), $include(), $includeWithOrder() - to change mode in given code path
+    - <$ $={() => {}} /> will match functions with body, which we don't want
 
 💡 Think of other use cases for the matching functionality (call the whole product code-magic)
   - should the product be an licensed cli ?
@@ -134,11 +139,11 @@ ___
       - implement transformed query
       -> generate AST diff and use it as a transform (try use json-diff with removed misc keys)
       - show example result
-  - predefined codemode snipets to apply on file
+  - predefined codemode snippets to apply on file
     - eg. transform props into `1{prop1, prop2}` based on which keys are used
     - a) it could be eslint plugin / no need for code-magic for that 
     - b) it might be impossible to implement with current approach to codemod
-  - for codemod and eslint we need to be able to reference a variable by indentifier, to be able to track references for more complex cases
+  - for codemod and eslint we need to be able to reference a variable by identifier, to be able to track references for more complex cases
   - track duplicated code - how (eg. pattern to match all DB queries, then exact compare of AST)
     - this could be integrated into editor, so it could search duplicates as you type code
     - predefined patterns to find in current file

@@ -71,7 +71,7 @@ const footerDefault = [
 
 const logErrorFileName = 'editor-log.txt'
 
-export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault, debug = true, separator }) => {
+export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault, debug = false, separator }) => {
   if (debug) {
     fs.writeFileSync(logErrorFileName, '');
   }

@@ -10,13 +10,15 @@ Names:
 
 ❌ restrict more than 2 wildcards on query parse level
 
+✅Adjust formatting of multiline code that is staring after some tokens
+
 ⌛ Make CLI a product
    - ✅ codeframe from babel
    - ✅  investigate results formatting query :`<Text $="ellipsis" ></Text>`
       - how we can present original code instead of generated one
       - ✅ fix problem with 0 padding
    - ✅ commander
-   - ❌ spinner while search
+   - ✅ spinner while search
    - ✅ results limit param
    - ✅ convenient multiline input 
     - ✅ find better tokenizer (fixed js-tokens)
@@ -204,6 +206,7 @@ ___
   - 
 ⌛ Marketing use-cases for eslint codemod
  - "Pay tech debt quicker"
+ - after changing prisma data model we can find interface/class for changed entity and adjust fields
 
 ✅
 ❌

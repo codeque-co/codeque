@@ -21,20 +21,38 @@ program
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
       let prevQuery = ''
-
+      const queryCachePath = path.resolve(__dirname + '/cliQuery')
       try {
-        prevQuery = fs.readFileSync(path.resolve('./cliQuery')).toString()
+        prevQuery = fs.readFileSync(queryCachePath).toString()
       }
       catch (e) { }
+      const cols = process.stdout.columns
+      const separator = ''.padStart(process.stdout.columns, '━')
+      const dot = ' • '
 
-      const separator = '\n'.padStart(process.stdout.columns, '━')
-      const rootText = `${cyan(bold('Root:'))} ${green(resolvedRoot)}\n`
-      const modeAndCaseText = `${separator}${rootText}${cyan(bold('Mode:'))} ${green(mode)}   ${cyan(bold('Case:'))} ${green(caseInsensitive ? 'insensitive' : 'sensitive')}\n`
+      const modeLabel = 'Mode: '
+      const caseLabel = 'Case: '
+      const caseText = caseInsensitive ? 'insensitive' : 'sensitive'
+      const modeAndCaseText = `${cyan(bold(modeLabel))}${green(mode)}${dot}${cyan(bold(caseLabel))}${green(caseText)}\n`
+
+      const remainingCharsForRoot = cols - modeLabel.length - mode.length - caseLabel.length - caseText.length - dot.length
+      console.log(remainingCharsForRoot)
+      const rootLabel = 'Root: '
+      const minLen = (dot.length + rootLabel.length + 5)
+      const remainingSpaceForRootPath = remainingCharsForRoot - (dot.length + rootLabel.length)
+      const charsToReplace = Math.max(resolvedRoot.length - remainingSpaceForRootPath, 0)
+      const ellipsis = '...'
+      const shortenedRoot = charsToReplace > 0 ? resolvedRoot.replace(new RegExp(`^(.){${charsToReplace + ellipsis.length}}`), ellipsis) : resolvedRoot
+      const rootText = remainingCharsForRoot > minLen
+        ? `${cyan(bold(rootLabel))
+        }${green(shortenedRoot)}${dot}`
+        : ''
+
       let query = ''
 
       if (queryPath === undefined) {
-        query = await openAsyncEditor({ header: `${modeAndCaseText}\n✨ Type query:`, code: prevQuery })
-        fs.writeFileSync(path.resolve('./cliQuery'), query)
+        query = await openAsyncEditor({ header: `${rootText}${modeAndCaseText}\n✨ Type query:`, code: prevQuery, separator })
+        fs.writeFileSync(queryCachePath, query)
       }
       else {
         try {

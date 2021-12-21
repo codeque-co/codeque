@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { search } from './src/search';
-import { Mode, getMode, logMetrics, print } from './src/utils'
+import { search } from './search';
+import { Mode, getMode, logMetrics, print } from './utils'
 
 
 const query = fs.readFileSync(path.resolve('./devQuery')).toString()

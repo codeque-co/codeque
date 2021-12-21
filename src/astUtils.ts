@@ -166,15 +166,17 @@ export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNo
 
 export const prepareCodeResult = ({ fileContent, start, end, loc }: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
   const frame = fileContent.substring(start - loc.start.column, end)
-  const indent = loc.start.column
-  const replaceRegex = new RegExp(`^\\s{0,${indent}}`)
-  const firstLineTextRegex = new RegExp(`^\\s{${indent}}`)
+  const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
 
-  const lines = frame.split('\n')
+  const firstLine = frame.split('\n')[0]
+  const lines = frame.substr(loc.start.column).split('\n')
+  const firstLineWhiteCharsCount = (firstLine?.match(firstLineWhiteCharsCountRegExp) as [string])[0]?.length
 
-  if (firstLineTextRegex.test(lines[0])) {
-    return frame.split('\n').map((line) => line.replace(replaceRegex, '')).join('\n')
+  const replaceRegex = new RegExp(`^\\s{0,${firstLineWhiteCharsCount}}`)
+
+  if (firstLineWhiteCharsCount > 0) {
+    return lines.map((line) => line.replace(replaceRegex, '')).join('\n')
   }
 
-  return frame.substr(loc.start.column)
+  return lines.join('\n')
 }

@@ -2,11 +2,15 @@ const path = require('path');
 const pgk = require('./package.json')
 
 module.exports = (_, { mode }) => {
+  const isDev = mode === 'development'
   return {
-    watch: mode === 'development',
+    watch: isDev,
     entry: {
       cli: path.resolve(__dirname, './src/cli.ts'),
       worker: path.resolve(__dirname, './src/searchWorker.ts'),
+      ...(isDev ? {
+        dev: path.resolve(__dirname, './src/dev.ts')
+      } : {})
     },
     module: {
       rules: [

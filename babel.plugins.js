@@ -1,5 +1,10 @@
 
 module.exports = function plugin() {
+
+  if (process.env.NODE_ENV !== 'production') {
+    return {}
+  }
+
   return {
     visitor: {
       CallExpression(path, state) {

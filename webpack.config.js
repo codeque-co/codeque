@@ -2,6 +2,7 @@ const path = require('path');
 const pgk = require('./package.json')
 
 module.exports = (_, { mode }) => {
+  const isStandaloneBuild = process.env.STANDALONE === 'true'
   const isDev = mode === 'development'
   return {
     watch: isDev,
@@ -22,7 +23,7 @@ module.exports = (_, { mode }) => {
       ]
     },
     //Don't transpile & include modules except some ESM modules that does not work otherwise
-    externals: Object.keys(pgk.dependencies).filter((dep) => {
+    externals: isStandaloneBuild ? undefined : Object.keys(pgk.dependencies).filter((dep) => {
       const depPkg = require(`./node_modules/${dep}/package.json`)
       return depPkg.type !== 'module'
     }).reduce((map, dep) => ({

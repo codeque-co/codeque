@@ -20,6 +20,10 @@ describe('Types', () => {
       123 + 321 ;
 
       [ab, d, 'asd', {}]
+
+      ${'`${id}`'}
+      ${'`${id}${id2}`'}
+      ${'`val ${id} text ${id2}`'}
     `)
   })
 
@@ -155,5 +159,75 @@ describe('Types', () => {
     expect(results.length).toBe(1)
   })
 
+  it('should match template literals with empty quasis', () => {
+    const queries = ['`${id}`']
 
+    const results = search({
+      mode: 'exact',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it('should not match template literals with empty quasis using required string wildcard', () => {
+    const queries = ['`$$${id}`']
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(0)
+  })
+
+  it('should match template literals with quasis', () => {
+    const queries = ['`val ${id} text ${id2}`']
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it('should match template literals with quasis with wildcard', () => {
+    const queries = ['`val ${id} $ ${id2}`']
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it('should match template literals with quasis with wildcard in id', () => {
+    const queries = ['`val ${$} text ${$}`']
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(1)
+  })
+
+  it('should match multiple template literals with include mode', () => {
+    const queries = ['`{$}`']
+
+    const results = search({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(results.length).toBe(0)
+  })
 })

@@ -3,7 +3,7 @@ import {
   getBody, getKeysToCompare, IdentifierTypes, isNode,
   isNodeArray, numericWildcard, parseOptions, PoorNodeType,
   Position, singleIdentifierWildcard, unwrapExpressionStatement, stringWildcard,
-   removeIdentifierRefFromWildcard
+  removeIdentifierRefFromWildcard
 } from './astUtils'
 import { measureStart } from './utils'
 
@@ -71,6 +71,32 @@ export const parseQueries = (queryCodes: string[], caseInsensitive = false): [Ar
 }>, boolean] => {
   const inputQueryNodes = queryCodes.map((queryText) => {
     let originalError = null
+    if (/(\$){3,}/.test(queryText)) {
+      const lines = queryText.split('\n')
+      let lineIdx: number | null = null;
+      let colNum: number | null = null
+
+      lines.forEach((line, idx) => {
+        const col = line.indexOf('$$$')
+        if (colNum === null && col > -1) {
+          lineIdx = idx
+          colNum = col + 1
+        }
+      })
+      return {
+        queryNode: {},
+        error: {
+          text: 'More than two wildcard chars are not allowed',
+          ...(colNum !== null && lineIdx !== null ? ({
+            location: {
+              line: lineIdx + 1,
+              column: colNum
+            }
+          }) : {})
+        }
+      }
+    }
+
     try {
       const parsedAsIs = parse(queryText, parseOptions) as unknown as PoorNodeType
       return {
@@ -113,7 +139,7 @@ export const parseQueries = (queryCodes: string[], caseInsensitive = false): [Ar
     const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
     const uniqueTokens = queryNode ? [...getUniqueTokens(queryNode, caseInsensitive)].filter((token) => typeof token !== 'string' || token.length > 0) : []
-    
+
     measureGetUniqueTokens()
 
     return {

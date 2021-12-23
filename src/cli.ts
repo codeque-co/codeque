@@ -20,6 +20,9 @@ program
     async ({ mode, caseInsensitive, root = process.cwd(), limit = '20', query: queryPath }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string }) => {
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
+
+      mode = getMode(mode)
+
       let prevQuery = ''
       const queryCachePath = path.resolve(__dirname + '/cliQuery')
 

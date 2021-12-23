@@ -5,12 +5,17 @@ Names:
   - code query (the best for set of tools)
   - code magic (taken :/)
   - magic code search (kinda too long)
+  - Quecode
+    - quecode.dev if free
+  - CodeQ
+  - CodeQue
+    - codeque.dev if free
 
 ✅ Fix bug with `<$>$</$>;` matching too much - JSX text wildcard acts like $$ o.O
 
-❌ restrict more than 2 wildcards on query parse level
+✅ restrict more than 2 wildcards on query parse level
 
-✅Adjust formatting of multiline code that is staring after some tokens
+✅ Adjust formatting of multiline code that is staring after some tokens
 
 ✅ Make CLI a product
    - ✅ codeframe from babel
@@ -26,6 +31,11 @@ Names:
    - ✅ runs in cwd
 
 ❌ Explore types matching and types literals -> tests on custom file
+
+✅ Bug with code generation for `<$ $={`${$$}`} />;` // use-case: probably redundant template literal (value can be not a string)
+   - implement tests for this
+   - implement tests for `<$ $={`fdsgg`} />;` // use-case: redundant template literal
+   - template literal seems to not work properly in exact mode
 
 ✅ Support wildcards in JSXText
 
@@ -46,9 +56,6 @@ Names:
   - `($$, $$) => {}` is invalid while parsing function
   - `$_refN` - currently without ref analysis
   - `$$_refN` - currently without ref analysis
-  - It might be useful to search for expressions within nested structures inside functions to make it more useful
-    - it might need special operator like `$nested()`
-
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license
 
@@ -69,7 +76,7 @@ Names:
   - explore parse result errors
 
 ✅ Regex matching of identifier seems to be slow 
-  ✅ one perf issue was caused by prettier - fixed!
+  - ✅ one perf issue was caused by prettier - fixed!
   - double the time on mac for `"import { $Plus } from 'react-icons$'"`
   - maybe instead of `"."` regex we could be more specific
   - ✅ it might be caused by lack of keywords for initial search
@@ -108,16 +115,27 @@ ___
 
 💡 Think of negation syntax and sense (just to make if future proof for now)
   - could be something like: `$not('asd')`
+  - it might execute 2 (or more) searches and filter results if there are 2 the same
+
 💡 Think of and, or syntax and sense (just to make if future proof for now)
-  - could be something like: `$and('asd', () => {})`
+  - could be something like: `$and('asd', $not(() => {}))`
+  - jsx excluding some prop`$and(<somejsx>, $not(<somejsx prop={$$}/>))`
+
 💡 Think of support for ref matching
   - user should be able to indicate that two wildcards are the same identifier 
   - eg. `const $_ref1 = 'string'; call($_ref1)`
+
 💡 Add query extensions
-   - $type() - to create type matcher
+  - `$type()` - to create type matcher
     - can be only used top-level
-   - $exact(), $include(), $includeWithOrder() - to change mode in given code path
+  - `$exact(), $include(), $includeWithOrder()` - to change mode in given code path
     - <$ $={() => {}} /> will match functions with body, which we don't want
+  - `$fn(() => {})` - alias for 3 types of function definition
+    - effectively executes 3 queries
+  - It might be useful to search for expressions within nested structures inside functions to make it more useful
+      - it might need special operator like `$nested()`
+  - `$jsx()` - for jsx tags when children can be ignored
+     - executes 2 query for self-closing and not self closing
 
 💡 Think of other use cases for the matching functionality (call the whole product code-magic)
   - should the product be an licensed cli ?
@@ -152,6 +170,10 @@ ___
   - check what SonarQube can measure
   - tool like rev-dep could be part of code-magic toolset
     - think how it could improve refactoring
+    - it should not only resolve imports, but references in code as well, so it would be more accurate (should resolve like stack trace)
+    - it helps with
+      - refactoring & finding all refactored views to test them
+      - saves a lot of time spent on manual references lookup
   - Feature: get all values of given property
     - eg. to assert unique test-ids across all files
   - Feature import-based search
@@ -164,6 +186,7 @@ ___
 💡 Add support for suggestions based on equivalent/similar syntax
   - user input: `<$ prop={"5"} />`,  suggestion: `<$ prop="5" />`
   - user input: `<$ prop={$+$} />`,  suggestion: `<$ prop={$-$} />`
+
 💡 Add hints based on first node
   - user input: `{a:b}`, hint: You probably needs `({a:b})`, right now it is a block statement
   - use input `"some string"`: You probably needs `("some string")`, right now it is a directive
@@ -175,6 +198,21 @@ ___
 
 💡 Add support for flow
   - Probably needs a refactor similar to different language refactor
+
+💡 Pricing
+  - Free only exact mode, no wildcards, no other features
+    - code stats
+  - Paid $19 / year (dev)
+    - search with all features 
+    - code stats
+    - exclude replace, ref analysis, import resolution
+  - Paid $29 / year (pro)
+    - search + replace + ref analysis + import resolution
+    - code stats
+  - Company $29 / month
+    - up to 10 users (+$3 for each additional user)
+    - all the above + eslint rules 
+  
 
 💡 Product website
   - home

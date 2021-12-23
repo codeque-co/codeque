@@ -43,6 +43,8 @@
   "scripts": {
     "build:watch": "webpack --mode development",
     "build": "webpack --mode production",
+    "build:standalone": "STANDALONE=true yarn build",
+    "build:pkg": "yarn build:standalone && node createPkg.js",
     "babel": "rm -rf babel-dist && babel ./ --extensions \".ts,.tsx\" -d babel-dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",

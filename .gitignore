@@ -4,3 +4,6 @@ editor-log.txt
 cliQuery
 dist
 babel-dist
+pkg
+pkg.zip
+.DS_Store

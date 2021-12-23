@@ -187,6 +187,18 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
     }
 
+    if ((queryNode.type as string) === 'TemplateElement' && (fileNode.type as string) === 'TemplateElement' && ((queryNode.value as any).raw as string).includes(stringWildcard)) {
+
+      const regex = patternToRegex((queryNode.value as any).raw as string, caseInsensitive)
+      const levelMatch = regex.test((fileNode.value as any).raw as string)
+      measureCompare()
+      return {
+        levelMatch: levelMatch,
+        queryKeysToTraverse: [],
+        fileKeysToTraverse
+      }
+    }
+
     if ((queryNode.type as string) === 'NumericLiteral' && (fileNode.type as string) === 'NumericLiteral' && ((queryNode.extra as any).raw as string) === numericWildcard) {
       measureCompare()
       return {
@@ -243,7 +255,13 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
     const { levelMatch, queryKeysToTraverse } = compareNodes(currentNode, currentQueryNode)
     if (!levelMatch) {
-      log('nodes incompat:\n\n', generate(currentNode as any).code, '\n\n', generate(currentQueryNode as any).code, '\n'.padEnd(10, '_'))
+      try {
+        log('nodes incompat:\n\n', generate(currentNode as any).code, '\n\n', generate(currentQueryNode as any).code, '\n'.padEnd(10, '_'))
+
+      }
+      catch (e) {
+        log('nodes incompat:\n\n', 'invalid code')
+      }
       return false
     }
     else {

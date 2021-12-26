@@ -6,6 +6,9 @@ const CopyPlugin = require("copy-webpack-plugin");
 module.exports = (_, { mode }) => {
   const isStandaloneBuild = process.env.STANDALONE === 'true'
   const isDev = mode === 'development'
+
+  process.env.BABEL_ENV = mode // used by custom babel plugin
+
   return {
     watch: isDev,
     entry: {

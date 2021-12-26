@@ -1,7 +1,7 @@
 
 module.exports = function plugin() {
-
-  if (process.env.NODE_ENV !== 'production') {
+  console.log('BABEL', process.env.BABEL_ENV)
+  if (process.env.BABEL_ENV !== 'production') {
     return {}
   }
 

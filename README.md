@@ -48,16 +48,23 @@ Names:
 ✅ Bundle/minify/obfuscate
 
 ❌ Invent / Implement license mechanism
-   - try webassembly
+   - ✅ try webassembly
+   - ❌ Cleanup rust code
+   - ❌ cleanup rust deps
+   - ❌ cleanup build chunks
+   - ❌ add wasm files to package script
+   - ❌ obfuscate wasm identifiers
+   - 
 
-❌❌ Add support for proposal syntaxes
+❌ PoC / Implement vscode extension - mostly to understand how to license
+
+✅ Add support for proposal syntaxes
 
 ✅ Add support for multiple wildcards
   - `($$, $$) => {}` is invalid while parsing function
   - `$_refN` - currently without ref analysis
   - `$$_refN` - currently without ref analysis
 
-❌ PoC / Implement vscode extension - mostly to understand how to license
 
 ✅ Implement tests
 

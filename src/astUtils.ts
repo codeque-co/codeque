@@ -1,6 +1,6 @@
 import { parse, ParserOptions } from '@babel/parser'
 // import omit from 'object.omit';
-
+import { wasmFns } from './wasm'
 export type Position = {
   line: number, column: number
 }
@@ -55,8 +55,9 @@ export const getKeysToCompare = (node: PoorNodeType) => {
 }
 
 export const sanitizeJSXText = (node: PoorNodeType) => {
+  wasmFns.transform_value(node);
   //@ts-ignore
-  node.value = node.value?.trim()
+  // node.value = node.value?.trim()
   //@ts-ignore
   node.extra.raw = node.extra.raw?.trim()
   //@ts-ignore

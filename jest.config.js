@@ -8,5 +8,6 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, { prefix: '<rootDir>' }),
   "testPathIgnorePatterns": [
     "__fixtures__"
-  ]
+  ],
+  setupFilesAfterEnv: ['./jest.setup.js']
 };

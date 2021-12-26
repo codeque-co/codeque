@@ -63,7 +63,11 @@ export const sanitizeJSXText = (node: PoorNodeType) => {
   node.extra.rawValue = node.extra.rawValue?.trim()
 }
 
-export const parseOptions = { sourceType: 'module', plugins: ['typescript', 'jsx', 'decorators-legacy'] } as ParserOptions
+export const parseOptions = {
+  sourceType: 'module',
+  plugins: ['typescript', 'jsx', 'decorators-legacy'],
+  allowReturnOutsideFunction: true
+} as ParserOptions
 
 const omit = (obj: Record<string, unknown>, keys: string[]) => {
   const newObj = {} as Record<string, unknown>

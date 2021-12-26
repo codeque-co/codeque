@@ -50,7 +50,7 @@ Names:
 ❌ Invent / Implement license mechanism
    - try webassembly
 
-❌ Add support for proposal syntaxes
+❌❌ Add support for proposal syntaxes
 
 ✅ Add support for multiple wildcards
   - `($$, $$) => {}` is invalid while parsing function
@@ -212,7 +212,7 @@ ___
   - Company $29 / month
     - up to 10 users (+$3 for each additional user)
     - all the above + eslint rules 
-  
+
 
 💡 Product website
   - home

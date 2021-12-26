@@ -1,5 +1,7 @@
 const path = require('path');
 const pgk = require('./package.json')
+const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (_, { mode }) => {
   const isStandaloneBuild = process.env.STANDALONE === 'true'
@@ -23,10 +25,10 @@ module.exports = (_, { mode }) => {
       ]
     },
     //Don't transpile & include modules except some ESM modules that does not work otherwise
-    externals: isStandaloneBuild ? undefined : Object.keys(pgk.dependencies).filter((dep) => {
+    externals: ['./crate/pkg/index.js'].concat(isStandaloneBuild ? [] : Object.keys(pgk.dependencies).filter((dep) => {
       const depPkg = require(`./node_modules/${dep}/package.json`)
       return depPkg.type !== 'module'
-    }).reduce((map, dep) => ({
+    })).reduce((map, dep) => ({
       ...map,
       [dep]: `commonjs2 ${dep}`
     })),
@@ -40,6 +42,21 @@ module.exports = (_, { mode }) => {
     output: {
       path: path.resolve(__dirname, './dist'),
       filename: '[name].js',
+    },
+    plugins: [
+      new WasmPackPlugin({
+        crateDirectory: path.resolve(__dirname, 'crate'),
+        extraArgs: '--target nodejs --mode normal',
+        outDir: path.resolve(__dirname, 'crate', "pkg"),
+      }),
+      new CopyPlugin({
+        patterns: [
+          { from: "./crate/pkg/index_bg.wasm", to: "./index_bg.wasm" },
+        ],
+      })
+    ],
+    experiments: {
+      syncWebAssembly: true,
     },
   };
 }

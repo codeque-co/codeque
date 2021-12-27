@@ -2,12 +2,21 @@ const path = require('path');
 const pgk = require('./package.json')
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const obfuscateWasmIds = require('./obfuscateWasmIds');
 
 module.exports = (_, { mode }) => {
   const isStandaloneBuild = process.env.STANDALONE === 'true'
   const isDev = mode === 'development'
 
   process.env.BABEL_ENV = mode // used by custom babel plugin
+
+  let crateBasePath = path.resolve(__dirname, 'crate')
+
+  if (!isDev) {
+    const { prodCratePath, replacements } = obfuscateWasmIds(crateBasePath)
+    crateBasePath = prodCratePath
+    process.env.BABEL_IDS_REPLACEMENTS = JSON.stringify(replacements)
+  }
 
   return {
     watch: isDev,
@@ -48,13 +57,13 @@ module.exports = (_, { mode }) => {
     },
     plugins: [
       new WasmPackPlugin({
-        crateDirectory: path.resolve(__dirname, 'crate'),
+        crateDirectory: crateBasePath,
         extraArgs: '--target nodejs --mode normal',
-        outDir: path.resolve(__dirname, 'crate', "pkg"),
+        outDir: path.join(crateBasePath, "pkg"),
       }),
       new CopyPlugin({
         patterns: [
-          { from: "./crate/pkg/index_bg.wasm", to: "./index_bg.wasm" },
+          { from: path.join(crateBasePath, "pkg", 'index_bg.wasm'), to: "./index_bg.wasm" },
         ],
       })
     ],

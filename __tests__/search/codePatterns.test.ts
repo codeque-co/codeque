@@ -2,7 +2,6 @@ import { search } from '/search'
 import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
-import { init } from '/wasm'
 const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('code patterns', () => {

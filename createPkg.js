@@ -26,3 +26,5 @@ fs.writeFileSync(`${pkgDir}/package.json`, JSON.stringify({
 fs.copyFileSync('./bin.js', `${pkgDir}/bin.js`)
 fs.copyFileSync('./dist/cli.js', `${distDir}/cli.js`)
 fs.copyFileSync('./dist/worker.js', `${distDir}/worker.js`)
+fs.copyFileSync('./dist/835.js', `${distDir}/835.js`)
+fs.copyFileSync('./dist/index_bg.wasm', `${distDir}/index_bg.wasm`)

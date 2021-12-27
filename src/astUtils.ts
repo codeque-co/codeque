@@ -55,7 +55,7 @@ export const getKeysToCompare = (node: PoorNodeType) => {
 }
 
 export const sanitizeJSXText = (node: PoorNodeType) => {
-  wasmFns.transform_value(node);
+  wasmFns.trim_value(node);
   //@ts-ignore
   // node.value = node.value?.trim()
   //@ts-ignore

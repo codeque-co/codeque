@@ -49,12 +49,18 @@ Names:
 
 ❌ Invent / Implement license mechanism
    - ✅ try webassembly
-   - ❌ Cleanup rust code
-   - ❌ cleanup rust deps
-   - ❌ cleanup build chunks
-   - ❌ add wasm files to package script
+   - ✅ Cleanup rust code
+   - ✅ cleanup rust deps
+   - ✅ cleanup build chunks
+   - ✅ add wasm files to package script
    - ❌ obfuscate wasm identifiers
-   - 
+   - ❌ License
+    - ability to seamless renewal 
+    - ideally can validate license with public key, but create with private key
+    - non-ideally - both keys (or one common key) is used to create and validate
+    - license is stored on device and not removed on update
+    - 
+  - temp key:  `dSgVkXp2s5v8y/B?`
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license
 

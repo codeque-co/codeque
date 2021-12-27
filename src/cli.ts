@@ -26,23 +26,6 @@ program
       let prevQuery = ''
       const queryCachePath = path.resolve(__dirname + '/cliQuery')
 
-      // @ts-ignore
-      await import("../crate/pkg").then(module => {
-        // module.main_js();
-        console.log(module.get_str("before"))
-        module.enable('')
-        console.log(module.get_str("after"))
-        const obj = { key: 'test', blah: 's' }
-        console.log('key from obj ', module.get_field(obj))
-        module.set_field(obj)
-        console.log(obj)
-        module.transform_value({ value: 'asdsad  ' })
-      });
-
-
-      // process.exit(0)
-
-
       try {
         prevQuery = fs.readFileSync(queryCachePath).toString()
       }

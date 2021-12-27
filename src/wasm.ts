@@ -5,11 +5,11 @@ const notInitialized = () => {
 }
 
 export const wasmFns = {
-  transform_value: notInitialized
-} as Pick<WasmType, 'transform_value'>
+  trim_value: notInitialized
+} as Pick<WasmType, 'trim_value'>
 
 export const init = () => {
   return import("../crate/pkg").then(mod => {
-    wasmFns.transform_value = mod.transform_value
+    wasmFns.trim_value = mod.trim_value
   })
 }

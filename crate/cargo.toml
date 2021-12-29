@@ -32,6 +32,14 @@ wee_alloc = { version = "0.4.2", optional = true }
 js-sys = "0.3.55"
 aes = "0.7.5"
 hex = "0.4.3"
+
+rsa = "0.5.0"
+getrandom = { version = "0.2.0", features = ["js"] }
+rand = "0.8.4"
+p256 = "0.10.0"
+rand_core = "0.6.3"
+sha256 = "1.0.3"
+aes-gcm = "0.9.4"
 # The `web-sys` crate allows you to interact with the various browser APIs,
 # like the DOM.
 [dependencies.web-sys]

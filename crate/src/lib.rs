@@ -12,6 +12,17 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 static mut ENABLED: bool = false;
 
 mod aes_test;
+fn get_random_buf() -> Result<[u8; 32], getrandom::Error> {
+    let mut buf = [0u8; 32];
+    getrandom::getrandom(&mut buf)?;
+    Ok(buf)
+}
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(catch, js_name = "module.require")]
+    fn require(s: &str) -> Result<NodeCrypto, JsValue>;
+    type NodeCrypto;
+}
 // This is like the `main` function, except for JavaScript.
 // This is executed on import (at least with current setup :v )
 #[wasm_bindgen(start)]
@@ -21,6 +32,12 @@ pub fn main_js() -> Result<(), JsValue> {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
 
+    // aes_test::rsa_test();
+
+    aes_test::p256_test();
+
+    aes_test::test_sha2();
+    aes_test::aes_gcm();
     unsafe {
         // mock of license check on module load
         ENABLED = aes_test::aes_test();

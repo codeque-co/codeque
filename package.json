@@ -48,6 +48,7 @@
     "build": "webpack --mode production",
     "build:standalone": "STANDALONE=true yarn build",
     "build:pkg": "yarn build:standalone && node createPkg.js",
+    "build:clean": "rm -rf ./crate/pkg && rm -rf ./crate/target && rm -rf ./dist && rm -rf ./crate-prod",
     "babel": "rm -rf babel-dist && babel ./ --extensions \".ts,.tsx\" -d babel-dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",

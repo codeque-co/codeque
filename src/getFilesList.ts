@@ -19,9 +19,10 @@ export const getFilesList = (root: string) => {
     const entriesList = fs.readdirSync(dir, {
       // withFileTypes: true // This should work but throws an error, so we have to workaround
     }) as string[]
-    const relativeToCWD = entriesList.map((entryName) => path.relative(root, path.join(dir, entryName)))
-    const filtered = ignoreInstance.filter(relativeToCWD)
-    const absolutePaths = filtered.map((pathName) => path.join(root, pathName))
+    
+    const relativeToRoot = entriesList.map((entryName) => path.relative(root, path.join(dir, entryName)))
+    const filtered = ignoreInstance.filter(relativeToRoot)
+    const absolutePaths = filtered.map((pathName) => path.resolve(root, pathName))
     const directories = absolutePaths.filter((pathName) => fs.lstatSync(pathName).isDirectory())
     const files = absolutePaths.filter((pathName) => fs.lstatSync(pathName).isFile())
 

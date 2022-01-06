@@ -4,9 +4,14 @@ import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
-const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('blocks', () => {
+  let filesList = [] as string[]
+
+  beforeAll(async () => {
+     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+  })
+
   it('should match exact whole block', () => {
     const queries = [`
       {

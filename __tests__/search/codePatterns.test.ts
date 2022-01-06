@@ -2,9 +2,14 @@ import { search } from '/search'
 import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
-const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
 
 describe('code patterns', () => {
+  let filesList = [] as string[]
+  
+  beforeAll(async () => {
+     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+  })
+
   it('Should match function with redundant block statement', () => {
     const queries = [`
       const $ = () => {

@@ -17,9 +17,9 @@ jest.mock('worker_threads', () => {
   }
 })
 
-const filesList = getFilesList(path.resolve(__dirname, 'search', '__fixtures__'))
 
 it('should search using multiple threads and give the same results count as single thread search', async () => {
+  const filesList = await getFilesList(path.resolve(__dirname, 'search', '__fixtures__'))
   const query = `
     () => $$
   `

@@ -89,3 +89,9 @@ export const getCodeFrame = (code: string, startLine: number, formatting = false
 }
 
 export const print = console.log // to distinguish intended logs
+
+export const asyncFilter = async <T>(arr: T[], predicate: (el:T) => Promise<boolean>) => {
+	const results = await Promise.all(arr.map(predicate));
+
+	return arr.filter((_v, index) => results[index]);
+}

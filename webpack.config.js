@@ -24,7 +24,8 @@ module.exports = (_, { mode }) => {
       cli: path.resolve(__dirname, './src/cli.ts'),
       worker: path.resolve(__dirname, './src/searchWorker.ts'),
       ...(isDev ? {
-        dev: path.resolve(__dirname, './src/dev.ts')
+        dev: path.resolve(__dirname, './src/dev.ts'),
+        devGetFiles: path.resolve(__dirname, './src/devGetFiles.ts')
       } : {})
     },
     module: {

@@ -33,9 +33,11 @@ Names:
 ❌ Explore types matching and types literals -> 
 tests on custom file
 
-❌ Investigate why node_modules search does not work
+❌!! Investigate why node_modules search does not work
 
-❌ see if async can speed up files search
+❌ add tests block statement search (queue example in catch block and function block)
+
+❌!! see if async can speed up files search
 
 ❌ Try
   - `tsc --extendedDiagnostics`
@@ -75,13 +77,18 @@ tests on custom file
    - ✅ cleanup rust deps
    - ✅ cleanup build chunks
    - ✅ add wasm files to package script
-   - ❌ obfuscate wasm identifiers
-   - ❌ License
+   - ✅ obfuscate wasm identifiers
+   - RSA-SHA256 License
     - ability to seamless renewal 
     - ideally can validate license with public key, but create with private key
     - non-ideally - both keys (or one common key) is used to create and validate
     - license is stored on device and not removed on update
-    - 
+    - ✅ consider calling RSA crypto from rust
+      - key can be stored on js or rust
+      - result can be get in rust
+        - to intercept attacker would have to modify / override crypto impl
+        - Consideration result: Let's use AES for now and stop overthinking this security :D it might not be the issue if software would not sell well
+    - investigate how to integrate tools like Paddle, Strip, Gumroad, Kofi for payments / memberships
   - temp key:  `dSgVkXp2s5v8y/B?`
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license

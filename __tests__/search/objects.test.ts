@@ -194,8 +194,8 @@ describe('Types', () => {
     expect(results.length).toBe(1)
   })
 
-  it('should match possibly repeated object properties', () => {
-    const filesList = getFilesList(path.resolve(__dirname, '__fixtures__'))
+  it('should match possibly repeated object properties', async () => {
+    const filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
 
     const queries = [`
       StyleSheet.create({

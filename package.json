@@ -52,6 +52,7 @@
     "babel": "rm -rf babel-dist && babel ./ --extensions \".ts,.tsx\" -d babel-dist",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",
+    "devGetFiles": "node ./dist/devGetFiles.js",
     "cli": "node ./dist/cli.js",
     "test": "yarn build && jest --passWithNoTests",
     "test:setup": "node ./dist/getFixtures.js"

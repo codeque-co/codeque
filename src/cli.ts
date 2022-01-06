@@ -91,7 +91,7 @@ program
 
       const results = await search({
         mode,
-        filePaths: getFilesList(resolvedRoot),
+        filePaths: await getFilesList(resolvedRoot),
         caseInsensitive,
         queryCodes: [query]
       })

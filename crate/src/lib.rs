@@ -34,10 +34,10 @@ pub fn main_js() -> Result<(), JsValue> {
 
     // aes_test::rsa_test();
 
-    aes_test::p256_test();
+    // aes_test::p256_test();
 
-    aes_test::test_sha2();
-    aes_test::aes_gcm();
+    // aes_test::test_sha2();
+    // aes_test::aes_gcm();
     unsafe {
         // mock of license check on module load
         ENABLED = aes_test::aes_test();

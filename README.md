@@ -30,7 +30,29 @@ Names:
    - ✅ file path query
    - ✅ runs in cwd
 
-❌ Explore types matching and types literals -> tests on custom file
+❌ Explore types matching and types literals -> 
+tests on custom file
+
+❌ Investigate why node_modules search does not work
+
+❌ see if async can speed up files search
+
+❌ Try
+  - `tsc --extendedDiagnostics`
+    How long stuff took and how big/complex it is.
+  - `tsc --listFiles`
+    List of every file included in the compilation.
+  - `tsc --explainFiles`
+    List of every file and *why* it's included.
+  - https://github.com/amcasey/ts-analyze-trace
+  
+❌ Think if we can solve problems with exports using rev-dep
+  - how to get root files in rev-dep
+  - how many roots it would find
+      - root can be an orphan
+  - look for dependencies analysis extensions
+  - how we could use rev-dep in vscode ext
+  
 
 ✅ Bug with code generation for `<$ $={`${$$}`} />;` // use-case: probably redundant template literal (value can be not a string)
    - implement tests for this
@@ -63,6 +85,7 @@ Names:
   - temp key:  `dSgVkXp2s5v8y/B?`
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license
+  - MVP needs to be vscode extension, cli is not convenient for users
 
 ✅ Add support for proposal syntaxes
 

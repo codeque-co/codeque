@@ -218,6 +218,18 @@ ___
     - you search for test based on name
       - you specify a query to find failing code patterns in files imported by test
   - Feature - get unique values of `$_ref/$$_ref`  in query
+  - Feature: ast-based diff to outline what actually changed in code logic
+    - needs more reading on how to integrate that into git
+  - Tool : "Import hygiene" - dependency graph summary and statistics, assertions
+    - need research on how it could improve codebase on daily basis
+    - need research how to present information in consumable way
+    - sort imports to solve css ordering problem
+    - make assertions to not import certain file in certain paths 
+      - like file with api keys that should only be on server side
+      - a given file should have list of allowed entry points
+    - some data on how convoluted and hard to maintain your dependency graph is
+      - mostly for myself so I know if project is in a good shape
+    - 
 
 💡 Add support for suggestions based on equivalent/similar syntax
   - user input: `<$ prop={"5"} />`,  suggestion: `<$ prop="5" />`
@@ -234,6 +246,7 @@ ___
 
 💡 Add support for flow
   - Probably needs a refactor similar to different language refactor
+    - maybe we could look for `@flow` comment and configure babel based on that
 
 💡 Pricing
   - Free only exact mode, no wildcards, no other features

@@ -71,7 +71,6 @@ program
 
       const startTime = Date.now()
 
-
       const [[{ error }], parseOk] = parseQueries([query])
 
       if (parseOk) {
@@ -87,11 +86,18 @@ program
 
         process.exit(1)
       }
-      const spinner = ora(`Searching`).start();
+
+      let spinner = ora(`Getting files list `).start();
+
+      const filePaths = await getFilesList(resolvedRoot)
+
+      spinner.stop()
+
+      spinner = ora(`Searching `).start();
 
       const results = await search({
         mode,
-        filePaths: await getFilesList(resolvedRoot),
+        filePaths,
         caseInsensitive,
         queryCodes: [query]
       })

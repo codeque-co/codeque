@@ -33,11 +33,13 @@ Names:
 ❌ Explore types matching and types literals -> 
 tests on custom file
 
-❌!! Investigate why node_modules search does not work
+✅ Investigate why node_modules search does not work
 
 ❌ add tests block statement search (queue example in catch block and function block)
 
-❌!! see if async can speed up files search
+❌ parse errors should not crash whole search
+
+✅ see if async can speed up files search
 
 ❌ Try
   - `tsc --extendedDiagnostics`

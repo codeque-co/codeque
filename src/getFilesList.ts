@@ -1,5 +1,6 @@
 import path from 'path'
 import { promises as fs } from 'fs';
+
 import ignore from 'ignore';
 import { asyncFilter, measureStart } from './utils';
 
@@ -19,7 +20,6 @@ export const getFilesList = async (root: string) => {
       })
 
       gitignore = currentDirScoped.join('\n')
-      console.log('have gitignore', path.join(dir, '.gitignore'), gitignore)
     }
     catch (e) { }
 

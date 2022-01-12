@@ -41,6 +41,8 @@ tests on custom file
 
 ✅ see if async can speed up files search
 
+❌ Market research on eslint and babel auto plugins
+
 ❌ Try
   - `tsc --extendedDiagnostics`
     How long stuff took and how big/complex it is.
@@ -56,7 +58,9 @@ tests on custom file
       - root can be an orphan
   - look for dependencies analysis extensions
   - how we could use rev-dep in vscode ext
+  - I NEED babel-plugin-undo-reexport
   
+❌ ensure create debug and other trash is not in pkg, install fresh pkg on linux to save space
 
 ✅ Bug with code generation for `<$ $={`${$$}`} />;` // use-case: probably redundant template literal (value can be not a string)
    - implement tests for this
@@ -148,6 +152,12 @@ tests on custom file
 
 
 Get files edited since last commit `echo  $(git diff --name-only HEAD)`
+
+❌ Notion this Readme !
+❌ Think of strategy
+  - 1st make a tool and test it within friends and Dweet
+  - 2nd start youtube channel / blog / *your other medai here* and speak about tooling, bundling etc
+    - make a list of videos with ToC that I would like to record
 ___
 
 ## Further product development
@@ -194,6 +204,18 @@ ___
     - check in autozone if custom plugins could be replaced
     - check which of the existing plugins could be replaced
     - plugin should have reference analisys (user should be able to mark that two identifiers should be the same, eg using `$_ref1`)
+    - there might be a problem to show error in specific line where it happens, since we usually need to outline more context in query to capture the problem. 
+      - eg. prop in JSX, you need to add some JSX code
+      - we need a way to mark the place where the error is actually
+      - maybe there should be 2 code queries, one for the whole pattern with error, and second, smaller, to highlight error in query itself
+      - it could potentially be a comment like 
+        ```
+          function(param) {
+            someCode // code-que-error-here
+          }
+        ```
+        As we are formatting agnostic, we can break up each code in the way, we have actual problem in one line (or multiple and use many comments)
+    - Market research
   - automated codemod - this one needs a PoC
     - check some codemods
     - program should be able to get diff of AST

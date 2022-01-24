@@ -12,7 +12,7 @@ module.exports = {
         "rootPathPrefix": "/"
       }
     ],
-    "./babel.plugins.js"
+    "./tools/babel.plugins.js"
   ],
   "ignore": ["dist", "node_modules", "__tests__"]
 }

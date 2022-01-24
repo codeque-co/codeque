@@ -2,7 +2,7 @@ const path = require('path');
 const pgk = require('./package.json')
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-const obfuscateWasmIds = require('./obfuscateWasmIds');
+const obfuscateWasmIds = require('./tools/obfuscateWasmIds');
 
 module.exports = (_, { mode }) => {
   const isStandaloneBuild = process.env.STANDALONE === 'true'

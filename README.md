@@ -39,7 +39,7 @@ tests on custom file
 
 ❌ add tests block statement search (queue example in catch block and function block)
 
-❌ parse errors should not crash whole search
+✅ parse errors should not crash whole search
 
 ✅ see if async can speed up files search
 
@@ -65,7 +65,7 @@ tests on custom file
   - I NEED babel-plugin-undo-reexport
     - done :D 
   
-❌ ensure create debug and other trash is not in pkg, install fresh pkg on linux to save space
+✅ ensure create debug and other trash is not in pkg, install fresh pkg on linux to save space
 
 ✅ Bug with code generation for `<$ $={`${$$}`} />;` // use-case: probably redundant template literal (value can be not a string)
    - implement tests for this

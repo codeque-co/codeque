@@ -21,13 +21,13 @@ describe('Other', () => {
       `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should not include the same result twice 2', () => {
@@ -55,12 +55,12 @@ describe('Other', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(140)
+    expect(matches.length).toBe(140)
   })
 })

@@ -22,14 +22,14 @@ describe('blocks', () => {
       `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
-    expect(compareCode(results[0].code, queries[0])).toBeTruthy()
+    expect(matches.length).toBe(1)
+    expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 
 

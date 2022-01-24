@@ -11,7 +11,7 @@ const mockFilePath = path.resolve('./devFile');
 
 (async () => {
   await init()
-  const matches = search({
+  const { matches, errors } = search({
     queryCodes: [query],
     filePaths: [mockFilePath],
     mode: getMode(process.argv[2] as Mode),
@@ -20,5 +20,6 @@ const mockFilePath = path.resolve('./devFile');
   })
 
   print(matches)
+  print(errors)
   logMetrics()
 })()

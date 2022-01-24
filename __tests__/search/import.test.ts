@@ -18,13 +18,13 @@ describe('JSX', () => {
         IconButton
       } from 'react-native-paper'
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('Should not find any imports including some keys when order changed', () => {
@@ -34,39 +34,39 @@ describe('JSX', () => {
         Button,
       } from 'react-native-paper'
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('Should find all imports of library', () => {
     const query = `
       import $$ from 'react-native';
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(41)
+    expect(matches.length).toBe(41)
   })
 
   it('Should find all default imports of a dependency', () => {
     const query = `
       import $ from '../ScreenWrapper';
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(33)
+    expect(matches.length).toBe(33)
   })
 
 
@@ -74,40 +74,40 @@ describe('JSX', () => {
     const query = `
       import $screenwrapper from '../screenwrapper';
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(33)
+    expect(matches.length).toBe(33)
   })
 
   it('Should find all aliased imports of a dependency', () => {
     const query = `
       import { Provider as $ } from 'react-native-paper';
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all imports with both default and named', () => {
     const query = `
       import $, { $$ } from '$'; 
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all aliased reexports ', () => {
@@ -115,12 +115,12 @@ describe('JSX', () => {
     const query = `
       export { $ as $$ } from '$'; 
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(6)
+    expect(matches.length).toBe(6)
   })
 })

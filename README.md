@@ -43,7 +43,9 @@ tests on custom file
 
 ✅ see if async can speed up files search
 
-❌ Market research on eslint and babel auto plugins
+✅ Market research on eslint and babel auto plugins
+  - https://eslint.org/docs/rules/no-restricted-syntax - one must know ASTs
+  - Didn't found any valid resource on eslint, assume that no resources exist for babel
 
 ❌ Try
   - `tsc --extendedDiagnostics`
@@ -54,13 +56,14 @@ tests on custom file
     List of every file and *why* it's included.
   - https://github.com/amcasey/ts-analyze-trace
   
-❌ Think if we can solve problems with exports using rev-dep
+✅ Think if we can solve problems with exports using rev-dep
   - how to get root files in rev-dep
   - how many roots it would find
       - root can be an orphan
   - look for dependencies analysis extensions
   - how we could use rev-dep in vscode ext
   - I NEED babel-plugin-undo-reexport
+    - done :D 
   
 ❌ ensure create debug and other trash is not in pkg, install fresh pkg on linux to save space
 

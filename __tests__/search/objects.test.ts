@@ -57,13 +57,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match exact object case insensitive', () => {
@@ -78,14 +78,14 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       caseInsensitive: true,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match nested object property with wildcard', () => {
@@ -98,13 +98,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match nested object with wildcard', () => {
@@ -115,13 +115,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should find repeating pattern in nested object several times', () => {
@@ -132,7 +132,7 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -156,9 +156,9 @@ describe('Types', () => {
       });
     `
 
-    expect(results.length).toBe(4)
+    expect(matches.length).toBe(4)
 
-    expect(compareCode(`(${results[0].code})`, firstMatch)).toBeTruthy()
+    expect(compareCode(`(${matches[0].code})`, firstMatch)).toBeTruthy()
   })
 
   it('should not match object if query is block statement', () => {
@@ -167,13 +167,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match function in object', () => {
@@ -185,13 +185,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match possibly repeated object properties', async () => {
@@ -208,13 +208,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 })

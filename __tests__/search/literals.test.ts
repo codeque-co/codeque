@@ -37,13 +37,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string with optional wildcard', () => {
@@ -52,13 +52,13 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string case insensitive', () => {
@@ -67,20 +67,20 @@ describe('Types', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
       caseInsensitive: true
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string with quite inside regardless used quotes', () => {
     const queries1 = [`('\\'other');`]
 
-    const results1 = search({
+    const { matches: results1 } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries1,
@@ -90,7 +90,7 @@ describe('Types', () => {
 
     const queries2 = [`("'other");`]
 
-    const results2 = search({
+    const { matches: results2 } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries2,
@@ -102,132 +102,132 @@ describe('Types', () => {
   it('should match string using pattern', () => {
     const queries = [`('$other');`]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string using pattern 2', () => {
     const queries = [`('$t$');`]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(5)
+    expect(matches.length).toBe(5)
   })
 
   it('should match string with wildcard inside string', () => {
     const queries = [`('react$native');`]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match numeric literal', () => {
     const queries = [`(0x0);`]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(3)
+    expect(matches.length).toBe(3)
   })
 
   it('should match array literal elements with mixed order', () => {
     const queries = [`[$$, $, a$, 'asd']`]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with empty quasis', () => {
     const queries = ['`${id}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match template literals with empty quasis using required string wildcard', () => {
     const queries = ['`$$${id}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match template literals with quasis', () => {
     const queries = ['`val ${id} text ${id2}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with quasis with wildcard', () => {
     const queries = ['`val ${id} $ ${id2}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with quasis with wildcard in id', () => {
     const queries = ['`val ${$} text ${$}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match multiple template literals with include mode', () => {
     const queries = ['`{$}`']
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 })

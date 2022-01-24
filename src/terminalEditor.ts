@@ -65,7 +65,7 @@ const newLineSequence = '\n'
 const footerDefault = [
   '🔍  Ctrl+s 👉 search!' + '          💅🏾  Ctrl+f 👉 format code',
   '🚪  Ctrl+c 👉 cancel and exit' + '  🔢  Ctrl+b 👉 toggle line numbers',
-  '🧹  2 x Ctrl+p 👉 clean query'
+  '🧹  2 x Ctrl+x 👉 clean query'
   ,
 ].join(newLineSequence)
 
@@ -195,7 +195,7 @@ export const openAsyncEditor = ({ header = '', code = '', footer = footerDefault
         cursorRight(content, Infinity)
       }
 
-      if (key.name === 'p' && key.ctrl) {
+      if (key.name === 'x' && key.ctrl) {
         cleanPressCounter++
         if (cleanPressCounter > 1) {
           content = ''

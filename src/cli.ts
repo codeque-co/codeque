@@ -94,8 +94,7 @@ program
       spinner.stop()
 
       spinner = ora(`Searching `).start();
-
-      const results = await search({
+      const {matches, errors} = await search({
         mode,
         filePaths,
         caseInsensitive,
@@ -105,9 +104,9 @@ program
       spinner.stop()
 
       const endTime = Date.now()
-      if (results.length > 0) {
-        const limitedResults = results.slice(0, resultsLimitCount)
-        const resultsText = results.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
+      if (matches.length > 0) {
+        const limitedResults = matches.slice(0, resultsLimitCount)
+        const resultsText = matches.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
 
         print(cyan(bold(resultsText)))
 
@@ -119,12 +118,20 @@ program
           print('\n' + codeFrame + '\n')
         })
 
-        print(cyan(bold('Total count:')), magenta(results.length))
+        print(cyan(bold('Total count:')), magenta(matches.length))
       }
+      
       else {
-        print(cyan(bold('No results found :c\n')))
+        print(cyan(bold('No results found :c')))
       }
-      print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's', '\n')
+      
+      print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
+
+      if (errors.length > 0) {
+        print(red(bold('Search failed for:')), magenta(errors.length), 'file(s)')
+      }
+
+      print('') // new line
     })
 
 program.parse(process.argv)

@@ -43,13 +43,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(4)
+    expect(matches.length).toBe(4)
   })
 
   it('should match exact function with body', () => {
@@ -68,14 +68,14 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
-    expect(compareCode(results[0].code, queries[0])).toBeTruthy()
+    expect(matches.length).toBe(1)
+    expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 
   it('should match function with body statements in order with exact statements', () => {
@@ -96,12 +96,12 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with body statements in order but without all statements', () => {
@@ -120,13 +120,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match function with body statements in different order', () => {
@@ -146,13 +146,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should not match function with body statements in different order without all statements', () => {
@@ -171,13 +171,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match function with body statements in different order', () => {
@@ -197,13 +197,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with body statements in different order without all statements', () => {
@@ -222,13 +222,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with 2 arguments', () => {
@@ -237,13 +237,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
     
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match function with 2 arguments using double wildcard', () => {
@@ -252,13 +252,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
     
-    expect(results.length).toBe(3)
+    expect(matches.length).toBe(3)
   })
 
   it('should match function with 3 arguments', () => {
@@ -267,13 +267,13 @@ describe('functions', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
     
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
 

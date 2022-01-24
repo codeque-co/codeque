@@ -34,7 +34,12 @@ export type SearchArgs = {
 
 export type Matches = Array<Match & { filePath: string }>
 
-const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false) => {
+export type SearchResults = {
+  matches: Matches,
+  errors: Array<any>
+}
+
+const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false):Matches => {
   const deduped: Matches = []
 
   matches.forEach((match) => {
@@ -55,7 +60,7 @@ const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = f
   return deduped
 }
 
-export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, debug = false }: SearchArgs) => {
+export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, debug = false }: SearchArgs):SearchResults => {
   const { log, logStepEnd, logStepStart } = createLogger(debug)
   const allMatches: Matches = []
   const isExact = mode === ('exact' as Mode)
@@ -65,9 +70,12 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
   const [queries, parseOk] = parseQueries(queryCodes, caseInsensitive)
 
   if (!parseOk) {
-    return []
+    return {
+      matches:[],
+      errors: queries.filter((queryResult) => queryResult.error),
+    }
   }
-
+  const searchErrors = []
   measureParseQuery()
 
   log('inputQueryNode', queries.map(({ queryNode }) => queryNode))
@@ -466,12 +474,16 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
     }
     catch (e) {
-      console.error(filePath, e)
+      searchErrors.push(e);
       if (debug) {
+        console.error(filePath, e)
         break;
       }
     }
   }
-  return dedupMatches(allMatches, log, debug)
+  return {
+    matches: dedupMatches(allMatches, log, debug),
+    errors: searchErrors
+  }
 }
 

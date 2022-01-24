@@ -31,13 +31,13 @@ describe('Types',  () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match type concatenation with one wildcard with not matching order', () => {
@@ -46,13 +46,13 @@ describe('Types',  () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match string enumeration type with exact mode', () => {
@@ -61,13 +61,13 @@ describe('Types',  () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match string enumeration type with include mode', () => {
@@ -76,13 +76,13 @@ describe('Types',  () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(3)
+    expect(matches.length).toBe(3)
   })
 
   it('should match generic type parametrization', () => {
@@ -93,13 +93,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(4)
+    expect(matches.length).toBe(4)
   })
 
   it('should match indexed object type with wildcard', () => {
@@ -110,13 +110,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match some indexed object type with partially wildcard identifier', () => {
@@ -127,13 +127,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match some indexed object type', () => {
@@ -144,13 +144,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should match types union inside indexed object type', () => {
@@ -161,13 +161,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should some random generic type', () => {
@@ -176,13 +176,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it.skip('should match wildcard as generic param', () => {
@@ -191,13 +191,13 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match wildcard in conditional type', () => {
@@ -206,12 +206,12 @@ describe('Types',  () => {
        `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 })

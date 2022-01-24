@@ -22,7 +22,7 @@ describe('code patterns', () => {
       `,
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
@@ -37,8 +37,8 @@ describe('code patterns', () => {
       };
     `
 
-    expect(results.length).toBe(10)
-    expect(compareCode(results[0].code, firstResult)).toBeTruthy()
+    expect(matches.length).toBe(10)
+    expect(compareCode(matches[0].code, firstResult)).toBeTruthy()
   })
 
   it('should match possible falsy event listeners', () => {
@@ -54,13 +54,13 @@ describe('code patterns', () => {
       </$>
     `]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should find all empty event listeners', () => {
@@ -76,13 +76,13 @@ describe('code patterns', () => {
       </$>
     `]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include', // TODO this should be 'exact', no? - we need $exact() matcher
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(63)
+    expect(matches.length).toBe(63)
   })
 
   it('should find all JSX props which always creates new reference', () => {
@@ -133,13 +133,13 @@ describe('code patterns', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(132)
+    expect(matches.length).toBe(132)
   })
 
   it('should match nested ternary operator', () => {
@@ -147,12 +147,12 @@ describe('code patterns', () => {
       $$ ? $$ : $$ ? $$ : $$
     `]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('should match cast to any', () => {
@@ -160,27 +160,27 @@ describe('code patterns', () => {
       ($$ as any)
     `]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('should find all console logs', () => {
     const query = `
       console.log()
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(results.length).toBe(3)
-    expect(results[2].code).toBe("console.log('Pressed')")
+    expect(matches.length).toBe(3)
+    expect(matches[2].code).toBe("console.log('Pressed')")
   })
 
   it('Should find all requires of jpg assets', () => {
@@ -190,13 +190,13 @@ describe('code patterns', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(6)
+    expect(matches.length).toBe(6)
   })
 
   it('Should find all string concatenations using + operator', () => {
@@ -206,13 +206,13 @@ describe('code patterns', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
 })

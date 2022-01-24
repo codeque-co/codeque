@@ -7,11 +7,11 @@ import fs from 'fs';
 
 describe('JSX', () => {
   let filesList = [] as string[]
-  
+
   beforeAll(async () => {
-     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
   })
-  
+
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const mockedFilesList = [tempFilePath]
   beforeAll(() => {
@@ -33,12 +33,12 @@ describe('JSX', () => {
 
   it('Should find all self-closing JSX', () => {
     const query = `<$ />`
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(results.length).toBe(148)
+    expect(matches.length).toBe(148)
   })
 
   it('Should find JSX by tag name and prop', () => {
@@ -46,7 +46,7 @@ describe('JSX', () => {
       <Drawer.Section title="Preferences">
       </Drawer.Section>
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
@@ -73,49 +73,49 @@ describe('JSX', () => {
       </Drawer.Section>
     `
 
-    expect(compareCode(results[0].code, resultCode)).toBeTruthy()
+    expect(compareCode(matches[0].code, resultCode)).toBeTruthy()
   })
 
   it('Should find JSX by prop name', () => {
     const query = `<$ value={$$} />`
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(results.length).toBe(41)
+    expect(matches.length).toBe(41)
   })
 
   it('Should find JSX by text content', () => {
     const query = `<Text>RTL</Text>`
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
     const query = `<Text>r$L</Text>`
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
       caseInsensitive: true
     })
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find JSX by text content case insensitive', () => {
     const query = `<Text>rtl</Text>`
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
       queryCodes: [query],
     })
-    expect(results.length).toBe(1)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find exact multiline JSX', () => {
@@ -130,13 +130,13 @@ describe('JSX', () => {
         />
       </View>
     `
-    const results = search({
+    const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: [query],
     })
 
-    expect(compareCode(results[0].code, query)).toBeTruthy()
+    expect(compareCode(matches[0].code, query)).toBeTruthy()
   })
 
   it('Should find components using useTheme() hook', () => {
@@ -151,13 +151,13 @@ describe('JSX', () => {
       } from 'react-native-paper';
     `
 
-    const resultsUsage = search({
+    const { matches: resultsUsage } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [usageQuery],
     })
 
-    const resultsImport = search({
+    const { matches: resultsImport } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [importQuery],
@@ -181,13 +181,13 @@ describe('JSX', () => {
         $={IconButton}
       />
     `
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query1, query2],
     })
 
-    expect(results.length).toBe(2)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all anonymous functions passed as a prop', () => {
@@ -205,7 +205,7 @@ describe('JSX', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -220,8 +220,8 @@ describe('JSX', () => {
       />
     `
 
-    expect(results.length).toBe(190)
-    expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
+    expect(matches.length).toBe(190)
+    expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
   })
 
   it('Should find all anonymous functions passed as event listener handler', () => {
@@ -239,7 +239,7 @@ describe('JSX', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -254,8 +254,8 @@ describe('JSX', () => {
       />
     `
 
-    expect(results.length).toBe(164)
-    expect(compareCode(results[0].code, firstResultCode)).toBeTruthy()
+    expect(matches.length).toBe(164)
+    expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
   })
 
   it('Should find all Elements pretending to be a wrapper', () => {
@@ -269,13 +269,13 @@ describe('JSX', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(34)
+    expect(matches.length).toBe(34)
   })
 
   it('Should find all title prop values which are strings', () => {
@@ -296,13 +296,13 @@ describe('JSX', () => {
     `
     ]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(78)
+    expect(matches.length).toBe(78)
   })
 
   it('Should ignore all empty JSXText in search', () => {
@@ -313,14 +313,14 @@ describe('JSX', () => {
         </$>;
     `]
 
-    const results = search({
+    const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
 
-    expect(results.length).toBe(1)
-    expect(compareCode(results[0].code,
+    expect(matches.length).toBe(1)
+    expect(compareCode(matches[0].code,
       ` <Button>
           Download
         </Button>

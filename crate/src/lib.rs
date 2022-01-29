@@ -1,14 +1,15 @@
-use wasm_bindgen::prelude::*;
-use web_sys::console;
 use js_sys;
+use wasm_bindgen::prelude::*;
 mod crypto;
 mod license;
+
+use web_sys::console;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 static mut ENABLED: bool = false;
+static mut TYPE: String = String::new();
 
 // This is like the `main` function, except for JavaScript.
 // This is executed on import (at least with current setup :v )
@@ -23,12 +24,15 @@ pub fn main_js() -> Result<(), JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn authorize(key: String) -> Result<(), JsValue> {
+pub fn authorize(key: String) -> Result<bool, JsValue> {
+    let (is_valid, license_type) = license::parse_and_validate_license(key);
+    console::log_1(&JsValue::from_str(&format!("is_valid: {:?}", is_valid)));
     unsafe {
-        ENABLED = license::is_license_valid(key);
+        ENABLED = is_valid;
+        TYPE = license_type;
     }
 
-    Ok(())
+    Ok(is_valid)
 }
 
 #[wasm_bindgen]

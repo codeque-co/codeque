@@ -10,7 +10,7 @@ export const wasmFns = {
 
 export const init = () => {
   return import("../crate/pkg").then(mod => {
-    mod.authorize('eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJjcmVhdGVkQXQiOjE2NDMwNjI3MzM4NTcsInR5cGUiOiJCQVNJQyIsInNpZ24iOiJkMGRiNDgwOTgwZjcyMWJjM2I0MTM0ZTMxZDE2NzZkZjQxZmNhNTU3YmNlNjhlZjRmOTRmOGMyMzgwODBlMmJlIn0=')
+    const licenseOk = mod.authorize('eyJjcmVhdGVkX2F0IjoxNjQzNDc0NDc2NzEzLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJsaWNlbnNlX3R5cGUiOiJCQVNJQyIsInNpZ24iOiIxZGRkNDE0ZTFlNzI3ZWNmZDY1NDQzNTUyNjJlNzQ5NjEyZTdlYTgwZjYxMTM0NWMyYzcyOWEzZmVjZWM2NDZhIn0=')
     wasmFns.trim_value = mod.trim_value
   })
 }

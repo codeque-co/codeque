@@ -35,6 +35,7 @@ aes = "0.7.5"
 hex = "0.4.3"
 base64 = "0.13.0"
 sha256 = "1.0.3"
+instant = { version = "0.1.12", features = [ "wasm-bindgen", "inaccurate" ] }
 # The `web-sys` crate allows you to interact with the various browser APIs,
 # like the DOM.
 [dependencies.web-sys]

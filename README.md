@@ -101,6 +101,73 @@ tests on custom file
         - Consideration result: Let's use AES for now and stop overthinking this security :D it might not be the issue if software would not sell well
     - investigate how to integrate tools like Paddle, Strip, Gumroad, Kofi for payments / memberships
   - temp key:  `dSgVkXp2s5v8y/B?`
+  - ❌ local license key store
+    - to survive lib update
+    - to survive vscode update
+    - to survive vscode ext update
+    - need to save in user home directory
+      - need to find package to handle that
+        - we can use os.homedir() and .codeque file
+  - 💡 cli set license
+  - cli authorize via github (later)
+  - One key can be shared between many users -> company key does not make sense if they don't want to use eslint
+    - maybe we can generate key with device footprint, then we could validate footprint
+      - footprint could be embeded in signature, so we need footprint either from JS or from Rust
+      - footprint could be sha2 from some os properties - this could be reliable
+    - one license = up to 3 active footprints
+    - can we use sha identity for this?
+      - we can, it would be usefull for CI servers
+      - for human users we would require to sign in with github, which would return license key
+        - some can still figure out that key is stored locally and they can copy it
+          - if we replace key frequently, that wouldn't be worth cheating
+          - footprint is a good idea
+      - sha for CI could be used by some users to get access to search for many ppl of the company
+        - sha access could be granted for 1h or some short-period of time
+      - license key is same as it is now
+    - how we can register footprint from CI server running eslint checks, would that be stable ?
+  - Each account could have it's own .wasm generated with custom key
+    - problem with versioning/updates
+    - we could generate wasm build on the fly if needed
+    - wasm build could be loaded async and cached
+      - It's async already
+    - act like a 2 factor auth. needs matching key and lock
+      - it would kind of secure flaky AES on wasm
+    - how we would fetch proper .wasm ?
+      - organization id + user id/email + npm pkg version
+      - anyone can (not easily) fetch some .wasm
+      - if some one fetch .wasm, they need to decompile to get AES key
+      - if they have AES key and .wasm they can generate key and use software
+      - decompile of .wasm to get AES would be different for every user and version
+        - harder than just one AES key for all versions and users
+    - cost of generation of .wasm assuming 10k customers and 5 minutes per build and 512RAM ~ $25 // 0.0000000083 * 1000 * 60 * 5 * 10000
+      - assuming we have container with rust installed - should be possible - need PoC
+      
+  - What if we would generate key on user device
+    - we would have to generate .wasm on demand
+
+  - ❌ Will partial .wasm impl be maintainable? 
+    - maybe we should build just JS on demand in the cloud?
+    - ❌ how we differentiate operations like search, eslint, replace on wasm side and still having nice API 
+      - remember codeQue can be used as a npm module
+      - wasm would have to control the flow of the program - pain in the ass ?
+  - License v1.0 - alpha
+    - shared AES key and on demand 6 months license gen
+  - License v1.1 - beta
+    - license generated using account on server (auth via github)
+    - each license key valid 1 month, github auth/my server refresh token to refresh key
+    - device fingerprint
+  - License v2 - with version for companies (eslint etc)
+    - fingerprint
+    - unique AES key for each organization/user
+    - cloud builds of .wasm
+    - sha keys for CI
+
+
+To release vscode ext
+  - figure out how to store key in user home dir
+  - npm package released as alpha with auth mechanism
+  - vscode ext implementation
+
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license
   - MVP needs to be vscode extension, cli is not convenient for users
@@ -161,7 +228,7 @@ Get files edited since last commit `echo  $(git diff --name-only HEAD)`
 ❌ Notion this Readme !
 ❌ Think of strategy
   - 1st make a tool and test it within friends and Dweet
-  - 2nd start youtube channel / blog / *your other medai here* and speak about tooling, bundling etc
+  - 2nd start youtube channel / blog / *your other media here* and speak about tooling, bundling etc
     - make a list of videos with ToC that I would like to record
 ___
 
@@ -290,12 +357,14 @@ ___
   - Paid $19 / year (dev)
     - search with all features 
     - code stats
-    - exclude replace, ref analysis, import resolution
+    - **exclude** replace, ref analysis, import resolution
   - Paid $29 / year (pro)
     - search + replace + ref analysis + import resolution
     - code stats
-  - Company $29 / month
+  - Company/project $29 / month
     - up to 10 users (+$3 for each additional user)
+      - limiting users amount does not make sense, since we cannot validate that
+      - we can if each user would have unique key + on CI we would use ssh identity to receive license key
     - all the above + eslint rules 
 
 

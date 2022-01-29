@@ -141,6 +141,18 @@ tests on custom file
         - harder than just one AES key for all versions and users
     - cost of generation of .wasm assuming 10k customers and 5 minutes per build and 512RAM ~ $25 // 0.0000000083 * 1000 * 60 * 5 * 10000
       - assuming we have container with rust installed - should be possible - need PoC
+  - ❌ Each version/build to have different AES key?
+    - what are the implications ?
+      - user would have to change key with each new version (we can add postinstall step)
+      - we could verify if user even can have key for this new version (safer than checking dates on local machine)
+      - a key still can be shared among many ppl, but due to updates (auto updates in vscode!) it would be frequently replaced
+      - we could do nightly builds to force to replace key more often
+      - each key get request would give you new, one-time refresh token
+        - impossible to share refresh token with others 
+    - harder to generate fake license (needs to deassembly key every time)
+    - what's the purpose of generating this key if we would have to use refresh token to get it?
+      - software features are locked until you get the key
+      - having a refresh token does not mean that you will be able to get a key (might have outdated account) 
       
   - What if we would generate key on user device
     - we would have to generate .wasm on demand

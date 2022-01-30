@@ -141,11 +141,12 @@ tests on custom file
         - harder than just one AES key for all versions and users
     - cost of generation of .wasm assuming 10k customers and 5 minutes per build and 512RAM ~ $25 // 0.0000000083 * 1000 * 60 * 5 * 10000
       - assuming we have container with rust installed - should be possible - need PoC
-  - ❌ Each version/build to have different AES key?
+  - ✅ Each version/build to have different AES key?
     - what are the implications ?
       - user would have to change key with each new version (we can add postinstall step)
       - we could verify if user even can have key for this new version (safer than checking dates on local machine)
       - a key still can be shared among many ppl, but due to updates (auto updates in vscode!) it would be frequently replaced
+        - if we add fingerprint that would be safe enough, cannot easily copy-paste key 
       - we could do nightly builds to force to replace key more often
       - each key get request would give you new, one-time refresh token
         - impossible to share refresh token with others 
@@ -157,17 +158,26 @@ tests on custom file
   - What if we would generate key on user device
     - we would have to generate .wasm on demand
 
-  - ❌ Will partial .wasm impl be maintainable? 
+  - ✅ Will partial .wasm impl be maintainable? 
+    - let's do  not overcomplicate wasm part
+      - some really greedy cheaters would just lose their time
+      - blocking key copy-paste is good enough - we will use fingerprint
     - maybe we should build just JS on demand in the cloud?
-    - ❌ how we differentiate operations like search, eslint, replace on wasm side and still having nice API 
+    - ✅ how we differentiate operations like search, eslint, replace on wasm side and still having nice API 
       - remember codeQue can be used as a npm module
       - wasm would have to control the flow of the program - pain in the ass ?
+        - too much work
+      - we would have just different functions to do different things
+        - maybe we can somehow pass current stack trace to authorize xD ?
+        - if someone would try to overuse regular license to have company/project features - we don't care
+          - we can obfuscate license checks, so it's harder to use "search" check in place of "eslint" check
   - License v1.0 - alpha
     - shared AES key and on demand 6 months license gen
   - License v1.1 - beta
+    - each release changes the AES key 
     - license generated using account on server (auth via github)
-    - each license key valid 1 month, github auth/my server refresh token to refresh key
     - device fingerprint
+    - each license key valid for device & version, github auth/my server refresh token to refresh key
   - License v2 - with version for companies (eslint etc)
     - fingerprint
     - unique AES key for each organization/user
@@ -364,6 +374,7 @@ ___
     - maybe we could look for `@flow` comment and configure babel based on that
 
 💡 Pricing
+  - if fingerprinting is added, each seat can have 3 fingerprints
   - Free only exact mode, no wildcards, no other features
     - code stats
   - Paid $19 / year (dev)

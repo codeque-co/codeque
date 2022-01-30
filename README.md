@@ -47,7 +47,7 @@ tests on custom file
   - https://eslint.org/docs/rules/no-restricted-syntax - one must know ASTs
   - Didn't found any valid resource on eslint, assume that no resources exist for babel
 
-❌ Try
+✅ Try
   - `tsc --extendedDiagnostics`
     How long stuff took and how big/complex it is.
   - `tsc --listFiles`
@@ -55,6 +55,8 @@ tests on custom file
   - `tsc --explainFiles`
     List of every file and *why* it's included.
   - https://github.com/amcasey/ts-analyze-trace
+
+❌ add search by dependencies using dpdm
   
 ✅ Think if we can solve problems with exports using rev-dep
   - how to get root files in rev-dep

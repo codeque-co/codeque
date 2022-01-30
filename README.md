@@ -188,9 +188,15 @@ tests on custom file
 
 
 To release vscode ext
-  - figure out how to store key in user home dir
-  - npm package released as alpha with auth mechanism
-  - vscode ext implementation
+  - ✅ figure out how to store key in user home dir
+  - ❌ implement storing key in home dir
+  - ❌ implement module API
+  - ❌ release npm alpha pkg protected by AES key
+  - ❌ vscode ext implementation
+    - list features like 
+      - select code to search
+      - include / exclude files dirs
+      - mimic normal search
 
 
 ❌ PoC / Implement vscode extension - mostly to understand how to license

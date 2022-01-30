@@ -94,7 +94,7 @@ program
       spinner.stop()
 
       spinner = ora(`Searching `).start();
-      const {matches, errors} = await search({
+      const { matches, errors } = await search({
         mode,
         filePaths,
         caseInsensitive,
@@ -120,11 +120,11 @@ program
 
         print(cyan(bold('Total count:')), magenta(matches.length))
       }
-      
+
       else {
         print(cyan(bold('No results found :c')))
       }
-      
+
       print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
 
       if (errors.length > 0) {

@@ -34,6 +34,12 @@ module.exports = (_, { mode }) => {
           test: /\.(js|ts)$/,
           exclude: /node_modules|__tests__/,
           use: ['babel-loader']
+        },
+        {
+          test: /dpdm(.)*\.m?js/,
+          resolve: {
+            fullySpecified: false
+          }
         }
       ]
     },

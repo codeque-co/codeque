@@ -26,7 +26,7 @@ pub fn main_js() -> Result<(), JsValue> {
 #[wasm_bindgen]
 pub fn authorize(key: String) -> Result<bool, JsValue> {
     let (is_valid, license_type) = license::parse_and_validate_license(key);
-    console::log_1(&JsValue::from_str(&format!("is_valid: {:?}", is_valid)));
+    // console::log_1(&JsValue::from_str(&format!("is_valid: {:?}", is_valid)));
     unsafe {
         ENABLED = is_valid;
         TYPE = license_type;

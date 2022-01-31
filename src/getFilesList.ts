@@ -4,8 +4,27 @@ import { promises as fs } from 'fs';
 import ignore from 'ignore';
 import { asyncFilter, measureStart } from './utils';
 
-export const getFilesList = async (root: string) => {
+import { parseDependencyTree } from 'dpdm';
+
+const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
+  const tree = await parseDependencyTree(entryPoint, {
+    context: root
+  })
+
+  const projectFiles = Object.keys(tree).filter((file) => !file.includes('node_modules') && /\.(ts|js|tsx|jsx|json|mjs)$/.test(file))
+
+  return projectFiles.map((filePath) => path.resolve(root, filePath))
+}
+
+export const getFilesList = async (root: string, entryPoint?: string) => {
   const measureStop = measureStart('getFiles')
+
+  if (entryPoint) {
+    const filesList = getFilesListByEntryPoint(root, entryPoint)
+    measureStop()
+    return filesList
+  }
+
   const ignoreInstance = ignore()
   const scan = async (dir: string): Promise<string[]> => {
     const dirRelativeToRoot = path.relative(root, dir)

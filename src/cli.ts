@@ -13,11 +13,12 @@ const program = new Command();
 program
   .option('-m, --mode [mode]', 'search mode: exact, include, include-with-order', 'include')
   .option('-r, --root [root]', 'root directory of search (default: process.cwd())')
+  .option('-e, --entry [entry]', 'entry point to resolve files list by dependencies (excluding node_modules)')
   .option('-i, --case-insensitive', 'perform search with case insensitive mode', false)
   .option('-l, --limit [limit]', 'limit of results count to display', '20')
   .option('-q, --query [query]', 'path to file with search query')
   .action(
-    async ({ mode, caseInsensitive, root = process.cwd(), limit = '20', query: queryPath }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string }) => {
+    async ({ mode, caseInsensitive, root = process.cwd(), limit = '20', query: queryPath, entry }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string, entry?: string }) => {
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
 
@@ -89,7 +90,7 @@ program
 
       let spinner = ora(`Getting files list `).start();
 
-      const filePaths = await getFilesList(resolvedRoot)
+      const filePaths = await getFilesList(resolvedRoot, entry)
 
       spinner.stop()
 
@@ -126,6 +127,7 @@ program
       }
 
       print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
+      print(cyan(bold('Searched files:')), magenta(filePaths.length))
 
       if (errors.length > 0) {
         print(red(bold('Search failed for:')), magenta(errors.length), 'file(s)')

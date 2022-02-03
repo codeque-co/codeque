@@ -436,6 +436,71 @@ ___
  - "Pay tech debt quicker"
  - after changing prisma data model we can find interface/class for changed entity and adjust fields
 
+
+Some use cases for replace fn
+
+
+
+From
+
+```ts
+import React from 'react'
+
+$nested(
+  React.useState($$)
+)
+```
+
+To
+
+```ts
+import React, {useState} from 'react'
+
+$nested(
+  useState($$)
+)
+```
+
+From 
+
+```tsx
+<Box>
+  <Inner prop="val"/>
+</Box>
+```
+
+To
+
+```tsx
+<Inner prop="val"/>
+```
+
+From
+
+```ts
+<>
+  {isMobile && (
+    <SetInitialPageType
+      pageType={pageType}
+      setPageType={setPageType}
+    />
+  )}
+</>
+            
+```
+
+To
+
+```tsx
+<>
+  <SetInitialPageType
+    pageType={pageType}
+    setPageType={setPageType}
+    isMobile={isMobile}
+  />
+</>
+```
+
 ✅
 ❌
 ⌛

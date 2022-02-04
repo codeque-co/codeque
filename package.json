@@ -21,6 +21,7 @@
     "babel-jest": "^27.4.4",
     "babel-plugin-root-import": "^6.6.0",
     "copy-webpack-plugin": "^10.2.0",
+    "deep-object-diff": "^1.1.7",
     "dependency-cruiser": "^11.3.0",
     "dpdm": "^3.8.0",
     "fs-extra": "^10.0.0",

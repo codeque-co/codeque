@@ -408,6 +408,11 @@ ___
   - playground
   - examples
 
+⌛ Code smells check script
+  - more than 5 if statements in the block
+  - spread overuse
+  - react literal prop values
+  - some others based on common eslint rules 
 
 ⌛ Marketing Implement stats script and encourage ppl to share their results on Twitter
   - N files

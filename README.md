@@ -442,9 +442,22 @@ ___
  - after changing prisma data model we can find interface/class for changed entity and adjust fields
 
 
+💡 Variable's binding tracking needed for refactoring (replace)
+- don't compare scope for non $_ref identifiers
+- check scope only for refs
+   -  find a way to track scope of the ref
+       - read about how to find shadowed identifiers
+       - https://github.com/jamiebuilds/babel-handbook/blob/master/translations/nl/plugin-handbook.md#toc-scopes
+   -  remember scope of the first ref occurrence
+   -  match ref for every identifier in subtree
+   -  mark if identifier is redeclared
+       -  create scope analysis object 
+   - don't start scope analysis if identifier is not declared only once in query
+   - if there is identifier redeclaration that is not a part of query stop checking further
+- to start working on it we need to have multi body statements queries (extensively concidered in search & replace test file) 
+
+
 Some use cases for replace fn
-
-
 
 From
 

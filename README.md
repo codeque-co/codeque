@@ -33,6 +33,21 @@ Names:
 ❌ Explore types matching and types literals -> 
 tests on custom file
 
+❌ Bug with JSX text compare -> found only once instead of two
+
+```tsx
+<Text
+  textAlign="center"
+  mb={4}
+  fontWeight={600}
+  lineHeight={1.3}
+  fontSize="xl"
+>
+  Please complete the short and completely confidential personality
+  questionnaire.
+</Text>
+```
+
 ❌ Try to make type declarations optional in include mode, right now if code has types, eg return type, it cannot be found without it
 
 ✅ Investigate why node_modules search does not work
@@ -519,6 +534,12 @@ To
 </>
 ```
 
+AST builder and AST finder - JScodeshift helpers
+- https://rajasegar.github.io/ast-finder/
+- https://rajasegar.github.io/ast-builder/
+- corresponding npm packages, 
+- not used, around 0 downloads
+
 ```md
 /**
  * How to replace?
@@ -565,6 +586,11 @@ To
  * 1. Implement a PoC with just one sub query for exact mode
  */
 ```
+
+Code duplication research
+- bookmarks folder code duplication research
+- video summary in ./Movies/code-duplicates.mp4
+
 
 
 ✅

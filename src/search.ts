@@ -5,7 +5,7 @@ import { createLogger, Mode, measureStart, patternToRegex } from './utils';
 import { parseQueries } from './parseQuery';
 import {
   getBody,
-  getKeysToCompare,
+  getSetsOfKeysToCompare,
   sanitizeJSXText,
   isNode,
   isNodeArray,
@@ -84,8 +84,7 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     const measureCompare = measureStart('compare')
     logStepStart('compare')
 
-    const queryKeys = getKeysToCompare(queryNode)
-    const fileKeys = getKeysToCompare(fileNode)
+    const [fileKeys, queryKeys] = getSetsOfKeysToCompare(fileNode, queryNode, isExact)
 
     log('compare: node type', fileNode.type)
 
@@ -276,7 +275,7 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       if (queryKeysToTraverse.length > 0) {
 
         for (const keyToTraverse of queryKeysToTraverse) {
-          log('validate: key', keyToTraverse)
+          log('validate: keyToTraverse', keyToTraverse)
           log('validate: file val', currentNode[keyToTraverse])
           log('validate: query val', currentQueryNode[keyToTraverse])
 
@@ -353,6 +352,8 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
             const newCurrentNode = currentNode[keyToTraverse] as PoorNodeType
             const newCurrentQueryNode = currentQueryNode[keyToTraverse] as PoorNodeType
+            log('validate: newCurrentNode', newCurrentNode)
+            log('validate: newCurrentQueryNode', newCurrentQueryNode)
 
             if (!newCurrentNode || !newCurrentQueryNode || !validateMatch(newCurrentNode, newCurrentQueryNode)) {
               return false

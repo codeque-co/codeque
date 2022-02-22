@@ -1,16 +1,3 @@
-<>
-  <Flex >
-
-      <Button
-    >
-        Press to 
-        Download
-      </Button>
-
-  </Flex>
-
-  <Button>
-    Press to
-    Download
-  </Button>
-</>
+useAskToFillInForm<{
+  noteFromDweetTeam: string;
+}>({ asd })

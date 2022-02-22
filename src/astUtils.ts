@@ -37,6 +37,7 @@ export const unwrapExpressionStatement = (node: PoorNodeType) => {
 }
 
 export const astPropsToSkip = ['loc', 'start', 'end', 'extra', 'trailingComments', 'leadingComments']
+export const astPropsOptionalInIncludeModeQuery = ['returnType', 'typeAnnotation', 'typeParameters']
 export const IdentifierTypes = ['Identifier', 'JSXIdentifier']
 
 export const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
@@ -52,6 +53,19 @@ export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
 
 export const getKeysToCompare = (node: PoorNodeType) => {
   return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
+}
+
+export const getSetsOfKeysToCompare = (fileNode: PoorNodeType, queryNode: PoorNodeType, isExact: boolean) => {
+  const exactFileKeys = getKeysToCompare(fileNode)
+  const exactQueryKeys = getKeysToCompare(queryNode)
+
+  if (isExact) {
+    return [exactFileKeys, exactQueryKeys]
+  }
+
+  const fileKeysToRemove = exactFileKeys.filter((fileKey) => !exactQueryKeys.includes(fileKey) && astPropsOptionalInIncludeModeQuery.includes(fileKey))
+
+  return [exactFileKeys.filter((fileKey) => !fileKeysToRemove.includes(fileKey)), exactQueryKeys]
 }
 
 export const SPACE_CHAR = ' '

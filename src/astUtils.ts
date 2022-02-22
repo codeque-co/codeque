@@ -54,14 +54,18 @@ export const getKeysToCompare = (node: PoorNodeType) => {
   return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
 }
 
+export const SPACE_CHAR = ' '
+
+export const normalizeText = (text: string) => text.trim().replace(/\s+/g, SPACE_CHAR)
+
 export const sanitizeJSXText = (node: PoorNodeType) => {
   wasmFns.trim_value(node);
   //@ts-ignore
-  // node.value = node.value?.trim()
+  node.value = normalizeText(node.value)
   //@ts-ignore
-  node.extra.raw = node.extra.raw?.trim()
+  node.extra.raw = normalizeText(node.extra.raw)
   //@ts-ignore
-  node.extra.rawValue = node.extra.rawValue?.trim()
+  node.extra.rawValue = normalizeText(node.extra.rawValue)
 }
 
 export const parseOptions = {

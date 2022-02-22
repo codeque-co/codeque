@@ -50,6 +50,8 @@ tests on custom file
 
 ❌ Try to make type declarations optional in include mode, right now if code has types, eg return type, it cannot be found without it
 
+❌ Add search by files changed since last commit
+
 ✅ Investigate why node_modules search does not work
 
 ❌ add tests block statement search (queue example in catch block and function block)

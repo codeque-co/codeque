@@ -19,7 +19,7 @@ const mockFilePath = path.resolve('./devFile');
     debug: true,
   })
 
-  print(matches)
-  print(errors)
+  print('matches', matches)
+  print('errors', errors)
   logMetrics()
 })()

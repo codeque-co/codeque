@@ -3,11 +3,15 @@ import {
   getBody, getKeysToCompare, IdentifierTypes, isNode,
   isNodeArray, numericWildcard, parseOptions, PoorNodeType,
   Position, singleIdentifierWildcard, unwrapExpressionStatement, stringWildcard,
-  removeIdentifierRefFromWildcard
+  removeIdentifierRefFromWildcard, normalizeText, SPACE_CHAR
 } from './astUtils'
 import { measureStart } from './utils'
 
 const MIN_TOKEN_LEN = 2
+
+const decomposeString = (str: string) => str.split(stringWildcard)
+  .map((part) => normalizeText(part).split(SPACE_CHAR))
+  .flat(1)
 
 const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, tokens: Set<string> = new Set()) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
@@ -20,7 +24,8 @@ const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, token
   }
 
   if ((queryNode.type as string) === 'StringLiteral') {
-    const trimmedWildcards = (queryNode.value as string).split(stringWildcard)
+    const trimmedWildcards = decomposeString(queryNode.value as string)
+
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
         tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
@@ -29,7 +34,8 @@ const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, token
   }
 
   if ((queryNode.type as string) === 'JSXText') {
-    const trimmedWildcards = (queryNode.value as string).split(stringWildcard)
+    const trimmedWildcards = decomposeString(queryNode.value as string)
+
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
         tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)

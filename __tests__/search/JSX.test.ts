@@ -16,14 +16,22 @@ describe('JSX', () => {
   const mockedFilesList = [tempFilePath]
   beforeAll(() => {
     fs.writeFileSync(tempFilePath, `
-      <Flex >
-    
-          <Button
-        >
-            Download
-          </Button>
+      <>
+        <Flex >
+      
+            <Button
+          >
+              Press to 
+              Download
+            </Button>
 
-      </Flex>
+        </Flex>
+
+        <Button>
+          Press to
+          Download
+        </Button>
+      </>
     `)
   })
 
@@ -94,6 +102,21 @@ describe('JSX', () => {
       queryCodes: [query],
     })
     expect(matches.length).toBe(1)
+  })
+
+  it('Should find JSX by text content regardless formatting', () => {
+    const query = `
+      <Button>
+        Press to 
+        Download
+      </Button>
+    `
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockedFilesList,
+      queryCodes: [query],
+    })
+    expect(matches.length).toBe(2)
   })
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
@@ -319,9 +342,10 @@ describe('JSX', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
+    expect(matches.length).toBe(2)
     expect(compareCode(matches[0].code,
       ` <Button>
+          Press to 
           Download
         </Button>
       `

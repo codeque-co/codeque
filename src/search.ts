@@ -39,7 +39,7 @@ export type SearchResults = {
   errors: Array<any>
 }
 
-const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false):Matches => {
+const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = false): Matches => {
   const deduped: Matches = []
 
   matches.forEach((match) => {
@@ -60,7 +60,7 @@ const dedupMatches = (matches: Matches, log: (...args: any[]) => void, debug = f
   return deduped
 }
 
-export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, debug = false }: SearchArgs):SearchResults => {
+export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, debug = false }: SearchArgs): SearchResults => {
   const { log, logStepEnd, logStepStart } = createLogger(debug)
   const allMatches: Matches = []
   const isExact = mode === ('exact' as Mode)
@@ -71,7 +71,7 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
   if (!parseOk) {
     return {
-      matches:[],
+      matches: [],
       errors: queries.filter((queryResult) => queryResult.error),
     }
   }
@@ -439,6 +439,10 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
       const includesUniqueTokens = queries.some(({ uniqueTokens }) => uniqueTokens.every((token) => fileContentForTokensLookup.includes(token)))
       measureShallowSearch()
+
+      const uniqueTokens = queries.reduce((tokens, { uniqueTokens }) => [...tokens, ...uniqueTokens], [] as string[])
+      log('Unique tokens', uniqueTokens)
+      log(`Include unique tokes (${uniqueTokens.length}) ${includesUniqueTokens}`)
 
       if (includesUniqueTokens) {
 

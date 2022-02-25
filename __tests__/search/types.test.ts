@@ -31,6 +31,16 @@ describe('Types', () => {
         noteFromTeam: string;
       }>({ asd })
 
+      interface A extends B<C | number>{
+        key: string;
+        key_2: number;
+      }
+
+      interface B {
+        key: string;
+        key_2: number;
+      }
+
     `)
   })
 
@@ -371,5 +381,54 @@ describe('Types', () => {
 
     expect(matchesInclude.length).toBe(1)
     expect(matchesExact.length).toBe(0)
+  })
+
+  it('should match some interface', () => {
+    const queries = [`
+        interface $ {
+          $_ref1: string
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match interface with wildcard in extends', () => {
+    const queries = [`
+        interface A extends $$ {
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match interface with wildcard in extends', () => {
+    const queries = [`
+        interface A extends $<$$> {
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
   })
 })

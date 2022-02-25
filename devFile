@@ -1,3 +1,1 @@
-useAskToFillInForm<{
-  noteFromDweetTeam: string;
-}>({ asd })
+type A = T extends (a: Record<string, string>) => infer U ? U : never;

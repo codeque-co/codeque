@@ -1,5 +1,4 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs';
@@ -17,6 +16,8 @@ describe('Types', () => {
   beforeAll(() => {
     fs.writeFileSync(tempFilePath, `
       type ReturnTypeInferer<T> = T extends (a: Record<string, string>) => infer U ? U : never;
+
+      type Generic<T extends B = C> = G
 
       const getInitialValues = (
         assignment: AssignmentPopulated,
@@ -197,7 +198,7 @@ describe('Types', () => {
     expect(matches.length).toBe(1)
   })
 
-  it.skip('should match wildcard as generic param', () => {
+  it('should match wildcard as generic param', () => {
     const queries = [`
       type ReturnTypeInferer<$> = $ extends (a: Record<string, string>) => infer U ? U : never; 
        `,
@@ -212,9 +213,54 @@ describe('Types', () => {
     expect(matches.length).toBe(1)
   })
 
+  it('should match wildcard as conditional extends part', () => {
+    const queries = [`
+      type ReturnTypeInferer<$> = $ extends $$ ? U : never; 
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'exact',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
   it('should match wildcard in conditional type', () => {
     const queries = [`
-      type $<T> = T extends $$ ? $$ : $$
+      type $<T> = T extends $$ ? $ : $
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'exact',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match wildcard as conditional type', () => {
+    const queries = [`
+      type $<T> = $$
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'exact',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match type parameter wildcard', () => {
+    const queries = [`
+        type $<$$> = G
        `,
     ]
 

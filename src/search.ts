@@ -113,14 +113,24 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
 
     })
 
+    /**
+     * Support for 'TSTypeParameter'
+     * <$> match <T>
+     * <$ extends $_ref> match <T extends 'boolean'>
+     * <$$> match both <T> and <T extends 'boolean'>
+     * 
+     * Need to add 'TSTypeAliasDeclaration'.id to work with wildcard
+     * 
+     */
+
     if (
       (fileNode.type as string).includes('TS')
       && (fileNode.type as string).includes('Keyword')
       && (queryNode.type as string) === 'TSTypeReference'
       && ((queryNode.typeName as any).name as string) === singleIdentifierWildcard
       && ((queryNode.typeParameters as any)) === undefined
-
     ) {
+      // support using '$' wildcard for TS keywords like 'never', 'boolean' etc.
       return {
         levelMatch: true,
         queryKeysToTraverse: [],
@@ -144,10 +154,17 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
         }
       }
 
+      const queryKeysWithNodes = queryKeys.filter((key) => {
+        const queryValue = queryNode[key]
+        return isNode(queryValue as PoorNodeType) || isNodeArray(queryValue as PoorNodeType[])
+      })
+
+      const queryKeysToTraverse = nameWithoutRef !== doubleIdentifierWildcard ? queryKeysWithNodes : []
+
       measureCompare()
       return {
         levelMatch,
-        queryKeysToTraverse: queryNode.name !== doubleIdentifierWildcard && queryNode.typeAnnotation !== undefined ? ['typeAnnotation'] : [],
+        queryKeysToTraverse,
         fileKeysToTraverse
       }
     }
@@ -163,7 +180,8 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     }
 
     if ((queryNode.type as string) === 'TSTypeReference' && removeIdentifierRefFromWildcard((queryNode.typeName as PoorNodeType).name as string) === doubleIdentifierWildcard) {
-      // treat "const a: $$; const a: () => $$" $$ as wildcard for any type annotation
+      // in "const a: $$; const a: () => $$" treat $$ as wildcard for any type annotation
+      // also type T = $$ 
       measureCompare()
       return {
         levelMatch: true,

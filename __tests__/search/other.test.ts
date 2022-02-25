@@ -1,18 +1,17 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
 
 describe('Other', () => {
-  
+
   let filesList = [] as string[]
-  
+
   beforeAll(async () => {
-     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
   })
 
-  it.only('should not include the same result twice', () => {
+  it('should not include the same result twice', () => {
     const queries = [`
       type $ = ScrollViewProps & $$
       `,
@@ -61,6 +60,6 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(140)
+    expect(matches.length).toBe(190)
   })
 })

@@ -38,7 +38,7 @@ export const unwrapExpressionStatement = (node: PoorNodeType) => {
 
 export const astPropsToSkip = ['loc', 'start', 'end', 'extra', 'trailingComments', 'leadingComments']
 export const astPropsOptionalInIncludeModeQuery = ['returnType', 'typeAnnotation', 'typeParameters']
-export const IdentifierTypes = ['Identifier', 'JSXIdentifier']
+export const IdentifierTypes = ['Identifier', 'JSXIdentifier', 'TSTypeParameter']
 
 export const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
 

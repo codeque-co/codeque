@@ -2,13 +2,13 @@ import { search } from '/search'
 import { compareCode } from '/astUtils';
 import path from 'path'
 import { getFilesList } from '/getFilesList'
-import fs from'fs'
+import fs from 'fs'
 
 describe('functions', () => {
   let filesList = [] as string[]
-  
+
   beforeAll(async () => {
-     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
   })
 
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
@@ -242,7 +242,7 @@ describe('functions', () => {
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
-    
+
     expect(matches.length).toBe(2)
   })
 
@@ -257,7 +257,7 @@ describe('functions', () => {
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
-    
+
     expect(matches.length).toBe(3)
   })
 
@@ -272,9 +272,8 @@ describe('functions', () => {
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
-    
+
     expect(matches.length).toBe(1)
   })
-
 
 })

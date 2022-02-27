@@ -38,7 +38,7 @@ describe('Types', () => {
 
       interface B {
         key: string;
-        key_2: number;
+        key_2?: number;
       }
 
     `)
@@ -122,7 +122,7 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(4)
+    expect(matches.length).toBe(5)
   })
 
   it('should match indexed object type with wildcard', () => {
@@ -397,7 +397,7 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
+    expect(matches.length).toBe(2)
   })
 
   it('should match interface with wildcard in extends', () => {
@@ -416,7 +416,7 @@ describe('Types', () => {
     expect(matches.length).toBe(1)
   })
 
-  it('should match interface with wildcard in extends', () => {
+  it('should match interface with wildcard in extends with type param', () => {
     const queries = [`
         interface A extends $<$$> {
         }
@@ -430,5 +430,92 @@ describe('Types', () => {
     })
 
     expect(matches.length).toBe(1)
+  })
+
+  it('should match interface with extends with double wildcard', () => {
+    const queries = [`
+        interface $$ {
+
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(2)
+  })
+
+  it('should match optional interface filed in include mode 1', () => {
+    const queries = [`
+        interface B {
+          key_2: number;
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match optional interface filed in include mode 2', () => {
+    const queries = [`
+        interface B {
+          key_2?: number;
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'include',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should match optional interface filed in exact mode', () => {
+    const queries = [`
+        interface B {
+          key:string;
+          key_2?: number;
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'exact',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
+  })
+
+  it('should not match optional interface filed in exact mode if not marked as optional', () => {
+    const queries = [`
+        interface B {
+          key:string;
+          key_2: number;
+        }
+       `,
+    ]
+
+    const { matches } = search({
+      mode: 'exact',
+      filePaths: mockFilesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(0)
   })
 })

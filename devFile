@@ -1,1 +1,7 @@
-type A = T extends (a: Record<string, string>) => infer U ? U : never;
+const getInitialValues = (
+  assignment: AssignmentPopulated,
+): AssignmentFormValues => {
+  if (!assignment) {
+    return undefined;
+  }
+};

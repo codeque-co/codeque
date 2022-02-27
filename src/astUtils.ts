@@ -1,6 +1,8 @@
 import { parse, ParserOptions } from '@babel/parser'
 // import omit from 'object.omit';
 import { wasmFns } from './wasm'
+import { NODE_FIELDS } from '@babel/types'
+
 export type Position = {
   line: number, column: number
 }
@@ -50,6 +52,11 @@ export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
   return Array.isArray(maybeNodeArr) && maybeNodeArr.length > 0 && isNode(maybeNodeArr[0])
 }
 
+const isNullOrUndef = (val: any) => val === null || val === undefined
+
+const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
+  return Boolean((NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[nodeFieldKey]?.optional ?? true)
+}
 
 export const getKeysToCompare = (node: PoorNodeType) => {
   return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
@@ -63,9 +70,26 @@ export const getSetsOfKeysToCompare = (fileNode: PoorNodeType, queryNode: PoorNo
     return [exactFileKeys, exactQueryKeys]
   }
 
-  const fileKeysToRemove = exactFileKeys.filter((fileKey) => !exactQueryKeys.includes(fileKey) && astPropsOptionalInIncludeModeQuery.includes(fileKey))
+  /**
+   *  If file and query nodes are of the same type
+   *    Exclude from file node all properties that
+   *    - are not present on query node or their value is falsy on query node (not specified)
+   *    - and are marked as optional in babel types
+  */
 
-  return [exactFileKeys.filter((fileKey) => !fileKeysToRemove.includes(fileKey)), exactQueryKeys]
+  const fileKeysToRemove = fileNode.type === queryNode.type
+    ? exactFileKeys.filter((fileKey) =>
+      (!exactQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey]))
+      && isNodeFieldOptional(fileNode.type as string, fileKey)
+    )
+    : []
+
+  const includeFileKeys = exactFileKeys.filter((fileKey) => !fileKeysToRemove.includes(fileKey))
+
+  // exclude all properties that has falsy value (otherwise properties set does not mach, if we remove these properties from file node)
+  const includeQueryKeys = exactQueryKeys.filter((queryKey) => !fileKeysToRemove.includes(queryKey) && !isNullOrUndef(queryNode[queryKey]))
+
+  return [includeFileKeys, includeQueryKeys]
 }
 
 export const SPACE_CHAR = ' '

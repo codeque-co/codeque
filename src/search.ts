@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
+import { NODE_FIELDS } from '@babel/types'
 import { createLogger, Mode, measureStart, patternToRegex } from './utils';
 import { parseQueries } from './parseQuery';
 import {
@@ -91,6 +92,7 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     log('compare:  queryKeys', queryKeys)
     log('compare: fileKeys', fileKeys)
 
+    log('queryNode fields', NODE_FIELDS[queryNode.type as string])
     const queryKeysToTraverse: string[] = []
     const fileKeysToTraverse: string[] = []
 
@@ -112,16 +114,6 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
       }
 
     })
-
-    /**
-     * Support for 'TSTypeParameter'
-     * <$> match <T>
-     * <$ extends $_ref> match <T extends 'boolean'>
-     * <$$> match both <T> and <T extends 'boolean'>
-     * 
-     * Need to add 'TSTypeAliasDeclaration'.id to work with wildcard
-     * 
-     */
 
     if (
       (fileNode.type as string).includes('TS')

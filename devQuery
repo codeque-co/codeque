@@ -1,1 +1,5 @@
-type A = $$
+const getInitialValues = (
+  assignment: AssignmentPopulated,
+) => {
+
+};

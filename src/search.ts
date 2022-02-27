@@ -13,7 +13,6 @@ import {
   IdentifierTypes,
   Match,
   PoorNodeType,
-  Position,
   parseOptions,
   numericWildcard,
   stringWildcard,
@@ -92,7 +91,6 @@ export const search = ({ mode, filePaths, queryCodes, caseInsensitive = false, d
     log('compare:  queryKeys', queryKeys)
     log('compare: fileKeys', fileKeys)
 
-    log('queryNode fields', NODE_FIELDS[queryNode.type as string])
     const queryKeysToTraverse: string[] = []
     const fileKeysToTraverse: string[] = []
 

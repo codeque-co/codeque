@@ -66,23 +66,22 @@ export const getSetsOfKeysToCompare = (fileNode: PoorNodeType, queryNode: PoorNo
   const exactFileKeys = getKeysToCompare(fileNode)
   const exactQueryKeys = getKeysToCompare(queryNode)
 
-  if (isExact) {
+  if (isExact || fileNode.type !== queryNode.type) {
     return [exactFileKeys, exactQueryKeys]
   }
 
   /**
-   *  If file and query nodes are of the same type
+   *  If in include mode and file and query nodes are of the same type
    *    Exclude from file node all properties that
    *    - are not present on query node or their value is falsy on query node (not specified)
    *    - and are marked as optional in babel types
   */
 
-  const fileKeysToRemove = fileNode.type === queryNode.type
-    ? exactFileKeys.filter((fileKey) =>
+  const fileKeysToRemove =
+    exactFileKeys.filter((fileKey) =>
       (!exactQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey]))
       && isNodeFieldOptional(fileNode.type as string, fileKey)
     )
-    : []
 
   const includeFileKeys = exactFileKeys.filter((fileKey) => !fileKeysToRemove.includes(fileKey))
 

@@ -17,8 +17,18 @@ program
   .option('-i, --case-insensitive', 'perform search with case insensitive mode', false)
   .option('-l, --limit [limit]', 'limit of results count to display', '20')
   .option('-q, --query [query]', 'path to file with search query')
+  .option('-g, --git', 'search in files changed since last git commit', false)
+
   .action(
-    async ({ mode, caseInsensitive, root = process.cwd(), limit = '20', query: queryPath, entry }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string, entry?: string }) => {
+    async ({
+      mode,
+      caseInsensitive,
+      root = process.cwd(),
+      limit = '20',
+      query: queryPath,
+      entry,
+      git
+    }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string, entry?: string, git: boolean }) => {
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
 
@@ -90,7 +100,7 @@ program
 
       let spinner = ora(`Getting files list `).start();
 
-      const filePaths = await getFilesList(resolvedRoot, entry)
+      const filePaths = await getFilesList(resolvedRoot, entry, git)
 
       spinner.stop()
 

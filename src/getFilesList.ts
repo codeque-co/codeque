@@ -5,19 +5,49 @@ import ignore from 'ignore';
 import { asyncFilter, measureStart } from './utils';
 
 import { parseDependencyTree } from 'dpdm';
+import { spawnSync } from 'child_process';
+
+const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   const tree = await parseDependencyTree(entryPoint, {
     context: root
   })
 
-  const projectFiles = Object.keys(tree).filter((file) => !file.includes('node_modules') && /\.(ts|js|tsx|jsx|json|mjs)$/.test(file))
+  const projectFiles = Object.keys(tree).filter((file) => !file.includes('node_modules') && extensionTester.test(file))
 
   return projectFiles.map((filePath) => path.resolve(root, filePath))
 }
 
-export const getFilesList = async (root: string, entryPoint?: string) => {
+const getFilesListByGitChanges = async (root: string) => {
+  const { error, output } = spawnSync('git', ['diff', '--name-only', 'HEAD'], {
+    cwd: root
+  })
+
+  if (error) {
+    throw error
+  }
+
+  const filesList = output
+    .filter((data) => data !== null)
+    .map((buff) => buff?.toString())
+    .join('')
+    .split('\n')
+    .filter((maybeFile) => maybeFile.length > 0)
+    .filter((filePath) => extensionTester.test(filePath))
+    .map((filePath) => path.resolve(root, filePath))
+
+  return filesList
+}
+
+export const getFilesList = async (root: string, entryPoint?: string, byGitChanges?: boolean) => {
   const measureStop = measureStart('getFiles')
+
+  if (byGitChanges) {
+    const filesList = getFilesListByGitChanges(root)
+    measureStop()
+    return filesList
+  }
 
   if (entryPoint) {
     const filesList = getFilesListByEntryPoint(root, entryPoint)
@@ -61,8 +91,6 @@ export const getFilesList = async (root: string, entryPoint?: string) => {
       const stat = await fs.lstat(pathName)
       return stat.isFile()
     })
-
-    const extensionTester = /\.(js|jsx|ts|tsx|json)$/
 
     const directoriesScanResult = (await Promise.all(directories.map(scan))).flat()
 

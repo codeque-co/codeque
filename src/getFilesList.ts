@@ -7,10 +7,13 @@ import { asyncFilter, measureStart } from './utils';
 import { parseDependencyTree } from 'dpdm';
 import { spawnSync } from 'child_process';
 
+//@ts-ignore
+import escapeGlob from 'glob-escape';
+
 const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
-  const tree = await parseDependencyTree(entryPoint, {
+  const tree = await parseDependencyTree(escapeGlob(entryPoint), {
     context: root
   })
 

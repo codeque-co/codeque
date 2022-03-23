@@ -4,16 +4,17 @@ import { wasmFns } from './wasm'
 import { NODE_FIELDS } from '@babel/types'
 
 export type Position = {
-  line: number, column: number
+  line: number
+  column: number
 }
 
 export type Match = {
-  start: number,
-  end: number,
+  start: number
+  end: number
   loc: {
-    start: Position,
-    end: Position,
-  },
+    start: Position
+    end: Position
+  }
   code: string
   query: string
 }
@@ -27,7 +28,7 @@ export const getBody = (fileNode: PoorNodeType) => {
 }
 
 export const unwrapExpressionStatement = (node: PoorNodeType) => {
-  if (typeof node !== "object") {
+  if (typeof node !== 'object') {
     return node
   }
 
@@ -38,8 +39,19 @@ export const unwrapExpressionStatement = (node: PoorNodeType) => {
   return node as PoorNodeType
 }
 
-export const astPropsToSkip = ['loc', 'start', 'end', 'extra', 'trailingComments', 'leadingComments']
-export const IdentifierTypes = ['Identifier', 'JSXIdentifier', 'TSTypeParameter']
+export const astPropsToSkip = [
+  'loc',
+  'start',
+  'end',
+  'extra',
+  'trailingComments',
+  'leadingComments'
+]
+export const IdentifierTypes = [
+  'Identifier',
+  'JSXIdentifier',
+  'TSTypeParameter'
+]
 
 export const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
 
@@ -48,20 +60,32 @@ export const isNode = (maybeNode: PoorNodeType) => {
 }
 
 export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
-  return Array.isArray(maybeNodeArr) && maybeNodeArr.length > 0 && isNode(maybeNodeArr[0])
+  return (
+    Array.isArray(maybeNodeArr) &&
+    maybeNodeArr.length > 0 &&
+    isNode(maybeNodeArr[0])
+  )
 }
 
 const isNullOrUndef = (val: any) => val === null || val === undefined
 
 const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return Boolean((NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[nodeFieldKey]?.optional ?? true)
+  return Boolean(
+    (NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[
+      nodeFieldKey
+    ]?.optional ?? true
+  )
 }
 
 export const getKeysToCompare = (node: PoorNodeType) => {
   return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
 }
 
-export const getSetsOfKeysToCompare = (fileNode: PoorNodeType, queryNode: PoorNodeType, isExact: boolean) => {
+export const getSetsOfKeysToCompare = (
+  fileNode: PoorNodeType,
+  queryNode: PoorNodeType,
+  isExact: boolean
+) => {
   const exactFileKeys = getKeysToCompare(fileNode)
   const exactQueryKeys = getKeysToCompare(queryNode)
 
@@ -74,28 +98,36 @@ export const getSetsOfKeysToCompare = (fileNode: PoorNodeType, queryNode: PoorNo
    *    Exclude from file node all properties that
    *    - are not present on query node or their value is falsy on query node (not specified)
    *    - and are marked as optional in babel types
-  */
+   */
 
-  const fileKeysToRemove =
-    exactFileKeys.filter((fileKey) =>
-      (!exactQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey]))
-      && isNodeFieldOptional(fileNode.type as string, fileKey)
-    )
+  const fileKeysToRemove = exactFileKeys.filter(
+    (fileKey) =>
+      (!exactQueryKeys.includes(fileKey) ||
+        isNullOrUndef(queryNode[fileKey])) &&
+      isNodeFieldOptional(fileNode.type as string, fileKey)
+  )
 
-  const includeFileKeys = exactFileKeys.filter((fileKey) => !fileKeysToRemove.includes(fileKey))
+  const includeFileKeys = exactFileKeys.filter(
+    (fileKey) => !fileKeysToRemove.includes(fileKey)
+  )
 
   // exclude all properties that has falsy value (otherwise properties set does not mach, if we remove these properties from file node)
-  const includeQueryKeys = exactQueryKeys.filter((queryKey) => !fileKeysToRemove.includes(queryKey) && !isNullOrUndef(queryNode[queryKey]))
+  const includeQueryKeys = exactQueryKeys.filter(
+    (queryKey) =>
+      !fileKeysToRemove.includes(queryKey) &&
+      !isNullOrUndef(queryNode[queryKey])
+  )
 
   return [includeFileKeys, includeQueryKeys]
 }
 
 export const SPACE_CHAR = ' '
 
-export const normalizeText = (text: string) => text.trim().replace(/\s+/g, SPACE_CHAR)
+export const normalizeText = (text: string) =>
+  text.trim().replace(/\s+/g, SPACE_CHAR)
 
 export const sanitizeJSXText = (node: PoorNodeType) => {
-  wasmFns.trim_value(node);
+  wasmFns.trim_value(node)
   //@ts-ignore
   node.value = normalizeText(node.value)
   //@ts-ignore
@@ -132,7 +164,6 @@ export const shouldCompareNode = (node: PoorNodeType) => {
 }
 
 export const cleanupAst = (ast: PoorNodeType) => {
-
   if (ast.type === 'JSXText') {
     sanitizeJSXText(ast)
   }
@@ -144,8 +175,9 @@ export const cleanupAst = (ast: PoorNodeType) => {
       cleanedAst[key] = cleanupAst(cleanedAst[key] as PoorNodeType)
     }
     if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
-
-      cleanedAst[key] = (cleanedAst[key] as PoorNodeType[]).filter(shouldCompareNode).map((subAst) => cleanupAst(subAst))
+      cleanedAst[key] = (cleanedAst[key] as PoorNodeType[])
+        .filter(shouldCompareNode)
+        .map((subAst) => cleanupAst(subAst))
     }
   })
 
@@ -175,22 +207,35 @@ export const removeIdentifierRefFromWildcard = (name: string) => {
   return name
 }
 
-// This is what happens if you write code at 01:30 at Friday after intensive week 
-export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNodeType) => {
-  const aIsIdentifierWithWildcard = ['TSTypeReference', ...IdentifierTypes]
-    .includes(nodeA.type as string) && (
-      removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(singleIdentifierWildcard)
-      || removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)?.includes(singleIdentifierWildcard)
-    )
-  const bIsIdentifierWithWildcard = ['TSTypeReference', ...IdentifierTypes]
-    .includes(nodeB.type as string) && (
-      removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(singleIdentifierWildcard)
-      || removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)?.includes(singleIdentifierWildcard)
-    )
+// This is what happens if you write code at 01:30 at Friday after intensive week
+export const sortByLeastIdentifierStrength = (
+  nodeA: PoorNodeType,
+  nodeB: PoorNodeType
+) => {
+  const aIsIdentifierWithWildcard =
+    ['TSTypeReference', ...IdentifierTypes].includes(nodeA.type as string) &&
+    (removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(
+      singleIdentifierWildcard
+    ) ||
+      removeIdentifierRefFromWildcard(
+        (nodeA as any)?.typeName?.name as string
+      )?.includes(singleIdentifierWildcard))
+  const bIsIdentifierWithWildcard =
+    ['TSTypeReference', ...IdentifierTypes].includes(nodeB.type as string) &&
+    (removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(
+      singleIdentifierWildcard
+    ) ||
+      removeIdentifierRefFromWildcard(
+        (nodeB as any)?.typeName?.name as string
+      )?.includes(singleIdentifierWildcard))
 
   if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
-    const idA = removeIdentifierRefFromWildcard(nodeA.name as string) || removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)
-    const idB = removeIdentifierRefFromWildcard(nodeB.name as string) || removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)
+    const idA =
+      removeIdentifierRefFromWildcard(nodeA.name as string) ||
+      removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)
+    const idB =
+      removeIdentifierRefFromWildcard(nodeB.name as string) ||
+      removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)
 
     if (idA === doubleIdentifierWildcard) {
       return 1
@@ -200,11 +245,16 @@ export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNo
       return -1
     }
 
-    const aNonWildcardCharsLen = idA.split(singleIdentifierWildcard).map((str) => str.length).reduce((sum, len) => sum + len, 0)
-    const bNonWildcardCharsLen = idB.split(singleIdentifierWildcard).map((str) => str.length).reduce((sum, len) => sum + len, 0)
+    const aNonWildcardCharsLen = idA
+      .split(singleIdentifierWildcard)
+      .map((str) => str.length)
+      .reduce((sum, len) => sum + len, 0)
+    const bNonWildcardCharsLen = idB
+      .split(singleIdentifierWildcard)
+      .map((str) => str.length)
+      .reduce((sum, len) => sum + len, 0)
 
     return bNonWildcardCharsLen - aNonWildcardCharsLen
-
   }
 
   if (aIsIdentifierWithWildcard) {
@@ -218,13 +268,20 @@ export const sortByLeastIdentifierStrength = (nodeA: PoorNodeType, nodeB: PoorNo
   return 0
 }
 
-export const prepareCodeResult = ({ fileContent, start, end, loc }: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
+export const prepareCodeResult = ({
+  fileContent,
+  start,
+  end,
+  loc
+}: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
   const frame = fileContent.substring(start - loc.start.column, end)
   const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
 
   const firstLine = frame.split('\n')[0]
   const lines = frame.substr(loc.start.column).split('\n')
-  const firstLineWhiteCharsCount = (firstLine?.match(firstLineWhiteCharsCountRegExp) as [string])[0]?.length
+  const firstLineWhiteCharsCount = (
+    firstLine?.match(firstLineWhiteCharsCountRegExp) as [string]
+  )[0]?.length
 
   const replaceRegex = new RegExp(`^\\s{0,${firstLineWhiteCharsCount}}`)
 

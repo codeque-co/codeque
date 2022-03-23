@@ -1,21 +1,40 @@
 import { parse, ParseError } from '@babel/parser'
 import {
-  getBody, getKeysToCompare, IdentifierTypes, isNode,
-  isNodeArray, numericWildcard, parseOptions, PoorNodeType,
-  Position, singleIdentifierWildcard, unwrapExpressionStatement, stringWildcard,
-  removeIdentifierRefFromWildcard, normalizeText, SPACE_CHAR
+  getBody,
+  getKeysToCompare,
+  IdentifierTypes,
+  isNode,
+  isNodeArray,
+  numericWildcard,
+  parseOptions,
+  PoorNodeType,
+  Position,
+  singleIdentifierWildcard,
+  unwrapExpressionStatement,
+  stringWildcard,
+  removeIdentifierRefFromWildcard,
+  normalizeText,
+  SPACE_CHAR
 } from './astUtils'
 import { measureStart } from './utils'
 
 const MIN_TOKEN_LEN = 2
 
-const decomposeString = (str: string) => str.split(stringWildcard)
-  .map((part) => normalizeText(part).split(SPACE_CHAR))
-  .flat(1)
+const decomposeString = (str: string) =>
+  str
+    .split(stringWildcard)
+    .map((part) => normalizeText(part).split(SPACE_CHAR))
+    .flat(1)
 
-const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, tokens: Set<string> = new Set()) => {
+const getUniqueTokens = (
+  queryNode: PoorNodeType,
+  caseInsensitive = false,
+  tokens: Set<string> = new Set()
+) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
-    const trimmedWildcards = removeIdentifierRefFromWildcard(queryNode.name as string).split(singleIdentifierWildcard)
+    const trimmedWildcards = removeIdentifierRefFromWildcard(
+      queryNode.name as string
+    ).split(singleIdentifierWildcard)
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
         tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
@@ -50,16 +69,19 @@ const getUniqueTokens = (queryNode: PoorNodeType, caseInsensitive = false, token
     }
   }
 
-  const nodeKeys = getKeysToCompare(queryNode).filter((key) =>
-    isNode(queryNode[key] as PoorNodeType) || isNodeArray(queryNode[key] as PoorNodeType[])
+  const nodeKeys = getKeysToCompare(queryNode).filter(
+    (key) =>
+      isNode(queryNode[key] as PoorNodeType) ||
+      isNodeArray(queryNode[key] as PoorNodeType[])
   )
 
   nodeKeys.forEach((key) => {
     const nodeVal = queryNode[key]
     if (isNodeArray(nodeVal as PoorNodeType[])) {
-      (nodeVal as PoorNodeType[]).forEach((node) => getUniqueTokens(node, caseInsensitive, tokens))
-    }
-    else {
+      ;(nodeVal as PoorNodeType[]).forEach((node) =>
+        getUniqueTokens(node, caseInsensitive, tokens)
+      )
+    } else {
       getUniqueTokens(nodeVal as PoorNodeType, caseInsensitive, tokens)
     }
   })
@@ -70,81 +92,97 @@ const extractQueryNode = (fileNode: PoorNodeType) => {
   return unwrapExpressionStatement(getBody(fileNode)[0])
 }
 
-export const parseQueries = (queryCodes: string[], caseInsensitive = false): [Array<{
-  queryNode: PoorNodeType,
-  uniqueTokens: string[],
-  error: { text: string, location?: any } | null
-}>, boolean] => {
-  const inputQueryNodes = queryCodes.map((queryText) => {
-    let originalError = null
-    if (/(\$){3,}/.test(queryText)) {
-      const lines = queryText.split('\n')
-      let lineIdx: number | null = null;
-      let colNum: number | null = null
+export const parseQueries = (
+  queryCodes: string[],
+  caseInsensitive = false
+): [
+  Array<{
+    queryNode: PoorNodeType
+    uniqueTokens: string[]
+    error: { text: string; location?: any } | null
+  }>,
+  boolean
+] => {
+  const inputQueryNodes = queryCodes
+    .map((queryText) => {
+      let originalError = null
+      if (/(\$){3,}/.test(queryText)) {
+        const lines = queryText.split('\n')
+        let lineIdx: number | null = null
+        let colNum: number | null = null
 
-      lines.forEach((line, idx) => {
-        const col = line.indexOf('$$$')
-        if (colNum === null && col > -1) {
-          lineIdx = idx
-          colNum = col + 1
+        lines.forEach((line, idx) => {
+          const col = line.indexOf('$$$')
+          if (colNum === null && col > -1) {
+            lineIdx = idx
+            colNum = col + 1
+          }
+        })
+        return {
+          queryNode: {},
+          error: {
+            text: 'More than two wildcard chars are not allowed',
+            ...(colNum !== null && lineIdx !== null
+              ? {
+                  location: {
+                    line: lineIdx + 1,
+                    column: colNum
+                  }
+                }
+              : {})
+          }
         }
-      })
-      return {
-        queryNode: {},
-        error: {
-          text: 'More than two wildcard chars are not allowed',
-          ...(colNum !== null && lineIdx !== null ? ({
-            location: {
-              line: lineIdx + 1,
-              column: colNum
-            }
-          }) : {})
+      }
+
+      try {
+        const parsedAsIs = parse(
+          queryText,
+          parseOptions
+        ) as unknown as PoorNodeType
+        return {
+          queryNode: extractQueryNode(parsedAsIs),
+          error: null
+        }
+      } catch (e) {
+        const error = e as ParseError & { loc: Position; message: string }
+
+        originalError = {
+          text: error.message,
+          location: error.loc,
+          code: error.code,
+          reasonCode: error.reasonCode
         }
       }
-    }
 
-    try {
-      const parsedAsIs = parse(queryText, parseOptions) as unknown as PoorNodeType
-      return {
-        queryNode: extractQueryNode(parsedAsIs),
-        error: null
+      try {
+        const parsedAsExp = parse(
+          `(${queryText})`,
+          parseOptions
+        ) as unknown as PoorNodeType
+        return {
+          queryNode: extractQueryNode(parsedAsExp),
+          error: null
+        }
+      } catch (e) {
+        return {
+          queryNode: {},
+          error: originalError
+        }
       }
-    }
-    catch (e) {
-      const error = e as ParseError & { loc: Position, message: string }
-
-      originalError = {
-        text: error.message,
-        location: error.loc,
-        code: error.code,
-        reasonCode: error.reasonCode
-      }
-    }
-
-    try {
-      const parsedAsExp = parse(`(${queryText})`, parseOptions) as unknown as PoorNodeType
-      return {
-        queryNode: extractQueryNode(parsedAsExp),
-        error: null
-      }
-    }
-    catch (e) {
-      return {
-        queryNode: {},
-        error: originalError
-      }
-    }
-  })
+    })
     .map(({ error, queryNode }) => ({
       queryNode,
-      error: !Boolean(queryNode) ? { text: 'Empty query!' } : error
+      error: !queryNode ? { text: 'Empty query!' } : error
     }))
-
 
   const queries = inputQueryNodes.map(({ queryNode, error }) => {
     const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
-    const uniqueTokens = queryNode ? [...getUniqueTokens(queryNode, caseInsensitive)].filter((token) => typeof token !== 'string' || token.length > 0) : []
+    const uniqueTokens = queryNode
+      ? [...getUniqueTokens(queryNode, caseInsensitive)].filter(
+          (token) => typeof token !== 'string' || token.length > 0
+        )
+      : []
 
     measureGetUniqueTokens()
 

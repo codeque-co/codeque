@@ -1,14 +1,14 @@
 import path from 'path'
-import { promises as fs } from 'fs';
+import { promises as fs } from 'fs'
 
-import ignore from 'ignore';
-import { asyncFilter, measureStart } from './utils';
+import ignore from 'ignore'
+import { asyncFilter, measureStart } from './utils'
 
-import { parseDependencyTree } from 'dpdm';
-import { spawnSync } from 'child_process';
+import { parseDependencyTree } from 'dpdm'
+import { spawnSync } from 'child_process'
 
 //@ts-ignore
-import escapeGlob from 'glob-escape';
+import escapeGlob from 'glob-escape'
 
 const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
 
@@ -17,7 +17,9 @@ const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
     context: root
   })
 
-  const projectFiles = Object.keys(tree).filter((file) => !file.includes('node_modules') && extensionTester.test(file))
+  const projectFiles = Object.keys(tree).filter(
+    (file) => !file.includes('node_modules') && extensionTester.test(file)
+  )
 
   return projectFiles.map((filePath) => path.resolve(root, filePath))
 }
@@ -43,7 +45,11 @@ const getFilesListByGitChanges = async (root: string) => {
   return filesList
 }
 
-export const getFilesList = async (root: string, entryPoint?: string, byGitChanges?: boolean) => {
+export const getFilesList = async (
+  root: string,
+  entryPoint?: string,
+  byGitChanges?: boolean
+) => {
   const measureStop = measureStart('getFiles')
 
   if (byGitChanges) {
@@ -66,24 +72,31 @@ export const getFilesList = async (root: string, entryPoint?: string, byGitChang
     try {
       gitignore = (await fs.readFile(path.join(dir, '.gitignore'))).toString()
       const lines = gitignore.split('\n')
-      const nonCommentedNonEmptyLines = lines.filter((line) => !/^(\s*)#/.test(line)).filter((line) => !/^(\s*)$/.test(line))
+      const nonCommentedNonEmptyLines = lines
+        .filter((line) => !/^(\s*)#/.test(line))
+        .filter((line) => !/^(\s*)$/.test(line))
       const currentDirScoped = nonCommentedNonEmptyLines.map((line) => {
         return path.join(dirRelativeToRoot, line)
       })
 
       gitignore = currentDirScoped.join('\n')
+    } catch (e) {
+      e
     }
-    catch (e) { }
 
     ignoreInstance.add(gitignore)
 
-    const entriesList = await fs.readdir(dir, {
+    const entriesList = (await fs.readdir(dir, {
       // withFileTypes: true // This should work but throws an error, so we have to workaround
-    }) as string[]
+    })) as string[]
 
-    const relativeToRoot = entriesList.map((entryName) => path.relative(root, path.join(dir, entryName)))
+    const relativeToRoot = entriesList.map((entryName) =>
+      path.relative(root, path.join(dir, entryName))
+    )
     const filtered = ignoreInstance.filter(relativeToRoot)
-    const absolutePaths = filtered.map((pathName) => path.resolve(root, pathName))
+    const absolutePaths = filtered.map((pathName) =>
+      path.resolve(root, pathName)
+    )
 
     const directories = await asyncFilter(absolutePaths, async (pathName) => {
       const stat = await fs.lstat(pathName)
@@ -95,7 +108,9 @@ export const getFilesList = async (root: string, entryPoint?: string, byGitChang
       return stat.isFile()
     })
 
-    const directoriesScanResult = (await Promise.all(directories.map(scan))).flat()
+    const directoriesScanResult = (
+      await Promise.all(directories.map(scan))
+    ).flat()
 
     return [
       ...files.filter((pathName) => extensionTester.test(pathName)),

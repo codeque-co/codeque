@@ -2,19 +2,33 @@ import path from 'path'
 import fs from 'fs'
 import { search } from '/searchMultiThread'
 import { getFilesList } from '/getFilesList'
-import { green, magenta, cyan, bold, red, yellow } from "colorette"
+import { green, magenta, cyan, bold, red, yellow } from 'colorette'
 import { Mode, getMode, getCodeFrame, print } from '/utils'
 import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from '/terminalEditor'
-import { Command } from 'commander';
+import { Command } from 'commander'
 import ora from 'ora'
-const program = new Command();
+const program = new Command()
 
 program
-  .option('-m, --mode [mode]', 'search mode: exact, include, include-with-order', 'include')
-  .option('-r, --root [root]', 'root directory of search (default: process.cwd())')
-  .option('-e, --entry [entry]', 'entry point to resolve files list by dependencies (excluding node_modules)')
-  .option('-i, --case-insensitive', 'perform search with case insensitive mode', false)
+  .option(
+    '-m, --mode [mode]',
+    'search mode: exact, include, include-with-order',
+    'include'
+  )
+  .option(
+    '-r, --root [root]',
+    'root directory of search (default: process.cwd())'
+  )
+  .option(
+    '-e, --entry [entry]',
+    'entry point to resolve files list by dependencies (excluding node_modules)'
+  )
+  .option(
+    '-i, --case-insensitive',
+    'perform search with case insensitive mode',
+    false
+  )
   .option('-l, --limit [limit]', 'limit of results count to display', '20')
   .option('-q, --query [query]', 'path to file with search query')
   .option('-g, --git', 'search in files changed since last git commit', false)
@@ -28,7 +42,15 @@ program
       query: queryPath,
       entry,
       git
-    }: { mode: Mode, caseInsensitive: boolean, root?: string, limit: string, query?: string, entry?: string, git: boolean }) => {
+    }: {
+      mode: Mode
+      caseInsensitive: boolean
+      root?: string
+      limit: string
+      query?: string
+      entry?: string
+      git: boolean
+    }) => {
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
 
@@ -39,8 +61,9 @@ program
 
       try {
         prevQuery = fs.readFileSync(queryCachePath).toString()
+      } catch (e) {
+        e
       }
-      catch (e) { }
 
       const cols = process.stdout.columns
       const separator = ''.padStart(process.stdout.columns, '━')
@@ -49,33 +72,57 @@ program
       const modeLabel = 'Mode: '
       const caseLabel = 'Case: '
       const caseText = caseInsensitive ? 'insensitive' : 'sensitive'
-      const modeAndCaseText = `${cyan(bold(modeLabel))}${green(mode)}${dot}${cyan(bold(caseLabel))}${green(caseText)}\n`
+      const modeAndCaseText = `${cyan(bold(modeLabel))}${green(
+        mode
+      )}${dot}${cyan(bold(caseLabel))}${green(caseText)}\n`
 
-      const remainingCharsForRoot = cols - modeLabel.length - mode.length - caseLabel.length - caseText.length - dot.length
+      const remainingCharsForRoot =
+        cols -
+        modeLabel.length -
+        mode.length -
+        caseLabel.length -
+        caseText.length -
+        dot.length
 
       const rootLabel = 'Root: '
-      const minLen = (dot.length + rootLabel.length + 5)
-      const remainingSpaceForRootPath = remainingCharsForRoot - (dot.length + rootLabel.length)
-      const charsToReplace = Math.max(resolvedRoot.length - remainingSpaceForRootPath, 0)
+      const minLen = dot.length + rootLabel.length + 5
+      const remainingSpaceForRootPath =
+        remainingCharsForRoot - (dot.length + rootLabel.length)
+      const charsToReplace = Math.max(
+        resolvedRoot.length - remainingSpaceForRootPath,
+        0
+      )
       const ellipsis = '...'
-      const shortenedRoot = charsToReplace > 0 ? resolvedRoot.replace(new RegExp(`^(.){${charsToReplace + ellipsis.length}}`), ellipsis) : resolvedRoot
-      const rootText = remainingCharsForRoot > minLen
-        ? `${cyan(bold(rootLabel))
-        }${green(shortenedRoot)}${dot}`
-        : ''
+      const shortenedRoot =
+        charsToReplace > 0
+          ? resolvedRoot.replace(
+              new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
+              ellipsis
+            )
+          : resolvedRoot
+      const rootText =
+        remainingCharsForRoot > minLen
+          ? `${cyan(bold(rootLabel))}${green(shortenedRoot)}${dot}`
+          : ''
 
       let query = ''
 
       if (queryPath === undefined) {
-        query = await openAsyncEditor({ header: `${rootText}${modeAndCaseText}\n✨ Type query:`, code: prevQuery, separator })
+        query = await openAsyncEditor({
+          header: `${rootText}${modeAndCaseText}\n✨ Type query:`,
+          code: prevQuery,
+          separator
+        })
         fs.writeFileSync(queryCachePath, query)
-      }
-      else {
+      } else {
         try {
           query = fs.readFileSync(path.resolve(queryPath)).toString()
-        }
-        catch (e) {
-          print('\n' + red(bold(`Query file not found:`)), path.resolve(queryPath), '\n')
+        } catch (e) {
+          print(
+            '\n' + red(bold(`Query file not found:`)),
+            path.resolve(queryPath),
+            '\n'
+          )
           process.exit(1)
         }
       }
@@ -88,23 +135,26 @@ program
         print(separator + '\n' + rootText + modeAndCaseText)
 
         print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
-      }
-      else {
+      } else {
         if (query.length > 0) {
-          print(red(bold('Query parse error:\n\n')) + getCodeFrame(query, 1, false, error?.location) + '\n')
+          print(
+            red(bold('Query parse error:\n\n')) +
+              getCodeFrame(query, 1, false, error?.location) +
+              '\n'
+          )
         }
         print(red(bold('Error:')), error?.text, '\n')
 
         process.exit(1)
       }
 
-      let spinner = ora(`Getting files list `).start();
+      let spinner = ora(`Getting files list `).start()
 
       const filePaths = await getFilesList(resolvedRoot, entry, git)
 
       spinner.stop()
 
-      spinner = ora(`Searching `).start();
+      spinner = ora(`Searching `).start()
       const { matches, errors } = await search({
         mode,
         filePaths,
@@ -117,22 +167,30 @@ program
       const endTime = Date.now()
       if (matches.length > 0) {
         const limitedResults = matches.slice(0, resultsLimitCount)
-        const resultsText = matches.length <= resultsLimitCount ? `Results:\n` : `First ${resultsLimitCount} results:\n`
+        const resultsText =
+          matches.length <= resultsLimitCount
+            ? `Results:\n`
+            : `First ${resultsLimitCount} results:\n`
 
         print(cyan(bold(resultsText)))
 
         limitedResults.forEach((result) => {
           const startLine = result.loc.start.line
           const codeFrame = getCodeFrame(result.code, startLine)
-          const relativePath = root === process.cwd() ? path.relative(resolvedRoot, result.filePath) : result.filePath
-          print(`${green(relativePath)}:${magenta(startLine)}:${yellow(result.loc.start.column + 1)}`)
+          const relativePath =
+            root === process.cwd()
+              ? path.relative(resolvedRoot, result.filePath)
+              : result.filePath
+          print(
+            `${green(relativePath)}:${magenta(startLine)}:${yellow(
+              result.loc.start.column + 1
+            )}`
+          )
           print('\n' + codeFrame + '\n')
         })
 
         print(cyan(bold('Total count:')), magenta(matches.length))
-      }
-
-      else {
+      } else {
         print(cyan(bold('No results found :c')))
       }
 
@@ -140,10 +198,15 @@ program
       print(cyan(bold('Searched files:')), magenta(filePaths.length))
 
       if (errors.length > 0) {
-        print(red(bold('Search failed for:')), magenta(errors.length), 'file(s)')
+        print(
+          red(bold('Search failed for:')),
+          magenta(errors.length),
+          'file(s)'
+        )
       }
 
       print('') // new line
-    })
+    }
+  )
 
 program.parse(process.argv)

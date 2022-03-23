@@ -3,7 +3,6 @@ import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
 import { Position } from './astUtils'
 export const createLogger = (debugMode = false) => {
-
   const log = (...args: any[]) => {
     if (debugMode) {
       print(...args)
@@ -35,7 +34,7 @@ export const getMode = (mode: Mode = 'include') => {
   return mode
 }
 
-let metrics = {} as Record<string, number>
+const metrics = {} as Record<string, number>
 
 export const measureStart = (name: string) => {
   const timestamp = performance.now()
@@ -53,25 +52,38 @@ export const patternToRegex = (str: string, caseInsensitive = false) => {
   if (/(\$){3,}/.test(str)) {
     throw new Error(`More than 2 wildcards chars are not allowed "${str}"`)
   }
-  const strWithReplacedWildcards = str.replace(/\$\$/g, '.+?').replace(/\$/g, '.*?')
-  return new RegExp(`^${strWithReplacedWildcards}$`, caseInsensitive ? 'i' : undefined)
+  const strWithReplacedWildcards = str
+    .replace(/\$\$/g, '.+?')
+    .replace(/\$/g, '.*?')
+  return new RegExp(
+    `^${strWithReplacedWildcards}$`,
+    caseInsensitive ? 'i' : undefined
+  )
 }
 
-export const getCodeFrame = (code: string, startLine: number, formatting = false, errorPos?: Position) => {
+export const getCodeFrame = (
+  code: string,
+  startLine: number,
+  formatting = false,
+  errorPos?: Position
+) => {
   const formatted = formatting ? format(code, { parser: 'babel-ts' }) : code
 
-  const linesCount = (formatted.match(/\n/g)?.length || 0) + (!formatting ? 1 : 0)
+  const linesCount =
+    (formatted.match(/\n/g)?.length || 0) + (!formatting ? 1 : 0)
 
   const maxLineLength = (startLine + linesCount).toString().length
 
   const indicateError = errorPos !== undefined
-  const linesBelow = indicateError ? linesCount - errorPos.line : linesCount;
+  const linesBelow = indicateError ? linesCount - errorPos.line : linesCount
   const linesAbove = indicateError ? errorPos.line : undefined
 
-  const errorLocation = indicateError ? {
-    start: errorPos,
-    end: errorPos
-  } : { start: { line: 0 } }
+  const errorLocation = indicateError
+    ? {
+        start: errorPos,
+        end: errorPos
+      }
+    : { start: { line: 0 } }
 
   let codeFrame = codeFrameColumns(formatted, errorLocation, {
     highlightCode: true,
@@ -81,8 +93,14 @@ export const getCodeFrame = (code: string, startLine: number, formatting = false
 
   for (let i = linesCount; i > 0; i--) {
     const frameLineNum = i
-    const originalPaddingLen = (frameLineNum).toString().length
-    codeFrame = codeFrame.replace(` ${frameLineNum} |`, ` ${startLine + i - 1} |`.padStart(maxLineLength + 2 + originalPaddingLen, ' '))
+    const originalPaddingLen = frameLineNum.toString().length
+    codeFrame = codeFrame.replace(
+      ` ${frameLineNum} |`,
+      ` ${startLine + i - 1} |`.padStart(
+        maxLineLength + 2 + originalPaddingLen,
+        ' '
+      )
+    )
   }
 
   return codeFrame
@@ -90,8 +108,11 @@ export const getCodeFrame = (code: string, startLine: number, formatting = false
 
 export const print = console.log // to distinguish intended logs
 
-export const asyncFilter = async <T>(arr: T[], predicate: (el:T) => Promise<boolean>) => {
-	const results = await Promise.all(arr.map(predicate));
+export const asyncFilter = async <T>(
+  arr: T[],
+  predicate: (el: T) => Promise<boolean>
+) => {
+  const results = await Promise.all(arr.map(predicate))
 
-	return arr.filter((_v, index) => results[index]);
+  return arr.filter((_v, index) => results[index])
 }

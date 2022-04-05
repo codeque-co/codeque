@@ -30,26 +30,35 @@ program
     false
   )
   .option('-l, --limit [limit]', 'limit of results count to display', '20')
-  .option('-q, --query [query]', 'path to file with search query')
+  .option('-q, --query [query]', 'inline search query', '')
+  .option('-qp, --queryPath [queryPath]', 'path to file with search query')
   .option('-g, --git', 'search in files changed since last git commit', false)
-
+  .option(
+    '-iec, --invertExitCode',
+    'Return non-zero exit code if matches are found',
+    false
+  )
   .action(
     async ({
       mode,
       caseInsensitive,
       root = process.cwd(),
-      limit = '20',
-      query: queryPath,
+      limit,
+      queryPath,
+      query = '',
       entry,
-      git
+      git,
+      invertExitCode
     }: {
       mode: Mode
       caseInsensitive: boolean
       root?: string
       limit: string
-      query?: string
+      query: string
+      queryPath?: string
       entry?: string
       git: boolean
+      invertExitCode?: boolean
     }) => {
       const resultsLimitCount = parseInt(limit, 10)
       const resolvedRoot = path.resolve(root)
@@ -105,16 +114,14 @@ program
           ? `${cyan(bold(rootLabel))}${green(shortenedRoot)}${dot}`
           : ''
 
-      let query = ''
-
-      if (queryPath === undefined) {
+      if (!query && queryPath === undefined) {
         query = await openAsyncEditor({
           header: `${rootText}${modeAndCaseText}\n✨ Type query:`,
           code: prevQuery,
           separator
         })
         fs.writeFileSync(queryCachePath, query)
-      } else {
+      } else if (queryPath !== undefined) {
         try {
           query = fs.readFileSync(path.resolve(queryPath)).toString()
         } catch (e) {
@@ -206,6 +213,10 @@ program
       }
 
       print('') // new line
+
+      const hasMatches = matches.length > 0
+      const shouldFail = hasMatches === invertExitCode
+      process.exit(shouldFail ? 1 : 0)
     }
   )
 

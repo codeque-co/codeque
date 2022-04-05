@@ -1,7 +1,7 @@
 //@ts-nocheck
 import readline from 'readline'
 import fs from 'fs'
-import colors from 'colorette'
+import * as colors from 'colorette'
 import jsTokens from './js-tokens-fork'
 import { format } from 'prettier'
 

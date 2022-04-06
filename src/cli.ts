@@ -30,8 +30,8 @@ program
     false
   )
   .option('-l, --limit [limit]', 'limit of results count to display', '20')
-  .option('-q, --query [query]', 'inline search query', '')
-  .option('-qp, --queryPath [queryPath]', 'path to file with search query')
+  .option('-q, --query [query...]', 'inline search query(s)')
+  .option('-qp, --queryPath [queryPath...]', 'path to file with search query')
   .option('-g, --git', 'search in files changed since last git commit', false)
   .option(
     '-iec, --invertExitCode',
@@ -44,8 +44,8 @@ program
       caseInsensitive,
       root = process.cwd(),
       limit,
-      queryPath,
-      query = '',
+      queryPath: queryPaths = [],
+      query: queries = [],
       entry,
       git,
       invertExitCode
@@ -54,8 +54,8 @@ program
       caseInsensitive: boolean
       root?: string
       limit: string
-      query: string
-      queryPath?: string
+      query: string[]
+      queryPath?: string[]
       entry?: string
       git: boolean
       invertExitCode?: boolean
@@ -105,53 +105,56 @@ program
       const shortenedRoot =
         charsToReplace > 0
           ? resolvedRoot.replace(
-              new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
-              ellipsis
-            )
+            new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
+            ellipsis
+          )
           : resolvedRoot
       const rootText =
         remainingCharsForRoot > minLen
           ? `${cyan(bold(rootLabel))}${green(shortenedRoot)}${dot}`
           : ''
 
-      if (!query && queryPath === undefined) {
-        query = await openAsyncEditor({
+      if (queries.length === 0 && queryPaths.length === 0) {
+        const q = await openAsyncEditor({
           header: `${rootText}${modeAndCaseText}\n✨ Type query:`,
           code: prevQuery,
           separator
         })
-        fs.writeFileSync(queryCachePath, query)
-      } else if (queryPath !== undefined) {
+        fs.writeFileSync(queryCachePath, q)
+        queries = [q]
+      } else if (queryPaths.length > 0) {
         try {
-          query = fs.readFileSync(path.resolve(queryPath)).toString()
-        } catch (e) {
-          print(
-            '\n' + red(bold(`Query file not found:`)),
-            path.resolve(queryPath),
-            '\n'
+          queries = queryPaths.map((qp) =>
+            fs.readFileSync(path.resolve(qp)).toString()
           )
+        } catch (e: any) {
+          print('\n' + red(bold(`Query file not found:`)), e.message, '\n')
           process.exit(1)
         }
       }
 
       const startTime = Date.now()
 
-      const [[{ error }], parseOk] = parseQueries([query])
-
+      const [results, parseOk] = parseQueries(queries)
       if (parseOk) {
         print(separator + '\n' + rootText + modeAndCaseText)
-
-        print(cyan(bold('Query:\n\n')) + getCodeFrame(query, 1, true) + '\n')
+        queries.forEach((q) => {
+          print(cyan(bold('Query:\n\n')) + getCodeFrame(q, 1, true) + '\n')
+        })
       } else {
-        if (query.length > 0) {
-          print(
-            red(bold('Query parse error:\n\n')) +
-              getCodeFrame(query, 1, false, error?.location) +
-              '\n'
-          )
-        }
-        print(red(bold('Error:')), error?.text, '\n')
-
+        queries.forEach((q, index) => {
+          const error = results[index].error
+          if (error) {
+            if (q.length > 0) {
+              print(
+                red(bold('Query parse error:\n\n')),
+                getCodeFrame(q, 1, false, error?.location),
+                '\n'
+              )
+            }
+            print(red(bold('Error:')), error?.text, '\n')
+          }
+        })
         process.exit(1)
       }
 
@@ -160,15 +163,13 @@ program
       const filePaths = await getFilesList(resolvedRoot, entry, git)
 
       spinner.stop()
-
       spinner = ora(`Searching `).start()
       const { matches, errors } = await search({
         mode,
         filePaths,
         caseInsensitive,
-        queryCodes: [query]
+        queryCodes: queries
       })
-
       spinner.stop()
 
       const endTime = Date.now()

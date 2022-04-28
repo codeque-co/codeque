@@ -8,6 +8,7 @@ import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander'
 import ora from 'ora'
+import { textSearch } from './textSearch'
 const program = new Command()
 
 program
@@ -105,9 +106,9 @@ program
       const shortenedRoot =
         charsToReplace > 0
           ? resolvedRoot.replace(
-            new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
-            ellipsis
-          )
+              new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
+              ellipsis
+            )
           : resolvedRoot
       const rootText =
         remainingCharsForRoot > minLen
@@ -136,7 +137,12 @@ program
       const startTime = Date.now()
 
       const [results, parseOk] = parseQueries(queries)
-      if (parseOk) {
+      if (mode === 'text') {
+        print(separator + '\n' + rootText + modeAndCaseText)
+        queries.forEach((q) => {
+          print(cyan(bold('Query:\n\n')) + q + '\n')
+        })
+      } else if (parseOk) {
         print(separator + '\n' + rootText + modeAndCaseText)
         queries.forEach((q) => {
           print(cyan(bold('Query:\n\n')) + getCodeFrame(q, 1, true) + '\n')
@@ -161,10 +167,10 @@ program
       let spinner = ora(`Getting files list `).start()
 
       const filePaths = await getFilesList(resolvedRoot, entry, git)
-
+      const searchFN = mode === 'text' ? textSearch : search
       spinner.stop()
       spinner = ora(`Searching `).start()
-      const { matches, errors } = await search({
+      const { matches, errors } = await searchFN({
         mode,
         filePaths,
         caseInsensitive,

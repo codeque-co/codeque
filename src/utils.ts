@@ -22,10 +22,10 @@ export const createLogger = (debugMode = false) => {
     logStepEnd
   }
 }
-export type Mode = 'exact' | 'include' | 'include-with-order'
+export type Mode = 'exact' | 'include' | 'include-with-order' | 'text'
 
 export const getMode = (mode: Mode = 'include') => {
-  const modes: Mode[] = ['include', 'exact', 'include-with-order']
+  const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']
 
   if (!modes.includes(mode)) {
     console.error('Invalid mode: ', mode, '\nValid modes: ', ...modes)

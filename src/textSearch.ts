@@ -6,7 +6,12 @@ import { SearchArgs, SearchResults } from '/search'
 const nonIdentifierOrKeyword = /([^\w\s\$])/
 
 // TODO either make all white spaces optional or which is more complex make whitespaces around punctuations optional
+// TODO think of restricting search to match within a block of code where search started
+// TODO if there is a wildcard in query eg. 'const $ = a', we can search two times, second time from the end of file with reversed file and query
+// so we can try having smaller matches (example looking for <Checkbox colorScheme="red" and finding  <CheckboxGroup><Checkbox colorScheme="red")
+// maybe we could somehow compare these two matches and take smaller one
 
+// TODO remove all from file comments before making search
 export function textSearch({
   queryCodes,
   filePaths,
@@ -23,10 +28,40 @@ export function textSearch({
       .split(nonIdentifierOrKeyword)
       .filter((str) => str !== '')
       .map((subStr) => {
+        const splitByWildcard3 = subStr.split(/(\$\$\$)/g)
+        console.log('splitByWildcard3', splitByWildcard3)
+        if (splitByWildcard3.length > 1) {
+          return splitByWildcard3
+        }
+        return subStr
+      })
+      .flat(1)
+      .map((subStr) => {
+        const splitByWildcard2 = subStr.split(/(\$\$)/g)
+        console.log('splitByWildcard2', splitByWildcard2)
+        if (subStr !== '$$$' && splitByWildcard2.length > 1) {
+          return splitByWildcard2
+        }
+        return subStr
+      })
+      .flat(1)
+      .map((subStr) => {
+        const splitByWildcard1 = subStr.split(/(\$)/g)
+        console.log('splitByWildcard1', splitByWildcard1)
         if (
-          nonIdentifierOrKeyword.test(subStr) ||
-          [']', ')'].includes(subStr)
+          subStr !== '$$$' &&
+          subStr !== '$$' &&
+          splitByWildcard1.length > 1
         ) {
+          return splitByWildcard1
+        }
+        return subStr
+      })
+      .flat(1)
+      .filter((str) => str.trim() !== '')
+      .map((subStr) => {
+        console.log('subStr', `'${subStr}'`)
+        if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
           return escaped
         }
@@ -36,14 +71,23 @@ export function textSearch({
     if (!isStringContent) {
       result = result
         // .replace(/\s+/g, '(\\s)+') // whitespaces non optional
-        .replace(/\s+/g, '(\\s)*') //whitespaces non optional
+        .replace(/\s+/g, '(\\s)*') //whitespaces optional
 
         .replace(/;/g, ';?')
     }
 
     result = result
-      .replace(/\$\$/g, '([\\S\\s])+?') // changed - match anything for a wildcard, not only non-whitespace
-      .replace(/\$/g, '([\\S\\s])*?')
+      // very slow perf as it try to match too much
+      // .replace(/\$\$\$/g, '([\\S\\s])+?') // changed - match anything for a wildcard, not only non-whitespace
+      // .replace(/\$\$/g, '([\\S\\s])*?')
+
+      // better perf but wildcard cannot have whitespaces around in some cases
+      // .replace(/\$\$\$/g, '([\\S])+?')
+      // .replace(/\$\$/g, '([\\S])*?')
+
+      // wildcard can have whitespaces around but it's not matching whole file
+      .replace(/\$\$\$/g, '(\\s)*([\\S])+?(\\s)*')
+      .replace(/\$\$/g, '(\\s)*([\\S])*?(\\s)*')
     return result
   })
 
@@ -51,7 +95,7 @@ export function textSearch({
     parts.join(`("|')`),
     'gm' + (caseInsensitive ? 'i' : '')
   )
-
+  console.log('query', query)
   const searchErrors = []
   const allMatches = []
   for (const filePath of filePaths) {

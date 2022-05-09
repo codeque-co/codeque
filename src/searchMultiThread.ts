@@ -7,11 +7,12 @@ const coresCount = Math.round(cpus().length / 2)
 
 export const search = async ({ filePaths, ...params }: SearchArgs) => {
   const tasks = []
-  const chunkSize = Math.round(filePaths.length / coresCount)
+  const chunksCount = params.mode === 'text' ? 1 : coresCount
+  const chunkSize = Math.round(filePaths.length / chunksCount)
 
-  for (let i = 0; i < coresCount; i++) {
+  for (let i = 0; i < chunksCount; i++) {
     const startIndex = i * chunkSize
-    const endIndex = i < coresCount - 1 ? startIndex + chunkSize : undefined
+    const endIndex = i < chunksCount - 1 ? startIndex + chunkSize : undefined
     const filePathsSlice = filePaths.slice(startIndex, endIndex)
     const task = new Promise<SearchResults>((resolve, reject) => {
       const worker = new Worker(__dirname + '/worker.js', {

@@ -1,17 +1,49 @@
-import fs from 'fs'
+import fs, { promises as fsPromise } from 'fs'
 import { SearchArgs, SearchResults } from '/search'
 
-//TODO we temporarily escape $ as well to support wildcards
-// Probably need some other wildcard pattern as dolar is used in template string
 const nonIdentifierOrKeyword = /([^\w\s\$])/
 
-// TODO either make all white spaces optional or which is more complex make whitespaces around punctuations optional
-// TODO think of restricting search to match within a block of code where search started
-// TODO if there is a wildcard in query eg. 'const $ = a', we can search two times, second time from the end of file with reversed file and query
-// so we can try having smaller matches (example looking for <Checkbox colorScheme="red" and finding  <CheckboxGroup><Checkbox colorScheme="red")
-// maybe we could somehow compare these two matches and take smaller one
-
 // TODO remove all from file comments before making search
+
+// TODO need to rethink wildcards to optimize performance vs flexibility and ease of use, maybe more wildcard types
+// TODO performance in to that bad unless you search for some multiline patters with wildcards
+// We could have multiline wildcards and single line wildcards, eg see results of `colorScheme="$$sap$$"` or on$$$={() => $$$}
+// So we can have wildcards `$$`, `$$$` for single line, `$$m` `$$$m` for two lines
+// Think of unifying wildcards `$` count for all search modes
+
+const singleLineCommentRegExp = /\/\/([\s\S])+?\n/g
+const multiLineCommentRegExp = /\/\*([\s\S])+?\*\//g
+
+const getMatchPosition = (match: string, fileContents: string) => {
+  const start = fileContents.indexOf(match)
+  const end = start + match.length
+
+  const fileLines = fileContents.split(/\n/)
+  const matchLines = match.split(/\n/)
+
+  const firstMatchLine = matchLines[0]
+  const lastMatchLine = matchLines[matchLines.length - 1]
+
+  const startLineIndex = fileLines.findIndex((line) =>
+    line.includes(firstMatchLine)
+  )
+
+  const endLineIndex = startLineIndex + matchLines.length - 1
+
+  const startLineColumn = fileLines[startLineIndex].indexOf(firstMatchLine)
+  const endLineColumn =
+    fileLines[endLineIndex].indexOf(lastMatchLine) + lastMatchLine.length
+
+  return {
+    start,
+    end,
+    loc: {
+      start: { line: startLineIndex + 1, column: startLineColumn },
+      end: { line: endLineIndex + 1, column: endLineColumn }
+    }
+  }
+}
+
 export function textSearch({
   queryCodes,
   filePaths,
@@ -29,7 +61,6 @@ export function textSearch({
       .filter((str) => str !== '')
       .map((subStr) => {
         const splitByWildcard3 = subStr.split(/(\$\$\$)/g)
-        console.log('splitByWildcard3', splitByWildcard3)
         if (splitByWildcard3.length > 1) {
           return splitByWildcard3
         }
@@ -38,7 +69,6 @@ export function textSearch({
       .flat(1)
       .map((subStr) => {
         const splitByWildcard2 = subStr.split(/(\$\$)/g)
-        console.log('splitByWildcard2', splitByWildcard2)
         if (subStr !== '$$$' && splitByWildcard2.length > 1) {
           return splitByWildcard2
         }
@@ -47,7 +77,6 @@ export function textSearch({
       .flat(1)
       .map((subStr) => {
         const splitByWildcard1 = subStr.split(/(\$)/g)
-        console.log('splitByWildcard1', splitByWildcard1)
         if (
           subStr !== '$$$' &&
           subStr !== '$$' &&
@@ -60,7 +89,6 @@ export function textSearch({
       .flat(1)
       .filter((str) => str.trim() !== '')
       .map((subStr) => {
-        console.log('subStr', `'${subStr}'`)
         if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
           return escaped
@@ -78,16 +106,18 @@ export function textSearch({
 
     result = result
       // very slow perf as it try to match too much
-      // .replace(/\$\$\$/g, '([\\S\\s])+?') // changed - match anything for a wildcard, not only non-whitespace
-      // .replace(/\$\$/g, '([\\S\\s])*?')
+      .replace(/\$\$\$/g, '([\\S\\s])+?') // changed - match anything for a wildcard, not only non-whitespace
+      .replace(/\$\$/g, '([\\S\\s])*?')
 
-      // better perf but wildcard cannot have whitespaces around in some cases
-      // .replace(/\$\$\$/g, '([\\S])+?')
-      // .replace(/\$\$/g, '([\\S])*?')
+    // better perf but wildcard cannot have whitespaces around in some cases
+    // .replace(/\$\$\$/g, '([\\S])+?')
+    // .replace(/\$\$/g, '([\\S])*?')
 
-      // wildcard can have whitespaces around but it's not matching whole file
-      .replace(/\$\$\$/g, '(\\s)*([\\S])+?(\\s)*')
-      .replace(/\$\$/g, '(\\s)*([\\S])*?(\\s)*')
+    // wildcard can have whitespaces around but it's not matching whole file
+    // Not working well, it's not matching whitespaces between non-whitespaces
+    // so option with very slow perf is more accurate
+    // .replace(/\$\$\$/g, '(\\s)*([\\S])+?(\\s)*')
+    // .replace(/\$\$/g, '(\\s)*([\\S])*?(\\s)*')
     return result
   })
 
@@ -95,20 +125,19 @@ export function textSearch({
     parts.join(`("|')`),
     'gm' + (caseInsensitive ? 'i' : '')
   )
-  console.log('query', query)
   const searchErrors = []
   const allMatches = []
   for (const filePath of filePaths) {
     try {
+      // sync file getting works faster :man-shrug;
       const fileContent = fs.readFileSync(filePath).toString()
-      const matches = fileContent.match(query)
-      const transformedMatches = (matches ?? []).map((match) => ({
-        start: 0,
-        end: 0,
-        loc: {
-          start: { line: 0, column: 0 },
-          end: { line: 0, column: 0 }
-        },
+      const fileContentWithoutComments = fileContent
+        .replace(singleLineCommentRegExp, '')
+        .replace(multiLineCommentRegExp, '')
+
+      const matches = fileContentWithoutComments.match(query) ?? []
+      const transformedMatches = matches.map((match) => ({
+        ...getMatchPosition(match, fileContent),
         code: match,
         query: query.toString(),
         filePath

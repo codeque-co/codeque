@@ -9,6 +9,7 @@ import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander'
 import ora from 'ora'
 import { textSearch } from './textSearch'
+
 const program = new Command()
 
 program
@@ -165,9 +166,8 @@ program
       }
 
       let spinner = ora(`Getting files list `).start()
-
-      const filePaths = await getFilesList(resolvedRoot, entry, git)
       const searchFN = mode === 'text' ? textSearch : search
+      const filePaths = await getFilesList(resolvedRoot, entry, git)
       spinner.stop()
       spinner = ora(`Searching `).start()
       const { matches, errors } = await searchFN({

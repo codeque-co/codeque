@@ -1,9 +1,8 @@
-import { compareCode, removeIdentifierRefFromWildcard } from '/astUtils';
+import { compareCode, removeIdentifierRefFromWildcard } from '/astUtils'
 
 describe('AST utils', () => {
   it('should compare code as equal', () => {
-    const code1 =
-      `
+    const code1 = `
       import * as React from 'react';
       import { Paragraph, Button, Portal, Dialog, Colors } from 'react-native-paper';
 
@@ -36,9 +35,7 @@ describe('AST utils', () => {
       export default DialogWithCustomColors;
     `
 
-    const code2 =
-
-      `
+    const code2 = `
       import * as React from 'react';
       import { 
         Paragraph,
@@ -80,8 +77,7 @@ describe('AST utils', () => {
   })
 
   it('should compare code as unequal', () => {
-    const code1 =
-      `
+    const code1 = `
       import * as React from 'react';
       import { Paragraph, Button, Portal, Dialog, Colors } from 'react-native-paper';
 
@@ -116,7 +112,8 @@ describe('AST utils', () => {
       export default DialogWithCustomColors;
     `
 
-    const code2 = // no Colors import
+    const code2 =
+      // no Colors import
 
       `
       import * as React from 'react';
@@ -161,11 +158,10 @@ describe('AST utils', () => {
   })
 
   it('should remove identifier ref from wildcard', () => {
+    expect(removeIdentifierRefFromWildcard('$$$_ref1')).toBe('$$$')
     expect(removeIdentifierRefFromWildcard('$$_ref1')).toBe('$$')
-    expect(removeIdentifierRefFromWildcard('$_ref1')).toBe('$')
-    expect(removeIdentifierRefFromWildcard('$something')).toBe('$something')
-    expect(removeIdentifierRefFromWildcard('$_something')).toBe('$')
-    expect(removeIdentifierRefFromWildcard('asd$_ref')).toBe('asd$_ref')
-
+    expect(removeIdentifierRefFromWildcard('$$something')).toBe('$$something')
+    expect(removeIdentifierRefFromWildcard('$$_something')).toBe('$$')
+    expect(removeIdentifierRefFromWildcard('asd$$_ref')).toBe('asd$$_ref')
   })
 })

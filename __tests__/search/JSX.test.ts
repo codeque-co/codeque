@@ -1,9 +1,8 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
+import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
-import fs from 'fs';
-
+import fs from 'fs'
 
 describe('JSX', () => {
   let filesList = [] as string[]
@@ -15,7 +14,9 @@ describe('JSX', () => {
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const mockedFilesList = [tempFilePath]
   beforeAll(() => {
-    fs.writeFileSync(tempFilePath, `
+    fs.writeFileSync(
+      tempFilePath,
+      `
       <>
         <Flex >
       
@@ -32,7 +33,8 @@ describe('JSX', () => {
           Download
         </Button>
       </>
-    `)
+    `
+    )
   })
 
   afterAll(() => {
@@ -40,11 +42,11 @@ describe('JSX', () => {
   })
 
   it('Should find all self-closing JSX', () => {
-    const query = `<$ />`
+    const query = `<$$ />`
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
     expect(matches.length).toBe(148)
   })
@@ -57,7 +59,7 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     const resultCode = `
@@ -85,11 +87,11 @@ describe('JSX', () => {
   })
 
   it('Should find JSX by prop name', () => {
-    const query = `<$ value={$$} />`
+    const query = `<$$ value={$$$} />`
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
     expect(matches.length).toBe(41)
   })
@@ -99,7 +101,7 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
     expect(matches.length).toBe(1)
   })
@@ -114,13 +116,13 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
     expect(matches.length).toBe(2)
   })
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
-    const query = `<Text>r$L</Text>`
+    const query = `<Text>r$$L</Text>`
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
@@ -136,7 +138,7 @@ describe('JSX', () => {
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: [query],
+      queryCodes: [query]
     })
     expect(matches.length).toBe(1)
   })
@@ -156,16 +158,15 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(compareCode(matches[0].code, query)).toBeTruthy()
   })
 
   it('Should find components using useTheme() hook', () => {
-
     const usageQuery = `
-      const $$ = useTheme();
+      const $$$ = useTheme();
     `
 
     const importQuery = `
@@ -177,13 +178,13 @@ describe('JSX', () => {
     const { matches: resultsUsage } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [usageQuery],
+      queryCodes: [usageQuery]
     })
 
     const { matches: resultsImport } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [importQuery],
+      queryCodes: [importQuery]
     })
     expect(resultsImport.length).not.toBe(0)
 
@@ -192,22 +193,22 @@ describe('JSX', () => {
 
   it('Should find all usages of component passed as a prop', () => {
     const query1 = `
-      <$$
-        $={() => (
+      <$$$
+        $$={() => (
           <IconButton />
         )}
       />
     `
 
     const query2 = `
-      <$$
-        $={IconButton}
+      <$$$
+        $$={IconButton}
       />
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query1, query2],
+      queryCodes: [query1, query2]
     })
 
     expect(matches.length).toBe(2)
@@ -216,22 +217,22 @@ describe('JSX', () => {
   it('Should find all anonymous functions passed as a prop', () => {
     const queries = [
       `
-      <$$
-        $={() => $$}
+      <$$$
+        $$={() => $$$}
       />
     `,
       `
-      <$$
-        $={() => $$}
+      <$$$
+        $$={() => $$$}
       >
-      </$$>
+      </$$$>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     const firstResultCode = `
@@ -250,22 +251,22 @@ describe('JSX', () => {
   it('Should find all anonymous functions passed as event listener handler', () => {
     const queries = [
       `
-      <$$
-        on$={() => $$}
+      <$$$
+        on$$={() => $$$}
       />
     `,
       `
-      <$$
-        on$={() => $$}
+      <$$$
+        on$$={() => $$$}
       >
-      </$$>
+      </$$$>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     const firstResultCode = `
@@ -284,18 +285,18 @@ describe('JSX', () => {
   it('Should find all Elements pretending to be a wrapper', () => {
     const queries = [
       `
-      <$Wrapper/>
+      <$$Wrapper/>
     `,
       `
-      <$Wrapper>
-      </$Wrapper>
+      <$$Wrapper>
+      </$$Wrapper>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(34)
@@ -304,25 +305,25 @@ describe('JSX', () => {
   it('Should find all title prop values which are strings', () => {
     const queries = [
       `
-      <$$ title="$" />
+      <$$$ title="$$" />
     `,
       `
-      <$$ title="$">
-      </$$>
+      <$$$ title="$$">
+      </$$$>
     `,
       `
-      <$$ title={"$"} />
+      <$$$ title={"$$"} />
     `,
       `
-      <$$ title={"$"}>
-      </$$>
+      <$$$ title={"$$"}>
+      </$$$>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(78)
@@ -331,26 +332,28 @@ describe('JSX', () => {
   it('Should ignore all empty JSXText in search', () => {
     const queries = [
       `
-        <$>
-          $
-        </$>;
-    `]
+        <$$>
+          $$
+        </$$>;
+    `
+    ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(2)
-    expect(compareCode(matches[0].code,
-      ` <Button>
+    expect(
+      compareCode(
+        matches[0].code,
+        ` <Button>
           Press to 
           Download
         </Button>
       `
-    )).toBeTruthy()
+      )
+    ).toBeTruthy()
   })
-
-
 })

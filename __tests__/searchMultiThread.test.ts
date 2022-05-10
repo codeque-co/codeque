@@ -1,7 +1,7 @@
 import { search as searchMultiThread } from '/searchMultiThread'
 import { search } from '/search'
 
-import { compareCode } from '/astUtils';
+import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
@@ -17,11 +17,12 @@ jest.mock('worker_threads', () => {
   }
 })
 
-
 it('should search using multiple threads and give the same matches count as single thread search', async () => {
-  const filesList = await getFilesList(path.resolve(__dirname, 'search', '__fixtures__'))
+  const filesList = await getFilesList(
+    path.resolve(__dirname, 'search', '__fixtures__')
+  )
   const query = `
-    () => $$
+    () => $$$
   `
 
   const { matches: resultsSingle } = search({
@@ -42,7 +43,9 @@ it('should search using multiple threads and give the same matches count as sing
 
   const codeSingle = resultsSingle.map(({ code }) => code)
   const codeMulti = resultsMulti.map(({ code }) => code)
-  const compareResults = codeSingle.map((code, idx) => compareCode(code, codeMulti[idx])).reduce((acc, result) => result && acc, true)
+  const compareResults = codeSingle
+    .map((code, idx) => compareCode(code, codeMulti[idx]))
+    .reduce((acc, result) => result && acc, true)
 
   expect(compareResults).toBeTruthy()
 })

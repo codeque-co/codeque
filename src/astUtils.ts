@@ -195,14 +195,31 @@ export const compareCode = (codeA: string, codeB: string) => {
 }
 
 export const numericWildcard = '0x0'
-export const wildcard = '$'
-export const stringWildcard = wildcard
-export const singleIdentifierWildcard = wildcard
-export const doubleIdentifierWildcard = `${singleIdentifierWildcard}${singleIdentifierWildcard}`
+export const wildcardChar = '$'
+
+export const optionalStringWildcardRegExp = new RegExp(
+  `\\${wildcardChar}\\${wildcardChar}`,
+  'g'
+)
+export const requiredStringWildcardRegExp = new RegExp(
+  `\\${wildcardChar}\\${wildcardChar}\\${wildcardChar}`,
+  'g'
+)
+export const anyStringWildcardRegExp = new RegExp(
+  `(\\${wildcardChar}){2,3}`,
+  'g'
+)
+
+export const identifierWildcard = wildcardChar + wildcardChar
+export const nodesTreeWildcard = identifierWildcard + wildcardChar
+
+export const disallowedWildcardRegExp = new RegExp(`(\\${wildcardChar}){4,}`)
 
 export const removeIdentifierRefFromWildcard = (name: string) => {
-  if (/^\$/.test(name)) {
-    return name.replace(/(?<=(\$){1,2})_.*/, '')
+  const containsWildcardRegExp = new RegExp(`^\\${wildcardChar}`)
+  const removeIdRefRegExp = new RegExp(`(?<=(\\${wildcardChar}){2,3})_.*`)
+  if (containsWildcardRegExp.test(name)) {
+    return name.replace(removeIdRefRegExp, '')
   }
   return name
 }
@@ -215,19 +232,19 @@ export const sortByLeastIdentifierStrength = (
   const aIsIdentifierWithWildcard =
     ['TSTypeReference', ...IdentifierTypes].includes(nodeA.type as string) &&
     (removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(
-      singleIdentifierWildcard
+      identifierWildcard
     ) ||
       removeIdentifierRefFromWildcard(
         (nodeA as any)?.typeName?.name as string
-      )?.includes(singleIdentifierWildcard))
+      )?.includes(identifierWildcard))
   const bIsIdentifierWithWildcard =
     ['TSTypeReference', ...IdentifierTypes].includes(nodeB.type as string) &&
     (removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(
-      singleIdentifierWildcard
+      identifierWildcard
     ) ||
       removeIdentifierRefFromWildcard(
         (nodeB as any)?.typeName?.name as string
-      )?.includes(singleIdentifierWildcard))
+      )?.includes(identifierWildcard))
 
   if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
     const idA =
@@ -237,20 +254,20 @@ export const sortByLeastIdentifierStrength = (
       removeIdentifierRefFromWildcard(nodeB.name as string) ||
       removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)
 
-    if (idA === doubleIdentifierWildcard) {
+    if (idA === nodesTreeWildcard) {
       return 1
     }
 
-    if (idB === doubleIdentifierWildcard) {
+    if (idB === nodesTreeWildcard) {
       return -1
     }
 
     const aNonWildcardCharsLen = idA
-      .split(singleIdentifierWildcard)
+      .split(identifierWildcard)
       .map((str) => str.length)
       .reduce((sum, len) => sum + len, 0)
     const bNonWildcardCharsLen = idB
-      .split(singleIdentifierWildcard)
+      .split(identifierWildcard)
       .map((str) => str.length)
       .reduce((sum, len) => sum + len, 0)
 

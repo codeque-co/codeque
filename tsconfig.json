@@ -100,5 +100,5 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "exclude": ["__tests__/**/__fixtures__", "dist", "node_modules"]
+  "exclude": ["__tests__/**/__fixtures__", "dist", "node_modules", "pkg", "crate", "crate-prod"]
 }

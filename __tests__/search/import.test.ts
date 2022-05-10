@@ -1,14 +1,13 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
+import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
-
 describe('JSX', () => {
   let filesList = [] as string[]
-  
+
   beforeAll(async () => {
-     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
   })
 
   it('Should find all imports including some keys with persisted order', () => {
@@ -21,7 +20,7 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(1)
@@ -37,7 +36,7 @@ describe('JSX', () => {
     const { matches } = search({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(0)
@@ -45,12 +44,12 @@ describe('JSX', () => {
 
   it('Should find all imports of library', () => {
     const query = `
-      import $$ from 'react-native';
+      import $$$ from 'react-native';
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(41)
@@ -58,27 +57,26 @@ describe('JSX', () => {
 
   it('Should find all default imports of a dependency', () => {
     const query = `
-      import $ from '../ScreenWrapper';
+      import $$ from '../ScreenWrapper';
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(33)
   })
 
-
   it('Should find all default imports with case insensitive query', () => {
     const query = `
-      import $screenwrapper from '../screenwrapper';
+      import $$screenwrapper from '../screenwrapper';
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(33)
@@ -86,12 +84,12 @@ describe('JSX', () => {
 
   it('Should find all aliased imports of a dependency', () => {
     const query = `
-      import { Provider as $ } from 'react-native-paper';
+      import { Provider as $$ } from 'react-native-paper';
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(2)
@@ -99,12 +97,12 @@ describe('JSX', () => {
 
   it('Should find all imports with both default and named', () => {
     const query = `
-      import $, { $$ } from '$'; 
+      import $$, { $$$ } from '$$'; 
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(2)
@@ -113,12 +111,12 @@ describe('JSX', () => {
   it('Should find all aliased reexports ', () => {
     // TODO: fix - it matches "export {default} from " but it shouldn't
     const query = `
-      export { $ as $$ } from '$'; 
+      export { $$ as $$$ } from '$$'; 
     `
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(6)

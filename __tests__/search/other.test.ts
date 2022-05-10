@@ -2,9 +2,7 @@ import { search } from '/search'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
-
 describe('Other', () => {
-
   let filesList = [] as string[]
 
   beforeAll(async () => {
@@ -12,52 +10,54 @@ describe('Other', () => {
   })
 
   it('should not include the same result twice', () => {
-    const queries = [`
-      type $ = ScrollViewProps & $$
+    const queries = [
+      `
+      type $$ = ScrollViewProps & $$$
       `,
       `
-       type $ = $$ & ScrollViewProps
+       type $$ = $$$ & ScrollViewProps
       `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should not include the same result twice 2', () => {
-    const queries = [`
-      <$$
-        $={() => {}}
+    const queries = [
+      `
+      <$$$
+        $$={() => {}}
       />
     `,
       `
-      <$$
-        $={() => $$}
+      <$$$
+        $$={() => $$$}
       />
     `,
       `
-      <$$
-        $={() => {}}
+      <$$$
+        $$={() => {}}
       >
-      </$$>
+      </$$$>
     `,
       `
-      <$$
-        $={() => $$}
+      <$$$
+        $$={() => $$$}
       >
-      </$$>
+      </$$$>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(190)

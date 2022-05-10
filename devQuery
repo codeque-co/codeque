@@ -1,5 +1,9 @@
-const getInitialValues = (
-  assignment: AssignmentPopulated,
-) => {
+const onScroll = ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0
 
-};
+  if (!isIOS) {
+    return velocity.setValue(currentScrollPosition)
+  }
+
+  setExtended(currentScrollPosition <= 0)
+}

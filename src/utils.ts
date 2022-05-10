@@ -2,6 +2,11 @@ import { performance } from 'perf_hooks'
 import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
 import { Position } from './astUtils'
+import {
+  optionalStringWildcardRegExp,
+  requiredStringWildcardRegExp,
+  disallowedWildcardRegExp
+} from '/astUtils'
 export const createLogger = (debugMode = false) => {
   const log = (...args: any[]) => {
     if (debugMode) {
@@ -49,12 +54,12 @@ export const logMetrics = () => {
 }
 
 export const patternToRegex = (str: string, caseInsensitive = false) => {
-  if (/(\$){3,}/.test(str)) {
-    throw new Error(`More than 2 wildcards chars are not allowed "${str}"`)
+  if (disallowedWildcardRegExp.test(str)) {
+    throw new Error(`More than 3 wildcards chars are not allowed "${str}"`)
   }
   const strWithReplacedWildcards = str
-    .replace(/\$\$/g, '.+?')
-    .replace(/\$/g, '.*?')
+    .replace(requiredStringWildcardRegExp, '.+?')
+    .replace(optionalStringWildcardRegExp, '.*?')
   return new RegExp(
     `^${strWithReplacedWildcards}$`,
     caseInsensitive ? 'i' : undefined
@@ -115,4 +120,14 @@ export const asyncFilter = async <T>(
   const results = await Promise.all(arr.map(predicate))
 
   return arr.filter((_v, index) => results[index])
+}
+
+export const regExpTest = (regExp: RegExp, text: string) => {
+  if (!text) {
+    return false
+  }
+
+  const matches = text.match(regExp)
+
+  return matches !== null && matches.length > 0
 }

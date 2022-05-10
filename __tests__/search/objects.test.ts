@@ -1,15 +1,16 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
+import { compareCode } from '/astUtils'
 import path from 'path'
 import fs from 'fs'
 import { getFilesList } from '/getFilesList'
-
 
 describe('Types', () => {
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const filesList = [tempFilePath]
   beforeAll(() => {
-    fs.writeFileSync(tempFilePath, `
+    fs.writeFileSync(
+      tempFilePath,
+      `
       ({
         a : {
           b : {
@@ -38,7 +39,8 @@ describe('Types', () => {
         someKey: someVal,
         fn: () => obj.other
       }
-    `)
+    `
+    )
   })
 
   afterAll(() => {
@@ -46,7 +48,8 @@ describe('Types', () => {
   })
 
   it('should match exact object', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
         someKey: someVal,
         someOtherKey: {
@@ -54,20 +57,21 @@ describe('Types', () => {
         },
         other: 'other'
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should match exact object case insensitive', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
         somekey: SomeVal,
         someOtherKey: {
@@ -75,67 +79,70 @@ describe('Types', () => {
         },
         other: 'OTHER'
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should match nested object property with wildcard', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
         someOtherKey: {
-          $:5
+          $$:5
         },
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should match nested object with wildcard', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
-        someOtherKey: $$,
+        someOtherKey: $$$,
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should find repeating pattern in nested object several times', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
-        a: $$,
+        a: $$$,
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     const firstMatch = `
@@ -162,58 +169,62 @@ describe('Types', () => {
   })
 
   it('should not match object if query is block statement', () => {
-    const queries = [`
+    const queries = [
+      `
       {}
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(0)
   })
 
   it('should match function in object', () => {
-    const queries = [`
+    const queries = [
+      `
       ({
-        $: $,
-        $: () => $$
+        $$: $$,
+        $$: () => $$$
       })
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should match possibly repeated object properties', async () => {
-    const filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    const filesList = await getFilesList(
+      path.resolve(__dirname, '__fixtures__')
+    )
 
-    const queries = [`
+    const queries = [
+      `
       StyleSheet.create({
-        $: {
+        $$: {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
         },
       });
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
-
 
     expect(matches.length).toBe(2)
   })

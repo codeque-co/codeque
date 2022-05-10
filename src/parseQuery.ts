@@ -9,20 +9,21 @@ import {
   parseOptions,
   PoorNodeType,
   Position,
-  singleIdentifierWildcard,
+  identifierWildcard,
   unwrapExpressionStatement,
-  stringWildcard,
   removeIdentifierRefFromWildcard,
   normalizeText,
+  anyStringWildcardRegExp,
   SPACE_CHAR
 } from './astUtils'
 import { measureStart } from './utils'
+import { wildcardChar, disallowedWildcardRegExp } from '/astUtils'
 
 const MIN_TOKEN_LEN = 2
 
 const decomposeString = (str: string) =>
   str
-    .split(stringWildcard)
+    .split(anyStringWildcardRegExp)
     .map((part) => normalizeText(part).split(SPACE_CHAR))
     .flat(1)
 
@@ -34,7 +35,7 @@ const getUniqueTokens = (
   if (IdentifierTypes.includes(queryNode.type as string)) {
     const trimmedWildcards = removeIdentifierRefFromWildcard(
       queryNode.name as string
-    ).split(singleIdentifierWildcard)
+    ).split(identifierWildcard)
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
         tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
@@ -106,13 +107,13 @@ export const parseQueries = (
   const inputQueryNodes = queryCodes
     .map((queryText) => {
       let originalError = null
-      if (/(\$){3,}/.test(queryText)) {
+      if (disallowedWildcardRegExp.test(queryText)) {
         const lines = queryText.split('\n')
         let lineIdx: number | null = null
         let colNum: number | null = null
 
         lines.forEach((line, idx) => {
-          const col = line.indexOf('$$$')
+          const col = line.indexOf(wildcardChar.repeat(4))
           if (colNum === null && col > -1) {
             lineIdx = idx
             colNum = col + 1
@@ -121,7 +122,7 @@ export const parseQueries = (
         return {
           queryNode: {},
           error: {
-            text: 'More than two wildcard chars are not allowed',
+            text: 'More than three wildcard chars are not allowed',
             ...(colNum !== null && lineIdx !== null
               ? {
                   location: {

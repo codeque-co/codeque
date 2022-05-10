@@ -1,33 +1,33 @@
 import { search } from '/search'
-import { compareCode } from '/astUtils';
+import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
 describe('code patterns', () => {
   let filesList = [] as string[]
-  
+
   beforeAll(async () => {
-     filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
   })
 
   it('Should match function with redundant block statement', () => {
-    const queries = [`
-      const $ = () => {
-        return $$
+    const queries = [
+      `
+      const $$ = () => {
+        return $$$
       };
       `,
-      `const $ = ($$) => {
-        return $$
+      `const $$ = ($$$) => {
+        return $$$
       };
-      `,
+      `
     ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
-
 
     const firstResult = `
       const DrawerContent = () => {
@@ -42,44 +42,48 @@ describe('code patterns', () => {
   })
 
   it('should match possible falsy event listeners', () => {
-    const queries = [`
-      <$
-        $={$$ && $$}
+    const queries = [
+      `
+      <$$
+        $$={$$$ && $$$}
       />
     `,
       `
-      <$
-        $={$$ && $$}
+      <$$
+        $$={$$$ && $$$}
       >
-      </$>
-    `]
+      </$$>
+    `
+    ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(1)
   })
 
   it('should find all empty event listeners', () => {
-    const queries = [`
-      <$
-        on$={()=>{}}
+    const queries = [
+      `
+      <$$
+        on$$={()=>{}}
       />
     `,
       `
-      <$
-        on$={()=>{}}
+      <$$
+        on$$={()=>{}}
       >
-      </$>
-    `]
+      </$$>
+    `
+    ]
 
     const { matches } = search({
-      mode: 'include', // TODO this should be 'exact', no? - we need $exact() matcher
+      mode: 'include', // TODO this should be 'exact', no? - we need $$exact() matcher
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(63)
@@ -88,82 +92,86 @@ describe('code patterns', () => {
   it('should find all JSX props which always creates new reference', () => {
     const queries = [
       `
-      <$
-        $={()=>{}}
+      <$$
+        $$={()=>{}}
       />
     `,
       `
-      <$
-        $={()=>{}}
+      <$$
+        $$={()=>{}}
       >
-      </$>
+      </$$>
     `,
       `
-      <$
-        $={[]}
+      <$$
+        $$={[]}
       />
     `,
       `
-      <$
-        $={[]}
+      <$$
+        $$={[]}
       >
-      </$>
+      </$$>
     `,
       `
-      <$
-        $={{}}
+      <$$
+        $$={{}}
       />
     `,
       `
-      <$
-        $={{}}
+      <$$
+        $$={{}}
       >
-      </$>
+      </$$>
     `,
       `
-      <$
-        $={$$()}
+      <$$
+        $$={$$$()}
       />
     `,
       `
-      <$
-        $={$$()}
+      <$$
+        $$={$$$()}
       >
-      </$>
+      </$$>
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(132)
   })
 
   it('should match nested ternary operator', () => {
-    const queries = [`
-      $$ ? $$ : $$ ? $$ : $$
-    `]
+    const queries = [
+      `
+      $$$ ? $$$ : $$$ ? $$$ : $$$
+    `
+    ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
     expect(matches.length).toBe(1)
   })
 
   it('should match cast to any', () => {
-    const queries = [`
-      ($$ as any)
-    `]
+    const queries = [
+      `
+      ($$$ as any)
+    `
+    ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(2)
@@ -176,7 +184,7 @@ describe('code patterns', () => {
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query],
+      queryCodes: [query]
     })
 
     expect(matches.length).toBe(3)
@@ -186,14 +194,14 @@ describe('code patterns', () => {
   it('Should find all requires of jpg assets', () => {
     const queries = [
       `
-      require("$assets$.jpg")
+      require("$$assets$$.jpg")
     `
     ]
 
     const { matches } = search({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(6)
@@ -202,17 +210,16 @@ describe('code patterns', () => {
   it('Should find all string concatenations using + operator', () => {
     const queries = [
       `
-      "$" + "$"
+      "$$" + "$$"
     `
     ]
 
     const { matches } = search({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries,
+      queryCodes: queries
     })
 
     expect(matches.length).toBe(0)
   })
-
 })

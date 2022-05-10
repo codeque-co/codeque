@@ -1,8 +1,13 @@
 import fs from 'fs'
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { NODE_FIELDS } from '@babel/types'
-import { createLogger, Mode, measureStart, patternToRegex } from './utils'
+import {
+  createLogger,
+  Mode,
+  measureStart,
+  patternToRegex,
+  regExpTest
+} from './utils'
 import { parseQueries } from './parseQuery'
 import {
   getBody,
@@ -15,13 +20,13 @@ import {
   PoorNodeType,
   parseOptions,
   numericWildcard,
-  stringWildcard,
-  singleIdentifierWildcard,
-  doubleIdentifierWildcard,
+  identifierWildcard,
+  nodesTreeWildcard,
   removeIdentifierRefFromWildcard,
   sortByLeastIdentifierStrength,
   prepareCodeResult,
-  shouldCompareNode
+  shouldCompareNode,
+  anyStringWildcardRegExp
 } from './astUtils'
 
 export type SearchArgs = {
@@ -106,7 +111,7 @@ export const search = ({
 
     log('compare: node type', fileNode.type)
 
-    log('compare:  queryKeys', queryKeys)
+    log('compare: queryKeys', queryKeys)
     log('compare: fileKeys', fileKeys)
 
     const queryKeysToTraverse: string[] = []
@@ -136,28 +141,26 @@ export const search = ({
       (fileNode.type as string).includes('TS') &&
       (fileNode.type as string).includes('Keyword') &&
       (queryNode.type as string) === 'TSTypeReference' &&
-      ((queryNode.typeName as any).name as string) ===
-        singleIdentifierWildcard &&
+      ((queryNode.typeName as any).name as string) === identifierWildcard &&
       (queryNode.typeParameters as any) === undefined
     ) {
-      // support using '$' wildcard for TS keywords like 'never', 'boolean' etc.
+      // support using '$$' wildcard for TS keywords like 'never', 'boolean' etc.
       return {
         levelMatch: true,
         queryKeysToTraverse: [],
         fileKeysToTraverse
       }
     }
-
     if (
       IdentifierTypes.includes(queryNode.type as string) &&
-      (queryNode.name as string).includes(singleIdentifierWildcard)
+      (queryNode.name as string).includes(identifierWildcard)
     ) {
       let levelMatch
 
       const nameWithoutRef = removeIdentifierRefFromWildcard(
         queryNode.name as string
       )
-      if (nameWithoutRef === doubleIdentifierWildcard) {
+      if (nameWithoutRef === nodesTreeWildcard) {
         levelMatch = true
       } else {
         const regex = patternToRegex(nameWithoutRef, caseInsensitive)
@@ -181,7 +184,7 @@ export const search = ({
       })
 
       const queryKeysToTraverse =
-        nameWithoutRef !== doubleIdentifierWildcard ? queryKeysWithNodes : []
+        nameWithoutRef !== nodesTreeWildcard ? queryKeysWithNodes : []
 
       measureCompare()
       return {
@@ -193,9 +196,9 @@ export const search = ({
 
     if (
       (queryNode.type as string) === 'ImportDefaultSpecifier' &&
-      (queryNode.local as PoorNodeType).name === doubleIdentifierWildcard
+      (queryNode.local as PoorNodeType).name === nodesTreeWildcard
     ) {
-      // treat "import $$ from '...'" as wildcard for any import
+      // treat "import $$$ from '...'" as wildcard for any import
       measureCompare()
       return {
         levelMatch: true,
@@ -203,15 +206,16 @@ export const search = ({
         fileKeysToTraverse
       }
     }
+    log('bla bla')
 
     if (
       (queryNode.type as string) === 'TSTypeReference' &&
       removeIdentifierRefFromWildcard(
         (queryNode.typeName as PoorNodeType).name as string
-      ) === doubleIdentifierWildcard
+      ) === nodesTreeWildcard
     ) {
-      // in "const a: $$; const a: () => $$" treat $$ as wildcard for any type annotation
-      // also type T = $$
+      // in "const a: $$$; const a: () => $$$" treat $$$ as wildcard for any type annotation
+      // also type T = $$$
       measureCompare()
       return {
         levelMatch: true,
@@ -220,11 +224,13 @@ export const search = ({
       }
     }
 
-    if (
+    const isStringWithWildcard =
       (queryNode.type as string) === 'StringLiteral' &&
       (fileNode.type as string) === 'StringLiteral' &&
-      (queryNode.value as string).includes(stringWildcard)
-    ) {
+      regExpTest(anyStringWildcardRegExp, queryNode.value as string)
+
+    log('isStringWithWildcard', isStringWithWildcard)
+    if (isStringWithWildcard) {
       const regex = patternToRegex(queryNode.value as string, caseInsensitive)
       const levelMatch = regex.test(fileNode.value as string)
       measureCompare()
@@ -238,7 +244,7 @@ export const search = ({
     if (
       (queryNode.type as string) === 'JSXText' &&
       (fileNode.type as string) === 'JSXText' &&
-      (queryNode.value as string).includes(stringWildcard)
+      regExpTest(anyStringWildcardRegExp, queryNode.value as string)
     ) {
       const regex = patternToRegex(queryNode.value as string, caseInsensitive)
       const levelMatch = regex.test(fileNode.value as string)
@@ -253,13 +259,19 @@ export const search = ({
     if (
       (queryNode.type as string) === 'TemplateElement' &&
       (fileNode.type as string) === 'TemplateElement' &&
-      ((queryNode.value as any).raw as string).includes(stringWildcard)
+      regExpTest(
+        anyStringWildcardRegExp,
+        (queryNode.value as any).raw as string
+      )
     ) {
       const regex = patternToRegex(
         (queryNode.value as any).raw as string,
         caseInsensitive
       )
-      const levelMatch = regex.test((fileNode.value as any).raw as string)
+      const levelMatch = regExpTest(
+        regex,
+        (fileNode.value as any).raw as string
+      )
       measureCompare()
       return {
         levelMatch: levelMatch,

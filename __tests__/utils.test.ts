@@ -1,9 +1,9 @@
-import { patternToRegex } from "/utils";
+import { patternToRegex } from '/utils'
 
 describe('Utils', () => {
   describe('should transform strings to regexes', () => {
     it('should match JSX event listeners props ', () => {
-      const pattern = 'on$'
+      const pattern = 'on$$'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('onClick')).toBeTruthy()
@@ -11,7 +11,7 @@ describe('Utils', () => {
     })
 
     it('should match any string', () => {
-      const pattern = '$'
+      const pattern = '$$'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('react-native-image')).toBeTruthy()
@@ -19,7 +19,7 @@ describe('Utils', () => {
     })
 
     it('should not match some strings with non-optional wildcard', () => {
-      const pattern = 'react-native-$$'
+      const pattern = 'react-native-$$$'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('react-native-')).toBeFalsy()
@@ -28,7 +28,7 @@ describe('Utils', () => {
     })
 
     it('should not match some strings with optional wildcard', () => {
-      const pattern = 'react-native-$'
+      const pattern = 'react-native-$$'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('react-native-')).toBeTruthy()
@@ -37,7 +37,7 @@ describe('Utils', () => {
     })
 
     it('should match multiple wildcards in pattern', () => {
-      const pattern = '../$$/$/file'
+      const pattern = '../$$$/$$/file'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('../dir/somedir/file')).toBeTruthy()
@@ -47,7 +47,7 @@ describe('Utils', () => {
     })
 
     it('should match wildcard on pattern start', () => {
-      const pattern = '$/file'
+      const pattern = '$$/file'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('../dir/somedir/file')).toBeTruthy()
@@ -58,23 +58,22 @@ describe('Utils', () => {
     })
 
     it('should match space by wildcard', () => {
-      const pattern = 'some$string'
+      const pattern = 'some$$string'
       const regex = patternToRegex(pattern)
 
       expect(regex.test('some string')).toBeTruthy()
     })
 
     it('should throw due to invalid string wildcard', () => {
-      const pattern = 'asd$$$asd$$as$'
+      const pattern = 'asd$$$$asd$$$as$$'
       expect(() => patternToRegex(pattern)).toThrow()
     })
 
     it('should match case insensitive string wildcard', () => {
-      const pattern = 'some$file'
+      const pattern = 'some$$file'
       const regex = patternToRegex(pattern, true)
 
       expect(regex.test('Some filE')).toBeTruthy()
     })
-
   })
 })

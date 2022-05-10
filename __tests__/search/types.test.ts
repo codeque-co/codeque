@@ -54,7 +54,7 @@ describe('Types', () => {
   it('should match type that concatenates other type', () => {
     const queries = [
       `
-      type $ = ScrollViewProps & $$
+      type $$ = ScrollViewProps & $$$
       `
     ]
 
@@ -70,7 +70,7 @@ describe('Types', () => {
   it('should match type concatenation with one wildcard with not matching order', () => {
     const queries = [
       `
-      type $ = $$ & ScrollViewProps
+      type $$ = $$$ & ScrollViewProps
       `
     ]
 
@@ -86,7 +86,7 @@ describe('Types', () => {
   it('should match string enumeration type with exact mode', () => {
     const queries = [
       `
-      type $ = "$" | "$"
+      type $$ = "$$" | "$$"
       `
     ]
 
@@ -102,7 +102,7 @@ describe('Types', () => {
   it('should match string enumeration type with include mode', () => {
     const queries = [
       `
-      type $ = "$" | "$"
+      type $$ = "$$" | "$$"
       `
     ]
 
@@ -118,8 +118,8 @@ describe('Types', () => {
   it('should match generic type parametrization', () => {
     const queries = [
       `
-        type $ = {
-          $: $<$$>;
+        type $$ = {
+          $$: $$<$$$>;
         };     
        `
     ]
@@ -136,8 +136,8 @@ describe('Types', () => {
   it('should match indexed object type with wildcard', () => {
     const queries = [
       `
-      type $ = {
-        [key: string]: $$;
+      type $$ = {
+        [key: string]: $$$;
       };   
        `
     ]
@@ -154,7 +154,7 @@ describe('Types', () => {
   it('should match some indexed object type with partially wildcard identifier', () => {
     const queries = [
       `
-      type $Visibility = {
+      type $$Visibility = {
         [key: string]: boolean | undefined
       };   
        `
@@ -172,8 +172,8 @@ describe('Types', () => {
   it('should match some indexed object type', () => {
     const queries = [
       `
-      type $ = {
-        [key: $]: $$
+      type $$ = {
+        [key: $$]: $$$
       };   
        `
     ]
@@ -190,8 +190,8 @@ describe('Types', () => {
   it('should match types union inside indexed object type', () => {
     const queries = [
       `
-      type $ = {
-        [key: string]: boolean | $;
+      type $$ = {
+        [key: string]: boolean | $$;
       };   
        `
     ]
@@ -224,7 +224,7 @@ describe('Types', () => {
   it('should match wildcard as generic param', () => {
     const queries = [
       `
-      type ReturnTypeInferer<$> = $ extends (a: Record<string, string>) => infer U ? U : never; 
+      type ReturnTypeInferer<$$> = $$ extends (a: Record<string, string>) => infer U ? U : never; 
        `
     ]
 
@@ -240,7 +240,7 @@ describe('Types', () => {
   it('should match wildcard as conditional extends part', () => {
     const queries = [
       `
-      type ReturnTypeInferer<$> = $ extends $$ ? U : never; 
+      type ReturnTypeInferer<$$> = $$ extends $$$ ? U : never; 
        `
     ]
 
@@ -256,7 +256,7 @@ describe('Types', () => {
   it('should match wildcard in conditional type', () => {
     const queries = [
       `
-      type $<T> = T extends $$ ? $ : $
+      type $$<T> = T extends $$$ ? $$ : $$
        `
     ]
 
@@ -272,7 +272,7 @@ describe('Types', () => {
   it('should match wildcard as conditional type', () => {
     const queries = [
       `
-      type $<T> = $$
+      type $$<T> = $$$
        `
     ]
 
@@ -288,7 +288,7 @@ describe('Types', () => {
   it('should match type parameter wildcard', () => {
     const queries = [
       `
-        type $<$$> = G
+        type $$<$$$> = G
        `
     ]
 
@@ -385,7 +385,7 @@ describe('Types', () => {
   it('should match call expression with typesParameters by query without typesParameters', () => {
     const queries = [
       `
-        use$Form$()
+        use$$Form$$()
        `
     ]
 
@@ -408,8 +408,8 @@ describe('Types', () => {
   it('should match some interface', () => {
     const queries = [
       `
-        interface $ {
-          $_ref1: string
+        interface $$ {
+          $$_ref1: string
         }
        `
     ]
@@ -426,7 +426,7 @@ describe('Types', () => {
   it('should match interface with wildcard in extends', () => {
     const queries = [
       `
-        interface A extends $$ {
+        interface A extends $$$ {
         }
        `
     ]
@@ -443,7 +443,7 @@ describe('Types', () => {
   it('should match interface with wildcard in extends with type param', () => {
     const queries = [
       `
-        interface A extends $<$$> {
+        interface A extends $$<$$$> {
         }
        `
     ]
@@ -460,7 +460,7 @@ describe('Types', () => {
   it('should match interface with extends with double wildcard', () => {
     const queries = [
       `
-        interface $$ {
+        interface $$$ {
 
         }
        `

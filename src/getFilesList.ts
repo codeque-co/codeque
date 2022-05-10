@@ -13,6 +13,7 @@ import escapeGlob from 'glob-escape'
 const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
+  console.log('getting entry points', root, entryPoint)
   const tree = await parseDependencyTree(escapeGlob(entryPoint), {
     context: root
   })

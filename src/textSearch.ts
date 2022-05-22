@@ -41,7 +41,30 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
 
   parts = parts.map((part, idx) => {
     const isStringContent = idx % 2 === 1
-    let result = part
+
+    const zipParts = (parts: string[]) => {
+      let result = ''
+
+      const isWildcardRegExp = /\$\$\$?m?/g
+
+      for (let i = 0; i < parts.length; i++) {
+        const currentPart = parts[i]
+        const nextPart = parts[i + 1] ?? ''
+        if (
+          (currentPart.match(isWildcardRegExp) ?? []).length > 0 ||
+          (nextPart.match(isWildcardRegExp) ?? []).length > 0 ||
+          nextPart === ''
+        ) {
+          result += currentPart
+        } else {
+          result += `${currentPart}(\\s)*`
+        }
+      }
+
+      return result
+    }
+
+    const partsOfPart = part
       .split(nonIdentifierOrKeyword)
       .filter((str) => str !== '')
       .map((subStr) => {
@@ -80,13 +103,16 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
       .flat(1)
       .filter((str) => str.trim() !== '')
       .map((subStr) => {
+        console.log('subString', subStr)
         if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
           return escaped
         }
         return subStr
       })
-      .join(isStringContent ? '' : '(\\s)*')
+
+    let result = isStringContent ? partsOfPart.join('') : zipParts(partsOfPart)
+
     if (!isStringContent) {
       result = result.replace(/\s+/g, '(\\s)*').replace(/;/g, ';?')
     }
@@ -104,6 +130,8 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
     parts.join(`("|')`),
     'gm' + (caseInsensitive ? 'i' : '')
   )
+
+  console.log('query', query)
 
   return query
 }
@@ -125,10 +153,22 @@ export function textSearch({
       const fileContent = fs.readFileSync(filePath).toString()
 
       for (const query of queries) {
-        const matches = uniqueItems(fileContent.match(query) ?? [])
+        const matches = fileContent.match(query) ?? []
+
+        let contentToMatchPosition = fileContent
 
         const transformedMatches = matches.map((match) => {
-          const matchPositionData = getMatchPosition(match, fileContent)
+          const matchPositionData = getMatchPosition(
+            match,
+            contentToMatchPosition
+          )
+
+          // replace match in content to properly find the same match in the source file
+          contentToMatchPosition = contentToMatchPosition.replace(
+            match,
+            ' '.padStart(match.length)
+          )
+
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
             matchPositionData,
             fileContent

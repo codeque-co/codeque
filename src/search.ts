@@ -28,6 +28,7 @@ import {
   shouldCompareNode,
   anyStringWildcardRegExp
 } from './astUtils'
+import { getExtendedCodeFrame } from '/utils'
 
 export type SearchArgs = {
   filePaths: string[]
@@ -37,7 +38,14 @@ export type SearchArgs = {
   debug?: boolean
 }
 
-export type Matches = Array<Match & { filePath: string }>
+export type ExtendedCodeFrame = {
+  code: string
+  startLine: number
+}
+
+export type Matches = Array<
+  Match & { filePath: string; extendedCodeFrame?: ExtendedCodeFrame }
+>
 
 export type SearchResults = {
   matches: Matches
@@ -605,11 +613,22 @@ export const search = ({
           for (const { queryNode } of queries) {
             const matches = traverseAndMatch(bodyPart, queryNode)
             allMatches.push(
-              ...matches.map((match) => ({
-                filePath,
-                ...match,
-                code: prepareCodeResult({ fileContent, ...match })
-              }))
+              ...matches.map((match) => {
+                const code = prepareCodeResult({ fileContent, ...match })
+                const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
+                  match,
+                  fileContent
+                )
+                return {
+                  filePath,
+                  ...match,
+                  code,
+                  extendedCodeFrame: {
+                    code: extendedCodeFrame,
+                    startLine: match.loc.start.line + newStartLine
+                  }
+                }
+              })
             )
 
             if (matches.length > 0) {

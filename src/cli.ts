@@ -189,14 +189,21 @@ program
         print(cyan(bold(resultsText)))
 
         limitedResults.forEach((result) => {
-          const startLine = result.loc.start.line
-          const codeFrame = getCodeFrame(result.code, startLine)
+          const resultCode = result.extendedCodeFrame
+            ? result.extendedCodeFrame.code
+            : result.code
+          const matchStartLine = result.loc.start.line
+          const codeFrameStartLine = result.extendedCodeFrame
+            ? result.extendedCodeFrame.startLine
+            : matchStartLine
+
+          const codeFrame = getCodeFrame(resultCode, codeFrameStartLine)
           const relativePath =
             root === process.cwd()
               ? path.relative(resolvedRoot, result.filePath)
               : result.filePath
           print(
-            `${green(relativePath)}:${magenta(startLine)}:${yellow(
+            `${green(relativePath)}:${magenta(matchStartLine)}:${yellow(
               result.loc.start.column + 1
             )}`
           )

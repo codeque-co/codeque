@@ -131,3 +131,60 @@ export const regExpTest = (regExp: RegExp, text: string) => {
 
   return matches !== null && matches.length > 0
 }
+
+export const uniqueItems = <T = unknown>(...arrays: Array<T | Array<T>>) => {
+  return [...new Set(arrays.flat())]
+}
+
+const reverse = (text: string) => {
+  return text.split('').reverse().join('')
+}
+
+const newLineCharLength = '\n'.length
+
+export const getExtendedCodeFrame = (
+  { start, end }: { start: number; end: number },
+  fileContent: string
+): [string, number] => {
+  const basicMatch = fileContent.substring(start, end)
+  const numberOfLines = 1 + (basicMatch.match(/\n/g)?.length ?? 0)
+
+  const suffixContent = fileContent.substring(end)
+  const positionOfNextLineEndInSuffix = suffixContent.search(/\n/g)
+  let positionOfNextLineEnd =
+    end +
+    (positionOfNextLineEndInSuffix > -1
+      ? positionOfNextLineEndInSuffix
+      : suffixContent.length)
+
+  const prefixContent = fileContent.substring(0, start)
+  const positionOfPrevLineEndInPrefix = reverse(prefixContent).search(/\n/g)
+  let positionOfPrevLineEnd =
+    start -
+    (positionOfPrevLineEndInPrefix > -1
+      ? positionOfPrevLineEndInPrefix
+      : prefixContent.length)
+
+  let moveStartLine = 0
+
+  if (numberOfLines < 3) {
+    moveStartLine = -1
+
+    positionOfPrevLineEnd -=
+      reverse(
+        prefixContent.substring(0, positionOfPrevLineEnd - newLineCharLength)
+      ).search(/\n/g) + newLineCharLength
+
+    positionOfNextLineEnd +=
+      suffixContent
+        .substring(positionOfNextLineEnd - end + newLineCharLength)
+        .search(/\n/g) + newLineCharLength
+  }
+
+  const newCodeFrame = fileContent.substring(
+    positionOfPrevLineEnd,
+    positionOfNextLineEnd
+  )
+
+  return [newCodeFrame, moveStartLine]
+}

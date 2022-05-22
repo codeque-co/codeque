@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { SearchArgs, SearchResults } from '/search'
+import { uniqueItems, getExtendedCodeFrame } from '/utils'
 
 // We process '$' separately
 const nonIdentifierOrKeyword = /([^\w\s$])/
@@ -32,12 +33,8 @@ const getMatchPosition = (match: string, fileContents: string) => {
   }
 }
 
-export function textSearch({
-  queryCodes,
-  filePaths,
-  caseInsensitive
-}: SearchArgs): SearchResults {
-  let parts = queryCodes[0]
+const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
+  let parts = queryCode
     .split(/"/g)
     .map((part) => part.split(/'/g))
     .flat(1)
@@ -108,6 +105,18 @@ export function textSearch({
     'gm' + (caseInsensitive ? 'i' : '')
   )
 
+  return query
+}
+
+export function textSearch({
+  queryCodes,
+  filePaths,
+  caseInsensitive
+}: SearchArgs): SearchResults {
+  const queries = queryCodes.map((queryCode) =>
+    prepareQuery(queryCode, caseInsensitive)
+  )
+
   const searchErrors = []
   const allMatches = []
   for (const filePath of filePaths) {
@@ -115,14 +124,29 @@ export function textSearch({
       // sync file getting works faster :man-shrug;
       const fileContent = fs.readFileSync(filePath).toString()
 
-      const matches = fileContent.match(query) ?? []
-      const transformedMatches = matches.map((match) => ({
-        ...getMatchPosition(match, fileContent),
-        code: match,
-        query: query.toString(),
-        filePath
-      }))
-      allMatches.push(...transformedMatches)
+      for (const query of queries) {
+        const matches = uniqueItems(fileContent.match(query) ?? [])
+
+        const transformedMatches = matches.map((match) => {
+          const matchPositionData = getMatchPosition(match, fileContent)
+          const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
+            matchPositionData,
+            fileContent
+          )
+
+          return {
+            ...matchPositionData,
+            code: match,
+            extendedCodeFrame: {
+              code: extendedCodeFrame,
+              startLine: matchPositionData.loc.start.line + newStartLine
+            },
+            query: query.toString(),
+            filePath
+          }
+        })
+        allMatches.push(...transformedMatches)
+      }
     } catch (e) {
       searchErrors.push(e)
       console.error(filePath, e)

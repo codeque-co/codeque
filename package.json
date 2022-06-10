@@ -10,6 +10,7 @@
   "engines": {
     "node": ">=14"
   },
+  "homepage": "https://codeque.co",
   "main": "dist/cli.js",
   "files": [
     "dist/cli.js",
@@ -46,6 +47,7 @@
     "fs-extra": "^10.0.0",
     "jest": "^27.4.4",
     "node-fetch-commonjs": "^3.1.1",
+    "release-it": "^15.0.0",
     "ts-jest": "^27.1.1",
     "typescript": "^4.5.2",
     "unzipper": "^0.10.11",
@@ -53,7 +55,6 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "dpdm": "^3.8.0",
     "@babel/code-frame": "^7.16.0",
     "@babel/generator": "7.16.0",
     "@babel/parser": "7.16.4",
@@ -62,6 +63,7 @@
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "dedent": "^0.7.0",
+    "dpdm": "^3.8.0",
     "glob-escape": "^0.0.2",
     "ignore": "^5.1.9",
     "ora": "^6.0.1",
@@ -83,6 +85,7 @@
     "test:setup": "node ./dist/tools/getFixtures.js",
     "cruise": "depcruise --include-only \"^src\" --output-type dot src | dot -T svg > dependencygraph.svg",
     "lint": "eslint --ext .js,.ts src",
-    "lint:fix": "yarn lint --fix"
+    "lint:fix": "yarn lint --fix",
+    "release": "release-it"
   }
 }

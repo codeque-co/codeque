@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
@@ -19,7 +19,7 @@ describe('Other', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -54,7 +54,7 @@ describe('Other', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries

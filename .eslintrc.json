@@ -18,6 +18,7 @@
     "node/shebang": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "node/no-unpublished-import": "off",
-    "node/no-unpublished-require": "off"
+    "node/no-unpublished-require": "off",
+    "@typescript-eslint/no-var-requires":"off"
   }
 }

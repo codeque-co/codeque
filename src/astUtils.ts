@@ -1,6 +1,6 @@
 import { parse, ParserOptions } from '@babel/parser'
 // import omit from 'object.omit';
-import { wasmFns } from './wasm'
+// import { wasmFns } from './wasm'
 import { NODE_FIELDS } from '@babel/types'
 
 export type Position = {
@@ -127,7 +127,7 @@ export const normalizeText = (text: string) =>
   text.trim().replace(/\s+/g, SPACE_CHAR)
 
 export const sanitizeJSXText = (node: PoorNodeType) => {
-  wasmFns.trim_value(node)
+  // wasmFns.trim_value(node)
   //@ts-ignore
   node.value = normalizeText(node.value)
   //@ts-ignore

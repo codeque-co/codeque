@@ -1,6 +1,5 @@
-import fs from 'fs'
-import { SearchArgs, SearchResults } from '/search'
-import { uniqueItems, getExtendedCodeFrame } from '/utils'
+import { FileSystemSearchArgs, SearchResults } from './searchStages'
+import { getExtendedCodeFrame } from '/utils'
 
 // We process '$' separately
 const nonIdentifierOrKeyword = /([^\w\s$])/
@@ -103,7 +102,6 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
       .flat(1)
       .filter((str) => str.trim() !== '')
       .map((subStr) => {
-        console.log('subString', subStr)
         if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
           return escaped
@@ -131,16 +129,19 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
     'gm' + (caseInsensitive ? 'i' : '')
   )
 
-  console.log('query', query)
-
   return query
+}
+
+type TextSearchArgs = FileSystemSearchArgs & {
+  getFileContent: (filePath: string) => string
 }
 
 export function textSearch({
   queryCodes,
   filePaths,
-  caseInsensitive
-}: SearchArgs): SearchResults {
+  caseInsensitive,
+  getFileContent
+}: TextSearchArgs): SearchResults {
   const queries = queryCodes.map((queryCode) =>
     prepareQuery(queryCode, caseInsensitive)
   )
@@ -150,7 +151,7 @@ export function textSearch({
   for (const filePath of filePaths) {
     try {
       // sync file getting works faster :man-shrug;
-      const fileContent = fs.readFileSync(filePath).toString()
+      const fileContent = getFileContent(filePath)
 
       for (const query of queries) {
         const matches = fileContent.match(query) ?? []

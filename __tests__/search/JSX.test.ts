@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
@@ -32,6 +32,11 @@ describe('JSX', () => {
           Press to
           Download
         </Button>
+
+        <Button>
+          Click
+          <Icon />
+        </Button>
       </>
     `
     )
@@ -43,7 +48,7 @@ describe('JSX', () => {
 
   it('Should find all self-closing JSX', () => {
     const query = `<$$ />`
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -56,7 +61,7 @@ describe('JSX', () => {
       <Drawer.Section title="Preferences">
       </Drawer.Section>
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -88,7 +93,7 @@ describe('JSX', () => {
 
   it('Should find JSX by prop name', () => {
     const query = `<$$ value={$$$} />`
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -98,7 +103,7 @@ describe('JSX', () => {
 
   it('Should find JSX by text content', () => {
     const query = `<Text>RTL</Text>`
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -113,7 +118,7 @@ describe('JSX', () => {
         Download
       </Button>
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: [query]
@@ -123,7 +128,7 @@ describe('JSX', () => {
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
     const query = `<Text>r$$L</Text>`
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
@@ -134,7 +139,7 @@ describe('JSX', () => {
 
   it('Should find JSX by text content case insensitive', () => {
     const query = `<Text>rtl</Text>`
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
@@ -155,7 +160,7 @@ describe('JSX', () => {
         />
       </View>
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: [query]
@@ -175,13 +180,13 @@ describe('JSX', () => {
       } from 'react-native-paper';
     `
 
-    const { matches: resultsUsage } = search({
+    const { matches: resultsUsage } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [usageQuery]
     })
 
-    const { matches: resultsImport } = search({
+    const { matches: resultsImport } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [importQuery]
@@ -205,7 +210,7 @@ describe('JSX', () => {
         $$={IconButton}
       />
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query1, query2]
@@ -229,7 +234,7 @@ describe('JSX', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -263,7 +268,7 @@ describe('JSX', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -293,7 +298,7 @@ describe('JSX', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -320,7 +325,7 @@ describe('JSX', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -338,13 +343,13 @@ describe('JSX', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries
     })
 
-    expect(matches.length).toBe(2)
+    expect(matches.length).toBe(3)
     expect(
       compareCode(
         matches[0].code,
@@ -352,6 +357,35 @@ describe('JSX', () => {
           Press to 
           Download
         </Button>
+      `
+      )
+    ).toBeTruthy()
+  })
+
+  it('Should match code with nested JSX when using wildcard on text content', () => {
+    const queries = [
+      `
+        <Button>
+          c$$$
+        </Button>;
+    `
+    ]
+
+    const { matches } = searchInFileSystem({
+      mode: 'include',
+      caseInsensitive: true,
+      filePaths: mockedFilesList,
+      queryCodes: queries
+    })
+
+    expect(matches.length).toBe(1)
+    expect(
+      compareCode(
+        matches[0].code,
+        ` <Button>
+        Click
+        <Icon />
+      </Button>
       `
       )
     ).toBeTruthy()

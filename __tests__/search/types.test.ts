@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
@@ -58,7 +58,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -74,7 +74,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -90,7 +90,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -106,7 +106,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -124,7 +124,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -142,7 +142,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -160,7 +160,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -178,7 +178,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -196,7 +196,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -212,7 +212,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -228,7 +228,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -244,7 +244,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -260,7 +260,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -276,7 +276,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -292,7 +292,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -312,13 +312,13 @@ describe('Types', () => {
        `
     ]
 
-    const { matches: matchesInclude } = search({
+    const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
     })
 
-    const { matches: matchesExact } = search({
+    const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -339,13 +339,13 @@ describe('Types', () => {
        `
     ]
 
-    const { matches: matchesInclude } = search({
+    const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
     })
 
-    const { matches: matchesExact } = search({
+    const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -366,13 +366,13 @@ describe('Types', () => {
        `
     ]
 
-    const { matches: matchesInclude } = search({
+    const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
     })
 
-    const { matches: matchesExact } = search({
+    const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -389,13 +389,13 @@ describe('Types', () => {
        `
     ]
 
-    const { matches: matchesInclude } = search({
+    const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
     })
 
-    const { matches: matchesExact } = search({
+    const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -414,7 +414,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -431,7 +431,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -448,7 +448,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -466,7 +466,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -484,7 +484,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -502,7 +502,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -521,7 +521,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries
@@ -540,7 +540,7 @@ describe('Types', () => {
        `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries

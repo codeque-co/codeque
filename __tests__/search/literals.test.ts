@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import fs from 'fs'
 
@@ -40,7 +40,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -56,7 +56,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -72,7 +72,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
@@ -85,7 +85,7 @@ describe('Types', () => {
   it('should match string with quite inside regardless used quotes', () => {
     const queries1 = [`('\\'other');`]
 
-    const { matches: results1 } = search({
+    const { matches: results1 } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries1
@@ -95,7 +95,7 @@ describe('Types', () => {
 
     const queries2 = [`("'other");`]
 
-    const { matches: results2 } = search({
+    const { matches: results2 } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries2
@@ -107,7 +107,7 @@ describe('Types', () => {
   it('should match string using pattern', () => {
     const queries = [`('$$other');`]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -119,7 +119,7 @@ describe('Types', () => {
   it('should match string using pattern 2', () => {
     const queries = [`('$$t$$');`]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -131,7 +131,7 @@ describe('Types', () => {
   it('should match string with wildcard inside string', () => {
     const queries = [`('react$$native');`]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -143,7 +143,7 @@ describe('Types', () => {
   it('should match numeric literal', () => {
     const queries = [`(0x0);`]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -155,7 +155,7 @@ describe('Types', () => {
   it('should match array literal elements with mixed order', () => {
     const queries = [`[$$$, $$, a$$, 'asd']`]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -167,7 +167,7 @@ describe('Types', () => {
   it('should match template literals with empty quasis', () => {
     const queries = ['`${id}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -179,7 +179,7 @@ describe('Types', () => {
   it('should not match template literals with empty quasis using required string wildcard', () => {
     const queries = ['`$$$${id}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -191,7 +191,7 @@ describe('Types', () => {
   it('should match template literals with quasis', () => {
     const queries = ['`val ${id} text ${id2}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -203,7 +203,7 @@ describe('Types', () => {
   it('should match template literals with quasis with wildcard', () => {
     const queries = ['`val ${id} $$ ${id2}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -215,7 +215,7 @@ describe('Types', () => {
   it('should match template literals with quasis with wildcard in id', () => {
     const queries = ['`val ${$$} text ${$$}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -227,7 +227,7 @@ describe('Types', () => {
   it('should match multiple template literals with include mode', () => {
     const queries = ['`{$$}`']
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries

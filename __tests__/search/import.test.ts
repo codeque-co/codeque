@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
@@ -17,7 +17,7 @@ describe('JSX', () => {
         IconButton
       } from 'react-native-paper'
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -33,7 +33,7 @@ describe('JSX', () => {
         Button,
       } from 'react-native-paper'
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: [query]
@@ -46,7 +46,7 @@ describe('JSX', () => {
     const query = `
       import $$$ from 'react-native';
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -59,7 +59,7 @@ describe('JSX', () => {
     const query = `
       import $$ from '../ScreenWrapper';
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -72,7 +72,7 @@ describe('JSX', () => {
     const query = `
       import $$screenwrapper from '../screenwrapper';
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
@@ -86,7 +86,7 @@ describe('JSX', () => {
     const query = `
       import { Provider as $$ } from 'react-native-paper';
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -99,7 +99,7 @@ describe('JSX', () => {
     const query = `
       import $$, { $$$ } from '$$'; 
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -113,7 +113,7 @@ describe('JSX', () => {
     const query = `
       export { $$ as $$$ } from '$$'; 
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]

@@ -1,5 +1,5 @@
 import { search as searchMultiThread } from '/searchMultiThread'
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 
 import { compareCode } from '/astUtils'
 import path from 'path'
@@ -25,7 +25,7 @@ it('should search using multiple threads and give the same matches count as sing
     () => $$$
   `
 
-  const { matches: resultsSingle } = search({
+  const { matches: resultsSingle } = searchInFileSystem({
     mode: 'exact',
     filePaths: filesList,
     queryCodes: [query]

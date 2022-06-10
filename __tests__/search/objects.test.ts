@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import fs from 'fs'
@@ -60,7 +60,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -82,7 +82,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       caseInsensitive: true,
@@ -103,7 +103,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -121,7 +121,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -139,7 +139,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -175,7 +175,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -194,7 +194,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -220,7 +220,7 @@ describe('Types', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries

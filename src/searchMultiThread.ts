@@ -1,11 +1,13 @@
-import { Worker } from 'worker_threads'
 import { cpus } from 'os'
-import path from 'path'
-import type { SearchArgs, Matches, SearchResults } from './search'
+import { Worker } from 'worker_threads'
+import type { FileSystemSearchArgs, SearchResults } from './searchStages'
 
 const coresCount = Math.round(cpus().length / 2)
 
-export const search = async ({ filePaths, ...params }: SearchArgs) => {
+export const search = async ({
+  filePaths,
+  ...params
+}: FileSystemSearchArgs) => {
   const tasks = []
   const chunksCount = params.mode === 'text' ? 1 : coresCount
   const chunkSize = Math.round(filePaths.length / chunksCount)

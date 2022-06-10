@@ -93,17 +93,16 @@ const extractQueryNode = (fileNode: PoorNodeType) => {
   return unwrapExpressionStatement(getBody(fileNode)[0])
 }
 
+export type ParsedQuery = {
+  queryNode: PoorNodeType
+  uniqueTokens: string[]
+  error: { text: string; location?: any } | null
+}
+
 export const parseQueries = (
   queryCodes: string[],
   caseInsensitive = false
-): [
-  Array<{
-    queryNode: PoorNodeType
-    uniqueTokens: string[]
-    error: { text: string; location?: any } | null
-  }>,
-  boolean
-] => {
+): [Array<ParsedQuery>, boolean] => {
   const inputQueryNodes = queryCodes
     .map((queryText) => {
       let originalError = null

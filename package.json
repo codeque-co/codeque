@@ -1,13 +1,21 @@
 {
-  "name": "magic-search",
-  "version": "1.0.0",
-  "description": "AST based search",
-  "bin": "bin.js",
+  "name": "@codeque/cli",
+  "version": "0.1.0-beta.0",
+  "description": "Supercharged multiline code search and replace tool",
+  "bin": {
+    "codeque": "./bin.js"
+  },
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
-  "license": "MIT",
+  "license": "Sustainable Use License",
   "engines": {
     "node": ">=14"
   },
+  "main": "dist/cli.js",
+  "files": [
+    "dist/cli.js",
+    "dist/worker.js",
+    "LICENSE.md"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
@@ -24,14 +32,12 @@
     "@types/unzipper": "^0.10.4",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
-    "@wasm-tool/wasm-pack-plugin": "^1.6.0",
     "babel-jest": "^27.4.4",
     "babel-loader": "^8.2.3",
     "babel-plugin-root-import": "^6.6.0",
     "copy-webpack-plugin": "^10.2.0",
     "deep-object-diff": "^1.1.7",
     "dependency-cruiser": "^11.3.0",
-    "dpdm": "^3.8.0",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jest": "^24.1.0",
@@ -47,6 +53,7 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
+    "dpdm": "^3.8.0",
     "@babel/code-frame": "^7.16.0",
     "@babel/generator": "7.16.0",
     "@babel/parser": "7.16.4",
@@ -64,13 +71,15 @@
     "build:watch": "webpack --mode development",
     "build": "webpack --mode production",
     "build:standalone": "STANDALONE=true yarn build",
+    "build:browser": "tsc --skipLibCheck --project tsconfig.browser.json --outDir ts-dist",
     "build:pkg": "yarn build:standalone && node ./tools/createPkg.js",
     "build:clean": "rm -rf ./crate/pkg && rm -rf ./crate/target && rm -rf ./dist && rm -rf ./crate-prod",
-    "babel": "rm -rf babel-dist && babel ./ --extensions \".ts,.tsx\" -d babel-dist",
+    "babel": "rm -rf babel-dist && BABEL_ENV=production babel ./ --extensions \".ts,.tsx\" --ignore 'tools' -d babel-dist",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly --declaration --declarationDir ./dist/@types --skipLibCheck",
     "typecheck": "tsc --skipLibCheck --noEmit --project tsconfig.json",
     "dev": "node ./dist/dev.js",
     "cli": "node ./dist/cli.js",
-    "test": "yarn build && jest --passWithNoTests",
+    "test": "jest",
     "test:setup": "node ./dist/tools/getFixtures.js",
     "cruise": "depcruise --include-only \"^src\" --output-type dot src | dot -T svg > dependencygraph.svg",
     "lint": "eslint --ext .js,.ts src",

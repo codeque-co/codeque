@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
@@ -23,7 +23,7 @@ describe('code patterns', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -56,7 +56,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -80,7 +80,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include', // TODO this should be 'exact', no? - we need $$exact() matcher
       filePaths: filesList,
       queryCodes: queries
@@ -137,7 +137,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -153,7 +153,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -168,7 +168,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -181,7 +181,7 @@ describe('code patterns', () => {
     const query = `
       console.log()
     `
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query]
@@ -198,7 +198,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -214,7 +214,7 @@ describe('code patterns', () => {
     `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries

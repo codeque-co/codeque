@@ -1,4 +1,4 @@
-import { search } from '/search'
+import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
@@ -47,7 +47,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -73,7 +73,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries
@@ -102,7 +102,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries
@@ -127,7 +127,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries
@@ -154,7 +154,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries
@@ -180,7 +180,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries
@@ -207,7 +207,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -233,7 +233,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries
@@ -249,7 +249,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries
@@ -265,7 +265,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries
@@ -281,7 +281,7 @@ describe('functions', () => {
       `
     ]
 
-    const { matches } = search({
+    const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries

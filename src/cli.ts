@@ -8,7 +8,6 @@ import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander'
 import ora from 'ora'
-import { textSearch } from './textSearch'
 
 const program = new Command()
 
@@ -166,11 +165,10 @@ program
       }
 
       let spinner = ora(`Getting files list `).start()
-      const searchFN = mode === 'text' ? textSearch : search
       const filePaths = await getFilesList(resolvedRoot, entry, git)
       spinner.stop()
       spinner = ora(`Searching `).start()
-      const { matches, errors } = await searchFN({
+      const { matches, errors } = await search({
         mode,
         filePaths,
         caseInsensitive,

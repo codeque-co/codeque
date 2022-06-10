@@ -69,7 +69,7 @@
     "dpdm": "^3.8.0",
     "glob-escape": "^0.0.2",
     "ignore": "^5.1.9",
-    "ora": "^6.0.1",
+    "ora": "^5.0",
     "prettier": "^2.5.1"
   },
   "scripts": {

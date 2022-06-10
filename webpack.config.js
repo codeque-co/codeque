@@ -37,14 +37,7 @@ module.exports = (_, { mode }) => {
     },
     //Don't transpile & include modules except some ESM modules that does not work otherwise
     externals: []
-      .concat(
-        isStandaloneBuild
-          ? []
-          : Object.keys(pgk.dependencies).filter((dep) => {
-              const depPkg = require(`./node_modules/${dep}/package.json`)
-              return depPkg.type !== 'module'
-            })
-      )
+      .concat(isStandaloneBuild ? [] : Object.keys(pgk.dependencies))
       .reduce((map, dep) => ({
         ...map,
         [dep]: `commonjs2 ${dep}`

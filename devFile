@@ -1,11 +1,5 @@
-const onScroll = ({
-  nativeEvent
-}: NativeSyntheticEvent<NativeScrollEvent>) => {
-  const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
-
-  if (!isIOS) {
-    return velocity.setValue(currentScrollPosition);
+const a = {
+  ["d" + "s"]: {
+    key:val
   }
-
-  setExtended(currentScrollPosition <= 0);
-};
+}

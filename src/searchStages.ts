@@ -281,6 +281,7 @@ const compareNodes = (
       fileKeysToTraverse
     }
   }
+  // Support for wildcards in all nodes
   if (
     IdentifierTypes.includes(queryNode.type as string) &&
     (queryNode.name as string).includes(identifierWildcard)
@@ -358,6 +359,8 @@ const compareNodes = (
     regExpTest(anyStringWildcardRegExp, queryNode.value as string)
 
   log('isStringWithWildcard', isStringWithWildcard)
+
+  // Support for wildcards in strings
   if (isStringWithWildcard) {
     const regex = patternToRegex(queryNode.value as string, caseInsensitive)
     const levelMatch = regex.test(fileNode.value as string)
@@ -369,6 +372,7 @@ const compareNodes = (
     }
   }
 
+  // Support for string wildcards in JSXText
   if (
     (queryNode.type as string) === 'JSXText' &&
     (fileNode.type as string) === 'JSXText' &&
@@ -384,6 +388,7 @@ const compareNodes = (
     }
   }
 
+  // Support for string wildcards in TemplateElements
   if (
     (queryNode.type as string) === 'TemplateElement' &&
     (fileNode.type as string) === 'TemplateElement' &&
@@ -402,6 +407,7 @@ const compareNodes = (
     }
   }
 
+  // Support for numeric wildcard
   if (
     (queryNode.type as string) === 'NumericLiteral' &&
     (fileNode.type as string) === 'NumericLiteral' &&
@@ -412,6 +418,34 @@ const compareNodes = (
       levelMatch: true,
       queryKeysToTraverse: [],
       fileKeysToTraverse
+    }
+  }
+
+  // Support for object property strings, identifiers and numbers comparison
+  if (
+    !isExact &&
+    (queryNode.type as string) === 'ObjectProperty' &&
+    (fileNode.type as string) === 'ObjectProperty' &&
+    !(queryNode.method as boolean) &&
+    !(fileNode.method as boolean)
+  ) {
+    // Key can be Identifier with `name` or String/Number with `value`
+    const queryKeyValue =
+      (queryNode.key as PoorNodeType).name ||
+      (queryNode.key as PoorNodeType).value
+
+    const fileKeyValue =
+      (fileNode.key as PoorNodeType).name ||
+      (fileNode.key as PoorNodeType).value
+
+    // compare with == to automatically cast types
+    if (queryKeyValue == fileKeyValue) {
+      measureCompare()
+      return {
+        levelMatch: true,
+        queryKeysToTraverse: ['value'],
+        fileKeysToTraverse
+      }
     }
   }
 

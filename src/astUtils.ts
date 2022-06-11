@@ -20,7 +20,7 @@ export type Match = {
 }
 
 export type PoorNodeType = {
-  [key: string]: string | number | PoorNodeType[] | PoorNodeType
+  [key: string]: string | number | boolean | PoorNodeType[] | PoorNodeType
 }
 
 export const getBody = (fileNode: PoorNodeType) => {

@@ -39,6 +39,26 @@ describe('Types', () => {
         someKey: someVal,
         fn: () => obj.other
       }
+
+      const objWithEquivalentKeys1 = {
+        5: "val1",
+      }
+
+      const objWithEquivalentKeys2 = {
+        ["5"]: "val2",
+      }
+
+      const objWithEquivalentKeys3 = {
+        "5": "val3"
+      }
+
+      const objWithEquivalentKeys4 = {
+        "aaa": "val4"
+      }
+
+      const objWithEquivalentKeys5 = {
+        aaa: "val5"
+      }
     `
     )
   })
@@ -227,5 +247,28 @@ describe('Types', () => {
     })
 
     expect(matches.length).toBe(2)
+  })
+
+  it('should match equivalent object keys', () => {
+    const queries = [
+      `
+      ({
+        5: $$$
+      })
+      `,
+      `
+      ({
+        aaa: "val$$"
+      })
+      `
+    ]
+
+    const { matches } = searchInFileSystem({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries
+    })
+
+    expect(matches.length).toBe(5)
   })
 })

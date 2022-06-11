@@ -1,26 +1,7 @@
 import { parse, ParserOptions } from '@babel/parser'
 
 import { NODE_FIELDS } from '@babel/types'
-
-export type Position = {
-  line: number
-  column: number
-}
-
-export type Match = {
-  start: number
-  end: number
-  loc: {
-    start: Position
-    end: Position
-  }
-  code: string
-  query: string
-}
-
-export type PoorNodeType = {
-  [key: string]: string | number | boolean | PoorNodeType[] | PoorNodeType
-}
+import { Match, PoorNodeType } from './types'
 
 export const getBody = (fileNode: PoorNodeType) => {
   return (fileNode.program as PoorNodeType).body as PoorNodeType[]

@@ -3,7 +3,8 @@ import fs from 'fs'
 import { search } from '/searchMultiThread'
 import { getFilesList } from '/getFilesList'
 import { green, magenta, cyan, bold, red, yellow } from 'colorette'
-import { Mode, getMode, getCodeFrame, print } from '/utils'
+import { getMode, getCodeFrame, print, groupMatchesByFile } from '/utils'
+import { Mode } from './types'
 import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander'
@@ -178,7 +179,7 @@ program
 
       const endTime = Date.now()
       if (matches.length > 0) {
-        const limitedResults = matches.slice(0, resultsLimitCount)
+        const groupedMatches = Object.entries(groupMatchesByFile(matches))
         const resultsText =
           matches.length <= resultsLimitCount
             ? `Results:\n`
@@ -186,31 +187,66 @@ program
 
         print(cyan(bold(resultsText)))
 
-        limitedResults.forEach((result) => {
-          const resultCode = result.extendedCodeFrame
-            ? result.extendedCodeFrame.code
-            : result.code
-          const matchStartLine = result.loc.start.line
-          const codeFrameStartLine = result.extendedCodeFrame
-            ? result.extendedCodeFrame.startLine
-            : matchStartLine
+        let printedResultsCounter = 0
+        let currentFileIndex = 0
 
-          const codeFrame = getCodeFrame(resultCode, codeFrameStartLine)
+        while (
+          printedResultsCounter < resultsLimitCount &&
+          groupedMatches[currentFileIndex] !== undefined
+        ) {
+          const [filePath, matches] = groupedMatches[currentFileIndex]
           const relativePath =
             root === process.cwd()
-              ? path.relative(resolvedRoot, result.filePath)
-              : result.filePath
-          print(
-            `${green(relativePath)}:${magenta(matchStartLine)}:${yellow(
-              result.loc.start.column + 1
-            )}`
+              ? path.relative(resolvedRoot, filePath)
+              : filePath
+
+          const leftPaddingForCentering = Math.trunc(
+            (cols - relativePath.length - 4) / 2
           )
-          print('\n' + codeFrame + '\n')
-        })
+          const leftPaddingStr = ''.padStart(leftPaddingForCentering, ' ')
+          print(
+            ''.padStart(leftPaddingForCentering, '━') +
+              '┯'.padEnd(relativePath.length + 3, '━') +
+              '┯' +
+              ''.padEnd(
+                cols - (leftPaddingForCentering + relativePath.length + 4),
+                '━'
+              )
+          )
+          print(leftPaddingStr + '│ ' + bold(green(relativePath)) + ' │')
+          print(leftPaddingStr + '╰'.padEnd(relativePath.length + 3, '─') + '╯')
+          print('')
+
+          for (const match of matches) {
+            if (printedResultsCounter >= resultsLimitCount) {
+              break
+            }
+            const resultCode = match.extendedCodeFrame
+              ? match.extendedCodeFrame.code
+              : match.code
+            const matchStartLine = match.loc.start.line
+            const codeFrameStartLine = match.extendedCodeFrame
+              ? match.extendedCodeFrame.startLine
+              : matchStartLine
+
+            const codeFrame = getCodeFrame(resultCode, codeFrameStartLine)
+
+            print(
+              `${green(relativePath)}:${magenta(matchStartLine)}:${yellow(
+                match.loc.start.column + 1
+              )}`
+            )
+            print('\n' + codeFrame + '\n')
+            printedResultsCounter++
+          }
+
+          currentFileIndex++
+        }
+        print(separator)
 
         print(cyan(bold('Total count:')), magenta(matches.length))
       } else {
-        print(cyan(bold('No results found :c')))
+        print(cyan(bold(`No results found${invertExitCode ? '!' : ' :c'}`)))
       }
 
       print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')

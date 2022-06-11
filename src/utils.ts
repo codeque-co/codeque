@@ -1,14 +1,12 @@
 import { performance } from 'perf_hooks'
 import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
-import { Position } from './astUtils'
 import {
   optionalStringWildcardRegExp,
   requiredStringWildcardRegExp,
   disallowedWildcardRegExp
 } from '/astUtils'
-
-export type Mode = 'exact' | 'include' | 'include-with-order' | 'text'
+import { Matches, Mode, Position } from './types'
 
 export const getMode = (mode: Mode = 'include') => {
   const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']
@@ -168,4 +166,14 @@ export const getExtendedCodeFrame = (
   )
 
   return [newCodeFrame, moveStartLine]
+}
+
+export const groupMatchesByFile = (matches: Matches) => {
+  return matches.reduce((grouped, match) => {
+    if (grouped[match.filePath] === undefined) {
+      grouped[match.filePath] = []
+    }
+    grouped[match.filePath].push(match)
+    return grouped
+  }, {} as Record<string, Matches>)
 }

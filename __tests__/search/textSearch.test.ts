@@ -18,4 +18,10 @@ describe('Text search mode', () => {
     expect(results.matches.length).toBe(7)
     expect(results.matches[0].code).toBe('const { colors } = useTheme(')
   })
+
+  /**
+   * Add one test per wildcard type
+   *
+   * Once-two tests for matching space agnostic
+   */
 })

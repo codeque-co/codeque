@@ -1,6 +1,6 @@
 import { cpus } from 'os'
 import { Worker } from 'worker_threads'
-import type { FileSystemSearchArgs, SearchResults } from './searchStages'
+import type { FileSystemSearchArgs, SearchResults } from './types'
 
 const coresCount = Math.round(cpus().length / 2)
 

@@ -1,6 +1,6 @@
 import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { Mode, measureStart, patternToRegex, regExpTest } from './utils'
+import { measureStart, patternToRegex, regExpTest } from './utils'
 import {
   getBody,
   getSetsOfKeysToCompare,
@@ -8,8 +8,6 @@ import {
   isNode,
   isNodeArray,
   IdentifierTypes,
-  Match,
-  PoorNodeType,
   parseOptions,
   numericWildcard,
   identifierWildcard,
@@ -23,28 +21,7 @@ import {
 import { getExtendedCodeFrame } from '/utils'
 import { ParsedQuery } from '/parseQuery'
 import { Logger } from './logger'
-
-export type FileSystemSearchArgs = {
-  filePaths: string[]
-  queryCodes: string[]
-  mode: Mode
-  caseInsensitive?: boolean
-  debug?: boolean
-}
-
-export type ExtendedCodeFrame = {
-  code: string
-  startLine: number
-}
-
-export type Matches = Array<
-  Match & { filePath: string; extendedCodeFrame?: ExtendedCodeFrame }
->
-
-export type SearchResults = {
-  matches: Matches
-  errors: Array<any>
-}
+import { Match, Matches, Mode, PoorNodeType } from './types'
 
 export const dedupMatches = (
   matches: Matches,

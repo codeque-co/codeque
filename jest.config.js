@@ -14,6 +14,6 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
     prefix: '<rootDir>'
   }),
-  testPathIgnorePatterns: ['__fixtures__'],
+  testPathIgnorePatterns: ['__fixtures__', 'ts-dist'],
   setupFilesAfterEnv: ['./jest.setup.js']
 }

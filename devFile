@@ -1,5 +1,0 @@
-const a = {
-  ["d" + "s"]: {
-    key:val
-  }
-}

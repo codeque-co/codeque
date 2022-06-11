@@ -7,8 +7,6 @@ import {
   isNodeArray,
   numericWildcard,
   parseOptions,
-  PoorNodeType,
-  Position,
   identifierWildcard,
   unwrapExpressionStatement,
   removeIdentifierRefFromWildcard,
@@ -16,6 +14,7 @@ import {
   anyStringWildcardRegExp,
   SPACE_CHAR
 } from './astUtils'
+import { PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
 import { wildcardChar, disallowedWildcardRegExp } from '/astUtils'
 

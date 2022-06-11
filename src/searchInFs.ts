@@ -2,14 +2,8 @@ import fs from 'fs'
 import { measureStart } from '/utils'
 import { createLogger } from './logger'
 import { parseQueries } from '/parseQuery'
-import {
-  FileSystemSearchArgs,
-  Matches,
-  SearchResults,
-  searchFileContent,
-  SearchSettings,
-  dedupMatches
-} from './searchStages'
+import { searchFileContent, SearchSettings, dedupMatches } from './searchStages'
+import { FileSystemSearchArgs, Matches, SearchResults } from './types'
 import { textSearch } from '/textSearch'
 
 export const searchInFileSystem = ({

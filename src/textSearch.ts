@@ -1,5 +1,5 @@
-import { FileSystemSearchArgs, SearchResults } from './searchStages'
 import { getExtendedCodeFrame } from '/utils'
+import { FileSystemSearchArgs, SearchResults } from '/types'
 
 // We process '$' separately
 const nonIdentifierOrKeyword = /([^\w\s$])/
@@ -125,7 +125,22 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
   })
 
   const query = new RegExp(
-    parts.join(`("|')`),
+    // parts.join(`("|')`),
+    parts.reduce((regexp, part, index) => {
+      if (index % 2 === 1) {
+        regexp += '(\\s)*'
+      }
+
+      regexp += `("|')`
+
+      if (index % 2 === 0) {
+        regexp += '(\\s)*'
+      }
+
+      regexp += part
+
+      return regexp
+    }),
     'gm' + (caseInsensitive ? 'i' : '')
   )
 

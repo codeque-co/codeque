@@ -1,8 +1,8 @@
 import path from 'path'
 import fs from 'fs'
 import { searchInFileSystem } from './searchInFs'
-import { Mode, getMode, logMetrics, print } from './utils'
-
+import { getMode, logMetrics, print } from './utils'
+import { Mode } from './types'
 const query = fs.readFileSync(path.resolve('./devQuery')).toString()
 
 const mockFilePath = path.resolve('./devFile')

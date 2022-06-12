@@ -40,12 +40,14 @@ export const search = async ({
     (allResults, partialResult) => {
       return {
         matches: [...allResults.matches, ...partialResult.matches],
-        errors: [...allResults.errors, ...partialResult.errors]
+        errors: [...allResults.errors, ...partialResult.errors],
+        hints: partialResult.hints // hints should be the same for each partial result
       }
     },
     {
       matches: [],
-      errors: []
+      errors: [],
+      hints: []
     }
   )
 }

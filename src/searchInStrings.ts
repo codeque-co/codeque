@@ -4,6 +4,7 @@ import { dedupMatches, SearchSettings, searchFileContent } from './searchStages'
 import { textSearch } from '/textSearch'
 import { createLogger } from './logger'
 import { FileSystemSearchArgs, Matches } from './types'
+import { SearchResults } from '/types'
 
 type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {
   files: {
@@ -18,7 +19,7 @@ export const searchInStrings = ({
   mode,
   debug = false,
   caseInsensitive = false
-}: StringsSearchArgs) => {
+}: StringsSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
       return files.find((file) => file.path === filePath)?.content as string
@@ -50,7 +51,8 @@ export const searchInStrings = ({
   if (!parseOk) {
     return {
       matches: [],
-      errors: queries.filter((queryResult) => queryResult.error)
+      errors: queries.filter((queryResult) => queryResult.error),
+      hints: queries.map(({ hints }) => hints)
     }
   }
   const searchErrors = []
@@ -88,7 +90,8 @@ export const searchInStrings = ({
   }
   return {
     matches: dedupMatches(allMatches, log, debug),
-    errors: searchErrors
+    errors: searchErrors,
+    hints: queries.map(({ hints }) => hints)
   }
 }
 

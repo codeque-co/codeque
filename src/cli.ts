@@ -2,9 +2,9 @@ import path from 'path'
 import fs from 'fs'
 import { search } from '/searchMultiThread'
 import { getFilesList } from '/getFilesList'
-import { green, magenta, cyan, bold, red, yellow } from 'colorette'
+import { green, magenta, cyan, bold, red, yellow, blue } from 'colorette'
 import { getMode, getCodeFrame, print, groupMatchesByFile } from '/utils'
-import { Mode } from './types'
+import { Hint, Mode } from './types'
 import { parseQueries } from '/parseQuery'
 import { openAsyncEditor } from '/terminalEditor'
 import { Command } from 'commander'
@@ -24,6 +24,12 @@ const textEllipsis = (text: string, maxLength: number) => {
       : text
 
   return shortenedRoot
+}
+
+const prepareHintText = (hint: Hint) => {
+  return hint.tokens
+    .map(({ content, type }) => (type === 'code' ? `\`${content}\`` : content))
+    .join(' ')
 }
 
 program
@@ -143,7 +149,7 @@ program
 
       const startTime = Date.now()
 
-      const [results, parseOk] = parseQueries(queries)
+      const [queryParseResults, parseOk] = parseQueries(queries)
       if (mode === 'text') {
         print(separator + '\n' + rootText + modeAndCaseText)
         queries.forEach((q) => {
@@ -156,7 +162,8 @@ program
         })
       } else {
         queries.forEach((q, index) => {
-          const error = results[index].error
+          const error = queryParseResults[index].error
+          const hints = queryParseResults[index].hints
           if (error) {
             if (q.length > 0) {
               print(
@@ -166,6 +173,10 @@ program
               )
             }
             print(red(bold('Error:')), error?.text, '\n')
+          }
+          if (hints.length > 0) {
+            const preparedText = prepareHintText(hints[0])
+            print(blue(bold('Hint:')), preparedText, '\n')
           }
         })
         process.exit(1)
@@ -265,6 +276,15 @@ program
       } else {
         print(cyan(bold(`No results found${invertExitCode ? '!' : ' :c'}`)))
       }
+
+      queryParseResults.forEach(({ hints }, queryIndex) => {
+        hints.forEach((hint, hintIndex) => {
+          if (queryIndex === 0 && hintIndex === 0) {
+            print('') // new line
+          }
+          print(blue(bold('Hint:')), prepareHintText(hint), '\n')
+        })
+      })
 
       print(cyan(bold('Found in:')), magenta((endTime - startTime) / 1000), 's')
       print(cyan(bold('Searched files:')), magenta(filePaths.length))

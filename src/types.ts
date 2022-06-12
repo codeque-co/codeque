@@ -41,5 +41,14 @@ export type FileSystemSearchArgs = {
 
 export type SearchResults = {
   matches: Matches
+  hints: Hint[][] // array of hints for each query
   errors: Array<any>
+}
+
+export type Hint = {
+  text: string
+  tokens: Array<{
+    content: string
+    type: 'text' | 'code'
+  }>
 }

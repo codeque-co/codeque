@@ -209,6 +209,6 @@ export function textSearch({
       console.error(filePath, e)
     }
   }
-  const result = { errors: searchErrors, matches: allMatches }
+  const result = { errors: searchErrors, matches: allMatches, hints: [] }
   return result
 }

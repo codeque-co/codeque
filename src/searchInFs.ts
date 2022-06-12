@@ -44,6 +44,7 @@ export const searchInFileSystem = ({
   if (!parseOk) {
     return {
       matches: [],
+      hints: queries.map(({ hints }) => hints),
       errors: queries.filter((queryResult) => queryResult.error)
     }
   }
@@ -88,6 +89,7 @@ export const searchInFileSystem = ({
   }
   return {
     matches: dedupMatches(allMatches, log, debug),
-    errors: searchErrors
+    errors: searchErrors,
+    hints: queries.map(({ hints }) => hints)
   }
 }

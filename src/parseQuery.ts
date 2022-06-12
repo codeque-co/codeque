@@ -1,4 +1,4 @@
-import { parse, ParseError } from '@babel/parser'
+import { parse, ParseError as BabelParseError } from '@babel/parser'
 import {
   getBody,
   getKeysToCompare,
@@ -14,7 +14,7 @@ import {
   anyStringWildcardRegExp,
   SPACE_CHAR
 } from './astUtils'
-import { PoorNodeType, Position } from './types'
+import { Hint, PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
 import { wildcardChar, disallowedWildcardRegExp } from '/astUtils'
 
@@ -92,10 +92,52 @@ const extractQueryNode = (fileNode: PoorNodeType) => {
   return unwrapExpressionStatement(getBody(fileNode)[0])
 }
 
+type ParseError = {
+  text: string
+  location?: Position
+  code?: string
+  reasonCode?: string
+}
+
 export type ParsedQuery = {
   queryNode: PoorNodeType
   uniqueTokens: string[]
-  error: { text: string; location?: any } | null
+  hints: Hint[]
+  error: ParseError | null
+}
+
+const getHints = (queryCode: string, error?: ParseError | null) => {
+  const hints: Hint[] = []
+  if (queryCode.startsWith('{')) {
+    const info = 'To look for object, add expression brackets'
+    const code = '({ key:val })'
+    hints.push({
+      text: `${info} ${code}`,
+      tokens: [
+        { type: 'text', content: info },
+        { type: 'code', content: code }
+      ]
+    })
+  }
+
+  if (
+    error &&
+    (queryCode.startsWith("'") || queryCode.startsWith('"')) &&
+    (error.text.includes('Unterminated string constant') ||
+      error.text.includes('Empty query'))
+  ) {
+    const info = 'To look for string, add expression brackets'
+    const code = "('some string')"
+    hints.push({
+      text: `${info} ${code}`,
+      tokens: [
+        { type: 'text', content: info },
+        { type: 'code', content: code }
+      ]
+    })
+  }
+
+  return hints
 }
 
 export const parseQueries = (
@@ -143,7 +185,7 @@ export const parseQueries = (
           error: null
         }
       } catch (e) {
-        const error = e as ParseError & { loc: Position; message: string }
+        const error = e as BabelParseError & { loc: Position; message: string }
 
         originalError = {
           text: error.message,
@@ -174,7 +216,7 @@ export const parseQueries = (
       error: !queryNode ? { text: 'Empty query!' } : error
     }))
 
-  const queries = inputQueryNodes.map(({ queryNode, error }) => {
+  const queries = inputQueryNodes.map(({ queryNode, error }, i) => {
     const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
     const uniqueTokens = queryNode
@@ -185,7 +227,10 @@ export const parseQueries = (
 
     measureGetUniqueTokens()
 
+    const hints = getHints(queryCodes[i], error)
+
     return {
+      hints,
       queryNode,
       uniqueTokens,
       error

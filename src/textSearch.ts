@@ -165,7 +165,6 @@ export function textSearch({
   const allMatches = []
   for (const filePath of filePaths) {
     try {
-      // sync file getting works faster :man-shrug;
       const fileContent = getFileContent(filePath)
 
       for (const query of queries) {
@@ -180,9 +179,11 @@ export function textSearch({
           )
 
           // replace match in content to properly find the same match in the source file
+          // For multiline matches we have to keep new line chars in order to properly determine lines for subsequent matches
+          const matchGhost = match.replace(/\S/g, ' ') // replace any non-white space with a space char
           contentToMatchPosition = contentToMatchPosition.replace(
             match,
-            ' '.padStart(match.length)
+            matchGhost
           )
 
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(

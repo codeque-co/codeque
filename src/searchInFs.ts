@@ -15,6 +15,7 @@ export const searchInFileSystem = ({
 }: FileSystemSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
+      // sync file getting works faster :man-shrug; in text mode
       return fs.readFileSync(filePath).toString()
     }
     return textSearch({

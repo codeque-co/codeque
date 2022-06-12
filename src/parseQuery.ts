@@ -28,7 +28,7 @@ const decomposeString = (str: string) =>
 
 const getUniqueTokens = (
   queryNode: PoorNodeType,
-  caseInsensitive = false,
+  caseInsensitive: boolean,
   tokens: Set<string> = new Set()
 ) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
@@ -42,7 +42,10 @@ const getUniqueTokens = (
     })
   }
 
-  if ((queryNode.type as string) === 'StringLiteral') {
+  if (
+    (queryNode.type as string) === 'StringLiteral' ||
+    (queryNode.type as string) === 'JSXText'
+  ) {
     const trimmedWildcards = decomposeString(queryNode.value as string)
 
     trimmedWildcards.forEach((part) => {
@@ -52,8 +55,10 @@ const getUniqueTokens = (
     })
   }
 
-  if ((queryNode.type as string) === 'JSXText') {
-    const trimmedWildcards = decomposeString(queryNode.value as string)
+  if ((queryNode.type as string) === 'TemplateElement') {
+    const trimmedWildcards = decomposeString(
+      (queryNode.value as { raw: string }).raw
+    )
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
@@ -142,7 +147,7 @@ const getHints = (queryCode: string, error?: ParseError | null) => {
 
 export const parseQueries = (
   queryCodes: string[],
-  caseInsensitive = false
+  caseInsensitive: boolean
 ): [Array<ParsedQuery>, boolean] => {
   const inputQueryNodes = queryCodes
     .map((queryText) => {

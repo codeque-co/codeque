@@ -149,7 +149,10 @@ program
 
       const startTime = Date.now()
 
-      const [queryParseResults, parseOk] = parseQueries(queries)
+      const [queryParseResults, parseOk] = parseQueries(
+        queries,
+        caseInsensitive
+      )
       if (mode === 'text') {
         print(separator + '\n' + rootText + modeAndCaseText)
         queries.forEach((q) => {

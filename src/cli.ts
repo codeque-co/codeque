@@ -12,6 +12,20 @@ import ora from 'ora'
 
 const program = new Command()
 
+const textEllipsis = (text: string, maxLength: number) => {
+  const charsToReplace = Math.max(text.length - maxLength, 0)
+  const ellipsis = '...'
+  const shortenedRoot =
+    charsToReplace > 0
+      ? text.replace(
+          new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
+          ellipsis
+        )
+      : text
+
+  return shortenedRoot
+}
+
 program
   .option(
     '-m, --mode [mode]',
@@ -99,18 +113,10 @@ program
       const minLen = dot.length + rootLabel.length + 5
       const remainingSpaceForRootPath =
         remainingCharsForRoot - (dot.length + rootLabel.length)
-      const charsToReplace = Math.max(
-        resolvedRoot.length - remainingSpaceForRootPath,
-        0
+      const shortenedRoot = textEllipsis(
+        resolvedRoot,
+        remainingSpaceForRootPath
       )
-      const ellipsis = '...'
-      const shortenedRoot =
-        charsToReplace > 0
-          ? resolvedRoot.replace(
-              new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
-              ellipsis
-            )
-          : resolvedRoot
       const rootText =
         remainingCharsForRoot > minLen
           ? `${cyan(bold(rootLabel))}${green(shortenedRoot)}${dot}`
@@ -200,21 +206,32 @@ program
               ? path.relative(resolvedRoot, filePath)
               : filePath
 
+          const maxRelativePathDisplayLength = cols - 4
+          const shortenRelativePath = textEllipsis(
+            relativePath,
+            maxRelativePathDisplayLength
+          )
+
           const leftPaddingForCentering = Math.trunc(
-            (cols - relativePath.length - 4) / 2
+            (cols - shortenRelativePath.length - 4) / 2
           )
           const leftPaddingStr = ''.padStart(leftPaddingForCentering, ' ')
           print(
             ''.padStart(leftPaddingForCentering, '━') +
-              '┯'.padEnd(relativePath.length + 3, '━') +
+              '┯'.padEnd(shortenRelativePath.length + 3, '━') +
               '┯' +
               ''.padEnd(
-                cols - (leftPaddingForCentering + relativePath.length + 4),
+                cols -
+                  (leftPaddingForCentering + shortenRelativePath.length + 4),
                 '━'
               )
           )
-          print(leftPaddingStr + '│ ' + bold(green(relativePath)) + ' │')
-          print(leftPaddingStr + '╰'.padEnd(relativePath.length + 3, '─') + '╯')
+          print(leftPaddingStr + '│ ' + bold(green(shortenRelativePath)) + ' │')
+          print(
+            leftPaddingStr +
+              '╰'.padEnd(shortenRelativePath.length + 3, '─') +
+              '╯'
+          )
           print('')
 
           for (const match of matches) {

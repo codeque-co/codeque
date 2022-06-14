@@ -20,12 +20,15 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "release-it": "^15.0.0"
+  },
   "dependencies": {
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "ora": "^5.0",
     "prettier": "^2.5.1",
-    "@codeque/core": "^0.1.0-beta.4"
+    "@codeque/core": "^0.1.0-beta.1"
   },
   "scripts": {
     "cli": "node dist/cli.js",

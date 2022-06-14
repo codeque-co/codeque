@@ -1,4 +1,4 @@
-import { search as searchMultiThread } from '/searchMultiThread'
+import { searchMultiThread as searchMultiThread } from '/searchMultiThread'
 import { searchInFileSystem } from '/searchInFs'
 
 import { compareCode } from '/astUtils'
@@ -8,7 +8,7 @@ import { getFilesList } from '/getFilesList'
 jest.mock('worker_threads', () => {
   const actual = jest.requireActual('worker_threads')
   function Worker(_: string, params: any) {
-    const mockedPath = path.resolve(process.cwd(), 'dist/worker.js')
+    const mockedPath = path.resolve(process.cwd(), 'dist-ts/searchWorker.js')
     return new actual.Worker(mockedPath, params)
   }
   return {

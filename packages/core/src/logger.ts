@@ -1,4 +1,4 @@
-import { print } from '/utils'
+import { print } from './utils'
 export const createLogger = (debugMode = false) => {
   const log = (...args: any[]) => {
     if (debugMode) {

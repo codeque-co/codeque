@@ -4,7 +4,7 @@ import type { FileSystemSearchArgs, SearchResults } from './types'
 
 const coresCount = Math.round(cpus().length / 2)
 
-export const search = async ({
+export const searchMultiThread = async ({
   filePaths,
   ...params
 }: FileSystemSearchArgs) => {

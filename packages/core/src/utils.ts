@@ -5,7 +5,7 @@ import {
   optionalStringWildcardRegExp,
   requiredStringWildcardRegExp,
   disallowedWildcardRegExp
-} from '/astUtils'
+} from './astUtils'
 import { Matches, Mode, Position } from './types'
 
 export const getMode = (mode: Mode = 'include') => {

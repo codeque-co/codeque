@@ -1,26 +1,33 @@
-import fs from 'fs'
-import { measureStart } from '/utils'
+import { measureStart } from './utils'
+import { parseQueries } from './parseQuery'
+import { dedupMatches, SearchSettings, searchFileContent } from './searchStages'
+import { textSearch } from './textSearch'
 import { createLogger } from './logger'
-import { parseQueries } from '/parseQuery'
-import { searchFileContent, SearchSettings, dedupMatches } from './searchStages'
-import { FileSystemSearchArgs, Matches, SearchResults } from './types'
-import { textSearch } from '/textSearch'
+import { FileSystemSearchArgs, Matches } from './types'
+import { SearchResults } from './types'
 
-export const searchInFileSystem = ({
-  mode,
-  filePaths,
+type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {
+  files: {
+    content: string
+    path: string
+  }[]
+}
+
+export const searchInStrings = ({
   queryCodes,
-  caseInsensitive = false,
-  debug = false
-}: FileSystemSearchArgs): SearchResults => {
+  files,
+  mode,
+  debug = false,
+  caseInsensitive = false
+}: StringsSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
-      // sync file getting works faster :man-shrug; in text mode
-      return fs.readFileSync(filePath).toString()
+      return files.find((file) => file.path === filePath)?.content as string
     }
+
     return textSearch({
       getFileContent,
-      filePaths,
+      filePaths: files.map((file) => file.path),
       mode,
       queryCodes,
       caseInsensitive
@@ -44,8 +51,8 @@ export const searchInFileSystem = ({
   if (!parseOk) {
     return {
       matches: [],
-      hints: queries.map(({ hints }) => hints),
-      errors: queries.filter((queryResult) => queryResult.error)
+      errors: queries.filter((queryResult) => queryResult.error),
+      hints: queries.map(({ hints }) => hints)
     }
   }
   const searchErrors = []
@@ -56,25 +63,19 @@ export const searchInFileSystem = ({
     queries.map(({ queryNode }) => queryNode)
   )
 
-  for (const filePath of filePaths) {
+  for (const file of files) {
     try {
-      log('Parse file')
-      const measureReadFile = measureStart('readFile')
-
-      const fileContent = fs.readFileSync(filePath).toString()
-      measureReadFile()
-
       const fileMatches = searchFileContent({
         queries,
-        filePath,
-        fileContent,
+        filePath: file.path,
+        fileContent: file.content,
         ...settings
       })
 
       allMatches.push(...fileMatches)
 
       if (fileMatches.length > 0) {
-        log(filePath, 'matches', fileMatches)
+        log(file.path, 'matches', fileMatches)
         if (debug) {
           break
         }
@@ -82,7 +83,7 @@ export const searchInFileSystem = ({
     } catch (e) {
       searchErrors.push(e)
       if (debug) {
-        console.error(filePath, e)
+        console.error(file.path, e)
         break
       }
     }
@@ -93,3 +94,5 @@ export const searchInFileSystem = ({
     hints: queries.map(({ hints }) => hints)
   }
 }
+
+export default searchInStrings

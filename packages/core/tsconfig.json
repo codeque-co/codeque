@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "/*": [
+        "src/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "declaration": false,
+    "noEmit": true
+  },
+  "exclude": [
+    "__tests__/**/__fixtures__",
+    "dist",
+    "node_modules",
+    "tools/*.js"
+  ]
+}

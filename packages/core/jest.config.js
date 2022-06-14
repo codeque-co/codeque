@@ -1,8 +1,9 @@
 const { pathsToModuleNameMapper } = require('ts-jest')
 const fs = require('fs')
+
 const tsConfig = JSON.parse(
   fs
-    .readFileSync('./tsconfig.json')
+    .readFileSync(__dirname + '/tsconfig.json')
     .toString()
     .replace(/^(\s)*\/\//gm, '')
     .replace(/\/\*.+?\*\//gm, '')

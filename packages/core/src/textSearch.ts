@@ -1,5 +1,5 @@
-import { getExtendedCodeFrame } from '/utils'
-import { FileSystemSearchArgs, SearchResults } from '/types'
+import { getExtendedCodeFrame } from './utils'
+import { FileSystemSearchArgs, SearchResults } from './types'
 
 // We process '$' separately
 const nonIdentifierOrKeyword = /([^\w\s$])/

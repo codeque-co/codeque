@@ -10,15 +10,8 @@ module.exports = (_, { mode }) => {
   return {
     watch: isDev,
     entry: {
-      cli: path.resolve(__dirname, './src/cli.ts'),
       worker: path.resolve(__dirname, './src/searchWorker.ts'),
-      searchInStrings: path.resolve(__dirname, './src/searchInStrings.ts'),
-      ...(isDev
-        ? {
-            dev: path.resolve(__dirname, './src/dev.ts'),
-            devGetFiles: path.resolve(__dirname, './src/devGetFiles.ts')
-          }
-        : {})
+      searchInStrings: path.resolve(__dirname, './src/searchInStrings.ts')
     },
     module: {
       rules: [

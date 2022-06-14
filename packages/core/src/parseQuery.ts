@@ -16,7 +16,7 @@ import {
 } from './astUtils'
 import { Hint, PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
-import { wildcardChar, disallowedWildcardRegExp } from '/astUtils'
+import { wildcardChar, disallowedWildcardRegExp } from './astUtils'
 
 const MIN_TOKEN_LEN = 2
 

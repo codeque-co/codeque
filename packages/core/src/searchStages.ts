@@ -18,8 +18,8 @@ import {
   shouldCompareNode,
   anyStringWildcardRegExp
 } from './astUtils'
-import { getExtendedCodeFrame } from '/utils'
-import { ParsedQuery } from '/parseQuery'
+import { getExtendedCodeFrame } from './utils'
+import { ParsedQuery } from './parseQuery'
 import { Logger } from './logger'
 import { Match, Matches, Mode, PoorNodeType } from './types'
 

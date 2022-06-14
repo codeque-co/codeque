@@ -1,16 +1,23 @@
 import path from 'path'
 import fs from 'fs'
-import { search } from '/searchMultiThread'
-import { getFilesList } from '/getFilesList'
+import {
+  searchMultiThread,
+  getFilesList,
+  getMode,
+  getCodeFrame,
+  groupMatchesByFile,
+  Hint,
+  Mode,
+  parseQueries
+} from '@codeque/core'
 import { green, magenta, cyan, bold, red, yellow, blue } from 'colorette'
-import { getMode, getCodeFrame, print, groupMatchesByFile } from '/utils'
-import { Hint, Mode } from './types'
-import { parseQueries } from '/parseQuery'
-import { openAsyncEditor } from '/terminalEditor'
+import { openAsyncEditor } from './terminalEditor'
 import { Command } from 'commander'
 import ora from 'ora'
 
 const program = new Command()
+
+const print = console.log
 
 const textEllipsis = (text: string, maxLength: number) => {
   const charsToReplace = Math.max(text.length - maxLength, 0)
@@ -189,7 +196,7 @@ program
       const filePaths = await getFilesList(resolvedRoot, entry, git)
       spinner.stop()
       spinner = ora(`Searching `).start()
-      const { matches, errors } = await search({
+      const { matches, errors } = await searchMultiThread({
         mode,
         filePaths,
         caseInsensitive,

@@ -1,8 +1,7 @@
-import path from 'path'
+import { getMode, Mode, searchInFileSystem } from '@codeque/core'
 import fs from 'fs'
-import { searchInFileSystem } from './searchInFs'
-import { getMode, logMetrics, print } from './utils'
-import { Mode } from './types'
+import path from 'path'
+
 const query = fs.readFileSync(path.resolve('./devQuery')).toString()
 
 const mockFilePath = path.resolve('./devFile')
@@ -16,7 +15,6 @@ const mockFilePath = path.resolve('./devFile')
     debug: true
   })
 
-  print('matches', matches)
-  print('errors', errors)
-  logMetrics()
+  console.log('matches', matches)
+  console.log('errors', errors)
 })()

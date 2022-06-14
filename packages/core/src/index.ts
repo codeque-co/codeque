@@ -1,0 +1,7 @@
+export { default as searchInStrings } from './searchInStrings'
+export { searchMultiThread } from './searchMultiThread'
+export { searchInFileSystem } from './searchInFs'
+export { getMode, groupMatchesByFile, getCodeFrame } from './utils'
+export { parseQueries } from './parseQuery'
+export { getFilesList } from './getFilesList'
+export * from './types'

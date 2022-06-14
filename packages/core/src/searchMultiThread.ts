@@ -17,7 +17,7 @@ export const searchMultiThread = async ({
     const endIndex = i < chunksCount - 1 ? startIndex + chunkSize : undefined
     const filePathsSlice = filePaths.slice(startIndex, endIndex)
     const task = new Promise<SearchResults>((resolve, reject) => {
-      const worker = new Worker(__dirname + '/worker.js', {
+      const worker = new Worker(__dirname + '/searchWorker.js', {
         workerData: {
           ...params,
           filePaths: filePathsSlice

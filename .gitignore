@@ -2,11 +2,10 @@
 node_modules
 __fixtures__
 editor-log.txt
+*.log
 
 cliQuery
 devQuery
 devFile
 
 dist
-dist-babel
-dist-ts

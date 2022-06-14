@@ -8,7 +8,7 @@ import { getFilesList } from '/getFilesList'
 jest.mock('worker_threads', () => {
   const actual = jest.requireActual('worker_threads')
   function Worker(_: string, params: any) {
-    const mockedPath = path.resolve(process.cwd(), 'dist-ts/searchWorker.js')
+    const mockedPath = path.resolve(process.cwd(), 'dist/searchWorker.js')
     return new actual.Worker(mockedPath, params)
   }
   return {

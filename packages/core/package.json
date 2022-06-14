@@ -1,6 +1,6 @@
 {
   "name": "@codeque/core",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-beta.3",
   "description": "Supercharged multiline code search and replace tool",
   "bin": {
     "codeque": "./bin.js"

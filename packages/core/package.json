@@ -12,6 +12,10 @@
   },
   "homepage": "https://codeque.co",
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./web": "./dist/index.web.js"
+  },
   "files": [
     "dist/**",
     "LICENSE.md"

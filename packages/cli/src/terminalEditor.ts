@@ -7,8 +7,10 @@ import { format } from 'prettier'
 
 function tokenize(code) {
   const tokens = Array.from(jsTokens(code))
+
   return tokens.reduce((coloredCode, token) => {
     let coloredToken = ''
+
     if (token.type === 'StringLiteral') {
       coloredToken = colors.green(token.value)
     } else if (token.type === 'IdentifierName') {
@@ -83,6 +85,7 @@ function tokenize(code) {
         'as',
         'any'
       ]
+
       if (keywords.includes(token.value)) {
         coloredToken = colors.cyan(token.value)
       } else {
@@ -101,6 +104,7 @@ function tokenize(code) {
     } else {
       coloredToken = token.value
     }
+
     return coloredCode + coloredToken
   }, '')
 }
@@ -190,16 +194,19 @@ export const openAsyncEditor = ({
     const cursorRight = (content, progress = 1) => {
       const lineLen =
         content.split(newLineSequence)[getCursorYWithOffset()].length
+
       cursorPos.x =
         Math.min(getCursorXWithOffset() + progress, lineLen) + cursorLeftOffset
     }
 
     const cursorDown = (content, progress = 1) => {
       const linesCount = content.split(newLineSequence).length
+
       cursorPos.y = Math.min(
         cursorPos.y + progress,
         linesCount - 1 + cursorTopOffset
       )
+
       fixCursorOverflow(content)
     }
 
@@ -215,13 +222,7 @@ export const openAsyncEditor = ({
         newLineSequence
       )
 
-      log(
-        footerFormatted.split(newLineSequence).length,
-        cursorTopOffset +
-          footerWithSep.split(newLineSequence).length +
-          Math.max(1, 100 - content.split(newLineSequence).length)
-      )
-      log(footerFormatted)
+      log('print')
 
       const tokenized = tokenize(content)
       const lines = tokenized.split(newLineSequence)
@@ -244,23 +245,30 @@ export const openAsyncEditor = ({
 
       updateCursor()
     }
+
     let cleanPressCounter = 0
-    process.stdin.on('keypress', (char, key) => {
+
+    const keypressListener = (char, key) => {
       if (key.name === 's' && key.ctrl) {
         flush()
         rl.close()
+        process.stdin.off('keypress', keypressListener)
+
         resolve(content)
+
         return
       }
 
       if (key.name === 'b' && key.ctrl) {
         cursorLeftOffset =
           cursorLeftOffset === defaultLeftOffset ? 0 : defaultLeftOffset
+
         cursorRight(content, Infinity)
       }
 
       if (key.name === 'x' && key.ctrl) {
         cleanPressCounter++
+
         if (cleanPressCounter > 1) {
           content = ''
           fixCursorOverflow(content)
@@ -275,6 +283,7 @@ export const openAsyncEditor = ({
           content = format(content, {
             parser: 'babel-ts'
           })
+
           fixCursorOverflow(content)
         } catch (e) {
           e
@@ -284,24 +293,28 @@ export const openAsyncEditor = ({
       if (key.name === 'up') {
         cursorUp(content)
         updateCursor()
+
         return
       }
 
       if (key.name === 'left') {
         cursorLeft()
         updateCursor()
+
         return
       }
 
       if (key.name === 'right') {
         cursorRight(content)
         updateCursor()
+
         return
       }
 
       if (key.name === 'down') {
         cursorDown(content)
         updateCursor()
+
         return
       }
 
@@ -343,6 +356,7 @@ export const openAsyncEditor = ({
         if (isNewLineChar) {
           log('line start')
           cursorPrevLineEnd(content)
+
           content =
             content.substring(0, currentPositionInContent - 1) +
             content.substring(currentPositionInContent)
@@ -350,13 +364,16 @@ export const openAsyncEditor = ({
           log('no line start')
 
           cursorLeft()
+
           content =
             content.substring(0, currentPositionInContent - 1) +
             content.substring(currentPositionInContent)
         }
       }
+
       log('char', char)
       log('key.name', key.name)
+
       if (
         !key.ctrl &&
         char !== undefined &&
@@ -367,6 +384,7 @@ export const openAsyncEditor = ({
           log('adding tab')
           char = `  `
         }
+
         const lines = content.split(newLineSequence)
         const line = lines[getCursorYWithOffset()]
         const newLineChars =
@@ -381,7 +399,9 @@ export const openAsyncEditor = ({
       }
 
       print()
-    })
+    }
+
+    process.stdin.on('keypress', keypressListener)
 
     const rl = readline.createInterface({
       input: process.stdin,

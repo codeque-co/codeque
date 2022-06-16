@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { measureStart } from './utils'
+import { measureStart, logMetrics } from './utils'
 import { createLogger } from './logger'
 import { parseQueries } from './parseQuery'
 import { searchFileContent, SearchSettings, dedupMatches } from './searchStages'
@@ -18,6 +18,7 @@ export const searchInFileSystem = ({
       // sync file getting works faster :man-shrug; in text mode
       return fs.readFileSync(filePath).toString()
     }
+
     return textSearch({
       getFileContent,
       filePaths,
@@ -48,6 +49,7 @@ export const searchInFileSystem = ({
       errors: queries.filter((queryResult) => queryResult.error)
     }
   }
+
   const searchErrors = []
   measureParseQuery()
 
@@ -75,18 +77,21 @@ export const searchInFileSystem = ({
 
       if (fileMatches.length > 0) {
         log(filePath, 'matches', fileMatches)
+
         if (debug) {
           break
         }
       }
     } catch (e) {
       searchErrors.push(e)
+
       if (debug) {
         console.error(filePath, e)
         break
       }
     }
   }
+
   return {
     matches: dedupMatches(allMatches, log, debug),
     errors: searchErrors,

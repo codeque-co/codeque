@@ -5,5 +5,10 @@
     "baseUrl": "./src",                                  
     "paths": {},                                     
     "outDir": "./dist",
-  }
+  },
+  "exclude": [
+    "dist",
+    "node_modules",
+    "tools/*.js"
+  ]
 }

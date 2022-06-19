@@ -483,7 +483,7 @@ const compareNodes = (
         }
       } else if (
         queryValue === fileValue ||
-        JSON.stringify(queryValue as any) === JSON.stringify(fileValue as any)
+        JSON.stringify(queryValue) === JSON.stringify(fileValue)
       ) {
         matchingPrimitivePropsCount++
       }

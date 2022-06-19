@@ -15,28 +15,30 @@
   "files": [
     "bin.js",
     "dist/**/*.js",
-    "LICENSE.md"
+    "LICENSE.md",
+    "demo.gif"
   ],
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "dedent": "^0.7.0",
     "release-it": "^15.0.0"
   },
   "dependencies": {
+    "@codeque/core": "^0.1.0-beta.6",
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "ora": "^5.0",
-    "prettier": "^2.5.1",
-    "@codeque/core": "^0.1.0-beta.6"
+    "prettier": "^2.5.1"
   },
   "scripts": {
     "cli": "node dist/cli.js",
     "dev": "node dist/dev.js",
-    "build": "rm -rf dist && BABEL_ENV=production yarn build:code",
+    "build": "rm -rf dist && yarn build:code",
     "build:watch": "rm -rf dist && yarn build:code --watch",
     "build:code": "tsc --project tsconfig.json",
-    "docs-gen": "exit 0",
+    "docs-gen": "node tools/addDocsToReadme.js",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "lint": "eslint --ext .js,.ts src",

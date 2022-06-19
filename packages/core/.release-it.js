@@ -10,8 +10,8 @@ module.exports = {
     commitMessage: `chore: release ${packageName}@\${version}`,
     commit: true,
     tag: true,
-    tagAnnotation: `${packageName}@\${version}`,
-    tagName: `Release ${packageName}@\${version}`,
+    tagAnnotation: `Release ${packageName}@\${version}`,
+    tagName: `${packageName}@\${version}`,
     push: true
   }
 }

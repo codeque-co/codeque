@@ -36,6 +36,7 @@
     "build": "rm -rf dist && BABEL_ENV=production yarn build:code",
     "build:watch": "rm -rf dist && yarn build:code --watch",
     "build:code": "tsc --project tsconfig.json",
+    "docs-gen": "exit 0",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",

@@ -68,6 +68,7 @@
     "test:setup": "node ./tools/getFixtures.js",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",
+    "checks": "yarn lint && yarn typecheck && yarn test",
     "release": "release-it"
   }
 }

@@ -65,6 +65,7 @@
     "build:code": "babel ./src --extensions \".ts,.tsx\" -d dist",
     "typecheck": "tsc --project tsconfig.json",
     "test": "jest",
+    "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "test:setup": "node ./tools/getFixtures.js",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",

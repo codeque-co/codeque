@@ -38,6 +38,7 @@
     "build:code": "tsc --project tsconfig.json",
     "docs-gen": "exit 0",
     "typecheck": "tsc --noEmit --project tsconfig.json",
+    "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",
     "checks": "yarn lint && yarn typecheck",

@@ -6,7 +6,9 @@ describe('Other', () => {
   let filesList = [] as string[]
 
   beforeAll(async () => {
-    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList({
+      searchRoot: path.resolve(__dirname, '__fixtures__')
+    })
   })
 
   it('should not include the same result twice', () => {

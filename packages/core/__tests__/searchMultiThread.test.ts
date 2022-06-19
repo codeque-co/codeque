@@ -7,10 +7,13 @@ import { getFilesList } from '/getFilesList'
 
 jest.mock('worker_threads', () => {
   const actual = jest.requireActual('worker_threads')
+
   function Worker(_: string, params: any) {
     const mockedPath = path.resolve(process.cwd(), 'dist/searchWorker.js')
+
     return new actual.Worker(mockedPath, params)
   }
+
   return {
     ...actual,
     Worker
@@ -18,9 +21,9 @@ jest.mock('worker_threads', () => {
 })
 
 it('should search using multiple threads and give the same matches count as single thread search', async () => {
-  const filesList = await getFilesList(
-    path.resolve(__dirname, 'search', '__fixtures__')
-  )
+  const filesList = await getFilesList({
+    searchRoot: path.resolve(__dirname, 'search', '__fixtures__')
+  })
   const query = `
     () => $$$
   `

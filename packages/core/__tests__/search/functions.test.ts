@@ -8,11 +8,14 @@ describe('functions', () => {
   let filesList = [] as string[]
 
   beforeAll(async () => {
-    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList({
+      searchRoot: path.resolve(__dirname, '__fixtures__')
+    })
   })
 
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const mockedFilesList = [tempFilePath]
+
   beforeAll(() => {
     fs.writeFileSync(
       tempFilePath,

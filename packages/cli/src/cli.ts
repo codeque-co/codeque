@@ -33,6 +33,12 @@ program
   )
   .option('-v, --version', 'print CLI version', false)
   .option('-pfl, --printFilesList', 'print list of searched files', false)
+  .option(
+    '-ogi, --omitGitIgnore',
+    'search in file paths regardless .gitignore settings',
+    false
+  )
+
   .action(search)
 
 program.parse(process.argv)

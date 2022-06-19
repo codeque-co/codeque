@@ -7,6 +7,7 @@ import { getFilesList } from '/getFilesList'
 describe('Types', () => {
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const filesList = [tempFilePath]
+
   beforeAll(() => {
     fs.writeFileSync(
       tempFilePath,
@@ -224,9 +225,9 @@ describe('Types', () => {
   })
 
   it('should match possibly repeated object properties', async () => {
-    const filesList = await getFilesList(
-      path.resolve(__dirname, '__fixtures__')
-    )
+    const filesList = await getFilesList({
+      searchRoot: path.resolve(__dirname, '__fixtures__')
+    })
 
     const queries = [
       `

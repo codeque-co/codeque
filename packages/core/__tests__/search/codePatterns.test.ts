@@ -7,7 +7,9 @@ describe('code patterns', () => {
   let filesList = [] as string[]
 
   beforeAll(async () => {
-    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList({
+      searchRoot: path.resolve(__dirname, '__fixtures__')
+    })
   })
 
   it('Should match function with redundant block statement', () => {

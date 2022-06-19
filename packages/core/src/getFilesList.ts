@@ -13,7 +13,6 @@ import escapeGlob from 'glob-escape'
 const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
-  console.log('getting entry points', root, entryPoint)
   const tree = await parseDependencyTree(escapeGlob(entryPoint), {
     context: root
   })
@@ -24,6 +23,8 @@ const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
 
   return projectFiles.map((filePath) => path.resolve(root, filePath))
 }
+
+const directoriesBlackList = ['.git']
 
 const getFilesListByGitChanges = async (root: string) => {
   const { error, output } = spawnSync('git', ['diff', '--name-only', 'HEAD'], {
@@ -46,66 +47,136 @@ const getFilesListByGitChanges = async (root: string) => {
   return filesList
 }
 
-export const getFilesList = async (
-  root: string,
-  entryPoint?: string,
-  byGitChanges?: boolean
+const getGitIgnoreContentForDirectory = async (
+  dirPath: string,
+  searchRoot?: string
 ) => {
+  const shouldBeRelativeToRoot = Boolean(searchRoot)
+
+  const dirRelativeToRoot =
+    shouldBeRelativeToRoot && searchRoot
+      ? path.relative(searchRoot, dirPath)
+      : dirPath
+  let gitignore: string[] = []
+
+  try {
+    const gitignoreFileContent = (
+      await fs.readFile(path.join(dirPath, '.gitignore'))
+    ).toString()
+    const lines = gitignoreFileContent.split('\n')
+    const nonCommentedNonEmptyLines = lines
+      .filter((line) => !/^(\s*)#/.test(line))
+      .filter((line) => !/^(\s*)$/.test(line))
+
+    const currentDirScoped = nonCommentedNonEmptyLines.map((line) => {
+      return path.join(dirRelativeToRoot, line)
+    })
+
+    gitignore = shouldBeRelativeToRoot
+      ? currentDirScoped
+      : nonCommentedNonEmptyLines
+  } catch (e) {
+    e
+  }
+
+  return gitignore
+}
+
+export const getFilesList = async ({
+  searchRoot,
+  entryPoint = undefined,
+  byGitChanges = false,
+  omitGitIgnore = false
+}: {
+  searchRoot: string
+  entryPoint?: string
+  byGitChanges?: boolean
+  omitGitIgnore?: boolean
+}) => {
   const measureStop = measureStart('getFiles')
 
   if (byGitChanges) {
-    const filesList = getFilesListByGitChanges(root)
+    const filesList = getFilesListByGitChanges(searchRoot)
     measureStop()
+
     return filesList
   }
 
   if (entryPoint) {
-    const filesList = getFilesListByEntryPoint(root, entryPoint)
+    const filesList = getFilesListByEntryPoint(searchRoot, entryPoint)
     measureStop()
+
     return filesList
   }
 
   const ignoreInstance = ignore()
-  const scan = async (dir: string): Promise<string[]> => {
-    const dirRelativeToRoot = path.relative(root, dir)
-    let gitignore = ''
 
-    try {
-      gitignore = (await fs.readFile(path.join(dir, '.gitignore'))).toString()
-      const lines = gitignore.split('\n')
-      const nonCommentedNonEmptyLines = lines
-        .filter((line) => !/^(\s*)#/.test(line))
-        .filter((line) => !/^(\s*)$/.test(line))
-      const currentDirScoped = nonCommentedNonEmptyLines.map((line) => {
-        return path.join(dirRelativeToRoot, line)
-      })
+  if (!omitGitIgnore) {
+    const pathSeparatorChar = '/'
+    const searchRootSegments = searchRoot.split(pathSeparatorChar)
 
-      gitignore = currentDirScoped.join('\n')
-    } catch (e) {
-      e
+    const pathSegmentsToSystemRoot = []
+
+    for (let i = 1; i < searchRootSegments.length; i++) {
+      let currentPath = searchRootSegments.slice(0, i).join(pathSeparatorChar)
+
+      if (!currentPath.startsWith(pathSeparatorChar)) {
+        currentPath = pathSeparatorChar + currentPath
+      }
+
+      pathSegmentsToSystemRoot.push(currentPath)
     }
 
-    ignoreInstance.add(gitignore)
+    const parentDirsIgnore = (
+      await Promise.all(
+        pathSegmentsToSystemRoot.map((parentPath) =>
+          getGitIgnoreContentForDirectory(parentPath)
+        )
+      )
+    )
+      .filter((parentGitignore) => parentGitignore.length > 0)
+      .flat(1)
+
+    ignoreInstance.add(parentDirsIgnore as string[])
+  }
+
+  const scan = async (dir: string): Promise<string[]> => {
+    if (!omitGitIgnore) {
+      const gitignore = await getGitIgnoreContentForDirectory(dir, undefined)
+
+      ignoreInstance.add(gitignore as string[])
+    }
 
     const entriesList = (await fs.readdir(dir, {
       // withFileTypes: true // This should work but throws an error, so we have to workaround
     })) as string[]
 
     const relativeToRoot = entriesList.map((entryName) =>
-      path.relative(root, path.join(dir, entryName))
-    )
-    const filtered = ignoreInstance.filter(relativeToRoot)
-    const absolutePaths = filtered.map((pathName) =>
-      path.resolve(root, pathName)
+      path.relative(searchRoot, path.join(dir, entryName))
     )
 
-    const directories = await asyncFilter(absolutePaths, async (pathName) => {
+    const filtered = ignoreInstance.filter(relativeToRoot)
+    const absolutePaths = filtered.map((pathName) =>
+      path.resolve(searchRoot, pathName)
+    )
+
+    let directories = await asyncFilter(absolutePaths, async (pathName) => {
       const stat = await fs.lstat(pathName)
+
       return stat.isDirectory()
+    })
+
+    directories = directories.filter((pathName) => {
+      const isOnBlackList = directoriesBlackList.some((directoryName) =>
+        pathName.endsWith(directoryName)
+      )
+
+      return !isOnBlackList
     })
 
     const files = await asyncFilter(absolutePaths, async (pathName) => {
       const stat = await fs.lstat(pathName)
+
       return stat.isFile()
     })
 
@@ -119,8 +190,7 @@ export const getFilesList = async (
     ]
   }
 
-  const filesList = await scan(root)
-
+  const filesList = await scan(searchRoot)
   measureStop()
 
   return filesList

@@ -7,8 +7,11 @@ describe('Text search mode', () => {
   let filesList = [] as string[]
 
   beforeAll(async () => {
-    filesList = await getFilesList(path.resolve(__dirname, '__fixtures__'))
+    filesList = await getFilesList({
+      searchRoot: path.resolve(__dirname, '__fixtures__')
+    })
   })
+
   it('should perform basic text search', () => {
     const results = searchInFileSystem({
       queryCodes: [`const $$ = use$$(`],

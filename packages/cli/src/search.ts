@@ -32,6 +32,7 @@ type CliParams = {
   invertExitCode: boolean
   version: boolean
   printFilesList: boolean
+  omitGitIgnore: boolean
 }
 
 export async function search(params: CliParams) {
@@ -40,12 +41,12 @@ export async function search(params: CliParams) {
     root = process.cwd(),
     limit,
     queryPath: queryPaths = [],
-
     entry,
     git,
     invertExitCode,
     version,
-    printFilesList
+    printFilesList,
+    omitGitIgnore
   } = params
 
   let { mode, query: queries = [] } = params
@@ -160,7 +161,12 @@ export async function search(params: CliParams) {
   }
 
   let spinner = ora(`Getting files list `).start()
-  const filePaths = await getFilesList(resolvedRoot, entry, git)
+  const filePaths = await getFilesList({
+    searchRoot: resolvedRoot,
+    entryPoint: entry,
+    byGitChanges: git,
+    omitGitIgnore
+  })
   spinner.stop()
   spinner = ora(`Searching `).start()
   const { matches, errors } = await searchMultiThread({

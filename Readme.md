@@ -1,6 +1,6 @@
-<h2 align="center">
+<h3 align="center">
   <code>CodeQue</code>
-</h2>
+</h3>
 
 <p align="center">
   Supercharged structural code search and replace tool

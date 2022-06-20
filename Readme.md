@@ -6,8 +6,6 @@
   Supercharged structural code search and replace tool
 </p>
 
-> Currently in beta!
-
 ---
 
 ## Overview 📣

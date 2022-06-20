@@ -6,8 +6,6 @@
   Supercharged structural code search and replace tool
 </p>
 
-> Currently in beta!
-
 ---
 
 ## Overview 📣
@@ -42,7 +40,7 @@ Type query and hit `ctrl+s` to run your first search!
 
 <img src="demo.gif" alt="codeque cli demo" width="500px"/>
 
-CodeQue CLI features:
+### CodeQue CLI features:
 
 - four search modes
 - search by file dependency
@@ -51,7 +49,7 @@ CodeQue CLI features:
 - case insensitive search
 - API to use codeque as restricted code pattern guard
 
-Find out how to use wildcards and discover search modes in [codeque docs](https://codeque.co/docs)!
+Find out **how to use wildcards and discover search modes** in [codeque docs](https://codeque.co/docs)!
 
 ## Use cases 🧑‍💻
 
@@ -59,13 +57,13 @@ In first place it's code search, so you can use it to search any code (as long a
 
 Here are some use cases where CodeQue shines ✨
 
-### Search duplicated code
+### Search duplicated code 🍣
 
 Once you spot some code pattern in more than one place, you can just copy and search for it.
 
 You will find all occurrences and you will be bale to get rid of repetition forever!
 
-### Search API usage
+### Search API usage 🧰
 
 I love using CodeQue to look for specific function or React hook usage. It's faster than looking for API into docs.
 
@@ -75,7 +73,7 @@ This a typical query that you can use to find usage of some React hook.
 const $$$ = useMyHook();
 ```
 
-### Assertions
+### Assertions ☔
 
 You can use CLI to ensure that some bad code patterns will not be introduced into the codebase.
 
@@ -89,7 +87,7 @@ codeque --query "$$.skip()" "$$.only()" --invertExitCode
 
 > Flag `--invertExitCode` will revert default behavior of exit codes, and return non zero exit code when matches would be found.
 
-### Git hooks
+### Git hooks 🪝
 
 I use codeque with `text` mode for my pre-commit hook.
 

@@ -24,13 +24,13 @@ You can also use it as a linter.
 
 Find out more on [codeque.co](https://codeque.co)
 
-## Installation 🔥
+## Installation 👇
 
 ```sh
 yarn global add @codeque/cli
 ```
 
-## Usage ⌨️
+## Usage 🕵️
 
 Run `codeque` to start CLI query editor.
 
@@ -40,7 +40,7 @@ codeque
 
 Type query and hit `ctrl+s` to run your first search!
 
-<img src="demo.gif" alt="codeque cli demo"/>
+<img src="demo.gif" alt="codeque cli demo" width="500px"/>
 
 CodeQue CLI features:
 
@@ -55,7 +55,7 @@ Find out how to use wildcards and discover search modes in [codeque docs](https:
 
 ## Use cases 🧑‍💻
 
-In first place it's code search, so you can use it to search any code (as long as it is TypeScript or JavaScript - more languages in future)
+In first place it's code search, so you can use it to search any code (as long as it is TypeScript or JavaScript - more languages in future).
 
 Here are some use cases where CodeQue shines ✨
 
@@ -69,7 +69,7 @@ You will find all occurrences and you will be bale to get rid of repetition fore
 
 I love using CodeQue to look for specific function or React hook usage. It's faster than looking for API into docs.
 
-This a typical query that you can use to find usage of some React hook
+This a typical query that you can use to find usage of some React hook.
 
 ```ts
 const $$$ = useMyHook();
@@ -81,7 +81,7 @@ You can use CLI to ensure that some bad code patterns will not be introduced int
 
 It's not that handy as ESLint (an CodeQue ESLint plugin is commit soon!), but at least you will not waste time for implementing custom plugins!
 
-Use this to ensure there are no skipped tests in the codebase
+Use this to ensure there are no skipped tests in the codebase:
 
 ```sh
 codeque --query "$$.skip()" "$$.only()" --invertExitCode
@@ -93,9 +93,9 @@ codeque --query "$$.skip()" "$$.only()" --invertExitCode
 
 I use codeque with `text` mode for my pre-commit hook.
 
-> `text` mode is faster than other modes, because it's regexp based
+> `text` mode is faster than other modes, because it's regexp based.
 
-I want to ensure there will be no console.logs, todos, and skipped tests introduced in my commit
+I want to ensure there will be no console.logs, todos, and skipped tests introduced in my commit.
 
 `.git/hooks/pre-commit` content
 
@@ -116,7 +116,7 @@ fi
 
 ### Root command `codeque`
 
-Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query option or query file.
+Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query provided as an param or query file.
 
 #### Usage
 

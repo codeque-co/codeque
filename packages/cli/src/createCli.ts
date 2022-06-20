@@ -4,7 +4,7 @@ import { search } from './search'
 export function createCliProgram(program: commander.Command) {
   program
     .description(
-      'Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query option or query file.'
+      'Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query provided as an param or query file.'
     )
     .option(
       '-m, --mode [mode]',

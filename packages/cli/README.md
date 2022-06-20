@@ -1,6 +1,6 @@
-<h3 align="center">
+<h2 align="center">
   <code>CodeQue</code>
-</h3>
+</h2>
 
 <p align="center">
   Supercharged structural code search and replace tool
@@ -20,7 +20,7 @@ It makes it easy to get familiar with codebase and helps make better decisions a
 
 You can also use it as a linter.
 
-Find out more on [codeque.co](https://codeque.co)
+Find out more about the project on [codeque.co](https://codeque.co)
 
 ## Installation 👇
 

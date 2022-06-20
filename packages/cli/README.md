@@ -38,7 +38,7 @@ codeque
 
 Type query and hit `ctrl+s` to run your first search!
 
-<img src="demo.gif" alt="codeque cli demo" width="500px"/>
+<img src="https://github.com/codeque-co/codeque/blob/df44bcfd393c5a954877790c9d1eb0adc5a2f4da/packages/cli/demo.gif?raw=true" alt="codeque cli demo" width="500px"/>
 
 ### CodeQue CLI features:
 

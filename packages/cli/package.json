@@ -15,8 +15,7 @@
   "files": [
     "bin.js",
     "dist/**/*.js",
-    "LICENSE.md",
-    "demo.gif"
+    "LICENSE.md"
   ],
   "publishConfig": {
     "access": "public"

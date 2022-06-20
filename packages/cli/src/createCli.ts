@@ -17,10 +17,11 @@ export function createCliProgram(program: commander.Command) {
     )
     .option(
       '-e, --entry [entry]',
-      "Entry point to determine search files list based on it's imports (excluding node_modules)"
+      //eslint-disable-next-line prettier/prettier, no-useless-escape
+      `Entry point to determine search files list based on it's imports (excluding nodeˍmodules)`
     )
     .option(
-      '-i, --case-insensitive',
+      '-i, --caseInsensitive',
       'Perform search with case insensitive mode',
       false
     )

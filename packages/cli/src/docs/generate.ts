@@ -78,6 +78,7 @@ function createCommandsInspector() {
 
       currentCommand = {
         name,
+        isRoot: false,
         arguments: args.map((arg) => ({
           nameRaw: arg,
           name: arg.substring(1, arg.length - 1),
@@ -141,7 +142,7 @@ function generate(output: string, initialHeaderLevel = 3) {
   //@ts-ignore
   createCliProgram(commandInspector)
   const commands = commandInspector.getCommands()
-  console.log('commands', commands)
+
   const document = template(commands, initialHeaderLevel)
 
   fs.writeFileSync(output, document)

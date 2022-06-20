@@ -20,7 +20,7 @@ It reduces struggle by providing accurate results regardless the formatting nois
 
 It makes it easy to get familiar with codebase and helps make better decisions as a result.
 
-You can use it also as a linter.
+You can also use it as a linter.
 
 Find out more on [codeque.co](https://codeque.co)
 
@@ -40,24 +40,75 @@ codeque
 
 Type query and hit `ctrl+s` to run your first search!
 
-Find out how to use wildcards and discover search modes in [codeque docs](https://codeque.co/docs)!
-
 <img src="demo.gif" alt="codeque cli demo"/>
+
+CodeQue CLI features:
+
+- four search modes
+- search by file dependency
+- search by files changed since last commit
+- clickable file links with code position (CMD + pointer click)
+- case insensitive search
+- API to use codeque as restricted code pattern guard
+
+Find out how to use wildcards and discover search modes in [codeque docs](https://codeque.co/docs)!
 
 ## Use cases 🧑‍💻
 
 In first place it's code search, so you can use it to search any code (as long as it is TypeScript or JavaScript - more languages in future)
 
-Here are some use cases where CodeQue shines
+Here are some use cases where CodeQue shines ✨
 
 ### Search duplicated code
 
-### Search API usage
-### Assertions 
-(yarn test:restricted-code)
+Once you spot some code pattern in more than one place, you can just copy and search for it.
 
-### Git hooks 
-(my pre-commit hook)
+You will find all occurrences and you will be bale to get rid of repetition forever!
+
+### Search API usage
+
+I love using CodeQue to look for specific function or React hook usage. It's faster than looking for API into docs.
+
+This a typical query that you can use to find usage of some React hook
+
+```ts
+const $$$ = useMyHook();
+```
+
+### Assertions
+
+You can use CLI to ensure that some bad code patterns will not be introduced into the codebase.
+
+It's not that handy as ESLint (an CodeQue ESLint plugin is commit soon!), but at least you will not waste time for implementing custom plugins!
+
+Use this to ensure there are no skipped tests in the codebase
+
+```sh
+codeque --query "$$.skip()" "$$.only()" --invertExitCode
+```
+
+> Flag `--invertExitCode` will revert default behavior of exit codes, and return non zero exit code when matches would be found.
+
+### Git hooks
+
+I use codeque with `text` mode for my pre-commit hook.
+
+> `text` mode is faster than other modes, because it's regexp based
+
+I want to ensure there will be no console.logs, todos, and skipped tests introduced in my commit
+
+`.git/hooks/pre-commit` content
+
+```sh
+#!/bin/sh
+
+codeque --git --query '$$.only(' '$$.skip(' 'console.log(' '// todo' --mode text --invertExitCode --caseInsensitive
+
+if [ $? -ge 1 ] ; then
+  echo '🛑 Found restricted code. Terminating.'
+  exit 1
+fi
+```
 
 ## CLI reference 📖
 
@@ -77,8 +128,8 @@ codeque [options]
 
 - `-m, --mode [mode]` - Search mode: exact, include, include-with-order, text (_optional_)
 - `-r, --root [root]` - Root directory for search (default: process.cwd()) (_optional_)
-- `-e, --entry [entry]` - Entry point to determine search files list based on it's imports (excluding node*modules) (\_optional*)
-- `-i, --case-insensitive` - Perform search with case insensitive mode (_optional_)
+- `-e, --entry [entry]` - Entry point to determine search files list based on it's imports (excluding nodeˍmodules) (_optional_)
+- `-i, --caseInsensitive` - Perform search with case insensitive mode (_optional_)
 - `-l, --limit [limit]` - Limit of results count to display (_optional_)
 - `-q, --query [query...]` - Inline search query(s) (_optional_)
 - `-qp, --queryPath [queryPath...]` - Path to file(s) with search query(s) (_optional_)

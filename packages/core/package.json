@@ -2,9 +2,6 @@
   "name": "@codeque/core",
   "version": "0.1.0",
   "description": "Supercharged multiline code search and replace tool",
-  "bin": {
-    "codeque": "./bin.js"
-  },
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",
   "engines": {
@@ -14,7 +11,8 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./web": "./dist/index.web.js"
+    "./web": "./dist/index.web.js",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist/**",

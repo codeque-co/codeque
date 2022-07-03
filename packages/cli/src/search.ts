@@ -161,12 +161,22 @@ export async function search(params: CliParams) {
   }
 
   let spinner = ora(`Getting files list `).start()
-  const filePaths = await getFilesList({
-    searchRoot: resolvedRoot,
-    entryPoint: entry,
-    byGitChanges: git,
-    omitGitIgnore
-  })
+  let filePaths = [] as string[]
+
+  try {
+    filePaths = await getFilesList({
+      searchRoot: resolvedRoot,
+      entryPoint: entry,
+      byGitChanges: git,
+      omitGitIgnore
+    })
+  } catch (e: any) {
+    print('\n')
+    print(bold(red('Error while getting files list:')))
+    print(e.message)
+    process.exit(1)
+  }
+
   spinner.stop()
   spinner = ora(`Searching `).start()
   const { matches, errors } = await searchMultiThread({

@@ -49,6 +49,7 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
       for (let i = 0; i < parts.length; i++) {
         const currentPart = parts[i]
         const nextPart = parts[i + 1] ?? ''
+
         if (
           (currentPart.match(isWildcardRegExp) ?? []).length > 0 ||
           (nextPart.match(isWildcardRegExp) ?? []).length > 0 ||
@@ -68,14 +69,17 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
       .filter((str) => str !== '')
       .map((subStr) => {
         const splitByWildcard3 = subStr.split(/(\$\$\$m?)/g)
+
         if (splitByWildcard3.length > 1) {
           return splitByWildcard3
         }
+
         return subStr
       })
       .flat(1)
       .map((subStr) => {
         const splitByWildcard2 = subStr.split(/(\$\$m?)/g)
+
         if (
           subStr !== '$$$' &&
           subStr !== '$$$m' &&
@@ -83,11 +87,13 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
         ) {
           return splitByWildcard2
         }
+
         return subStr
       })
       .flat(1)
       .map((subStr) => {
         const splitByWildcard1 = subStr.split(/(\$)/g)
+
         if (
           subStr !== '$$$' &&
           subStr !== '$$$m' &&
@@ -97,6 +103,7 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
         ) {
           return splitByWildcard1
         }
+
         return subStr
       })
       .flat(1)
@@ -104,8 +111,10 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
       .map((subStr) => {
         if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
+
           return escaped
         }
+
         return subStr
       })
 
@@ -125,7 +134,6 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
   })
 
   const query = new RegExp(
-    // parts.join(`("|')`),
     parts.reduce((regexp, part, index) => {
       if (index % 2 === 1) {
         regexp += '(\\s)*'
@@ -161,8 +169,11 @@ export function textSearch({
     prepareQuery(queryCode, caseInsensitive)
   )
 
+  console.log('queries', queries)
+
   const searchErrors = []
   const allMatches = []
+
   for (const filePath of filePaths) {
     try {
       const fileContent = getFileContent(filePath)
@@ -181,6 +192,7 @@ export function textSearch({
           // replace match in content to properly find the same match in the source file
           // For multiline matches we have to keep new line chars in order to properly determine lines for subsequent matches
           const matchGhost = match.replace(/\S/g, ' ') // replace any non-white space with a space char
+
           contentToMatchPosition = contentToMatchPosition.replace(
             match,
             matchGhost
@@ -206,9 +218,10 @@ export function textSearch({
       }
     } catch (e) {
       searchErrors.push(e)
-      console.error(filePath, e)
     }
   }
+
   const result = { errors: searchErrors, matches: allMatches, hints: [] }
+
   return result
 }

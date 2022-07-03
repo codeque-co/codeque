@@ -1,5 +1,4 @@
 import { Command } from 'commander'
-import { search } from './search'
 import { createCliProgram } from './createCli'
 
 const program = new Command()

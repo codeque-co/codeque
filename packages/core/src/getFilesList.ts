@@ -4,7 +4,7 @@ import { promises as fs } from 'fs'
 import ignore from 'ignore'
 import { asyncFilter, measureStart } from './utils'
 
-import { parseDependencyTree } from 'dpdm'
+import { parseDependencyTree } from 'dpdm/lib/index.js'
 import { spawnSync } from 'child_process'
 
 //@ts-ignore
@@ -93,6 +93,7 @@ export const getFilesList = async ({
   byGitChanges?: boolean
   omitGitIgnore?: boolean
 }) => {
+  console.log('__dirname', __dirname)
   const measureStop = measureStart('getFiles')
 
   if (byGitChanges) {

@@ -1,7 +1,10 @@
-import * as vscode from 'vscode'
-import { getNonce } from './getNonce'
-import { StateManager, StateShape } from './StateManager'
+import { Match } from '@codeque/core'
 import dedent from 'dedent'
+import * as vscode from 'vscode'
+import { eventBusInstance } from './EventBus'
+import { getNonce } from './getNonce'
+import { StateManager } from './StateManager'
+import { ExtendedSearchResults } from './types'
 
 export class SearchResultsPanel {
   /**
@@ -92,39 +95,83 @@ export class SearchResultsPanel {
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
+    const postMessage = (message: any) => webview.postMessage(message)
+
+    eventBusInstance.addTransport(postMessage)
 
     // // Handle messages from the webview
     webview.onDidReceiveMessage(
-      (message) => {
-        switch (message.type) {
-          case 'panel-open':
-            this.sendInitialDataToWebview()
-
-            return
-        }
-      },
+      eventBusInstance.pipeFromWebview,
       null,
       this._disposables
     )
 
-    const reportSettingsChange = (data: StateShape) => {
-      webview.postMessage({
-        type: 'settings-changed',
-        data
-      })
+    eventBusInstance.addListener('panel-open', this.sendInitialDataToWebview)
+    eventBusInstance.addListener('set-query', this.setQueryData)
+    eventBusInstance.addListener('open-file', this.openFile)
+    // eventBusInstance.addListener('settings-changed', this.reportSettingsChange)
+
+    const unsubscribeFromEventBus = () => {
+      eventBusInstance.removeListener(
+        'panel-open',
+        this.sendInitialDataToWebview
+      )
+
+      eventBusInstance.removeListener('set-query', this.setQueryData)
+      eventBusInstance.removeListener('open-file', this.openFile)
+
+      // eventBusInstance.removeListener(
+      //   'settings-changed',
+      //   this.reportSettingsChange
+      // )
+
+      eventBusInstance.removeTransport(postMessage)
     }
 
-    const unsubscribe = stateManager.subscribe(reportSettingsChange)
-
-    this._disposables.push(new vscode.Disposable(unsubscribe))
+    this._disposables.push(new vscode.Disposable(unsubscribeFromEventBus))
   }
 
-  public sendInitialDataToWebview() {
-    this._panel.webview.postMessage({
-      type: 'settings-changed',
-      data: this.stateManager.getState()
-    })
+  private setQueryData = (query: string | null) => {
+    this.stateManager.setState({ query: query ?? '' })
   }
+
+  private sendInitialDataToWebview = () => {
+    eventBusInstance.dispatch('initial-settings', this.stateManager.getState())
+  }
+
+  private openFile = ({
+    filePath,
+    location
+  }: {
+    filePath: string
+    location: Match['loc']
+  }) => {
+    const setting: vscode.Uri = vscode.Uri.parse(filePath)
+
+    vscode.workspace.openTextDocument(setting).then(
+      (textDoc: vscode.TextDocument) => {
+        const startPos = new vscode.Position(
+          location.start.line - 1, // API has 0-based indexes
+          location.start.column
+        )
+        const endPos = new vscode.Position(
+          location.end.line - 1, // API has 0-based indexes
+          location.end.column
+        )
+        const selection = new vscode.Range(startPos, endPos)
+
+        return vscode.window.showTextDocument(textDoc, { selection })
+      },
+      (error: any) => {
+        console.log('error opening file', filePath)
+        console.error(error)
+      }
+    )
+  }
+
+  // private reportSettingsChange = (data: StateShape) => {
+  //   eventBusInstance.dispatch('settings-changed', data)
+  // }
 
   public dispose() {
     SearchResultsPanel.currentPanel = undefined

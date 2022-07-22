@@ -1,9 +1,11 @@
 import type { Mode } from '@codeque/core'
+import { CaseType } from 'types'
 import * as vscode from 'vscode'
+import { eventBusInstance } from './EventBus'
 
 export type StateShape = {
   mode: Mode
-  caseInsensitive: boolean
+  caseType: CaseType
   query: string
 }
 
@@ -12,14 +14,13 @@ type SubscribeHandler = (data: StateShape) => void
 export class StateManager {
   private readonly defaultState: StateShape = {
     mode: 'include',
-    caseInsensitive: false,
+    caseType: 'insensitive',
     query: ''
   }
 
   private readonly stateKey = 'codeque-data'
   private workspaceState: vscode.ExtensionContext['workspaceState']
   private localState: StateShape
-  private subscribeHandlers: Array<SubscribeHandler> = []
 
   constructor(workspaceState: vscode.ExtensionContext['workspaceState']) {
     this.workspaceState = workspaceState
@@ -30,6 +31,7 @@ export class StateManager {
     try {
       savedStateParsed = JSON.parse(savedState)
     } catch (e) {
+      console.log('saved state parse error', e)
       void 0
     }
 
@@ -37,35 +39,25 @@ export class StateManager {
       ...this.defaultState,
       ...savedStateParsed
     }
+
+    console.log('restored state', this.localState)
   }
 
-  public setState(data: Partial<StateShape>) {
+  public setState = (data: Partial<StateShape>) => {
     const newState = {
       ...this.localState,
       ...data
     }
     this.localState = newState
 
-    this.subscribeHandlers.forEach((handler) => handler(newState))
+    // this.subscribeHandlers.forEach((handler) => handler(newState))
+    eventBusInstance.dispatch('settings-changed', newState)
 
+    console.log('persisting state', newState)
     this.workspaceState.update(this.stateKey, JSON.stringify(newState))
   }
 
-  public getState() {
-    return this.localState
-  }
-
-  public subscribe(handler: SubscribeHandler) {
-    this.subscribeHandlers.push(handler)
-
-    return this.createUnsubscribe(handler)
-  }
-
-  private createUnsubscribe(handler: SubscribeHandler) {
-    return () => {
-      this.subscribeHandlers = this.subscribeHandlers.filter(
-        (savedHandler) => savedHandler !== handler
-      )
-    }
+  public getState = () => {
+    return { ...this.localState }
   }
 }

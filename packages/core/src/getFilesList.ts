@@ -93,7 +93,6 @@ export const getFilesList = async ({
   byGitChanges?: boolean
   omitGitIgnore?: boolean
 }) => {
-  console.log('__dirname', __dirname)
   const measureStop = measureStart('getFiles')
 
   if (byGitChanges) {

@@ -169,8 +169,6 @@ export function textSearch({
     prepareQuery(queryCode, caseInsensitive)
   )
 
-  console.log('queries', queries)
-
   const searchErrors = []
   const allMatches = []
 

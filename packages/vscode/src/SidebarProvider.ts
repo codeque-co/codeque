@@ -2,6 +2,7 @@ import dedent from 'dedent'
 import * as vscode from 'vscode'
 import { getNonce } from './getNonce'
 import { StateManager } from './StateManager'
+import { eventBusInstance } from './EventBus'
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView
   _doc?: vscode.TextDocument
@@ -22,18 +23,25 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview)
 
-    webviewView.webview.onDidReceiveMessage(async (message) => {
-      switch (message.type) {
-        case 'sidebar-open': {
-          this.openPanel()
-          break
-        }
+    const postMessage = (message: any) =>
+      this._view?.webview.postMessage(message)
 
-        case 'set-settings': {
-          this.stateManager.setState(message.data)
-          break
-        }
-      }
+    //TODO Should we somehow remove it on unmount and remove listeners ?
+    eventBusInstance.addTransport(postMessage)
+
+    webviewView.webview.onDidReceiveMessage(eventBusInstance.pipeFromWebview)
+
+    eventBusInstance.addListener('sidebar-open', () => {
+      this.openPanel()
+
+      eventBusInstance.dispatch(
+        'initial-settings',
+        this.stateManager.getState()
+      )
+    })
+
+    eventBusInstance.addListener('set-settings', (data) => {
+      this.stateManager.setState(data)
     })
   }
 

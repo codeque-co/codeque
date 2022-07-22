@@ -1,19 +1,26 @@
 import * as vscode from 'vscode'
-import { searchMultiThread, getFilesList } from '@codeque/core'
 import { SidebarProvider } from './SidebarProvider'
 import { SearchResultsPanel } from './SearchResultsPanel'
 import { StateManager } from './StateManager'
+import { SearchManager } from './SearchManager'
+import dedent from 'dedent'
 
 export function activate(context: vscode.ExtensionContext) {
   const { extensionUri } = context
 
   const stateManager = new StateManager(context.workspaceState)
 
+  // Move to event bus
+  const openPanel = () =>
+    SearchResultsPanel.createOrShow(extensionUri, stateManager)
+
   const sidebarProvider = new SidebarProvider(
     context.extensionUri,
     stateManager,
-    () => SearchResultsPanel.createOrShow(extensionUri, stateManager)
+    openPanel
   )
+
+  const searchManager = new SearchManager()
 
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
@@ -27,27 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
       'codeque-sidebar',
       sidebarProvider
     )
-  )
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand('codeque.helloWorld', async () => {
-      vscode.window.showInformationMessage('Hello World from CodeQue!')
-      const root =
-        vscode.workspace.workspaceFolders?.[0] !== undefined
-          ? vscode.workspace.workspaceFolders[0].uri
-          : undefined
-
-      if (root !== undefined) {
-        const files = await getFilesList({ searchRoot: root.path })
-        console.log('files count', files.length)
-        const results = await searchMultiThread({
-          filePaths: files,
-          queryCodes: ['console.log()'],
-          mode: 'include'
-        })
-        console.log('results count:', results.matches.length)
-      }
-    })
   )
 
   context.subscriptions.push(
@@ -70,9 +56,28 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (selectedCode) {
         stateManager.setState({
-          query: selectedCode
+          query: dedent(selectedCode)
         })
       }
+    })
+  )
+
+  context.subscriptions.push(
+    // Thanks Ben
+    vscode.commands.registerCommand('codeque.refresh', async () => {
+      SearchResultsPanel.kill()
+      SearchResultsPanel.createOrShow(extensionUri, stateManager)
+      await vscode.commands.executeCommand('workbench.action.closeSidebar')
+
+      await vscode.commands.executeCommand(
+        'workbench.view.extension.codeque-sidebar-view'
+      )
+
+      // setTimeout(() => {
+      //   vscode.commands.executeCommand(
+      //     'workbench.action.webview.openDeveloperTools'
+      //   )
+      // }, 500)
     })
   )
 }

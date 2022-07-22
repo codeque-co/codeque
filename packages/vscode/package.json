@@ -4,7 +4,8 @@
 	"description": "Supercharged structural code search and replace",
 	"version": "0.0.1",
 	"engines": {
-		"vscode": "^1.68.0"
+		"vscode": "^1.68.0",
+		"node": "^14"
 	},
 	"categories": [
 		"Other"
@@ -37,12 +38,12 @@
 		},
 		"commands": [
 			{
-				"command": "codeque.helloWorld",
-				"title": "Hello World"
-			},
-			{
 				"command": "codeque.openSearch",
 				"title": "Open Search"
+			},
+			{
+				"command": "codeque.refresh",
+				"title": "Refresh extension"
 			}
 		]
 	},
@@ -76,11 +77,17 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
+		"@chakra-ui/react": "^2.2.4",
 		"@codeque/core": "^0.1.0",
+		"@emotion/react": "^11.9.3",
+		"@emotion/styled": "^11.9.3",
 		"@types/react": "^18.0.15",
 		"@types/react-dom": "^18.0.6",
 		"dedent": "^0.7.0",
+		"framer-motion": "^6.5.1",
+		"prism-react-renderer": "^1.3.5",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"react-simple-code-editor": "^0.11.2"
 	}
 }

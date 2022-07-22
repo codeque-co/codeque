@@ -1,5 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
+
+// TODO add vendors output to not include react and chakra twice
 module.exports = {
   target: 'web',
   mode: 'none',
@@ -25,7 +27,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      process: 'process/browser',
-    }),
+      process: 'process/browser'
+    })
   ]
 }

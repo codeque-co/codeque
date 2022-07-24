@@ -1,6 +1,6 @@
 {
   "name": "@codeque/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Supercharged multiline code search and replace tool",
   "bin": {
     "codeque": "./bin.js"

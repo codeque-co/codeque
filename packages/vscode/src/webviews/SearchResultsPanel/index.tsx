@@ -3,7 +3,7 @@ window.Buffer = global.Buffer = {}
 //@ts-ignore
 window.require = global.require = () => void 0
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Providers } from '../components/Providers'
 import { QueryEditor } from './components/QueryEditor'
@@ -13,6 +13,7 @@ import { Flex, Spinner } from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
+import { simpleDebounce } from '../utils'
 
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
@@ -27,9 +28,14 @@ type ResultsObj = {
 const defaultDisplayLimit = 50
 
 const Panel = () => {
+  const [lastSearchedQuery, setLastSearchedQuery] = useState<string | null>(
+    null
+  )
   const [query, setQuery] = useState<string | null>(null)
   const [mode, setMode] = useState<string | null>(null)
-
+  const [hasQueryError, setHasQueryError] = useState<boolean>(false)
+  const [initialSettingsReceived, setInitialSettingsReceived] =
+    useState<boolean>(false)
   const [results, setResults] = useState<ExtendedSearchResults | undefined>(
     undefined
   )
@@ -41,6 +47,12 @@ const Panel = () => {
   const handleSettingsChanged = useCallback((data: StateShape) => {
     setQuery(data.query)
     setMode(data.mode)
+  }, [])
+
+  const handleInitialSettings = useCallback((data: StateShape) => {
+    setInitialSettingsReceived(true)
+    setLastSearchedQuery(data.query) // to block first auto search
+    handleSettingsChanged(data)
   }, [])
 
   const handleResults = useCallback((data: ResultsObj) => {
@@ -55,9 +67,31 @@ const Panel = () => {
     setIsLoading(true)
   }, [])
 
-  const saveQueryInSettings = useCallback(() => {
-    eventBusInstance.dispatch('set-query', query)
-  }, [query, setIsLoading])
+  const startSearch = useCallback(() => {
+    eventBusInstance.dispatch('start-search')
+  }, [])
+
+  const handleQueryChangeDebounced = useMemo(
+    () =>
+      simpleDebounce((query: string, hasQueryError: boolean) => {
+        eventBusInstance.dispatch('set-query', query)
+
+        if (!hasQueryError) {
+          startSearch()
+        }
+      }, 800),
+    [startSearch]
+  )
+
+  useEffect(() => {
+    if (
+      initialSettingsReceived &&
+      query !== null &&
+      lastSearchedQuery !== query
+    ) {
+      handleQueryChangeDebounced(query, hasQueryError)
+    }
+  }, [lastSearchedQuery, query, hasQueryError])
 
   useEffect(() => {
     eventBusInstance.env = 'search-results'
@@ -65,7 +99,7 @@ const Panel = () => {
     const postMessage = (...args: any[]) => vscode.postMessage(...args)
     eventBusInstance.addTransport(postMessage)
 
-    eventBusInstance.dispatch('panel-open')
+    eventBusInstance.dispatch('results-panel-opened')
 
     return () => {
       eventBusInstance.removeTransport(postMessage)
@@ -79,11 +113,11 @@ const Panel = () => {
 
   useEffect(() => {
     eventBusInstance.addListener('settings-changed', handleSettingsChanged)
-    eventBusInstance.addListener('initial-settings', handleSettingsChanged)
+    eventBusInstance.addListener('initial-settings', handleInitialSettings)
 
     return () => {
       eventBusInstance.removeListener('settings-changed', handleSettingsChanged)
-      eventBusInstance.removeListener('initial-settings', handleSettingsChanged)
+      eventBusInstance.removeListener('initial-settings', handleInitialSettings)
     }
   }, [handleSettingsChanged])
 
@@ -96,12 +130,12 @@ const Panel = () => {
   }, [handleResults])
 
   useEffect(() => {
-    eventBusInstance.addListener('search-start', handleSearchStart)
+    eventBusInstance.addListener('search-started', handleSearchStart)
 
     return () => {
-      eventBusInstance.removeListener('search-start', handleSearchStart)
+      eventBusInstance.removeListener('search-started', handleSearchStart)
     }
-  }, [handleResults])
+  }, [handleSearchStart])
 
   const matchedFilesCount = results
     ? Object.keys(results?.groupedMatches ?? {}).length
@@ -122,11 +156,16 @@ const Panel = () => {
     <Providers>
       <Flex height="98vh" flexDir="column">
         {query !== null ? (
-          <QueryEditor query={query} setQuery={setQuery} mode={mode} />
+          <QueryEditor
+            query={query}
+            setQuery={setQuery}
+            mode={mode}
+            setHasQueryError={setHasQueryError}
+          />
         ) : null}
         <ResultsMeta
           time={time}
-          startSearch={saveQueryInSettings}
+          startSearch={startSearch}
           filesCount={filesList?.length}
           matchesCount={results?.matches?.length}
           matchedFilesCount={matchedFilesCount}

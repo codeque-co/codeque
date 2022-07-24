@@ -9,3 +9,4 @@ devQuery
 devFile
 
 dist
+*.temp

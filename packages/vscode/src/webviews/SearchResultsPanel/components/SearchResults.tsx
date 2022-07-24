@@ -20,6 +20,7 @@ const matchHighlightStyle = {
   boxShadow: `0px 5px 0px ${highlightColorOnDark}, 0px -5px 0px ${highlightColorOnDark}`
 }
 import { useThemeType } from '../../components/useThemeType'
+import dedent from 'dedent'
 
 export function SearchResultsList({
   matches,
@@ -93,6 +94,10 @@ export function SearchResultsList({
               <CodeBlock
                 startLineNumber={match.extendedCodeFrame?.startLine}
                 theme={highlightTheme}
+                dedent={
+                  (match.extendedCodeFrame?.startLine as number) >=
+                  match.loc.start.line
+                }
                 // customHighlight={matchHighlight}
               >
                 {match.extendedCodeFrame?.code as string}
@@ -103,8 +108,10 @@ export function SearchResultsList({
       })}
       {matches.length > displayLimit ? (
         <Flex justifyContent="center" ml="5" mr="5" mb="5">
-          <Button onClick={extendDisplayLimit}>Show more</Button>
-          <Button ml="5" onClick={showAllResults}>
+          <Button onClick={extendDisplayLimit} colorScheme="blue">
+            Show more
+          </Button>
+          <Button ml="5" onClick={showAllResults} colorScheme="blue">
             Show all ({matches.length})
           </Button>
         </Flex>

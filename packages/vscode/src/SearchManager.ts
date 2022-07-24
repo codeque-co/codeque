@@ -13,8 +13,8 @@ import { eventBusInstance } from './EventBus'
 export class SearchManager {
   private root: string | undefined
 
-  constructor() {
-    eventBusInstance.addListener('settings-changed', this.handleSettingsChange)
+  constructor(private readonly stateManager: StateManager) {
+    eventBusInstance.addListener('start-search', this.startSearch)
 
     this.root =
       vscode.workspace.workspaceFolders?.[0] !== undefined
@@ -22,8 +22,8 @@ export class SearchManager {
         : undefined
   }
 
-  private handleSettingsChange = (settings: StateShape) => {
-    this.performSearch(settings)
+  private startSearch = () => {
+    this.performSearch(this.stateManager.getState())
   }
 
   private processSearchResults = (
@@ -50,7 +50,7 @@ export class SearchManager {
       if (this.root !== undefined) {
         console.log('start search')
         console.log('root', this.root)
-        eventBusInstance.dispatch('search-start')
+        eventBusInstance.dispatch('search-started')
         const searchStart = Date.now()
         const files = await getFilesList({ searchRoot: this.root })
         const getFilesEnd = Date.now()

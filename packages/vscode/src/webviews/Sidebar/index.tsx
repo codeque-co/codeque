@@ -8,13 +8,20 @@ import { eventBusInstance } from '../../EventBus'
 const vscode = acquireVsCodeApi()
 
 const Sidebar = () => {
+  const [resultsPanelVisible, setResultsPanelVisible] = useState(true)
   const [initialSettings, setInitialSettings] = useState<Settings | null>(null)
+
   const setSettings = useCallback((settings: Partial<Settings>) => {
     eventBusInstance.dispatch('set-settings', settings)
+    eventBusInstance.dispatch('start-search')
   }, [])
 
   const handleDefaultSettings = useCallback((data: Settings) => {
     setInitialSettings(data)
+  }, [])
+
+  const handleResultsPanelVisibilityChange = useCallback((data: boolean) => {
+    setResultsPanelVisible(data)
   }, [])
 
   useEffect(() => {
@@ -24,7 +31,7 @@ const Sidebar = () => {
     eventBusInstance.addTransport(postMessage)
 
     setTimeout(() => {
-      eventBusInstance.dispatch('sidebar-open')
+      eventBusInstance.dispatch('sidebar-panel-opened')
     }, 0)
 
     return () => {
@@ -45,12 +52,27 @@ const Sidebar = () => {
     }
   }, [handleDefaultSettings])
 
+  useEffect(() => {
+    eventBusInstance.addListener(
+      'results-panel-visibility',
+      handleResultsPanelVisibilityChange
+    )
+
+    return () => {
+      eventBusInstance.removeListener(
+        'results-panel-visibility',
+        handleResultsPanelVisibilityChange
+      )
+    }
+  }, [handleResultsPanelVisibilityChange])
+
   return (
     <Providers>
       {initialSettings && (
         <SearchSettings
           initialSettings={initialSettings}
           setSettings={setSettings}
+          resultsPanelVisible={resultsPanelVisible}
         />
       )}
     </Providers>

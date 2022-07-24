@@ -9,8 +9,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private readonly stateManager: StateManager,
-    private readonly openPanel: () => void
+    private readonly stateManager: StateManager
   ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -31,8 +30,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(eventBusInstance.pipeFromWebview)
 
-    eventBusInstance.addListener('sidebar-open', () => {
-      this.openPanel()
+    eventBusInstance.addListener('sidebar-panel-opened', () => {
+      eventBusInstance.dispatch('show-results-panel')
 
       eventBusInstance.dispatch(
         'initial-settings',

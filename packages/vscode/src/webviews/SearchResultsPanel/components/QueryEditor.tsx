@@ -23,6 +23,7 @@ type Props = {
   query: string
   setQuery: (query: string) => void
   mode: Mode
+  setHasQueryError: (value: boolean) => void
 }
 
 const renderHint = (hint: Hint) => {
@@ -57,9 +58,18 @@ const getParseErrorHighlight = (errorLocation: {
   }
 }
 
-export function QueryEditor({ query, setQuery, mode }: Props) {
+export function QueryEditor({
+  query,
+  setQuery,
+  setHasQueryError,
+  mode
+}: Props) {
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    setHasQueryError(Boolean(queryError))
+  }, [queryError])
 
   useEffect(() => {
     setQueryError(null)

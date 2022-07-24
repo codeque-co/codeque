@@ -55,7 +55,6 @@ export function Highlight({
               startLineNumber !== undefined
                 ? lineIdx + startLineNumber
                 : undefined
-            const lineNum = lineIdx + 1
 
             const lineNumToCompareHighlight = lineIdx + safeStartLineNumber
 

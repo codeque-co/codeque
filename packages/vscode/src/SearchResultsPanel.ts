@@ -4,7 +4,6 @@ import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { getNonce } from './getNonce'
 import { StateManager } from './StateManager'
-import { ExtendedSearchResults } from './types'
 
 export class SearchResultsPanel {
   /**
@@ -30,8 +29,6 @@ export class SearchResultsPanel {
     // If we already have a panel, show it.
     if (SearchResultsPanel.currentPanel) {
       SearchResultsPanel.currentPanel._panel.reveal(column)
-      SearchResultsPanel.currentPanel._update()
-      SearchResultsPanel.currentPanel.sendInitialDataToWebview()
 
       return
     }
@@ -44,6 +41,7 @@ export class SearchResultsPanel {
       {
         // Enable javascript in the webview
         enableScripts: true,
+        retainContextWhenHidden: true,
 
         // And restrict the webview to only loading content from our extension's `media` directory.
         localResourceRoots: [
@@ -54,6 +52,15 @@ export class SearchResultsPanel {
     )
 
     panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'logoShort.png')
+
+    panel.onDidChangeViewState((ev) => {
+      console.log('panel view changed', ev.webviewPanel.visible)
+
+      eventBusInstance.dispatch(
+        'results-panel-visibility',
+        ev.webviewPanel.visible
+      )
+    })
 
     SearchResultsPanel.currentPanel = new SearchResultsPanel(
       panel,
@@ -106,24 +113,26 @@ export class SearchResultsPanel {
       this._disposables
     )
 
-    eventBusInstance.addListener('panel-open', this.sendInitialDataToWebview)
+    eventBusInstance.addListener(
+      'results-panel-opened',
+      this.sendInitialDataToWebview
+    )
+
     eventBusInstance.addListener('set-query', this.setQueryData)
     eventBusInstance.addListener('open-file', this.openFile)
-    // eventBusInstance.addListener('settings-changed', this.reportSettingsChange)
+
+    eventBusInstance.addListenerOnce('results-panel-opened', () => {
+      eventBusInstance.dispatch('start-search')
+    })
 
     const unsubscribeFromEventBus = () => {
       eventBusInstance.removeListener(
-        'panel-open',
+        'results-panel-opened',
         this.sendInitialDataToWebview
       )
 
       eventBusInstance.removeListener('set-query', this.setQueryData)
       eventBusInstance.removeListener('open-file', this.openFile)
-
-      // eventBusInstance.removeListener(
-      //   'settings-changed',
-      //   this.reportSettingsChange
-      // )
 
       eventBusInstance.removeTransport(postMessage)
     }

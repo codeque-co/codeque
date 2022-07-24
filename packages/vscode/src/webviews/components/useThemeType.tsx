@@ -15,7 +15,7 @@ const themeTypeContext = createContext<ThemeType>('dark')
 const { Provider, Consumer } = themeTypeContext
 
 export const ThemeTypeProvider = (props: { children: React.ReactNode }) => {
-  const [themeType, setThemeType] = useState<ThemeType>('dark')
+  const [themeType, setThemeType] = useState<ThemeType>('light')
 
   useEffect(() => {
     setThemeType(getThemeType(document.body as HTMLBodyElement))

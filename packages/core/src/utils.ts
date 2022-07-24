@@ -15,6 +15,7 @@ export const getMode = (mode: Mode = 'include') => {
     console.error('Invalid mode: ', mode, '\nValid modes: ', ...modes)
     process.exit(0)
   }
+
   return mode
 }
 
@@ -22,6 +23,7 @@ const metrics = {} as Record<string, number>
 
 export const measureStart = (name: string) => {
   const timestamp = performance.now()
+
   return () => {
     const previousTime = metrics[name] || 0
     metrics[name] = previousTime + (performance.now() - timestamp)
@@ -36,9 +38,11 @@ export const patternToRegex = (str: string, caseInsensitive = false) => {
   if (disallowedWildcardRegExp.test(str)) {
     throw new Error(`More than 3 wildcards chars are not allowed "${str}"`)
   }
+
   const strWithReplacedWildcards = str
     .replace(requiredStringWildcardRegExp, '.+?')
     .replace(optionalStringWildcardRegExp, '.*?')
+
   return new RegExp(
     `^${strWithReplacedWildcards}$`,
     caseInsensitive ? 'i' : undefined
@@ -78,6 +82,7 @@ export const getCodeFrame = (
   for (let i = linesCount; i > 0; i--) {
     const frameLineNum = i
     const originalPaddingLen = frameLineNum.toString().length
+
     codeFrame = codeFrame.replace(
       ` ${frameLineNum} |`,
       ` ${startLine + i - 1} |`.padStart(
@@ -147,12 +152,16 @@ export const getExtendedCodeFrame = (
   let moveStartLine = 0
 
   if (numberOfLines < 3) {
-    moveStartLine = -1
-
-    positionOfPrevLineEnd -=
+    const movePrevLineEndBy =
       reverse(
         prefixContent.substring(0, positionOfPrevLineEnd - newLineCharLength)
       ).search(/\n/g) + newLineCharLength
+
+    positionOfPrevLineEnd -= movePrevLineEndBy
+
+    if (movePrevLineEndBy > 0) {
+      moveStartLine = -1
+    }
 
     positionOfNextLineEnd +=
       suffixContent
@@ -173,7 +182,9 @@ export const groupMatchesByFile = (matches: Matches) => {
     if (grouped[match.filePath] === undefined) {
       grouped[match.filePath] = []
     }
+
     grouped[match.filePath].push(match)
+
     return grouped
   }, {} as Record<string, Matches>)
 }

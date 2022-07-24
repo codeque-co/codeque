@@ -32,14 +32,26 @@ const getMatchPosition = (match: string, fileContents: string) => {
   }
 }
 
+const maxResultsLimit = 10000
+
 const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
+  const regExpFlags = 'gm' + (caseInsensitive ? 'i' : '')
+
+  if (queryCode.length === 0) {
+    return null
+  }
+
+  if (!queryCode.includes('$$') && queryCode.match(/\s/g) === null) {
+    return new RegExp(queryCode, regExpFlags)
+  }
+
   let parts = queryCode
     .split(/"/g)
     .map((part) => part.split(/'/g))
     .flat(1)
 
   parts = parts.map((part, idx) => {
-    const isStringContent = idx % 2 === 1
+    const isStringContent: boolean = idx % 2 === 1
 
     const zipParts = (parts: string[]) => {
       let result = ''
@@ -149,7 +161,7 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
 
       return regexp
     }),
-    'gm' + (caseInsensitive ? 'i' : '')
+    regExpFlags
   )
 
   return query
@@ -165,14 +177,26 @@ export function textSearch({
   caseInsensitive,
   getFileContent
 }: TextSearchArgs): SearchResults {
-  const queries = queryCodes.map((queryCode) =>
-    prepareQuery(queryCode, caseInsensitive)
-  )
+  const queries = queryCodes
+    .map((queryCode) => prepareQuery(queryCode, caseInsensitive))
+    .filter(Boolean) as RegExp[]
+
+  if (queries.length === 0) {
+    return {
+      matches: [],
+      hints: [],
+      errors: ['Empty Query']
+    }
+  }
 
   const searchErrors = []
   const allMatches = []
 
   for (const filePath of filePaths) {
+    if (allMatches.length > maxResultsLimit) {
+      break
+    }
+
     try {
       const fileContent = getFileContent(filePath)
 

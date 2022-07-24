@@ -4,23 +4,24 @@ import { SearchResultsPanel } from './SearchResultsPanel'
 import { StateManager } from './StateManager'
 import { SearchManager } from './SearchManager'
 import dedent from 'dedent'
+import { EventBus, eventBusInstance } from './EventBus'
 
 export function activate(context: vscode.ExtensionContext) {
   const { extensionUri } = context
 
   const stateManager = new StateManager(context.workspaceState)
 
-  // Move to event bus
   const openPanel = () =>
     SearchResultsPanel.createOrShow(extensionUri, stateManager)
 
+  eventBusInstance.addListener('show-results-panel', openPanel)
+
   const sidebarProvider = new SidebarProvider(
     context.extensionUri,
-    stateManager,
-    openPanel
+    stateManager
   )
 
-  const searchManager = new SearchManager()
+  const searchManager = new SearchManager(stateManager)
 
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
@@ -48,6 +49,12 @@ export function activate(context: vscode.ExtensionContext) {
         )
       }
 
+      if (selectedCode) {
+        stateManager.setState({
+          query: dedent(selectedCode)
+        })
+      }
+
       SearchResultsPanel.createOrShow(extensionUri, stateManager)
 
       await vscode.commands.executeCommand(
@@ -55,9 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
       )
 
       if (selectedCode) {
-        stateManager.setState({
-          query: dedent(selectedCode)
-        })
+        eventBusInstance.dispatch('start-search')
       }
     })
   )

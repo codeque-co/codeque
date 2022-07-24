@@ -3,15 +3,18 @@ import { Match } from '@codeque/core'
 import { ExtendedSearchResults } from './types'
 
 type EventTypes = {
-  'sidebar-open': null
-  'panel-open': null
+  'sidebar-panel-opened': null
+  'results-panel-opened': null
+  'results-panel-visibility': boolean
+  'show-results-panel': null
   'set-settings': Partial<StateShape>
   'initial-settings': StateShape
   'open-file': {
     filePath: string
     location: Match['loc']
   }
-  'search-start': null
+  'start-search': null
+  'search-started': null
   'have-results': {
     results: ExtendedSearchResults
     time: number
@@ -36,26 +39,26 @@ type MaybeEvent = {
 export class EventBus {
   private transports: Array<(data: any) => void> = []
   private listeners: Record<EventType, Array<(data: any) => void>> = {
-    'sidebar-open': [],
-    'panel-open': [],
+    'sidebar-panel-opened': [],
+    'results-panel-opened': [],
+    'show-results-panel': [],
+    'results-panel-visibility': [],
     'initial-settings': [],
     'set-settings': [],
     'set-query': [],
     'settings-changed': [],
     'open-file': [],
-    'search-start': [],
+    'start-search': [],
+    'search-started': [],
     'have-results': []
   }
   public env = 'extension'
 
   addTransport = (sendFn: (data: any) => void) => {
-    console.log(this.env, 'addTransport')
     this.transports.push(sendFn)
   }
 
   removeTransport = (sendFn: (data: any) => void) => {
-    console.log(this.env, 'removeTransport')
-
     this.transports = this.transports.filter(
       (transportFn) => sendFn !== transportFn
     )
@@ -65,17 +68,25 @@ export class EventBus {
     eventType: T,
     callback: (data: EventTypes[T]) => void
   ) => {
-    console.log(this.env, 'addListener')
-
     this.listeners[eventType].push(callback)
+  }
+
+  addListenerOnce = <T extends EventType>(
+    eventType: T,
+    callback: (data: EventTypes[T]) => void
+  ) => {
+    const onceHandler = (data: EventTypes[T]) => {
+      callback(data)
+      this.removeListener(eventType, onceHandler)
+    }
+
+    this.listeners[eventType].push(onceHandler)
   }
 
   removeListener = <T extends EventType>(
     eventType: T,
     callback: (data: EventTypes[T]) => void
   ) => {
-    console.log(this.env, 'removeListener')
-
     this.listeners[eventType] = this.listeners[eventType].filter(
       (fn) => fn !== callback
     )
@@ -86,7 +97,6 @@ export class EventBus {
     data?: EventTypes[T],
     dispatchThroughTransports = true
   ) => {
-    console.log(this.env, 'dispatch', eventType)
     try {
       await Promise.all(
         this.listeners[eventType].map((callback) => callback(data))
@@ -104,18 +114,13 @@ export class EventBus {
         }
       })
 
-      console.log(this.env, 'transports', this.transports.length)
-
       try {
         await Promise.all(
           this.transports.map((sendFn) => {
-            console.log(this.env, 'sendFn', sendFn)
-
             if (sendFn) {
               return sendFn(eventWrappedForTransport)
             }
 
-            // return sendFn(eventWrappedForTransport)
             return
           })
         )
@@ -134,7 +139,6 @@ export class EventBus {
   }
 
   pipeFromWebview = (maybeEventStr: string) => {
-    console.log(this.env, 'pipeFromWebview')
     try {
       const maybeEvent = JSON.parse(maybeEventStr) as MaybeEvent
 
@@ -152,7 +156,6 @@ export class EventBus {
   }
 
   pipeFromWindowMessage = (message: { data: string }) => {
-    console.log(this.env, 'pipeFromWindowMessage')
     try {
       const maybeEvent = JSON.parse(message?.data) as MaybeEvent
 

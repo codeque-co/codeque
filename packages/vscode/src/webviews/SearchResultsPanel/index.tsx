@@ -32,6 +32,9 @@ const Panel = () => {
     null
   )
   const [query, setQuery] = useState<string | null>(null)
+  const [nextSearchIsFromSelection, setNextSearchIsFromSelection] =
+    useState<boolean>(false)
+
   const [mode, setMode] = useState<string | null>(null)
   const [hasQueryError, setHasQueryError] = useState<boolean>(false)
   const [initialSettingsReceived, setInitialSettingsReceived] =
@@ -45,6 +48,7 @@ const Panel = () => {
   const [displayLimit, setDisplayLimit] = useState(50)
 
   const handleSettingsChanged = useCallback((data: StateShape) => {
+    setLastSearchedQuery(data.query) // to block first auto search
     setQuery(data.query)
     setMode(data.mode)
   }, [])
@@ -61,6 +65,7 @@ const Panel = () => {
     setFilesList(data.files)
     setIsLoading(false)
     setDisplayLimit(defaultDisplayLimit)
+    setNextSearchIsFromSelection(false)
   }, [])
 
   const handleSearchStart = useCallback(() => {
@@ -82,16 +87,6 @@ const Panel = () => {
       }, 800),
     [startSearch]
   )
-
-  useEffect(() => {
-    if (
-      initialSettingsReceived &&
-      query !== null &&
-      lastSearchedQuery !== query
-    ) {
-      handleQueryChangeDebounced(query, hasQueryError)
-    }
-  }, [lastSearchedQuery, query, hasQueryError])
 
   useEffect(() => {
     eventBusInstance.env = 'search-results'
@@ -130,6 +125,24 @@ const Panel = () => {
   }, [handleResults])
 
   useEffect(() => {
+    const setNextSearchFromSelection = () => {
+      setNextSearchIsFromSelection(true)
+    }
+
+    eventBusInstance.addListener(
+      'open-search-from-selection',
+      setNextSearchFromSelection
+    )
+
+    return () => {
+      eventBusInstance.removeListener(
+        'open-search-from-selection',
+        setNextSearchFromSelection
+      )
+    }
+  }, [setNextSearchIsFromSelection])
+
+  useEffect(() => {
     eventBusInstance.addListener('search-started', handleSearchStart)
 
     return () => {
@@ -151,6 +164,17 @@ const Panel = () => {
   const showAllResults = useCallback(() => {
     setDisplayLimit(results?.matches.length ?? 0)
   }, [results])
+
+  useEffect(() => {
+    if (
+      initialSettingsReceived &&
+      query !== null &&
+      lastSearchedQuery !== query &&
+      !nextSearchIsFromSelection
+    ) {
+      handleQueryChangeDebounced(query, hasQueryError)
+    }
+  }, [lastSearchedQuery, query, hasQueryError, nextSearchIsFromSelection])
 
   return (
     <Providers>

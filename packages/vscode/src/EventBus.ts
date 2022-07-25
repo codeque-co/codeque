@@ -13,6 +13,7 @@ type EventTypes = {
     filePath: string
     location: Match['loc']
   }
+  'open-search-from-selection': null
   'start-search': null
   'search-started': null
   'have-results': {
@@ -48,6 +49,7 @@ export class EventBus {
     'set-query': [],
     'settings-changed': [],
     'open-file': [],
+    'open-search-from-selection': [],
     'start-search': [],
     'search-started': [],
     'have-results': []

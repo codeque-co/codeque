@@ -21,6 +21,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeque-co/codeque"
+  },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.3",
     "@types/babel__generator": "^7.6.3",

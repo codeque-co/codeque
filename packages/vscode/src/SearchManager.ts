@@ -12,14 +12,18 @@ import { eventBusInstance } from './EventBus'
 
 export class SearchManager {
   private root: string | undefined
+  private searchRunning = false
 
   constructor(private readonly stateManager: StateManager) {
     eventBusInstance.addListener('start-search', this.startSearch)
 
-    this.root =
-      vscode.workspace.workspaceFolders?.[0] !== undefined
-        ? vscode.workspace.workspaceFolders[0].uri.path
-        : undefined
+    this.root = this.getRoot()
+  }
+
+  private getRoot() {
+    return vscode.workspace.workspaceFolders?.[0] !== undefined
+      ? vscode.workspace.workspaceFolders[0].uri.path
+      : undefined
   }
 
   private startSearch = () => {
@@ -46,15 +50,20 @@ export class SearchManager {
   }
 
   public performSearch = async (settings: StateShape) => {
+    if (this.root === undefined) {
+      this.root = this.getRoot()
+    }
+
+    const searchStart = Date.now()
+    let files: string[] = []
+
     try {
-      if (this.root !== undefined) {
-        console.log('start search')
-        console.log('root', this.root)
+      if (this.root !== undefined && !this.searchRunning) {
+        this.searchRunning = true
         eventBusInstance.dispatch('search-started')
-        const searchStart = Date.now()
-        const files = await getFilesList({ searchRoot: this.root })
+        files = await getFilesList({ searchRoot: this.root })
         const getFilesEnd = Date.now()
-        console.log('getFiles', getFilesEnd - searchStart)
+
         const results = await searchMultiThread({
           filePaths: files,
           queryCodes: [settings.query],
@@ -62,20 +71,35 @@ export class SearchManager {
           caseInsensitive: settings.caseType === 'insensitive'
         })
         const searchEnd = Date.now()
-        console.log('end search', searchEnd - getFilesEnd)
 
         eventBusInstance.dispatch('have-results', {
           results: this.processSearchResults(results, this.root),
           time: (searchEnd - searchStart) / 1000,
           files
         })
+
+        this.searchRunning = false
       } else {
         vscode.window.showErrorMessage(
           'Search error: Could not determine search root.'
         )
       }
-    } catch (e) {
+    } catch (e: any) {
       vscode.window.showErrorMessage('Search error: ' + (e as Error).message)
+
+      eventBusInstance.dispatch('have-results', {
+        results: {
+          matches: [],
+          errors: e.message,
+          hints: [],
+          relativePathsMap: {},
+          groupedMatches: {}
+        },
+        time: (Date.now() - searchStart) / 1000,
+        files: files
+      })
+
+      this.searchRunning = false
     }
   }
 

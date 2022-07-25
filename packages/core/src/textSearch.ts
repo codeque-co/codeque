@@ -41,10 +41,6 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
     return null
   }
 
-  if (!queryCode.includes('$$') && queryCode.match(/\s/g) === null) {
-    return new RegExp(queryCode, regExpFlags)
-  }
-
   let parts = queryCode
     .split(/"/g)
     .map((part) => part.split(/'/g))

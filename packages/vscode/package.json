@@ -1,8 +1,13 @@
 {
 	"name": "codeque",
+	"publisher": "CodeQue",
 	"displayName": "CodeQue",
-	"description": "Supercharged structural code search and replace",
-	"version": "0.0.1",
+	"description": "Supercharged multiline search and replace tool for TypeScript and JavaScript",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codeque-co/codeque"
+	},
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.68.0",
 		"node": "^14"
@@ -10,11 +15,19 @@
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"search",
+		"multiline search",
+		"structural search",
+		"search and replace",
+		"regexp search"
+	],
 	"activationEvents": [
-		"onCommand:codeque.helloWorld",
 		"onView:codeque-sidebar"
 	],
+	"license": "SEE LICENSE IN LICENSE.md",
 	"main": "./dist/extension.js",
+	"icon": "media/logoShort2_bg.png",
 	"contributes": {
 		"viewsContainers": {
 			"activitybar": [
@@ -50,9 +63,11 @@
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
 		"compile": "webpack",
-		"watch": "webpack --config webpack.extension.config.js --watch",
-		"package": "webpack --config webpack.extension.config.js --mode production --devtool hidden-source-map",
+		"watch:extension": "webpack --config webpack.extension.config.js --watch",
+		"package:extension": "webpack --config webpack.extension.config.js --mode production",
 		"watch:webviews": "webpack --config webpack.webviews.config.js --watch",
+		"package:webviews": "webpack --config webpack.webviews.config.js --mode production",
+		"package": "yarn package:extension && yarn package:webviews",
 		"compile-tests": "tsc -p . --outDir out",
 		"watch-tests": "tsc -p . -w --outDir out",
 		"pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
@@ -63,7 +78,7 @@
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "16.x",
-		"@types/vscode": "^1.69.0",
+		"@types/vscode": "^1.68.0",
 		"@typescript-eslint/eslint-plugin": "^5.30.0",
 		"@typescript-eslint/parser": "^5.30.0",
 		"@vscode/test-electron": "^2.1.5",
@@ -78,7 +93,7 @@
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^2.2.4",
-		"@codeque/core": "^0.1.0",
+		"@codeque/core": "^0.1.2",
 		"@emotion/react": "^11.9.3",
 		"@emotion/styled": "^11.9.3",
 		"@types/react": "^18.0.15",

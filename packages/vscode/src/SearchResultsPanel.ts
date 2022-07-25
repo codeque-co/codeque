@@ -54,8 +54,6 @@ export class SearchResultsPanel {
     panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'logoShort.png')
 
     panel.onDidChangeViewState((ev) => {
-      console.log('panel view changed', ev.webviewPanel.visible)
-
       eventBusInstance.dispatch(
         'results-panel-visibility',
         ev.webviewPanel.visible

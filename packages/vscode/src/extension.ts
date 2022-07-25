@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import { SidebarProvider } from './SidebarProvider'
 import { SearchResultsPanel } from './SearchResultsPanel'
 import { StateManager } from './StateManager'
-import { SearchManager } from './SearchManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
 
@@ -21,7 +20,12 @@ export function activate(context: vscode.ExtensionContext) {
     stateManager
   )
 
-  const searchManager = new SearchManager(stateManager)
+  try {
+    const { SearchManager } = require('./SearchManager.ts')
+    const searchManager = new SearchManager(stateManager)
+  } catch (e: any) {
+    vscode.window.showErrorMessage('Failed create search manager ' + e.message)
+  }
 
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
@@ -62,6 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
       )
 
       if (selectedCode) {
+        eventBusInstance.dispatch('open-search-from-selection')
         eventBusInstance.dispatch('start-search')
       }
     })

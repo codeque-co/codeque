@@ -25,6 +25,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist-webviews'),
     filename: '[name].js'
   },
+  devtool: false,
   plugins: [
     new webpack.ProvidePlugin({
       process: 'process/browser'

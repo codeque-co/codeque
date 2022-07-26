@@ -1,13 +1,13 @@
 {
 	"name": "codeque",
 	"publisher": "CodeQue",
-	"displayName": "CodeQue",
+	"displayName": "CodeQue - multiline search",
 	"description": "Supercharged multiline search and replace tool for TypeScript and JavaScript",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/codeque-co/codeque"
 	},
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.68.0",
 		"node": "^14"
@@ -27,7 +27,7 @@
 	],
 	"license": "SEE LICENSE IN LICENSE.md",
 	"main": "./dist/extension.js",
-	"icon": "media/logoShort2_bg.png",
+	"icon": "media/logoShort.png",
 	"contributes": {
 		"viewsContainers": {
 			"activitybar": [

@@ -58,31 +58,33 @@ export class SearchManager {
     let files: string[] = []
 
     try {
-      if (this.root !== undefined && !this.searchRunning) {
-        this.searchRunning = true
-        eventBusInstance.dispatch('search-started')
-        files = await getFilesList({ searchRoot: this.root })
-        const getFilesEnd = Date.now()
+      if (!this.searchRunning) {
+        if (this.root !== undefined) {
+          this.searchRunning = true
+          eventBusInstance.dispatch('search-started')
+          files = await getFilesList({ searchRoot: this.root })
+          const getFilesEnd = Date.now()
 
-        const results = await searchMultiThread({
-          filePaths: files,
-          queryCodes: [settings.query],
-          mode: settings.mode,
-          caseInsensitive: settings.caseType === 'insensitive'
-        })
-        const searchEnd = Date.now()
+          const results = await searchMultiThread({
+            filePaths: files,
+            queryCodes: [settings.query],
+            mode: settings.mode,
+            caseInsensitive: settings.caseType === 'insensitive'
+          })
+          const searchEnd = Date.now()
 
-        eventBusInstance.dispatch('have-results', {
-          results: this.processSearchResults(results, this.root),
-          time: (searchEnd - searchStart) / 1000,
-          files
-        })
+          eventBusInstance.dispatch('have-results', {
+            results: this.processSearchResults(results, this.root),
+            time: (searchEnd - searchStart) / 1000,
+            files
+          })
 
-        this.searchRunning = false
-      } else {
-        vscode.window.showErrorMessage(
-          'Search error: Could not determine search root.'
-        )
+          this.searchRunning = false
+        } else {
+          vscode.window.showErrorMessage(
+            'Search error: Could not determine search root.'
+          )
+        }
       }
     } catch (e: any) {
       vscode.window.showErrorMessage('Search error: ' + (e as Error).message)

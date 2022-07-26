@@ -55,6 +55,7 @@ export const searchInStrings = ({
       hints: queries.map(({ hints }) => hints)
     }
   }
+
   const searchErrors = []
   measureParseQuery()
 
@@ -76,18 +77,21 @@ export const searchInStrings = ({
 
       if (fileMatches.length > 0) {
         log(file.path, 'matches', fileMatches)
+
         if (debug) {
           break
         }
       }
     } catch (e) {
       searchErrors.push(e)
+
       if (debug) {
         console.error(file.path, e)
         break
       }
     }
   }
+
   return {
     matches: dedupMatches(allMatches, log, debug),
     errors: searchErrors,

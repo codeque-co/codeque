@@ -9,7 +9,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private readonly stateManager: StateManager
+    private readonly stateManager: StateManager,
   ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -17,7 +17,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this._extensionUri]
+      localResourceRoots: [this._extensionUri],
     }
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview)
@@ -35,7 +35,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
       eventBusInstance.dispatch(
         'initial-settings',
-        this.stateManager.getState()
+        this.stateManager.getState(),
       )
     })
 
@@ -50,17 +50,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'),
     )
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'),
     )
 
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'dist-webviews', 'sidebar.js')
+      vscode.Uri.joinPath(this._extensionUri, 'dist-webviews', 'sidebar.js'),
     )
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/sidebar.css')
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/sidebar.css'),
     )
 
     // Use a nonce to only allow a specific script to be run.

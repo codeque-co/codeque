@@ -15,7 +15,7 @@ export class StateManager {
   private readonly defaultState: StateShape = {
     mode: 'include',
     caseType: 'insensitive',
-    query: ''
+    query: '',
   }
 
   private readonly stateKey = 'codeque-data'
@@ -37,7 +37,7 @@ export class StateManager {
 
     this.localState = {
       ...this.defaultState,
-      ...savedStateParsed
+      ...savedStateParsed,
     }
 
     console.log('restored state', this.localState)
@@ -46,7 +46,7 @@ export class StateManager {
   public setState = (data: Partial<StateShape>) => {
     const newState = {
       ...this.localState,
-      ...data
+      ...data,
     }
     this.localState = newState
 

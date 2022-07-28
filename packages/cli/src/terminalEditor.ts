@@ -83,7 +83,7 @@ function tokenize(code) {
         'type',
         'interface',
         'as',
-        'any'
+        'any',
       ]
 
       if (keywords.includes(token.value)) {
@@ -114,7 +114,7 @@ const newLineSequence = '\n'
 const footerDefault = [
   '🔍  Ctrl+s 👉 search!' + '          💅🏾  Ctrl+f 👉 format code',
   '🚪  Ctrl+c 👉 cancel and exit' + '  🔢  Ctrl+b 👉 toggle line numbers',
-  '🧹  2 x Ctrl+x 👉 clean query'
+  '🧹  2 x Ctrl+x 👉 clean query',
 ].join(newLineSequence)
 
 const logErrorFileName = 'editor-log.txt'
@@ -124,7 +124,7 @@ export const openAsyncEditor = ({
   code = '',
   footer = footerDefault,
   debug = false,
-  separator
+  separator,
 }) => {
   if (debug) {
     fs.writeFileSync(logErrorFileName, '')
@@ -153,7 +153,7 @@ export const openAsyncEditor = ({
     let cursorLeftOffset = defaultLeftOffset
     const cursorPos = {
       x: cursorLeftOffset,
-      y: cursorTopOffset
+      y: cursorTopOffset,
     }
 
     const getCursorYWithOffset = () => cursorPos.y - cursorTopOffset
@@ -204,7 +204,7 @@ export const openAsyncEditor = ({
 
       cursorPos.y = Math.min(
         cursorPos.y + progress,
-        linesCount - 1 + cursorTopOffset
+        linesCount - 1 + cursorTopOffset,
       )
 
       fixCursorOverflow(content)
@@ -219,7 +219,7 @@ export const openAsyncEditor = ({
       const footerFormatted = footerWithSep.padStart(
         footerWithSep.length +
           Math.max(1, 5 - content.split(newLineSequence).length),
-        newLineSequence
+        newLineSequence,
       )
 
       log('print')
@@ -231,13 +231,13 @@ export const openAsyncEditor = ({
           (line, idx) =>
             `${
               colors.gray(`${idx + 1}`.padStart(3)) + colors.gray(' | ')
-            }${line}`
+            }${line}`,
         )
         .join(newLineSequence)
 
       if (cursorLeftOffset === defaultLeftOffset) {
         outputStream.write(
-          headerFormatted + contentWithLineNumbers + footerFormatted
+          headerFormatted + contentWithLineNumbers + footerFormatted,
         )
       } else {
         outputStream.write(headerFormatted + tokenized + footerFormatted)
@@ -281,7 +281,7 @@ export const openAsyncEditor = ({
       if (key.name === 'f' && key.ctrl) {
         try {
           content = format(content, {
-            parser: 'babel-ts'
+            parser: 'babel-ts',
           })
 
           fixCursorOverflow(content)
@@ -325,7 +325,7 @@ export const openAsyncEditor = ({
             .filter((_, idx) => idx < getCursorYWithOffset())
             .reduce(
               (len, str) => len + str.length + newLineSequence.length,
-              0
+              0,
             ) + getCursorXWithOffset()
 
         content =
@@ -346,7 +346,7 @@ export const openAsyncEditor = ({
             .filter((_, idx) => idx < getCursorYWithOffset())
             .reduce(
               (len, str) => len + str.length + newLineSequence.length,
-              0
+              0,
             ) + getCursorXWithOffset()
 
         const lastChar = content.charCodeAt(currentPositionInContent - 1)
@@ -407,7 +407,7 @@ export const openAsyncEditor = ({
       input: process.stdin,
       output: null,
       terminal: true,
-      prompt: ''
+      prompt: '',
     })
 
     cursorDown(content, Infinity)

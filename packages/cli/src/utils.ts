@@ -8,7 +8,7 @@ export const textEllipsis = (text: string, maxLength: number) => {
     charsToReplace > 0
       ? text.replace(
           new RegExp(`^(.){${charsToReplace + ellipsis.length}}`),
-          ellipsis
+          ellipsis,
         )
       : text
 

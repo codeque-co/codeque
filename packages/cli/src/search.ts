@@ -5,7 +5,7 @@ import {
   getMode,
   groupMatchesByFile,
   parseQueries,
-  searchMultiThread
+  searchMultiThread,
 } from '@codeque/core'
 import { blue, bold, cyan, green, magenta, red, yellow } from 'colorette'
 import fs from 'fs'
@@ -16,7 +16,7 @@ import {
   prepareHintText,
   print,
   textEllipsis,
-  printVersionNumber
+  printVersionNumber,
 } from './utils'
 import { waitForSearchDecision } from './waitForSearchDecision'
 
@@ -46,7 +46,7 @@ export async function search(params: CliParams) {
     invertExitCode,
     version,
     printFilesList,
-    omitGitIgnore
+    omitGitIgnore,
   } = params
 
   let { mode, query: queries = [] } = params
@@ -78,7 +78,7 @@ export async function search(params: CliParams) {
   const caseLabel = 'Case: '
   const caseText = caseInsensitive ? 'insensitive' : 'sensitive'
   const modeAndCaseText = `${cyan(bold(modeLabel))}${green(mode)}${dot}${cyan(
-    bold(caseLabel)
+    bold(caseLabel),
   )}${green(caseText)}\n`
 
   const remainingCharsForRoot =
@@ -103,14 +103,14 @@ export async function search(params: CliParams) {
     const q = await openAsyncEditor({
       header: `${rootText}${modeAndCaseText}\n✨ Type query:`,
       code: prevQuery,
-      separator
+      separator,
     })
     fs.writeFileSync(queryCachePath, q)
     queries = [q]
   } else if (queryPaths.length > 0) {
     try {
       queries = queryPaths.map((qp) =>
-        fs.readFileSync(path.resolve(qp)).toString()
+        fs.readFileSync(path.resolve(qp)).toString(),
       )
     } catch (e: any) {
       print('\n' + red(bold(`Query file not found:`)), e.message, '\n')
@@ -144,7 +144,7 @@ export async function search(params: CliParams) {
           print(
             red(bold('Query parse error:\n\n')),
             getCodeFrame(q, 1, false, error?.location),
-            '\n'
+            '\n',
           )
         }
 
@@ -168,7 +168,7 @@ export async function search(params: CliParams) {
       searchRoot: resolvedRoot,
       entryPoint: entry,
       byGitChanges: git,
-      omitGitIgnore
+      omitGitIgnore,
     })
   } catch (e: any) {
     print('\n')
@@ -183,7 +183,7 @@ export async function search(params: CliParams) {
     mode,
     filePaths,
     caseInsensitive,
-    queryCodes: queries
+    queryCodes: queries,
   })
 
   spinner.stop()
@@ -215,11 +215,11 @@ export async function search(params: CliParams) {
       const maxRelativePathDisplayLength = cols - 4
       const shortenRelativePath = textEllipsis(
         relativePath,
-        maxRelativePathDisplayLength
+        maxRelativePathDisplayLength,
       )
 
       const leftPaddingForCentering = Math.trunc(
-        (cols - shortenRelativePath.length - 4) / 2
+        (cols - shortenRelativePath.length - 4) / 2,
       )
       const leftPaddingStr = ''.padStart(leftPaddingForCentering, ' ')
 
@@ -229,14 +229,14 @@ export async function search(params: CliParams) {
           '┯' +
           ''.padEnd(
             cols - (leftPaddingForCentering + shortenRelativePath.length + 4),
-            '━'
-          )
+            '━',
+          ),
       )
 
       print(leftPaddingStr + '│ ' + bold(green(shortenRelativePath)) + ' │')
 
       print(
-        leftPaddingStr + '╰'.padEnd(shortenRelativePath.length + 3, '─') + '╯'
+        leftPaddingStr + '╰'.padEnd(shortenRelativePath.length + 3, '─') + '╯',
       )
 
       print('')
@@ -258,8 +258,8 @@ export async function search(params: CliParams) {
 
         print(
           `${green(relativePath)}:${magenta(matchStartLine)}:${yellow(
-            match.loc.start.column + 1
-          )}`
+            match.loc.start.column + 1,
+          )}`,
         )
 
         print('\n' + codeFrame + '\n')

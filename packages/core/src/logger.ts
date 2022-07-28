@@ -13,10 +13,11 @@ export const createLogger = (debugMode = false) => {
   const logStepEnd = (stepName: string) => {
     log('\n' + stepName, '\n'.padStart(10, '&'))
   }
+
   return {
     log,
     logStepStart,
-    logStepEnd
+    logStepEnd,
   }
 }
 

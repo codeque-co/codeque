@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const sidebarProvider = new SidebarProvider(
     context.extensionUri,
-    stateManager
+    stateManager,
   )
 
   try {
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   const item = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right
+    vscode.StatusBarAlignment.Right,
   )
   item.text = '🔍 Open Search'
   item.command = 'codeque.openSearch'
@@ -37,8 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       'codeque-sidebar',
-      sidebarProvider
-    )
+      sidebarProvider,
+    ),
   )
 
   context.subscriptions.push(
@@ -49,27 +49,27 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (activeTextEditor) {
         selectedCode = activeTextEditor.document.getText(
-          activeTextEditor.selection
+          activeTextEditor.selection,
         )
       }
 
       if (selectedCode) {
         stateManager.setState({
-          query: dedent(selectedCode)
+          query: dedent(selectedCode),
         })
       }
 
       SearchResultsPanel.createOrShow(extensionUri, stateManager)
 
       await vscode.commands.executeCommand(
-        'workbench.view.extension.codeque-sidebar-view'
+        'workbench.view.extension.codeque-sidebar-view',
       )
 
       if (selectedCode) {
         eventBusInstance.dispatch('open-search-from-selection')
         eventBusInstance.dispatch('start-search')
       }
-    })
+    }),
   )
 
   context.subscriptions.push(
@@ -80,7 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
       await vscode.commands.executeCommand('workbench.action.closeSidebar')
 
       await vscode.commands.executeCommand(
-        'workbench.view.extension.codeque-sidebar-view'
+        'workbench.view.extension.codeque-sidebar-view',
       )
 
       // setTimeout(() => {
@@ -88,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
       //     'workbench.action.webview.openDeveloperTools'
       //   )
       // }, 500)
-    })
+    }),
   )
 }
 

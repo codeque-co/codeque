@@ -4,16 +4,16 @@ import { search } from './search'
 export function createCliProgram(program: commander.Command) {
   program
     .description(
-      'Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query provided as an param or query file.'
+      'Opens interactive terminal editor to type query and performs structural code search in current working directory. Alternatively performs search based on query provided as an param or query file.',
     )
     .option(
       '-m, --mode [mode]',
       'Search mode: exact, include, include-with-order, text',
-      'include'
+      'include',
     )
     .option(
       '-r, --root [root]',
-      'Root directory for search (default: process.cwd())'
+      'Root directory for search (default: process.cwd())',
     )
     .option(
       '-e, --entry [entry]',
@@ -23,26 +23,26 @@ export function createCliProgram(program: commander.Command) {
     .option(
       '-i, --caseInsensitive',
       'Perform search with case insensitive mode',
-      false
+      false,
     )
     .option('-l, --limit [limit]', 'Limit of results count to display', '20')
     .option('-q, --query [query...]', 'Inline search query(s)')
     .option(
       '-qp, --queryPath [queryPath...]',
-      'Path to file(s) with search query(s)'
+      'Path to file(s) with search query(s)',
     )
     .option('-g, --git', 'Search in files changed since last git commit', false)
     .option(
       '-iec, --invertExitCode',
       'Return non-zero exit code if matches are found. Useful for creating assertions',
-      false
+      false,
     )
     .option('-v, --version', 'Print CLI version', false)
     .option('-pfl, --printFilesList', 'Print list of searched files', false)
     .option(
       '-ogi, --omitGitIgnore',
       'Search files regardless .gitignore settings',
-      false
+      false,
     )
     .action(search)
 }

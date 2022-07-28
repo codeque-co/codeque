@@ -12,7 +12,7 @@ import {
   removeIdentifierRefFromWildcard,
   normalizeText,
   anyStringWildcardRegExp,
-  SPACE_CHAR
+  SPACE_CHAR,
 } from './astUtils'
 import { Hint, PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
@@ -29,12 +29,13 @@ const decomposeString = (str: string) =>
 const getUniqueTokens = (
   queryNode: PoorNodeType,
   caseInsensitive: boolean,
-  tokens: Set<string> = new Set()
+  tokens: Set<string> = new Set(),
 ) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
     const trimmedWildcards = removeIdentifierRefFromWildcard(
-      queryNode.name as string
+      queryNode.name as string,
     ).split(identifierWildcard)
+
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
         tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
@@ -57,7 +58,7 @@ const getUniqueTokens = (
 
   if ((queryNode.type as string) === 'TemplateElement') {
     const trimmedWildcards = decomposeString(
-      (queryNode.value as { raw: string }).raw
+      (queryNode.value as { raw: string }).raw,
     )
 
     trimmedWildcards.forEach((part) => {
@@ -69,6 +70,7 @@ const getUniqueTokens = (
 
   if ((queryNode.type as string) === 'NumericLiteral') {
     const raw = (queryNode.extra as any).raw as string
+
     if (raw !== numericWildcard) {
       tokens.add(raw)
     }
@@ -77,19 +79,21 @@ const getUniqueTokens = (
   const nodeKeys = getKeysToCompare(queryNode).filter(
     (key) =>
       isNode(queryNode[key] as PoorNodeType) ||
-      isNodeArray(queryNode[key] as PoorNodeType[])
+      isNodeArray(queryNode[key] as PoorNodeType[]),
   )
 
   nodeKeys.forEach((key) => {
     const nodeVal = queryNode[key]
+
     if (isNodeArray(nodeVal as PoorNodeType[])) {
       ;(nodeVal as PoorNodeType[]).forEach((node) =>
-        getUniqueTokens(node, caseInsensitive, tokens)
+        getUniqueTokens(node, caseInsensitive, tokens),
       )
     } else {
       getUniqueTokens(nodeVal as PoorNodeType, caseInsensitive, tokens)
     }
   })
+
   return tokens
 }
 
@@ -113,15 +117,17 @@ export type ParsedQuery = {
 
 const getHints = (queryCode: string, error?: ParseError | null) => {
   const hints: Hint[] = []
+
   if (queryCode.startsWith('{')) {
     const info = 'To look for object, add expression brackets'
     const code = '({ key:val })'
+
     hints.push({
       text: `${info} ${code}`,
       tokens: [
         { type: 'text', content: info },
-        { type: 'code', content: code }
-      ]
+        { type: 'code', content: code },
+      ],
     })
   }
 
@@ -133,12 +139,13 @@ const getHints = (queryCode: string, error?: ParseError | null) => {
   ) {
     const info = 'To look for string, add expression brackets'
     const code = "('some string')"
+
     hints.push({
       text: `${info} ${code}`,
       tokens: [
         { type: 'text', content: info },
-        { type: 'code', content: code }
-      ]
+        { type: 'code', content: code },
+      ],
     })
   }
 
@@ -147,11 +154,12 @@ const getHints = (queryCode: string, error?: ParseError | null) => {
 
 export const parseQueries = (
   queryCodes: string[],
-  caseInsensitive: boolean
+  caseInsensitive: boolean,
 ): [Array<ParsedQuery>, boolean] => {
   const inputQueryNodes = queryCodes
     .map((queryText) => {
       let originalError = null
+
       if (disallowedWildcardRegExp.test(queryText)) {
         const lines = queryText.split('\n')
         let lineIdx: number | null = null
@@ -159,11 +167,13 @@ export const parseQueries = (
 
         lines.forEach((line, idx) => {
           const col = line.indexOf(wildcardChar.repeat(4))
+
           if (colNum === null && col > -1) {
             lineIdx = idx
             colNum = col + 1
           }
         })
+
         return {
           queryNode: {},
           error: {
@@ -172,22 +182,23 @@ export const parseQueries = (
               ? {
                   location: {
                     line: lineIdx + 1,
-                    column: colNum
-                  }
+                    column: colNum,
+                  },
                 }
-              : {})
-          }
+              : {}),
+          },
         }
       }
 
       try {
         const parsedAsIs = parse(
           queryText,
-          parseOptions
+          parseOptions,
         ) as unknown as PoorNodeType
+
         return {
           queryNode: extractQueryNode(parsedAsIs),
-          error: null
+          error: null,
         }
       } catch (e) {
         const error = e as BabelParseError & { loc: Position; message: string }
@@ -196,29 +207,30 @@ export const parseQueries = (
           text: error.message,
           location: error.loc,
           code: error.code,
-          reasonCode: error.reasonCode
+          reasonCode: error.reasonCode,
         }
       }
 
       try {
         const parsedAsExp = parse(
           `(${queryText})`,
-          parseOptions
+          parseOptions,
         ) as unknown as PoorNodeType
+
         return {
           queryNode: extractQueryNode(parsedAsExp),
-          error: null
+          error: null,
         }
       } catch (e) {
         return {
           queryNode: {},
-          error: originalError
+          error: originalError,
         }
       }
     })
     .map(({ error, queryNode }) => ({
       queryNode,
-      error: !queryNode ? { text: 'Empty query!' } : error
+      error: !queryNode ? { text: 'Empty query!' } : error,
     }))
 
   const queries = inputQueryNodes.map(({ queryNode, error }, i) => {
@@ -226,7 +238,7 @@ export const parseQueries = (
 
     const uniqueTokens = queryNode
       ? [...getUniqueTokens(queryNode, caseInsensitive)].filter(
-          (token) => typeof token !== 'string' || token.length > 0
+          (token) => typeof token !== 'string' || token.length > 0,
         )
       : []
 
@@ -238,7 +250,7 @@ export const parseQueries = (
       hints,
       queryNode,
       uniqueTokens,
-      error
+      error,
     }
   })
 

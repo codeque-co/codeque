@@ -4,7 +4,7 @@ import {
   searchMultiThread,
   getFilesList,
   SearchResults,
-  groupMatchesByFile
+  groupMatchesByFile,
 } from '@codeque/core'
 import path from 'path'
 import { ExtendedSearchResults } from './types'
@@ -32,7 +32,7 @@ export class SearchManager {
 
   private processSearchResults = (
     searchResults: SearchResults,
-    searchRoot: string
+    searchRoot: string,
   ) => {
     const groupedMatches = groupMatchesByFile(searchResults.matches)
     const filePaths = Object.keys(groupedMatches)
@@ -45,7 +45,7 @@ export class SearchManager {
     return {
       ...searchResults,
       groupedMatches,
-      relativePathsMap
+      relativePathsMap,
     }
   }
 
@@ -69,20 +69,20 @@ export class SearchManager {
             filePaths: files,
             queryCodes: [settings.query],
             mode: settings.mode,
-            caseInsensitive: settings.caseType === 'insensitive'
+            caseInsensitive: settings.caseType === 'insensitive',
           })
           const searchEnd = Date.now()
 
           eventBusInstance.dispatch('have-results', {
             results: this.processSearchResults(results, this.root),
             time: (searchEnd - searchStart) / 1000,
-            files
+            files,
           })
 
           this.searchRunning = false
         } else {
           vscode.window.showErrorMessage(
-            'Search error: Could not determine search root.'
+            'Search error: Could not determine search root.',
           )
         }
       }
@@ -95,10 +95,10 @@ export class SearchManager {
           errors: e.message,
           hints: [],
           relativePathsMap: {},
-          groupedMatches: {}
+          groupedMatches: {},
         },
         time: (Date.now() - searchStart) / 1000,
-        files: files
+        files: files,
       })
 
       this.searchRunning = false

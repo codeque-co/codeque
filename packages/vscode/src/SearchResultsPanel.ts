@@ -20,7 +20,7 @@ export class SearchResultsPanel {
 
   public static createOrShow(
     extensionUri: vscode.Uri,
-    stateManager: StateManager
+    stateManager: StateManager,
   ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -46,9 +46,9 @@ export class SearchResultsPanel {
         // And restrict the webview to only loading content from our extension's `media` directory.
         localResourceRoots: [
           vscode.Uri.joinPath(extensionUri, 'media'),
-          vscode.Uri.joinPath(extensionUri, 'dist-webviews')
-        ]
-      }
+          vscode.Uri.joinPath(extensionUri, 'dist-webviews'),
+        ],
+      },
     )
 
     panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'logoShort.png')
@@ -56,14 +56,14 @@ export class SearchResultsPanel {
     panel.onDidChangeViewState((ev) => {
       eventBusInstance.dispatch(
         'results-panel-visibility',
-        ev.webviewPanel.visible
+        ev.webviewPanel.visible,
       )
     })
 
     SearchResultsPanel.currentPanel = new SearchResultsPanel(
       panel,
       extensionUri,
-      stateManager
+      stateManager,
     )
   }
 
@@ -76,19 +76,19 @@ export class SearchResultsPanel {
   public static revive(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    stateManager: StateManager
+    stateManager: StateManager,
   ) {
     SearchResultsPanel.currentPanel = new SearchResultsPanel(
       panel,
       extensionUri,
-      stateManager
+      stateManager,
     )
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    stateManager: StateManager
+    stateManager: StateManager,
   ) {
     this._panel = panel
     this._extensionUri = extensionUri
@@ -108,12 +108,12 @@ export class SearchResultsPanel {
     webview.onDidReceiveMessage(
       eventBusInstance.pipeFromWebview,
       null,
-      this._disposables
+      this._disposables,
     )
 
     eventBusInstance.addListener(
       'results-panel-opened',
-      this.sendInitialDataToWebview
+      this.sendInitialDataToWebview,
     )
 
     eventBusInstance.addListener('set-query', this.setQueryData)
@@ -126,7 +126,7 @@ export class SearchResultsPanel {
     const unsubscribeFromEventBus = () => {
       eventBusInstance.removeListener(
         'results-panel-opened',
-        this.sendInitialDataToWebview
+        this.sendInitialDataToWebview,
       )
 
       eventBusInstance.removeListener('set-query', this.setQueryData)
@@ -148,7 +148,7 @@ export class SearchResultsPanel {
 
   private openFile = ({
     filePath,
-    location
+    location,
   }: {
     filePath: string
     location: Match['loc']
@@ -159,11 +159,11 @@ export class SearchResultsPanel {
       (textDoc: vscode.TextDocument) => {
         const startPos = new vscode.Position(
           location.start.line - 1, // API has 0-based indexes
-          location.start.column
+          location.start.column,
         )
         const endPos = new vscode.Position(
           location.end.line - 1, // API has 0-based indexes
-          location.end.column
+          location.end.column,
         )
         const selection = new vscode.Range(startPos, endPos)
 
@@ -172,7 +172,7 @@ export class SearchResultsPanel {
       (error: any) => {
         console.log('error opening file', filePath)
         console.error(error)
-      }
+      },
     )
   }
 
@@ -208,19 +208,19 @@ export class SearchResultsPanel {
       vscode.Uri.joinPath(
         this._extensionUri,
         'dist-webviews',
-        'searchResultsPanel.js'
-      )
+        'searchResultsPanel.js',
+      ),
     )
 
     const stylesResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'),
     )
     const stylesMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'),
     )
 
     const cssUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css')
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css'),
     )
 
     const nonce = getNonce()

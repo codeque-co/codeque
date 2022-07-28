@@ -4,7 +4,7 @@ import { format } from 'prettier'
 import {
   optionalStringWildcardRegExp,
   requiredStringWildcardRegExp,
-  disallowedWildcardRegExp
+  disallowedWildcardRegExp,
 } from './astUtils'
 import { Matches, Mode, Position } from './types'
 
@@ -45,7 +45,7 @@ export const patternToRegex = (str: string, caseInsensitive = false) => {
 
   return new RegExp(
     `^${strWithReplacedWildcards}$`,
-    caseInsensitive ? 'i' : undefined
+    caseInsensitive ? 'i' : undefined,
   )
 }
 
@@ -53,7 +53,7 @@ export const getCodeFrame = (
   code: string,
   startLine: number,
   formatting = false,
-  errorPos?: Position
+  errorPos?: Position,
 ) => {
   const formatted = formatting ? format(code, { parser: 'babel-ts' }) : code
 
@@ -69,14 +69,14 @@ export const getCodeFrame = (
   const errorLocation = indicateError
     ? {
         start: errorPos,
-        end: errorPos
+        end: errorPos,
       }
     : { start: { line: 0 } }
 
   let codeFrame = codeFrameColumns(formatted, errorLocation, {
     highlightCode: true,
     linesBelow,
-    linesAbove
+    linesAbove,
   })
 
   for (let i = linesCount; i > 0; i--) {
@@ -87,8 +87,8 @@ export const getCodeFrame = (
       ` ${frameLineNum} |`,
       ` ${startLine + i - 1} |`.padStart(
         maxLineLength + 2 + originalPaddingLen,
-        ' '
-      )
+        ' ',
+      ),
     )
   }
 
@@ -99,7 +99,7 @@ export const print = console.log // to distinguish intended logs
 
 export const asyncFilter = async <T>(
   arr: T[],
-  predicate: (el: T) => Promise<boolean>
+  predicate: (el: T) => Promise<boolean>,
 ) => {
   const results = await Promise.all(arr.map(predicate))
 
@@ -128,7 +128,7 @@ const newLineCharLength = '\n'.length
 
 export const getExtendedCodeFrame = (
   { start, end }: { start: number; end: number },
-  fileContent: string
+  fileContent: string,
 ): [string, number] => {
   const basicMatch = fileContent.substring(start, end)
   const numberOfLines = 1 + (basicMatch.match(/\n/g)?.length ?? 0)
@@ -154,7 +154,7 @@ export const getExtendedCodeFrame = (
   if (numberOfLines < 3) {
     const movePrevLineEndBy =
       reverse(
-        prefixContent.substring(0, positionOfPrevLineEnd - newLineCharLength)
+        prefixContent.substring(0, positionOfPrevLineEnd - newLineCharLength),
       ).search(/\n/g) + newLineCharLength
 
     positionOfPrevLineEnd -= movePrevLineEndBy
@@ -171,7 +171,7 @@ export const getExtendedCodeFrame = (
 
   const newCodeFrame = fileContent.substring(
     positionOfPrevLineEnd,
-    positionOfNextLineEnd
+    positionOfNextLineEnd,
   )
 
   return [newCodeFrame, moveStartLine]

@@ -20,8 +20,8 @@ export const searchMultiThread = async ({
       const worker = new Worker(__dirname + '/searchWorker.js', {
         workerData: {
           ...params,
-          filePaths: filePathsSlice
-        }
+          filePaths: filePathsSlice,
+        },
       })
       worker.on('message', resolve)
       worker.on('error', reject)
@@ -42,13 +42,13 @@ export const searchMultiThread = async ({
       return {
         matches: [...allResults.matches, ...partialResult.matches],
         errors: [...allResults.errors, ...partialResult.errors],
-        hints: partialResult.hints // hints should be the same for each partial result
+        hints: partialResult.hints, // hints should be the same for each partial result
       }
     },
     {
       matches: [],
       errors: [],
-      hints: []
-    }
+      hints: [],
+    },
   )
 }

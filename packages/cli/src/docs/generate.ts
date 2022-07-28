@@ -30,7 +30,7 @@ function createCommandsInspector() {
     data: string,
     description: string,
     defaultValue: string,
-    required: boolean
+    required: boolean,
   ) => {
     const argRegex = /(<|\[).+?(>|\])/g
     const argument = data.match(argRegex)
@@ -46,7 +46,7 @@ function createCommandsInspector() {
         argument !== null && argument.length > 0 ? argument[0] : undefined,
       description,
       defaultValue,
-      required
+      required,
     }
   }
 
@@ -62,9 +62,9 @@ function createCommandsInspector() {
         arguments: args.map((arg) => ({
           nameRaw: arg,
           name: arg.substring(1, arg.length - 1),
-          required: arg.charAt(0) === '<'
+          required: arg.charAt(0) === '<',
         })),
-        options: []
+        options: [],
       }
 
       return this
@@ -82,9 +82,9 @@ function createCommandsInspector() {
         arguments: args.map((arg) => ({
           nameRaw: arg,
           name: arg.substring(1, arg.length - 1),
-          required: arg.charAt(0) === '<'
+          required: arg.charAt(0) === '<',
         })),
-        options: []
+        options: [],
       }
 
       return this
@@ -108,7 +108,7 @@ function createCommandsInspector() {
     option(data: string, description: string, defaultValue: string) {
       if (currentCommand !== null) {
         currentCommand.options.push(
-          parseOption(data, description, defaultValue, false)
+          parseOption(data, description, defaultValue, false),
         )
       }
 
@@ -117,7 +117,7 @@ function createCommandsInspector() {
     requiredOption(data: string, description: string, defaultValue: string) {
       if (currentCommand !== null) {
         currentCommand.options.push(
-          parseOption(data, description, defaultValue, true)
+          parseOption(data, description, defaultValue, true),
         )
       }
 
@@ -132,7 +132,7 @@ function createCommandsInspector() {
       }
 
       return commands
-    }
+    },
   }
 }
 

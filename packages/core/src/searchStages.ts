@@ -16,7 +16,7 @@ import {
   sortByLeastIdentifierStrength,
   prepareCodeResult,
   shouldCompareNode,
-  anyStringWildcardRegExp
+  anyStringWildcardRegExp,
 } from './astUtils'
 import { getExtendedCodeFrame } from './utils'
 import { ParsedQuery } from './parseQuery'
@@ -26,7 +26,7 @@ import { Match, Matches, Mode, PoorNodeType } from './types'
 export const dedupMatches = (
   matches: Matches,
   log: (...args: any[]) => void,
-  debug = false
+  debug = false,
 ): Matches => {
   const deduped: Matches = []
 
@@ -58,12 +58,12 @@ export type SearchSettings = {
 const validateMatch = (
   currentNode: PoorNodeType,
   currentQueryNode: PoorNodeType,
-  settings: SearchSettings
+  settings: SearchSettings,
 ) => {
   const {
     mode,
     caseInsensitive,
-    logger: { log, logStepEnd, logStepStart }
+    logger: { log, logStepEnd, logStepStart },
   } = settings
 
   const isExact = mode === 'exact'
@@ -73,7 +73,7 @@ const validateMatch = (
   const { levelMatch, queryKeysToTraverse } = compareNodes(
     currentNode,
     currentQueryNode,
-    settings
+    settings,
   )
 
   if (!levelMatch) {
@@ -83,7 +83,7 @@ const validateMatch = (
         generate(currentNode as any).code,
         '\n\n',
         generate(currentQueryNode as any).code,
-        '\n'.padEnd(10, '_')
+        '\n'.padEnd(10, '_'),
       )
     } catch (e) {
       log('nodes incompat:\n\n', 'invalid code')
@@ -131,7 +131,7 @@ const validateMatch = (
             const matchedIndexes: number[] = []
 
             const queryNodesArrSorted = [...queryNodesArr].sort(
-              sortByLeastIdentifierStrength
+              sortByLeastIdentifierStrength,
             )
 
             for (let i = 0; i < queryNodesArrSorted.length; i++) {
@@ -161,7 +161,7 @@ const validateMatch = (
                   } else {
                     return val < arr[idx + 1]
                   }
-                }
+                },
               )
 
               if (
@@ -209,8 +209,8 @@ const compareNodes = (
   {
     mode,
     caseInsensitive,
-    logger: { log, logStepEnd, logStepStart }
-  }: SearchSettings
+    logger: { log, logStepEnd, logStepStart },
+  }: SearchSettings,
 ) => {
   const measureCompare = measureStart('compare')
   logStepStart('compare')
@@ -218,7 +218,7 @@ const compareNodes = (
   const [fileKeys, queryKeys] = getSetsOfKeysToCompare(
     fileNode,
     queryNode,
-    isExact
+    isExact,
   )
 
   log('compare: node type', fileNode.type)
@@ -261,7 +261,7 @@ const compareNodes = (
     return {
       levelMatch: true,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -273,7 +273,7 @@ const compareNodes = (
     let levelMatch
 
     const nameWithoutRef = removeIdentifierRefFromWildcard(
-      queryNode.name as string
+      queryNode.name as string,
     )
 
     if (nameWithoutRef === nodesTreeWildcard) {
@@ -308,7 +308,7 @@ const compareNodes = (
     return {
       levelMatch,
       queryKeysToTraverse,
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -322,14 +322,14 @@ const compareNodes = (
     return {
       levelMatch: true,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
   if (
     (queryNode.type as string) === 'TSTypeReference' &&
     removeIdentifierRefFromWildcard(
-      (queryNode.typeName as PoorNodeType).name as string
+      (queryNode.typeName as PoorNodeType).name as string,
     ) === nodesTreeWildcard
   ) {
     // in "const a: $$$; const a: () => $$$" treat $$$ as wildcard for any type annotation
@@ -339,7 +339,7 @@ const compareNodes = (
     return {
       levelMatch: true,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -359,7 +359,7 @@ const compareNodes = (
     return {
       levelMatch: levelMatch,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -376,7 +376,7 @@ const compareNodes = (
     return {
       levelMatch: levelMatch,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -388,7 +388,7 @@ const compareNodes = (
   ) {
     const regex = patternToRegex(
       (queryNode.value as any).raw as string,
-      caseInsensitive
+      caseInsensitive,
     )
     const levelMatch = regExpTest(regex, (fileNode.value as any).raw as string)
     measureCompare()
@@ -396,7 +396,7 @@ const compareNodes = (
     return {
       levelMatch: levelMatch,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -411,7 +411,7 @@ const compareNodes = (
     return {
       levelMatch: true,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -439,7 +439,7 @@ const compareNodes = (
       return {
         levelMatch: true,
         queryKeysToTraverse: ['value'],
-        fileKeysToTraverse
+        fileKeysToTraverse,
       }
     }
   }
@@ -453,7 +453,7 @@ const compareNodes = (
     return {
       levelMatch: false,
       queryKeysToTraverse: [],
-      fileKeysToTraverse
+      fileKeysToTraverse,
     }
   }
 
@@ -501,17 +501,17 @@ const compareNodes = (
       primitivePropsCount === matchingPrimitivePropsCount &&
       queryKeys.every((key) => fileKeys.includes(key)),
     queryKeysToTraverse,
-    fileKeysToTraverse
+    fileKeysToTraverse,
   }
 }
 
 const traverseAndMatch = (
   currentNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: SearchSettings
+  settings: SearchSettings,
 ) => {
   const {
-    logger: { log, logStepEnd, logStepStart }
+    logger: { log, logStepEnd, logStepStart },
   } = settings
 
   logStepStart('traverse')
@@ -523,7 +523,7 @@ const traverseAndMatch = (
   const { levelMatch, fileKeysToTraverse } = compareNodes(
     currentNode,
     queryNode,
-    settings
+    settings,
   )
 
   const foundMatchStart = levelMatch
@@ -536,7 +536,7 @@ const traverseAndMatch = (
     const query = generate(queryNode as any).code
     const code = generate(currentNode as any, {
       jsescOption: { compact: false },
-      retainFunctionParens: true
+      retainFunctionParens: true,
     }).code
 
     log(
@@ -544,7 +544,7 @@ const traverseAndMatch = (
       code,
       '\n',
       generate(queryNode as any).code,
-      '\n'.padEnd(10, '_')
+      '\n'.padEnd(10, '_'),
     )
 
     const measureValidate = measureStart('validate')
@@ -556,7 +556,7 @@ const traverseAndMatch = (
         start: currentNode.start as number,
         end: currentNode.end as number,
         loc: currentNode.loc as Match['loc'],
-        query: query.toString()
+        query: query.toString(),
       })
     }
   }
@@ -572,11 +572,11 @@ const traverseAndMatch = (
           return traverseAndMatch(
             currentNode[key] as PoorNodeType,
             queryNode,
-            settings
+            settings,
           )
         } else {
           return (currentNode[key] as PoorNodeType[]).map((node) =>
-            traverseAndMatch(node, queryNode, settings)
+            traverseAndMatch(node, queryNode, settings),
           )
         }
       }
@@ -604,7 +604,7 @@ export const searchFileContent = ({
 }: SearchFileContentArgs) => {
   const {
     logger: { log },
-    caseInsensitive
+    caseInsensitive,
   } = settings
 
   const measureShallowSearch = measureStart('shallowSearch')
@@ -614,13 +614,13 @@ export const searchFileContent = ({
     : fileContent
 
   const includesUniqueTokens = queries.some(({ uniqueTokens }) =>
-    uniqueTokens.every((token) => fileContentForTokensLookup.includes(token))
+    uniqueTokens.every((token) => fileContentForTokensLookup.includes(token)),
   )
   measureShallowSearch()
 
   const uniqueTokens = queries.reduce(
     (tokens, { uniqueTokens }) => [...tokens, ...uniqueTokens],
-    [] as string[]
+    [] as string[],
   )
   log('Unique tokens', uniqueTokens)
   log(`Include unique tokes (${uniqueTokens.length}) ${includesUniqueTokens}`)
@@ -636,7 +636,7 @@ export const searchFileContent = ({
 
     const fileNode = parse(
       maybeWrappedJSON,
-      parseOptions
+      parseOptions,
     ) as unknown as PoorNodeType
 
     measureParseFile()
@@ -652,7 +652,7 @@ export const searchFileContent = ({
             const code = prepareCodeResult({ fileContent, ...match })
             const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
               match,
-              fileContent
+              fileContent,
             )
 
             return {
@@ -661,10 +661,10 @@ export const searchFileContent = ({
               code,
               extendedCodeFrame: {
                 code: extendedCodeFrame,
-                startLine: match.loc.start.line + newStartLine
-              }
+                startLine: match.loc.start.line + newStartLine,
+              },
             }
-          })
+          }),
         )
       }
     })

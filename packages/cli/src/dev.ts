@@ -12,7 +12,7 @@ const mockFilePath = path.resolve('./devFile')
     filePaths: [mockFilePath],
     mode: getMode(process.argv[2] as Mode),
     caseInsensitive: Boolean(process.argv[3]),
-    debug: true
+    debug: true,
   })
 
   console.log('matches', matches)

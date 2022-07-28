@@ -52,7 +52,7 @@ export class EventBus {
     'open-search-from-selection': [],
     'start-search': [],
     'search-started': [],
-    'have-results': []
+    'have-results': [],
   }
   public env = 'extension'
 
@@ -62,20 +62,20 @@ export class EventBus {
 
   removeTransport = (sendFn: (data: any) => void) => {
     this.transports = this.transports.filter(
-      (transportFn) => sendFn !== transportFn
+      (transportFn) => sendFn !== transportFn,
     )
   }
 
   addListener = <T extends EventType>(
     eventType: T,
-    callback: (data: EventTypes[T]) => void
+    callback: (data: EventTypes[T]) => void,
   ) => {
     this.listeners[eventType].push(callback)
   }
 
   addListenerOnce = <T extends EventType>(
     eventType: T,
-    callback: (data: EventTypes[T]) => void
+    callback: (data: EventTypes[T]) => void,
   ) => {
     const onceHandler = (data: EventTypes[T]) => {
       callback(data)
@@ -87,21 +87,21 @@ export class EventBus {
 
   removeListener = <T extends EventType>(
     eventType: T,
-    callback: (data: EventTypes[T]) => void
+    callback: (data: EventTypes[T]) => void,
   ) => {
     this.listeners[eventType] = this.listeners[eventType].filter(
-      (fn) => fn !== callback
+      (fn) => fn !== callback,
     )
   }
 
   dispatch = async <T extends EventType>(
     eventType: T,
     data?: EventTypes[T],
-    dispatchThroughTransports = true
+    dispatchThroughTransports = true,
   ) => {
     try {
       await Promise.all(
-        this.listeners[eventType].map((callback) => callback(data))
+        this.listeners[eventType].map((callback) => callback(data)),
       )
     } catch (e) {
       console.log(this.env, 'internal dispatch error', e)
@@ -112,8 +112,8 @@ export class EventBus {
         metaType: 'event-bus-event',
         metaEvent: {
           type: eventType,
-          data
-        }
+          data,
+        },
       })
 
       try {
@@ -124,7 +124,7 @@ export class EventBus {
             }
 
             return
-          })
+          }),
         )
       } catch (e) {
         console.log(
@@ -134,7 +134,7 @@ export class EventBus {
           'event-type',
           eventType,
           'data',
-          data
+          data,
         )
       }
     }

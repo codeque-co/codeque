@@ -7,7 +7,7 @@ export async function waitForSearchDecision() {
   return new Promise((resolve) => {
     const keypressListener = (
       char: string,
-      key: { name: string; ctrl: boolean }
+      key: { name: string; ctrl: boolean },
     ) => {
       if (key.name === 's' && key.ctrl) {
         rl.close()
@@ -28,7 +28,7 @@ export async function waitForSearchDecision() {
       input: process.stdin,
       output: undefined,
       terminal: true,
-      prompt: ''
+      prompt: '',
     })
   })
 }

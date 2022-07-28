@@ -31,8 +31,8 @@ function template(commands: Command[], headerLevel: number) {
           programName,
           cmd.name,
           ...cmd.arguments.map((arg) => arg.nameRaw),
-          cmd.options.length > 0 ? '[options]' : undefined
-        ])
+          cmd.options.length > 0 ? '[options]' : undefined,
+        ]),
       )}
       ${cmd.arguments.length > 0 ? header(headerLevel + 1, 'Arguments') : ''}
 
@@ -42,7 +42,7 @@ function template(commands: Command[], headerLevel: number) {
         * ${code(name)} - ${description} (${
             required ? requiredStr : optionalStr
           })
-      `
+      `,
         )
         .join('\n')}
       
@@ -53,15 +53,15 @@ function template(commands: Command[], headerLevel: number) {
           ({ shortName, longName, argument, required, description }) => dedent`
         * ${code(
           filterFalsy([shortName, longName]).join(', ') +
-            (argument ? ` ${argument}` : '')
+            (argument ? ` ${argument}` : ''),
         )} - ${description} (${required ? requiredStr : optionalStr})
-      `
+      `,
         )
         .join('\n')}
 
     `
       })
-      .join('\n')
+      .join('\n'),
   )
 }
 

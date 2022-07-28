@@ -14,7 +14,7 @@ const getMatchPosition = (match: string, fileContents: string) => {
   const lastMatchLine = matchLines[matchLines.length - 1]
 
   const startLineIndex = fileLines.findIndex((line) =>
-    line.includes(firstMatchLine)
+    line.includes(firstMatchLine),
   )
 
   const endLineIndex = startLineIndex + matchLines.length - 1
@@ -27,8 +27,8 @@ const getMatchPosition = (match: string, fileContents: string) => {
     end,
     loc: {
       start: { line: startLineIndex + 1, column: startLineColumn },
-      end: { line: endLineIndex + 1, column: endLineColumn }
-    }
+      end: { line: endLineIndex + 1, column: endLineColumn },
+    },
   }
 }
 
@@ -157,7 +157,7 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
 
       return regexp
     }),
-    regExpFlags
+    regExpFlags,
   )
 
   return query
@@ -171,7 +171,7 @@ export function textSearch({
   queryCodes,
   filePaths,
   caseInsensitive,
-  getFileContent
+  getFileContent,
 }: TextSearchArgs): SearchResults {
   const queries = queryCodes
     .map((queryCode) => prepareQuery(queryCode, caseInsensitive))
@@ -181,7 +181,7 @@ export function textSearch({
     return {
       matches: [],
       hints: [],
-      errors: ['Empty Query']
+      errors: ['Empty Query'],
     }
   }
 
@@ -204,7 +204,7 @@ export function textSearch({
         const transformedMatches = matches.map((match) => {
           const matchPositionData = getMatchPosition(
             match,
-            contentToMatchPosition
+            contentToMatchPosition,
           )
 
           // replace match in content to properly find the same match in the source file
@@ -213,12 +213,12 @@ export function textSearch({
 
           contentToMatchPosition = contentToMatchPosition.replace(
             match,
-            matchGhost
+            matchGhost,
           )
 
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
             matchPositionData,
-            fileContent
+            fileContent,
           )
 
           return {
@@ -226,10 +226,10 @@ export function textSearch({
             code: match,
             extendedCodeFrame: {
               code: extendedCodeFrame,
-              startLine: matchPositionData.loc.start.line + newStartLine
+              startLine: matchPositionData.loc.start.line + newStartLine,
             },
             query: query.toString(),
-            filePath
+            filePath,
           }
         })
         allMatches.push(...transformedMatches)

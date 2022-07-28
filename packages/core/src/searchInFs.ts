@@ -11,7 +11,7 @@ export const searchInFileSystem = ({
   filePaths,
   queryCodes,
   caseInsensitive = false,
-  debug = false
+  debug = false,
 }: FileSystemSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
@@ -24,14 +24,14 @@ export const searchInFileSystem = ({
       filePaths,
       mode,
       queryCodes,
-      caseInsensitive
+      caseInsensitive,
     })
   }
 
   const settings: SearchSettings = {
     mode,
     caseInsensitive,
-    logger: createLogger(debug)
+    logger: createLogger(debug),
   }
 
   const { log } = settings.logger
@@ -46,7 +46,7 @@ export const searchInFileSystem = ({
     return {
       matches: [],
       hints: queries.map(({ hints }) => hints),
-      errors: queries.filter((queryResult) => queryResult.error)
+      errors: queries.filter((queryResult) => queryResult.error),
     }
   }
 
@@ -55,7 +55,7 @@ export const searchInFileSystem = ({
 
   log(
     'inputQueryNode',
-    queries.map(({ queryNode }) => queryNode)
+    queries.map(({ queryNode }) => queryNode),
   )
 
   for (const filePath of filePaths) {
@@ -70,7 +70,7 @@ export const searchInFileSystem = ({
         queries,
         filePath,
         fileContent,
-        ...settings
+        ...settings,
       })
 
       allMatches.push(...fileMatches)
@@ -95,6 +95,6 @@ export const searchInFileSystem = ({
   return {
     matches: dedupMatches(allMatches, log, debug),
     errors: searchErrors,
-    hints: queries.map(({ hints }) => hints)
+    hints: queries.map(({ hints }) => hints),
   }
 }

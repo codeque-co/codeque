@@ -24,12 +24,12 @@ export const astPropsToSkip = [
   'end',
   'extra',
   'trailingComments',
-  'leadingComments'
+  'leadingComments',
 ]
 export const IdentifierTypes = [
   'Identifier',
   'JSXIdentifier',
-  'TSTypeParameter'
+  'TSTypeParameter',
 ]
 
 export const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
@@ -52,7 +52,7 @@ const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
   return Boolean(
     (NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[
       nodeFieldKey
-    ]?.optional ?? true
+    ]?.optional ?? true,
   )
 }
 
@@ -63,7 +63,7 @@ export const getKeysToCompare = (node: PoorNodeType) => {
 export const getSetsOfKeysToCompare = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  isExact: boolean
+  isExact: boolean,
 ) => {
   const exactFileKeys = getKeysToCompare(fileNode)
   const exactQueryKeys = getKeysToCompare(queryNode)
@@ -83,18 +83,18 @@ export const getSetsOfKeysToCompare = (
     (fileKey) =>
       (!exactQueryKeys.includes(fileKey) ||
         isNullOrUndef(queryNode[fileKey])) &&
-      isNodeFieldOptional(fileNode.type as string, fileKey)
+      isNodeFieldOptional(fileNode.type as string, fileKey),
   )
 
   const includeFileKeys = exactFileKeys.filter(
-    (fileKey) => !fileKeysToRemove.includes(fileKey)
+    (fileKey) => !fileKeysToRemove.includes(fileKey),
   )
 
   // exclude all properties that has falsy value (otherwise properties set does not mach, if we remove these properties from file node)
   const includeQueryKeys = exactQueryKeys.filter(
     (queryKey) =>
       !fileKeysToRemove.includes(queryKey) &&
-      !isNullOrUndef(queryNode[queryKey])
+      !isNullOrUndef(queryNode[queryKey]),
   )
 
   return [includeFileKeys, includeQueryKeys]
@@ -117,7 +117,7 @@ export const sanitizeJSXText = (node: PoorNodeType) => {
 export const parseOptions = {
   sourceType: 'module',
   plugins: ['typescript', 'jsx', 'decorators-legacy'],
-  allowReturnOutsideFunction: true
+  allowReturnOutsideFunction: true,
 } as ParserOptions
 
 const omit = (obj: Record<string, unknown>, keys: string[]) => {
@@ -135,6 +135,7 @@ const omit = (obj: Record<string, unknown>, keys: string[]) => {
 export const shouldCompareNode = (node: PoorNodeType) => {
   if (node.type === 'JSXText') {
     sanitizeJSXText(node)
+
     return (node.value as string).length > 0
   }
 
@@ -152,6 +153,7 @@ export const cleanupAst = (ast: PoorNodeType) => {
     if (isNode(cleanedAst[key] as PoorNodeType)) {
       cleanedAst[key] = cleanupAst(cleanedAst[key] as PoorNodeType)
     }
+
     if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
       cleanedAst[key] = (cleanedAst[key] as PoorNodeType[])
         .filter(shouldCompareNode)
@@ -177,15 +179,15 @@ export const wildcardChar = '$'
 
 export const optionalStringWildcardRegExp = new RegExp(
   `\\${wildcardChar}\\${wildcardChar}`,
-  'g'
+  'g',
 )
 export const requiredStringWildcardRegExp = new RegExp(
   `\\${wildcardChar}\\${wildcardChar}\\${wildcardChar}`,
-  'g'
+  'g',
 )
 export const anyStringWildcardRegExp = new RegExp(
   `(\\${wildcardChar}){2,3}`,
-  'g'
+  'g',
 )
 
 export const identifierWildcard = wildcardChar + wildcardChar
@@ -196,32 +198,34 @@ export const disallowedWildcardRegExp = new RegExp(`(\\${wildcardChar}){4,}`)
 export const removeIdentifierRefFromWildcard = (name: string) => {
   const containsWildcardRegExp = new RegExp(`^\\${wildcardChar}`)
   const removeIdRefRegExp = new RegExp(`(?<=(\\${wildcardChar}){2,3})_.*`)
+
   if (containsWildcardRegExp.test(name)) {
     return name.replace(removeIdRefRegExp, '')
   }
+
   return name
 }
 
 // This is what happens if you write code at 01:30 at Friday after intensive week
 export const sortByLeastIdentifierStrength = (
   nodeA: PoorNodeType,
-  nodeB: PoorNodeType
+  nodeB: PoorNodeType,
 ) => {
   const aIsIdentifierWithWildcard =
     ['TSTypeReference', ...IdentifierTypes].includes(nodeA.type as string) &&
     (removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(
-      identifierWildcard
+      identifierWildcard,
     ) ||
       removeIdentifierRefFromWildcard(
-        (nodeA as any)?.typeName?.name as string
+        (nodeA as any)?.typeName?.name as string,
       )?.includes(identifierWildcard))
   const bIsIdentifierWithWildcard =
     ['TSTypeReference', ...IdentifierTypes].includes(nodeB.type as string) &&
     (removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(
-      identifierWildcard
+      identifierWildcard,
     ) ||
       removeIdentifierRefFromWildcard(
-        (nodeB as any)?.typeName?.name as string
+        (nodeB as any)?.typeName?.name as string,
       )?.includes(identifierWildcard))
 
   if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
@@ -267,7 +271,7 @@ export const prepareCodeResult = ({
   fileContent,
   start,
   end,
-  loc
+  loc,
 }: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
   const frame = fileContent.substring(start - loc.start.column, end)
   const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)

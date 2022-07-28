@@ -18,7 +18,7 @@ export const searchInStrings = ({
   files,
   mode,
   debug = false,
-  caseInsensitive = false
+  caseInsensitive = false,
 }: StringsSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
@@ -30,14 +30,14 @@ export const searchInStrings = ({
       filePaths: files.map((file) => file.path),
       mode,
       queryCodes,
-      caseInsensitive
+      caseInsensitive,
     })
   }
 
   const settings: SearchSettings = {
     mode,
     caseInsensitive,
-    logger: createLogger(debug)
+    logger: createLogger(debug),
   }
 
   const { log } = settings.logger
@@ -52,7 +52,7 @@ export const searchInStrings = ({
     return {
       matches: [],
       errors: queries.filter((queryResult) => queryResult.error),
-      hints: queries.map(({ hints }) => hints)
+      hints: queries.map(({ hints }) => hints),
     }
   }
 
@@ -61,7 +61,7 @@ export const searchInStrings = ({
 
   log(
     'inputQueryNode',
-    queries.map(({ queryNode }) => queryNode)
+    queries.map(({ queryNode }) => queryNode),
   )
 
   for (const file of files) {
@@ -70,7 +70,7 @@ export const searchInStrings = ({
         queries,
         filePath: file.path,
         fileContent: file.content,
-        ...settings
+        ...settings,
       })
 
       allMatches.push(...fileMatches)
@@ -95,7 +95,7 @@ export const searchInStrings = ({
   return {
     matches: dedupMatches(allMatches, log, debug),
     errors: searchErrors,
-    hints: queries.map(({ hints }) => hints)
+    hints: queries.map(({ hints }) => hints),
   }
 }
 

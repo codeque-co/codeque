@@ -5,6 +5,7 @@ import fs from 'fs'
 describe('Types', () => {
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
   const filesList = [tempFilePath]
+
   beforeAll(() => {
     fs.writeFileSync(
       tempFilePath,
@@ -25,7 +26,7 @@ describe('Types', () => {
       ${'`${id}`'}
       ${'`${id}${id2}`'}
       ${'`val ${id} text ${id2}`'}
-    `
+    `,
     )
   })
 
@@ -37,13 +38,13 @@ describe('Types', () => {
     const queries = [
       `
       ("somestring");
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -53,13 +54,13 @@ describe('Types', () => {
     const queries = [
       `
       ("somestring$$");
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -69,14 +70,14 @@ describe('Types', () => {
     const queries = [
       `
       ("SOMeString");
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
-      caseInsensitive: true
+      caseInsensitive: true,
     })
 
     expect(matches.length).toBe(2)
@@ -88,7 +89,7 @@ describe('Types', () => {
     const { matches: results1 } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries1
+      queryCodes: queries1,
     })
 
     expect(results1.length).toBe(2)
@@ -98,7 +99,7 @@ describe('Types', () => {
     const { matches: results2 } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries2
+      queryCodes: queries2,
     })
 
     expect(results2.length).toBe(2)
@@ -110,7 +111,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -122,7 +123,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)
@@ -134,7 +135,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -146,7 +147,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
@@ -158,7 +159,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -170,7 +171,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -182,7 +183,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
@@ -194,7 +195,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -206,7 +207,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -218,7 +219,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -230,7 +231,7 @@ describe('Types', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)

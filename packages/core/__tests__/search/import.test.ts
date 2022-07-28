@@ -8,7 +8,8 @@ describe('JSX', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -22,7 +23,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(1)
@@ -38,7 +39,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(0)
@@ -51,7 +52,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(41)
@@ -64,7 +65,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(33)
@@ -78,7 +79,7 @@ describe('JSX', () => {
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(33)
@@ -91,7 +92,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(2)
@@ -104,7 +105,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(2)
@@ -118,7 +119,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(6)

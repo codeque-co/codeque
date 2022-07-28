@@ -9,7 +9,8 @@ describe('functions', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -24,7 +25,7 @@ describe('functions', () => {
       (a,d) => {};
       (a, { b}) => {};
 
-    `
+    `,
     )
   })
 
@@ -47,13 +48,13 @@ describe('functions', () => {
         }: {
           $$: () => $$$;
         }) => {}
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(4)
@@ -73,13 +74,13 @@ describe('functions', () => {
       
         setExtended(currentScrollPosition <= 0);
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -102,13 +103,13 @@ describe('functions', () => {
         setExtended(currentScrollPosition <= 0);
 
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
     expect(matches.length).toBe(1)
   })
@@ -127,13 +128,13 @@ describe('functions', () => {
         }
       
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -154,13 +155,13 @@ describe('functions', () => {
         }
       
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
@@ -180,13 +181,13 @@ describe('functions', () => {
         const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
       
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
@@ -207,13 +208,13 @@ describe('functions', () => {
         }
       
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -233,13 +234,13 @@ describe('functions', () => {
         const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
       
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -249,13 +250,13 @@ describe('functions', () => {
     const queries = [
       `
       ($$_ref1, $$_ref2) => {}
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -265,13 +266,13 @@ describe('functions', () => {
     const queries = [
       `
       ($$_ref1, $$$_ref2) => {}
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
@@ -281,13 +282,13 @@ describe('functions', () => {
     const queries = [
       `
       ($$_ref1, $$_ref2, $$_ref3) => {}
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)

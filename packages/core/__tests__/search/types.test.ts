@@ -8,7 +8,8 @@ describe('Types', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -45,7 +46,7 @@ describe('Types', () => {
         key_2?: number;
       }
 
-    `
+    `,
     )
   })
 
@@ -57,13 +58,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$ = ScrollViewProps & $$$
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -73,13 +74,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$ = $$$ & ScrollViewProps
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -89,13 +90,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$ = "$$" | "$$"
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -105,13 +106,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$ = "$$" | "$$"
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
@@ -123,13 +124,13 @@ describe('Types', () => {
         type $$ = {
           $$: $$<$$$>;
         };     
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)
@@ -141,13 +142,13 @@ describe('Types', () => {
       type $$ = {
         [key: string]: $$$;
       };   
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -159,13 +160,13 @@ describe('Types', () => {
       type $$Visibility = {
         [key: string]: boolean | undefined
       };   
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -177,13 +178,13 @@ describe('Types', () => {
       type $$ = {
         [key: $$]: $$$
       };   
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -195,13 +196,13 @@ describe('Types', () => {
       type $$ = {
         [key: string]: boolean | $$;
       };   
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -211,13 +212,13 @@ describe('Types', () => {
     const queries = [
       `
       type ReturnTypeInferer<T> = T extends (a: Record<string, string>) => infer U ? U : never; 
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -227,13 +228,13 @@ describe('Types', () => {
     const queries = [
       `
       type ReturnTypeInferer<$$> = $$ extends (a: Record<string, string>) => infer U ? U : never; 
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -243,13 +244,13 @@ describe('Types', () => {
     const queries = [
       `
       type ReturnTypeInferer<$$> = $$ extends $$$ ? U : never; 
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -259,13 +260,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$<T> = T extends $$$ ? $$ : $$
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -275,13 +276,13 @@ describe('Types', () => {
     const queries = [
       `
       type $$<T> = $$$
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -291,13 +292,13 @@ describe('Types', () => {
     const queries = [
       `
         type $$<$$$> = G
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -311,19 +312,19 @@ describe('Types', () => {
         ) => {
         
         };
-       `
+       `,
     ]
 
     const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matchesInclude.length).toBe(1)
@@ -338,19 +339,19 @@ describe('Types', () => {
         ): AssignmentFormValues => {
         
         };
-       `
+       `,
     ]
 
     const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matchesInclude.length).toBe(1)
@@ -365,19 +366,19 @@ describe('Types', () => {
         ) => {
         
         };
-       `
+       `,
     ]
 
     const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matchesInclude.length).toBe(1)
@@ -388,19 +389,19 @@ describe('Types', () => {
     const queries = [
       `
         use$$Form$$()
-       `
+       `,
     ]
 
     const { matches: matchesInclude } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const { matches: matchesExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matchesInclude.length).toBe(1)
@@ -413,13 +414,13 @@ describe('Types', () => {
         interface $$ {
           $$_ref1: string
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -430,13 +431,13 @@ describe('Types', () => {
       `
         interface A extends $$$ {
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -447,13 +448,13 @@ describe('Types', () => {
       `
         interface A extends $$<$$$> {
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -465,13 +466,13 @@ describe('Types', () => {
         interface $$$ {
 
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -483,13 +484,13 @@ describe('Types', () => {
         interface B {
           key_2: number;
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -501,13 +502,13 @@ describe('Types', () => {
         interface B {
           key_2?: number;
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -520,13 +521,13 @@ describe('Types', () => {
           key:string;
           key_2?: number;
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -539,13 +540,13 @@ describe('Types', () => {
           key:string;
           key_2: number;
         }
-       `
+       `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)

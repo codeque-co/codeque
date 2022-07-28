@@ -9,7 +9,8 @@ describe('JSX', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -41,7 +42,7 @@ describe('JSX', () => {
           <Icon />
         </Button>
       </>
-    `
+    `,
     )
   })
 
@@ -54,7 +55,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
     expect(matches.length).toBe(148)
   })
@@ -67,7 +68,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     const resultCode = `
@@ -99,7 +100,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
     expect(matches.length).toBe(41)
   })
@@ -109,7 +110,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
     expect(matches.length).toBe(1)
   })
@@ -124,7 +125,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
     expect(matches.length).toBe(2)
   })
@@ -135,7 +136,7 @@ describe('JSX', () => {
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
-      caseInsensitive: true
+      caseInsensitive: true,
     })
     expect(matches.length).toBe(1)
   })
@@ -146,7 +147,7 @@ describe('JSX', () => {
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: [query]
+      queryCodes: [query],
     })
     expect(matches.length).toBe(1)
   })
@@ -166,7 +167,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(compareCode(matches[0].code, query)).toBeTruthy()
@@ -186,13 +187,13 @@ describe('JSX', () => {
     const { matches: resultsUsage } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [usageQuery]
+      queryCodes: [usageQuery],
     })
 
     const { matches: resultsImport } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [importQuery]
+      queryCodes: [importQuery],
     })
     expect(resultsImport.length).not.toBe(0)
 
@@ -216,7 +217,7 @@ describe('JSX', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query1, query2]
+      queryCodes: [query1, query2],
     })
 
     expect(matches.length).toBe(2)
@@ -234,13 +235,13 @@ describe('JSX', () => {
         $$={() => $$$}
       >
       </$$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const firstResultCode = `
@@ -268,13 +269,13 @@ describe('JSX', () => {
         on$$={() => $$$}
       >
       </$$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const firstResultCode = `
@@ -298,13 +299,13 @@ describe('JSX', () => {
       `
       <$$Wrapper>
       </$$Wrapper>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(34)
@@ -325,13 +326,13 @@ describe('JSX', () => {
       `
       <$$$ title={"$$"}>
       </$$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(78)
@@ -343,13 +344,13 @@ describe('JSX', () => {
         <$$>
           $$
         </$$>;
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
@@ -361,8 +362,8 @@ describe('JSX', () => {
           Press to 
           Download
         </Button>
-      `
-      )
+      `,
+      ),
     ).toBeTruthy()
   })
 
@@ -372,14 +373,14 @@ describe('JSX', () => {
         <Button>
           c$$$
         </Button>;
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       caseInsensitive: true,
       filePaths: mockedFilesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -391,8 +392,8 @@ describe('JSX', () => {
         Click
         <Icon />
       </Button>
-      `
-      )
+      `,
+      ),
     ).toBeTruthy()
   })
 })

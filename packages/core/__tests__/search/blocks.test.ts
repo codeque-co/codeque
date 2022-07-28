@@ -8,7 +8,8 @@ describe('blocks', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -20,13 +21,13 @@ describe('blocks', () => {
         I18nManager.forceRTL(!isRTL);
         Updates.reloadAsync();
       }
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -40,13 +41,13 @@ describe('blocks', () => {
         Updates.reloadAsync();
         toggleRTL();
       }
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -59,13 +60,13 @@ describe('blocks', () => {
         toggleRTL();
         Updates.reloadAsync();
       }
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)

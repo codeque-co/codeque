@@ -8,7 +8,8 @@ describe('code patterns', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -22,13 +23,13 @@ describe('code patterns', () => {
       `const $$ = ($$$) => {
         return $$$
       };
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const firstResult = `
@@ -55,13 +56,13 @@ describe('code patterns', () => {
         $$={$$$ && $$$}
       >
       </$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -79,13 +80,13 @@ describe('code patterns', () => {
         on$$={()=>{}}
       >
       </$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include', // TODO this should be 'exact', no? - we need $$exact() matcher
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(63)
@@ -136,13 +137,13 @@ describe('code patterns', () => {
         $$={$$$()}
       >
       </$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(132)
@@ -152,13 +153,13 @@ describe('code patterns', () => {
     const queries = [
       `
       $$$ ? $$$ : $$$ ? $$$ : $$$
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
     expect(matches.length).toBe(1)
   })
@@ -167,13 +168,13 @@ describe('code patterns', () => {
     const queries = [
       `
       ($$$ as any)
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -186,7 +187,7 @@ describe('code patterns', () => {
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: [query]
+      queryCodes: [query],
     })
 
     expect(matches.length).toBe(3)
@@ -197,13 +198,13 @@ describe('code patterns', () => {
     const queries = [
       `
       require("$$assets$$.jpg")
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(6)
@@ -213,13 +214,13 @@ describe('code patterns', () => {
     const queries = [
       `
       "$$" + "$$"
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)

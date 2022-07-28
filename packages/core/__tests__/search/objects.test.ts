@@ -60,7 +60,7 @@ describe('Types', () => {
       const objWithEquivalentKeys5 = {
         aaa: "val5"
       }
-    `
+    `,
     )
   })
 
@@ -78,13 +78,13 @@ describe('Types', () => {
         },
         other: 'other'
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -100,14 +100,14 @@ describe('Types', () => {
         },
         other: 'OTHER'
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       caseInsensitive: true,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -121,13 +121,13 @@ describe('Types', () => {
           $$:5
         },
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -139,13 +139,13 @@ describe('Types', () => {
       ({
         someOtherKey: $$$,
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -157,13 +157,13 @@ describe('Types', () => {
       ({
         a: $$$,
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     const firstMatch = `
@@ -193,13 +193,13 @@ describe('Types', () => {
     const queries = [
       `
       {}
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
@@ -212,13 +212,13 @@ describe('Types', () => {
         $$: $$,
         $$: () => $$$
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -226,7 +226,8 @@ describe('Types', () => {
 
   it('should match possibly repeated object properties', async () => {
     const filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
 
     const queries = [
@@ -238,13 +239,13 @@ describe('Types', () => {
           justifyContent: 'center',
         },
       });
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
@@ -261,13 +262,13 @@ describe('Types', () => {
       ({
         aaa: "val$$"
       })
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)

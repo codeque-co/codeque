@@ -8,7 +8,8 @@ describe('Text search mode', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -16,7 +17,7 @@ describe('Text search mode', () => {
     const results = searchInFileSystem({
       queryCodes: [`const $$ = use$$(`],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(results.matches.length).toBe(7)
@@ -28,10 +29,10 @@ describe('Text search mode', () => {
       queryCodes: [
         dedent`
         <Avatar.Text $$ label="XD" />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(1)
@@ -42,10 +43,10 @@ describe('Text search mode', () => {
       queryCodes: [
         dedent`
         <Avatar.Text style={styles.avatar} label="XD" $$ />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(2)
@@ -59,10 +60,10 @@ describe('Text search mode', () => {
           $$m
           color={Colors.black}
         />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(2)
@@ -77,10 +78,10 @@ describe('Text search mode', () => {
           icon="folder" $$m
           color={Colors.black}
         />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(1)
@@ -91,10 +92,10 @@ describe('Text search mode', () => {
       queryCodes: [
         dedent`
         <Avatar.Text $$$ label="XD" />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(1)
@@ -105,10 +106,10 @@ describe('Text search mode', () => {
       queryCodes: [
         dedent`
         <Avatar.Text style={sty$$$les.avatar} label="XD" />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(0)
@@ -122,10 +123,10 @@ describe('Text search mode', () => {
           style={[styles.av$$$m
           color={Colors.black}
         />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(2)
@@ -140,10 +141,10 @@ describe('Text search mode', () => {
           icon="folder"$$$m
           color={Colors.black}
         />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(0)
@@ -162,10 +163,10 @@ describe('Text search mode', () => {
           
               color={Colors.black}
         />
-        `
+        `,
       ],
       filePaths: filesList,
-      mode: 'text'
+      mode: 'text',
     })
 
     expect(matches).toHaveLength(1)

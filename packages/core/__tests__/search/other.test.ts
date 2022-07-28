@@ -7,7 +7,8 @@ describe('Other', () => {
 
   beforeAll(async () => {
     filesList = await getFilesList({
-      searchRoot: path.resolve(__dirname, '__fixtures__')
+      searchRoot: path.resolve(__dirname, '__fixtures__'),
+      omitGitIgnore: true,
     })
   })
 
@@ -18,13 +19,13 @@ describe('Other', () => {
       `,
       `
        type $$ = $$$ & ScrollViewProps
-      `
+      `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
@@ -53,13 +54,13 @@ describe('Other', () => {
         $$={() => $$$}
       >
       </$$$>
-    `
+    `,
     ]
 
     const { matches } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
-      queryCodes: queries
+      queryCodes: queries,
     })
 
     expect(matches.length).toBe(190)

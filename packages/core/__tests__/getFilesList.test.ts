@@ -236,7 +236,9 @@ it.skip('should return files for project root ignored by parent gitignore, but i
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project/src/config' }),
+    await getFilesList({
+      searchRoot: '/root/project/src/config',
+    }),
   )
 
   mockFs.restore()
@@ -276,7 +278,9 @@ it('should ignore files from parent .gitignore', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project/src' }),
+    await getFilesList({
+      searchRoot: '/root/project/src',
+    }),
   )
 
   mockFs.restore()

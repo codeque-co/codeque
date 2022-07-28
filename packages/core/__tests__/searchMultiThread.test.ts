@@ -16,13 +16,14 @@ jest.mock('worker_threads', () => {
 
   return {
     ...actual,
-    Worker
+    Worker,
   }
 })
 
 it('should search using multiple threads and give the same matches count as single thread search', async () => {
   const filesList = await getFilesList({
-    searchRoot: path.resolve(__dirname, 'search', '__fixtures__')
+    searchRoot: path.resolve(__dirname, 'search', '__fixtures__'),
+    omitGitIgnore: true,
   })
   const query = `
     () => $$$
@@ -31,13 +32,13 @@ it('should search using multiple threads and give the same matches count as sing
   const { matches: resultsSingle } = searchInFileSystem({
     mode: 'exact',
     filePaths: filesList,
-    queryCodes: [query]
+    queryCodes: [query],
   })
 
   const { matches: resultsMulti } = await searchMultiThread({
     mode: 'exact',
     filePaths: filesList,
-    queryCodes: [query]
+    queryCodes: [query],
   })
 
   expect(resultsMulti.length).toBe(204)

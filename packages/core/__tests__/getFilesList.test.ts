@@ -21,15 +21,15 @@ it('should return files list without gitignore', async () => {
           'fileC.tsx': '',
           'fileD.jsx': '',
           config: {
-            'fileE.json': ''
-          }
-        }
-      }
-    }
+            'fileE.json': '',
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' })
+    await getFilesList({ searchRoot: '/root/project' }),
   )
   mockFs.restore()
 
@@ -38,7 +38,7 @@ it('should return files list without gitignore', async () => {
     '/root/project/fileB.js',
     '/root/project/src/fileC.tsx',
     '/root/project/src/fileD.jsx',
-    '/root/project/src/config/fileE.json'
+    '/root/project/src/config/fileE.json',
   ])
 })
 
@@ -54,15 +54,15 @@ it('should return files for project root with gitignore', async () => {
           'fileC.tsx': '',
           'fileD.jsx': '',
           config: {
-            'fileE.json': ''
-          }
-        }
-      }
-    }
+            'fileE.json': '',
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' })
+    await getFilesList({ searchRoot: '/root/project' }),
   )
   mockFs.restore()
 
@@ -70,7 +70,7 @@ it('should return files for project root with gitignore', async () => {
     '/root/project/fileA.ts',
     '/root/project/fileB.js',
     '/root/project/src/fileC.tsx',
-    '/root/project/src/fileD.jsx'
+    '/root/project/src/fileD.jsx',
   ])
 })
 
@@ -85,25 +85,92 @@ it('should return files for project root with two gitignores', async () => {
         src: {
           'fileC.tsx': '',
           'fileD.jsx': '',
+          'file.json': '',
           '.gitignore': '*.json',
           config: {
-            'fileE.json': ''
-          }
-        }
-      }
-    }
+            'fileE.json': '',
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' })
+    await getFilesList({ searchRoot: '/root/project' }),
   )
   mockFs.restore()
 
   expect(filesList).toMatchObject([
     '/root/project/fileA.ts',
     '/root/project/fileB.js',
-    '/root/project/src/fileD.jsx'
+    '/root/project/src/fileD.jsx',
   ])
+})
+
+it('should return files for monorepo with gitignores in subdirs', async () => {
+  mockFs({
+    '/root': {
+      project: {
+        'fileA.ts': 'content',
+        '.gitignore': 'dist',
+        packageA: {
+          'fileC.tsx': '',
+          '.gitignore': `
+            ignoreInA/**
+          `,
+          src: {
+            'fileE.json': '',
+          },
+          ignoreInA: {
+            'file.ts': 'content',
+          },
+          ignoreInB: {
+            'file.ts': 'content',
+          },
+          dist: {
+            'distFile.ts': 'content',
+          },
+        },
+        packageB: {
+          'fileC.tsx': '',
+          'fileD.jsx': '',
+          '.gitignore': `
+            ignoreInB/**
+          `,
+          src: {
+            'fileE.json': '',
+          },
+          ignoreInA: {
+            'file.ts': 'content',
+          },
+          ignoreInB: {
+            'file.ts': 'content',
+          },
+          dist: {
+            'distFile.ts': 'content',
+          },
+        },
+      },
+    },
+  })
+
+  const filesList = removeCwd(
+    await getFilesList({ searchRoot: '/root/project' }),
+  )
+  mockFs.restore()
+
+  expect(filesList.sort()).toMatchObject(
+    [
+      '/root/project/fileA.ts',
+      '/root/project/packageA/src/fileE.json',
+      '/root/project/packageA/fileC.tsx',
+      '/root/project/packageA/ignoreInB/file.ts',
+      '/root/project/packageB/fileC.tsx',
+      '/root/project/packageB/fileD.jsx',
+      '/root/project/packageB/ignoreInA/file.ts',
+      '/root/project/packageB/src/fileE.json',
+    ].sort(),
+  )
 })
 
 it('should return files for project root with omitting gitignore', async () => {
@@ -118,15 +185,15 @@ it('should return files for project root with omitting gitignore', async () => {
           'fileC.tsx': '',
           'fileD.jsx': '',
           config: {
-            'fileE.json': ''
-          }
-        }
-      }
-    }
+            'fileE.json': '',
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project', omitGitIgnore: true })
+    await getFilesList({ searchRoot: '/root/project', omitGitIgnore: true }),
   )
   mockFs.restore()
 
@@ -135,11 +202,12 @@ it('should return files for project root with omitting gitignore', async () => {
     '/root/project/fileB.js',
     '/root/project/src/fileC.tsx',
     '/root/project/src/fileD.jsx',
-    '/root/project/src/config/fileE.json'
+    '/root/project/src/config/fileE.json',
   ])
 })
 
-it('should return files for project root ignored by parent gitignore, but ignore the nested directories', async () => {
+// We will add option to search in ignored files, so that exception is not needed
+it.skip('should return files for project root ignored by parent gitignore, but ignore the nested directories', async () => {
   mockFs({
     '/root': {
       project: {
@@ -158,24 +226,24 @@ it('should return files for project root ignored by parent gitignore, but ignore
             dir: {
               config: {
                 'fileF.js': '',
-                'fileG.ts': ''
-              }
-            }
-          }
-        }
-      }
-    }
+                'fileG.ts': '',
+              },
+            },
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project/src/config' })
+    await getFilesList({ searchRoot: '/root/project/src/config' }),
   )
 
   mockFs.restore()
 
   expect(filesList).toMatchObject([
     '/root/project/src/config/fileE.json',
-    '/root/project/src/config/dir/config/fileG.ts'
+    '/root/project/src/config/dir/config/fileG.ts',
   ])
 })
 
@@ -198,17 +266,17 @@ it('should ignore files from parent .gitignore', async () => {
             dir: {
               config: {
                 'fileF.js': '',
-                'fileG.ts': ''
-              }
-            }
-          }
-        }
-      }
-    }
+                'fileG.ts': '',
+              },
+            },
+          },
+        },
+      },
+    },
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project/src' })
+    await getFilesList({ searchRoot: '/root/project/src' }),
   )
 
   mockFs.restore()
@@ -216,6 +284,6 @@ it('should ignore files from parent .gitignore', async () => {
   expect(filesList).toMatchObject([
     '/root/project/src/fileC.tsx',
     '/root/project/src/fileD.jsx',
-    '/root/project/src/config/dir/config/fileG.ts'
+    '/root/project/src/config/dir/config/fileG.ts',
   ])
 })

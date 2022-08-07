@@ -2,21 +2,23 @@ import ReactDOM from 'react-dom/client'
 import { useEffect, useCallback, useState } from 'react'
 import { Providers } from '../components/Providers'
 import { SearchSettings } from './components/SearchSettings'
-import { Settings } from '../../types'
 import { eventBusInstance } from '../../EventBus'
+import { StateShape } from '../../StateManager'
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
 
 const Sidebar = () => {
   const [resultsPanelVisible, setResultsPanelVisible] = useState(true)
-  const [initialSettings, setInitialSettings] = useState<Settings | null>(null)
+  const [initialSettings, setInitialSettings] = useState<StateShape | null>(
+    null,
+  )
 
-  const setSettings = useCallback((settings: Partial<Settings>) => {
+  const setSettings = useCallback((settings: Partial<StateShape>) => {
     eventBusInstance.dispatch('set-settings', settings)
     eventBusInstance.dispatch('start-search')
   }, [])
 
-  const handleDefaultSettings = useCallback((data: Settings) => {
+  const handleDefaultSettings = useCallback((data: StateShape) => {
     setInitialSettings(data)
   }, [])
 
@@ -39,7 +41,7 @@ const Sidebar = () => {
 
       window.removeEventListener(
         'message',
-        eventBusInstance.pipeFromWindowMessage
+        eventBusInstance.pipeFromWindowMessage,
       )
     }
   }, [])
@@ -55,13 +57,13 @@ const Sidebar = () => {
   useEffect(() => {
     eventBusInstance.addListener(
       'results-panel-visibility',
-      handleResultsPanelVisibilityChange
+      handleResultsPanelVisibilityChange,
     )
 
     return () => {
       eventBusInstance.removeListener(
         'results-panel-visibility',
-        handleResultsPanelVisibilityChange
+        handleResultsPanelVisibilityChange,
       )
     }
   }, [handleResultsPanelVisibilityChange])

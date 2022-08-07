@@ -11,7 +11,7 @@ export function ResultsMeta({
   filesCount,
   matchesCount,
   matchedFilesCount,
-  startSearch
+  startSearch,
 }: ResultsMetaProps) {
   return (
     <Flex mb="4" alignItems="center">
@@ -25,12 +25,12 @@ export function ResultsMeta({
           Found in <b>{matchedFilesCount}</b> files
         </Text>
       )}
-      {time && (
+      {time !== undefined && (
         <Text ml="5">
           Found in: <b>{time}s</b>
         </Text>
       )}
-      {filesCount && (
+      {filesCount !== undefined && (
         <Text ml="5">
           Searched files: <b>{filesCount}</b>
         </Text>

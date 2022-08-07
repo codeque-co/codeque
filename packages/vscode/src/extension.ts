@@ -10,10 +10,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   const stateManager = new StateManager(context.workspaceState)
 
-  const openPanel = () =>
+  const openSearchResults = () =>
     SearchResultsPanel.createOrShow(extensionUri, stateManager)
 
-  eventBusInstance.addListener('show-results-panel', openPanel)
+  const openSidebar = async () =>
+    vscode.commands.executeCommand(
+      'workbench.view.extension.codeque-sidebar-view',
+    )
+  eventBusInstance.addListener('show-results-panel', openSearchResults)
+
+  eventBusInstance.addListener('results-panel-visibility', (isVisible) => {
+    if (isVisible) {
+      openSidebar()
+    }
+  })
 
   const sidebarProvider = new SidebarProvider(
     context.extensionUri,
@@ -61,9 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       SearchResultsPanel.createOrShow(extensionUri, stateManager)
 
-      await vscode.commands.executeCommand(
-        'workbench.view.extension.codeque-sidebar-view',
-      )
+      await openSidebar()
 
       if (selectedCode) {
         eventBusInstance.dispatch('open-search-from-selection')

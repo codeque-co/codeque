@@ -1,15 +1,13 @@
-import * as vscode from 'vscode'
-import { StateManager, StateShape } from './StateManager'
 import {
-  searchMultiThread,
   getFilesList,
-  SearchResults,
   groupMatchesByFile,
+  searchMultiThread,
+  SearchResults,
 } from '@codeque/core'
 import path from 'path'
-import { ExtendedSearchResults } from './types'
+import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
-
+import { StateManager, StateShape } from './StateManager'
 export class SearchManager {
   private root: string | undefined
   private searchRunning = false
@@ -62,7 +60,17 @@ export class SearchManager {
         if (this.root !== undefined) {
           this.searchRunning = true
           eventBusInstance.dispatch('search-started')
-          files = await getFilesList({ searchRoot: this.root })
+
+          files = await getFilesList({
+            searchRoot: this.root,
+            ignoreNodeModules: !settings.searchNodeModules,
+            omitGitIgnore: settings.searchIgnoredFiles,
+            include:
+              settings.include?.length > 0 ? settings.include : undefined,
+            exclude: settings.exclude,
+            entryPoint: settings.entryPoint ?? undefined,
+          })
+
           const getFilesEnd = Date.now()
 
           const results = await searchMultiThread({

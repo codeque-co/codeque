@@ -1,6 +1,7 @@
 import mockFs from 'mock-fs'
 import { getFilesList } from '/getFilesList'
 import dedent from 'dedent'
+import { filterIncludeExclude } from '../src/getFilesList'
 
 afterEach(() => {
   mockFs.restore()
@@ -290,4 +291,49 @@ it('should ignore files from parent .gitignore', async () => {
     '/root/project/src/fileD.jsx',
     '/root/project/src/config/dir/config/fileG.ts',
   ])
+})
+
+it('should filter out excluded files', () => {
+  const filteredList = filterIncludeExclude({
+    searchRoot: '/root/project',
+    filesList: [
+      '/root/project/dir/file',
+      '/root/project/dist/file1',
+      '/root/project/src/index.ts',
+    ],
+    include: undefined,
+    exclude: ['**/file', 'dist/file*'],
+  })
+
+  expect(filteredList).toMatchObject(['/root/project/src/index.ts'])
+})
+
+it('should only list included files', () => {
+  const filteredList = filterIncludeExclude({
+    searchRoot: '/root/project',
+    filesList: [
+      '/root/project/dir/file',
+      '/root/project/dist/file1',
+      '/root/project/src/index.ts',
+    ],
+    include: ['**/index.*'],
+    exclude: [],
+  })
+
+  expect(filteredList).toMatchObject(['/root/project/src/index.ts'])
+})
+
+it('should only list included files, but not excluded ones', () => {
+  const filteredList = filterIncludeExclude({
+    searchRoot: '/root/project',
+    filesList: [
+      '/root/project/dir/file',
+      '/root/project/dist/file1',
+      '/root/project/src/index.ts',
+    ],
+    include: ['di*/**'],
+    exclude: ['dir/**'],
+  })
+
+  expect(filteredList).toMatchObject(['/root/project/dist/file1'])
 })

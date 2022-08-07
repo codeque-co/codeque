@@ -58,6 +58,7 @@
     "dpdm": "^3.8.0",
     "glob-escape": "^0.0.2",
     "ignore": "^5.1.9",
+    "minimatch": "^5.1.0",
     "prettier": "^2.5.1"
   },
   "scripts": {

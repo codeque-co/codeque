@@ -7,15 +7,23 @@ export type StateShape = {
   mode: Mode
   caseType: CaseType
   query: string
+  include: string[]
+  exclude: string[]
+  searchIgnoredFiles: boolean
+  searchNodeModules: boolean
+  entryPoint: string | null
 }
-
-type SubscribeHandler = (data: StateShape) => void
 
 export class StateManager {
   private readonly defaultState: StateShape = {
     mode: 'include',
     caseType: 'insensitive',
     query: '',
+    include: [],
+    exclude: [],
+    searchIgnoredFiles: false,
+    searchNodeModules: false,
+    entryPoint: null,
   }
 
   private readonly stateKey = 'codeque-data'

@@ -29,7 +29,7 @@ const defaultDisplayLimit = 50
 
 const Panel = () => {
   const [lastSearchedQuery, setLastSearchedQuery] = useState<string | null>(
-    null
+    null,
   )
   const [query, setQuery] = useState<string | null>(null)
   const [nextSearchIsFromSelection, setNextSearchIsFromSelection] =
@@ -40,7 +40,7 @@ const Panel = () => {
   const [initialSettingsReceived, setInitialSettingsReceived] =
     useState<boolean>(false)
   const [results, setResults] = useState<ExtendedSearchResults | undefined>(
-    undefined
+    undefined,
   )
   const [time, setTime] = useState<number | undefined>(undefined)
   const [filesList, setFilesList] = useState<string[] | undefined>(undefined)
@@ -85,7 +85,7 @@ const Panel = () => {
           startSearch()
         }
       }, 800),
-    [startSearch]
+    [startSearch],
   )
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const Panel = () => {
 
       window.removeEventListener(
         'message',
-        eventBusInstance.pipeFromWindowMessage
+        eventBusInstance.pipeFromWindowMessage,
       )
     }
   }, [])
@@ -131,13 +131,13 @@ const Panel = () => {
 
     eventBusInstance.addListener(
       'open-search-from-selection',
-      setNextSearchFromSelection
+      setNextSearchFromSelection,
     )
 
     return () => {
       eventBusInstance.removeListener(
         'open-search-from-selection',
-        setNextSearchFromSelection
+        setNextSearchFromSelection,
       )
     }
   }, [setNextSearchIsFromSelection])

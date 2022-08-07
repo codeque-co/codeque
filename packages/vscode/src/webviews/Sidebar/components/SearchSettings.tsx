@@ -1,32 +1,71 @@
-import { Button, Flex, Radio, RadioGroup, Stack, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Checkbox,
+  Flex,
+  Input,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import Creatable from 'react-select/creatable'
+
 import { Mode } from '@codeque/core'
-import { useCallback, useEffect, useState } from 'react'
-import { CaseType, Settings } from '../../../types'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { eventBusInstance } from '../../../EventBus'
+import { StateShape } from '../../../StateManager'
+import { CaseType } from '../../../types'
+import { reactSelectStyles } from '../../components/reactSelectStyles'
+import { simpleDebounce } from '../../utils'
 
 type SearchSettingsProps = {
-  initialSettings: Settings
-  setSettings: (settings: Partial<Settings>) => void
+  initialSettings: StateShape
+  setSettings: (settings: Partial<StateShape>) => void
   resultsPanelVisible: boolean
 }
+type Options = { value: string; label: string }[]
+
+const formatCreateLabel = (input: string) => `Add "${input}"`
+const noOptionsMessage = () => 'Type relative path or glob'
+
+const getOptionsFromArray = (values: string[]) =>
+  values.map((value) => ({ value, label: value }))
+
+const getValuesFromOptions = (options: Options) =>
+  options.map(({ value }) => value)
 
 export function SearchSettings({
   initialSettings,
   setSettings,
-  resultsPanelVisible
+  resultsPanelVisible,
 }: SearchSettingsProps) {
   const [mode, setMode] = useState(initialSettings?.mode)
   const [caseType, setCase] = useState(initialSettings?.caseType)
+  const [searchNodeModules, setSearchNodeModules] = useState(
+    initialSettings?.searchNodeModules,
+  )
+  const [searchIgnoredFiles, setSearchIgnoredFiles] = useState(
+    initialSettings?.searchIgnoredFiles,
+  )
+  const [include, setInclude] = useState(
+    getOptionsFromArray(initialSettings?.include ?? []),
+  )
+  const [exclude, setExclude] = useState(
+    getOptionsFromArray(initialSettings?.exclude ?? []),
+  )
+  const [entryPoint, setEntryPoint] = useState(
+    initialSettings?.entryPoint ?? '',
+  )
 
   const handleModeChange = useCallback(
     (mode: Mode) => {
       setMode(mode)
 
       setSettings({
-        mode
+        mode,
       })
     },
-    [setSettings]
+    [setSettings],
   )
 
   const handleCaseChange = useCallback(
@@ -34,10 +73,78 @@ export function SearchSettings({
       setCase(caseType)
 
       setSettings({
-        caseType
+        caseType,
       })
     },
-    [setSettings]
+    [setSettings],
+  )
+
+  const handleSearchNodeModulesChange = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      const checked = ev.target.checked
+      setSearchNodeModules(checked)
+
+      setSettings({
+        searchNodeModules: checked,
+      })
+    },
+    [setSettings],
+  )
+
+  const handleSearchIgnoredFilesChange = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      const checked = ev.target.checked
+      setSearchIgnoredFiles(checked)
+
+      setSettings({
+        searchIgnoredFiles: checked,
+      })
+    },
+    [setSettings],
+  )
+
+  const handleIncludeChange = useCallback(
+    (options: Options) => {
+      setInclude(options)
+      const include = getValuesFromOptions(options)
+
+      setSettings({
+        include,
+      })
+    },
+    [setSettings],
+  )
+
+  const handleExcludeChange = useCallback(
+    (options: Options) => {
+      setExclude(options)
+      const exclude = getValuesFromOptions(options)
+
+      setSettings({
+        exclude,
+      })
+    },
+    [setSettings],
+  )
+
+  const setSettingsEntryPointDebounced = useMemo(
+    () =>
+      simpleDebounce((entryPoint: string) => {
+        setSettings({
+          entryPoint: entryPoint.length > 0 ? entryPoint : null,
+        })
+      }, 800),
+    [setSettings],
+  )
+
+  const handleEntryPointChange = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      const entryPoint = ev.target.value
+
+      setEntryPoint(entryPoint)
+      setSettingsEntryPointDebounced(entryPoint)
+    },
+    [setSettings, setSettingsEntryPointDebounced],
   )
 
   const showResultsPanel = () => {
@@ -66,64 +173,141 @@ export function SearchSettings({
           </Text>
         </Flex>
       )}
-      <Text fontWeight="medium" mb="1">
-        Mode:
-      </Text>
-      <Flex mb="4" alignItems="center">
-        <RadioGroup value={mode} onChange={handleModeChange}>
-          <Stack direction="row" flexWrap="wrap">
-            <Radio
-              value="text"
-              marginEnd="1rem !important"
-              marginStart="0 !important"
-              borderColor="blue.200"
-            >
-              text
-            </Radio>
-            <Radio
-              value="include"
-              marginStart="0 !important"
-              marginEnd="1rem !important"
-              borderColor="blue.200"
-            >
-              include
-            </Radio>
-            <Radio
-              value="exact"
-              marginStart="0 !important"
-              marginEnd="1rem !important"
-              borderColor="blue.200"
-            >
-              exact
-            </Radio>
-            <Radio
-              value="include-with-order"
-              marginStart="0 !important"
-              borderColor="blue.200"
-            >
-              include with order
-            </Radio>
-          </Stack>
-        </RadioGroup>
+      <Flex flexDir="column">
+        <Text fontWeight="medium" mb="3" fontSize="lg">
+          Query settings
+        </Text>
+        <Text fontWeight="medium" mb="1">
+          Mode:
+        </Text>
+        <Flex mb="4" alignItems="center">
+          <RadioGroup value={mode} onChange={handleModeChange}>
+            <Stack direction="row" flexWrap="wrap">
+              <Radio
+                value="text"
+                marginEnd="1rem !important"
+                marginStart="0 !important"
+                borderColor="blue.200"
+              >
+                text
+              </Radio>
+              <Radio
+                value="include"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                include
+              </Radio>
+              <Radio
+                value="exact"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                exact
+              </Radio>
+              <Radio
+                value="include-with-order"
+                marginStart="0 !important"
+                borderColor="blue.200"
+              >
+                include with order
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
+        <Text fontWeight="medium" mb="1">
+          Case:
+        </Text>
+        <Flex alignItems="center">
+          <RadioGroup value={caseType} onChange={handleCaseChange}>
+            <Stack direction="row">
+              <Radio value="insensitive" borderColor="blue.200">
+                insensitive
+              </Radio>
+              <Radio
+                value="sensitive"
+                marginStart="1rem !important"
+                borderColor="blue.200"
+              >
+                sensitive
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
       </Flex>
-      <Text fontWeight="medium" mb="1">
-        Case:
-      </Text>
-      <Flex alignItems="center">
-        <RadioGroup value={caseType} onChange={handleCaseChange}>
-          <Stack direction="row">
-            <Radio value="insensitive" borderColor="blue.200">
-              insensitive
-            </Radio>
-            <Radio
-              value="sensitive"
-              marginStart="1rem !important"
-              borderColor="blue.200"
-            >
-              sensitive
-            </Radio>
-          </Stack>
-        </RadioGroup>
+      <Flex flexDir="column">
+        <Text fontWeight="medium" my="3" fontSize="lg">
+          Files list settings
+        </Text>
+        <Checkbox
+          isChecked={searchIgnoredFiles}
+          onChange={handleSearchIgnoredFilesChange}
+        >
+          Search ignored files
+        </Checkbox>
+        <Checkbox
+          mt="2"
+          isChecked={searchNodeModules}
+          onChange={handleSearchNodeModulesChange}
+        >
+          Search <code>node_modules</code>
+        </Checkbox>
+        <Text fontWeight="medium" mb="1" mt="2">
+          Include files or directories
+        </Text>
+        <Box
+          mb="2"
+          transform="scale(0.85)"
+          transformOrigin="left"
+          zIndex="3"
+          width="117%"
+        >
+          <Creatable
+            isMulti={true}
+            placeholder={noOptionsMessage()}
+            noOptionsMessage={noOptionsMessage}
+            formatCreateLabel={formatCreateLabel}
+            //@ts-ignore react-select things...
+            onChange={handleIncludeChange}
+            value={include}
+            styles={reactSelectStyles}
+          />
+        </Box>
+        <Text fontWeight="medium" my="1">
+          Exclude files or directories
+        </Text>
+        <Box
+          transform="scale(0.85)"
+          transformOrigin="left"
+          width="117%"
+          zIndex="2"
+        >
+          <Creatable
+            isMulti={true}
+            placeholder={noOptionsMessage()}
+            noOptionsMessage={noOptionsMessage}
+            formatCreateLabel={formatCreateLabel}
+            //@ts-ignore react-select things...
+            onChange={handleExcludeChange}
+            value={exclude}
+            styles={reactSelectStyles}
+          />
+        </Box>
+        <Text fontWeight="medium" my="1">
+          Search by entry point
+        </Text>
+        <Input
+          border="none"
+          outlineColor="transparent !important"
+          outline="none !important"
+          mt="2"
+          onChange={handleEntryPointChange}
+          value={entryPoint}
+          placeholder="Entry point relative path"
+          size="sm"
+        />
       </Flex>
     </Flex>
   )

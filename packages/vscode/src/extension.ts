@@ -55,12 +55,14 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('codeque.openSearch', async () => {
       const { activeTextEditor } = vscode.window
 
-      let selectedCode = ''
+      let selectedCode: string | null = ''
 
       if (activeTextEditor) {
         selectedCode = activeTextEditor.document.getText(
           activeTextEditor.selection,
         )
+      } else {
+        selectedCode = stateManager.getState().webviewTextSelection
       }
 
       if (selectedCode) {

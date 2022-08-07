@@ -12,6 +12,7 @@ export type StateShape = {
   searchIgnoredFiles: boolean
   searchNodeModules: boolean
   entryPoint: string | null
+  webviewTextSelection: string | null
 }
 
 export class StateManager {
@@ -24,6 +25,7 @@ export class StateManager {
     searchIgnoredFiles: false,
     searchNodeModules: false,
     entryPoint: null,
+    webviewTextSelection: null,
   }
 
   private readonly stateKey = 'codeque-data'

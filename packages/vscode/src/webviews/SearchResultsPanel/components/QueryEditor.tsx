@@ -36,7 +36,7 @@ const renderHint = (hint: Hint) => {
           </Text>
         ) : (
           <Fragment key={content}>{content}</Fragment>
-        )
+        ),
       )}
     </Text>
   )
@@ -50,11 +50,11 @@ const getParseErrorHighlight = (errorLocation: {
     start: errorLocation,
     end: {
       line: errorLocation.line,
-      column: errorLocation.column + 1
+      column: errorLocation.column + 1,
     },
     style: {
-      borderBottom: `3px solid ${codeRed}`
-    }
+      borderBottom: `3px solid ${codeRed}`,
+    },
   }
 }
 
@@ -62,7 +62,7 @@ export function QueryEditor({
   query,
   setQuery,
   setHasQueryError,
-  mode
+  mode,
 }: Props) {
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
@@ -82,10 +82,10 @@ export function QueryEditor({
         files: [
           {
             content: '',
-            path: 'file.ts'
-          }
+            path: 'file.ts',
+          },
         ],
-        mode
+        mode,
       })
       const hint = matches.hints?.[0]?.[0] ?? null
       setQueryHint(hint)
@@ -102,7 +102,7 @@ export function QueryEditor({
           } else if (!error.error.text.includes('Empty query')) {
             setQueryError({
               text: error.error.text,
-              location: error.error.location
+              location: error.error.location,
             })
           }
         }

@@ -3,7 +3,7 @@ window.Buffer = global.Buffer = {}
 //@ts-ignore
 window.require = global.require = () => void 0
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Providers } from '../components/Providers'
 import { QueryEditor } from './components/QueryEditor'
@@ -46,6 +46,7 @@ const Panel = () => {
   const [filesList, setFilesList] = useState<string[] | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [displayLimit, setDisplayLimit] = useState(50)
+  const selectedText = useRef<string | null>(null)
 
   const handleSettingsChanged = useCallback((data: StateShape) => {
     setLastSearchedQuery(data.query) // to block first auto search
@@ -73,12 +74,19 @@ const Panel = () => {
   }, [])
 
   const startSearch = useCallback(() => {
+    if (selectedText.current) {
+      eventBusInstance.dispatch('set-settings', {
+        query: selectedText.current,
+      })
+    }
+
     eventBusInstance.dispatch('start-search')
-  }, [])
+  }, [selectedText])
 
   const handleQueryChangeDebounced = useMemo(
     () =>
       simpleDebounce((query: string, hasQueryError: boolean) => {
+        console.log('query changed debounced', query)
         eventBusInstance.dispatch('set-query', query)
 
         if (!hasQueryError) {
@@ -175,6 +183,29 @@ const Panel = () => {
       handleQueryChangeDebounced(query, hasQueryError)
     }
   }, [lastSearchedQuery, query, hasQueryError, nextSearchIsFromSelection])
+
+  useEffect(() => {
+    const handleSelectionChangeDebounced = simpleDebounce(() => {
+      const text = window?.getSelection()?.toString() ?? null
+
+      if (text !== selectedText.current) {
+        selectedText.current = text
+
+        eventBusInstance.dispatch('set-settings', {
+          webviewTextSelection: text,
+        })
+      }
+    }, 300)
+
+    document.addEventListener('selectionchange', handleSelectionChangeDebounced)
+
+    return () => {
+      document.removeEventListener(
+        'selectionchange',
+        handleSelectionChangeDebounced,
+      )
+    }
+  }, [])
 
   return (
     <Providers>

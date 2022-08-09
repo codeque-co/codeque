@@ -21,7 +21,7 @@ type EventTypes = {
     time: number
     files: string[]
   }
-  'settings-changed': StateShape
+  'settings-changed': Partial<StateShape>
   'set-query': string | null
 }
 
@@ -99,12 +99,13 @@ export class EventBus {
     data?: EventTypes[T],
     dispatchThroughTransports = true,
   ) => {
+    // console.log(`dispatch:${this.env}`, eventType, data)
     try {
       await Promise.all(
         this.listeners[eventType].map((callback) => callback(data)),
       )
     } catch (e) {
-      console.log(this.env, 'internal dispatch error', e)
+      console.error(this.env, 'internal dispatch error', e)
     }
 
     if (dispatchThroughTransports) {
@@ -127,7 +128,7 @@ export class EventBus {
           }),
         )
       } catch (e) {
-        console.log(
+        console.error(
           this.env,
           'transports dispatch error',
           e,
@@ -153,7 +154,7 @@ export class EventBus {
         this.dispatch(event.type, event?.data, false)
       }
     } catch (e) {
-      console.log(this.env, 'pipeFromWebview failed', e)
+      console.error(this.env, 'pipeFromWebview failed', e)
     }
   }
 
@@ -171,7 +172,7 @@ export class EventBus {
         this.dispatch(event?.type, event?.data, false)
       }
     } catch (e) {
-      console.log(this.env, 'pipeFromWindowMessage failed', e)
+      console.error(this.env, 'pipeFromWindowMessage failed', e)
     }
   }
 }

@@ -170,15 +170,11 @@ export class SearchResultsPanel {
         return vscode.window.showTextDocument(textDoc, { selection })
       },
       (error: any) => {
-        console.log('error opening file', filePath)
+        console.error('error opening file', filePath)
         console.error(error)
       },
     )
   }
-
-  // private reportSettingsChange = (data: StateShape) => {
-  //   eventBusInstance.dispatch('settings-changed', data)
-  // }
 
   public dispose() {
     SearchResultsPanel.currentPanel = undefined

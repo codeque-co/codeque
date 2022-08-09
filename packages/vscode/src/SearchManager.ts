@@ -112,10 +112,4 @@ export class SearchManager {
       this.searchRunning = false
     }
   }
-
-  public openFileInEditor(filePath: string) {
-    vscode.workspace.openTextDocument(vscode.Uri.file(filePath)).then((doc) => {
-      console.log(doc)
-    })
-  }
 }

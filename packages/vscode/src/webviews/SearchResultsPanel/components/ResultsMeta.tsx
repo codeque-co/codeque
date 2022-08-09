@@ -4,7 +4,7 @@ type ResultsMetaProps = {
   filesCount: number | undefined
   matchesCount: number | undefined
   matchedFilesCount: number | undefined
-  startSearch: () => void
+  startSearch: (useSelectionIfAvailable: boolean) => void
 }
 export function ResultsMeta({
   time,
@@ -37,7 +37,7 @@ export function ResultsMeta({
       )}
 
       <Button
-        onClick={startSearch}
+        onClick={() => startSearch(true)}
         size="sm"
         width="100px"
         marginLeft="auto"

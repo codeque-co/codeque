@@ -10,7 +10,7 @@ import { spawnSync } from 'child_process'
 //@ts-ignore
 import escapeGlob from 'glob-escape'
 
-const extensionTester = /\.(js|jsx|ts|tsx|json|mjs)$/
+const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   // dpdm does not support custom search directory :/

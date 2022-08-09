@@ -48,10 +48,15 @@ const Panel = () => {
   const [displayLimit, setDisplayLimit] = useState(50)
   const selectedText = useRef<string | null>(null)
 
-  const handleSettingsChanged = useCallback((data: StateShape) => {
-    setLastSearchedQuery(data.query) // to block first auto search
-    setQuery(data.query)
-    setMode(data.mode)
+  const handleSettingsChanged = useCallback((data: Partial<StateShape>) => {
+    if (data.query !== undefined) {
+      setLastSearchedQuery(data.query) // to block first auto search
+      setQuery(data.query)
+    }
+
+    if (data.mode !== undefined) {
+      setMode(data.mode)
+    }
   }, [])
 
   const handleInitialSettings = useCallback((data: StateShape) => {
@@ -73,20 +78,22 @@ const Panel = () => {
     setIsLoading(true)
   }, [])
 
-  const startSearch = useCallback(() => {
-    if (selectedText.current) {
-      eventBusInstance.dispatch('set-settings', {
-        query: selectedText.current,
-      })
-    }
+  const startSearch = useCallback(
+    (useSelectionIfAvailable = false) => {
+      if (selectedText.current && useSelectionIfAvailable) {
+        eventBusInstance.dispatch('set-settings', {
+          query: selectedText.current,
+        })
+      }
 
-    eventBusInstance.dispatch('start-search')
-  }, [selectedText])
+      eventBusInstance.dispatch('start-search')
+    },
+    [selectedText],
+  )
 
   const handleQueryChangeDebounced = useMemo(
     () =>
       simpleDebounce((query: string, hasQueryError: boolean) => {
-        console.log('query changed debounced', query)
         eventBusInstance.dispatch('set-query', query)
 
         if (!hasQueryError) {

@@ -41,7 +41,7 @@ export class StateManager {
     try {
       savedStateParsed = JSON.parse(savedState)
     } catch (e) {
-      console.log('saved state parse error', e)
+      console.error('saved state parse error', e)
       void 0
     }
 
@@ -53,15 +53,49 @@ export class StateManager {
     console.log('restored state', this.localState)
   }
 
+  private undefinedToNull = (state: StateShape) => {
+    return Object.entries(state)
+      .map(([key, value]) => [key, value ?? null] as const)
+      .reduce((state, [key, value]) => {
+        return {
+          ...state,
+          [key]: value,
+        }
+      }, {} as StateShape)
+  }
+
+  private getStateDiff = (
+    prevState: StateShape,
+    nextState: StateShape,
+  ): Partial<StateShape> => {
+    const diff = {} as StateShape
+
+    Object.entries(prevState).forEach(([_key, value]) => {
+      const key = _key as keyof StateShape
+
+      if (JSON.stringify(value) !== JSON.stringify(nextState[key])) {
+        const nextValue = nextState[key]
+        //@ts-ignore
+        diff[key] = nextValue
+      }
+    })
+
+    return diff
+  }
+
   public setState = (data: Partial<StateShape>) => {
-    const newState = {
-      ...this.localState,
+    const oldState = { ...this.localState }
+    const newState = this.undefinedToNull({
+      ...oldState,
       ...data,
-    }
+    })
+
     this.localState = newState
 
-    // this.subscribeHandlers.forEach((handler) => handler(newState))
-    eventBusInstance.dispatch('settings-changed', newState)
+    eventBusInstance.dispatch(
+      'settings-changed',
+      this.getStateDiff(oldState, newState),
+    )
 
     console.log('persisting state', newState)
     this.workspaceState.update(this.stateKey, JSON.stringify(newState))

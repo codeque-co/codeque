@@ -108,7 +108,7 @@ export function QueryEditor({
         }
       }
     } catch (e) {
-      console.log('search error', e)
+      console.error('search error', e)
     }
   }, [mode, query])
 

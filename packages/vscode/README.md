@@ -16,3 +16,14 @@ While in VSCode with extension host run `> Reload Extension` to refresh webview 
 
 To refresh extension backed re-run debugger configuration.
 
+## Publish
+
+Bump version manually in package.json
+
+And just run 
+
+`vsce publish`
+
+`vsce` will automatically run pre-publish hooks from script `vscode:prepublish` to run checks and build package
+
+You might be asked to [get new PAT](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)

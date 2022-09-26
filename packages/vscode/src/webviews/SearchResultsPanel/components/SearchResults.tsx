@@ -1,5 +1,5 @@
 import { Flex, Text, Link, Button } from '@chakra-ui/react'
-import { SearchResults, Match } from '@codeque/core'
+import { SearchResults, Match, MatchWithFileInfo } from '@codeque/core'
 import { CodeBlock } from '../../components/CodeBlock'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { eventBusInstance } from '../../../EventBus'
@@ -17,17 +17,18 @@ const highlightColorOnDark = '#366186'
 
 const matchHighlightStyle = {
   backgroundColor: highlightColorOnDark,
-  boxShadow: `0px 5px 0px ${highlightColorOnDark}, 0px -5px 0px ${highlightColorOnDark}`
+  boxShadow: `0px 5px 0px ${highlightColorOnDark}, 0px -5px 0px ${highlightColorOnDark}`,
 }
 import { useThemeType } from '../../components/useThemeType'
 import dedent from 'dedent'
+import { SearchResult } from './SearchResult'
 
 export function SearchResultsList({
   matches,
   getRelativePath,
   displayLimit,
   showAllResults,
-  extendDisplayLimit
+  extendDisplayLimit,
 }: SearchResultsListProps) {
   const openFile = (data: { filePath: string; location: Match['loc'] }) => {
     eventBusInstance.dispatch('open-file', data)
@@ -52,58 +53,14 @@ export function SearchResultsList({
   return (
     <Flex flexDir="column" mt="5" overflowY={'auto'}>
       {matches.slice(0, displayLimit).map((match) => {
-        const matchHighlight = [{ ...match.loc, style: matchHighlightStyle }]
+        const key = `${match.filePath}-${match.start}-${match.end}`
 
         return (
-          <Flex
-            key={`${match.filePath}-${match.start}-${match.end}`}
-            flexDir="column"
-            mb="4"
-            border="1px solid"
-            borderColor={
-              themeType === 'dark'
-                ? highlightTheme.plain.backgroundColor
-                : 'blue.200'
-            }
-          >
-            <Link
-              p="2"
-              onClick={() =>
-                openFile({
-                  filePath: match.filePath,
-                  location: match.loc
-                })
-              }
-              fontWeight="500"
-            >
-              <Text as="span">{getRelativePath(match.filePath)}</Text>
-              <Text as="span">:</Text>
-              <Text as="span" color="#c792ea">
-                {match.loc.start.line}
-              </Text>
-              <Text as="span">:</Text>
-              <Text as="span" color="#ffcb8b">
-                {match.loc.start.column}
-              </Text>
-            </Link>
-            <Flex
-              padding="5"
-              background={highlightTheme.plain.backgroundColor}
-              overflowX="auto"
-            >
-              <CodeBlock
-                startLineNumber={match.extendedCodeFrame?.startLine}
-                theme={highlightTheme}
-                dedent={
-                  (match.extendedCodeFrame?.startLine as number) >=
-                  match.loc.start.line
-                }
-                // customHighlight={matchHighlight}
-              >
-                {match.extendedCodeFrame?.code as string}
-              </CodeBlock>
-            </Flex>
-          </Flex>
+          <SearchResult
+            key={key}
+            match={match}
+            getRelativePath={getRelativePath}
+          />
         )
       })}
       {matches.length > displayLimit ? (

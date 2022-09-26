@@ -2,7 +2,7 @@ import githubTheme from 'prism-react-renderer/themes/github'
 import { PrismTheme } from 'prism-react-renderer'
 import nightOwlTheme from 'prism-react-renderer/themes/nightOwl'
 
-type MyPrismTheme = PrismTheme & {
+export type MyPrismTheme = PrismTheme & {
   plain: PrismTheme['plain'] & {
     backgroundColor: string
   }

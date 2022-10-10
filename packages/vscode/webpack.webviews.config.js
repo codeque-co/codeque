@@ -7,28 +7,28 @@ module.exports = {
   mode: 'none',
   entry: {
     sidebar: './src/webviews/Sidebar/index.tsx',
-    searchResultsPanel: './src/webviews/SearchResultsPanel/index.tsx'
+    searchResultsPanel: './src/webviews/SearchResultsPanel/index.tsx',
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
     path: path.resolve(__dirname, 'dist-webviews'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
   devtool: false,
   plugins: [
     new webpack.ProvidePlugin({
-      process: 'process/browser'
-    })
-  ]
+      process: 'process/browser.js',
+    }),
+  ],
 }

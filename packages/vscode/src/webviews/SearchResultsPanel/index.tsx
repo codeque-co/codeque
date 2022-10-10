@@ -14,6 +14,7 @@ import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
 import { simpleDebounce } from '../utils'
+import { Matches } from '@codeque/core'
 
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
@@ -214,6 +215,26 @@ const Panel = () => {
     }
   }, [])
 
+  const removeMatch = useCallback(
+    (filePath: string, start: number, end: number) => {
+      const currentMatches = results?.matches ?? ([] as Matches)
+      const newMatches = currentMatches.filter(
+        (match) =>
+          !(
+            match.filePath === filePath &&
+            match.start === start &&
+            match.end === end
+          ),
+      )
+
+      setResults({
+        ...results,
+        matches: newMatches,
+      } as ExtendedSearchResults)
+    },
+    [results],
+  )
+
   return (
     <Providers>
       <Flex height="98vh" flexDir="column">
@@ -241,6 +262,7 @@ const Panel = () => {
             displayLimit={displayLimit}
             extendDisplayLimit={extendDisplayLimit}
             showAllResults={showAllResults}
+            removeMatch={removeMatch}
           />
         )}
       </Flex>

@@ -1,8 +1,8 @@
-import { Flex, Text, Link, Button } from '@chakra-ui/react'
-import { SearchResults, Match, MatchWithFileInfo } from '@codeque/core'
-import { CodeBlock } from '../../components/CodeBlock'
+import { Button, Flex, Text } from '@chakra-ui/react'
+import { SearchResults } from '@codeque/core'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
-import { eventBusInstance } from '../../../EventBus'
+import { useThemeType } from '../../components/useThemeType'
+import { SearchResult } from './SearchResult'
 
 type SearchResultsListProps = {
   matches: SearchResults['matches']
@@ -10,18 +10,8 @@ type SearchResultsListProps = {
   displayLimit: number
   extendDisplayLimit: () => void
   showAllResults: () => void
+  removeMatch: (filePath: string, start: number, end: number) => void
 }
-
-const highlightColorOnLight = 'rgb(249,245,182)'
-const highlightColorOnDark = '#366186'
-
-const matchHighlightStyle = {
-  backgroundColor: highlightColorOnDark,
-  boxShadow: `0px 5px 0px ${highlightColorOnDark}, 0px -5px 0px ${highlightColorOnDark}`,
-}
-import { useThemeType } from '../../components/useThemeType'
-import dedent from 'dedent'
-import { SearchResult } from './SearchResult'
 
 export function SearchResultsList({
   matches,
@@ -29,11 +19,8 @@ export function SearchResultsList({
   displayLimit,
   showAllResults,
   extendDisplayLimit,
+  removeMatch,
 }: SearchResultsListProps) {
-  const openFile = (data: { filePath: string; location: Match['loc'] }) => {
-    eventBusInstance.dispatch('open-file', data)
-  }
-
   const themeType = useThemeType()
   const highlightTheme = themeType === 'dark' ? darkTheme : lightTheme
 
@@ -60,6 +47,7 @@ export function SearchResultsList({
             key={key}
             match={match}
             getRelativePath={getRelativePath}
+            removeMatch={removeMatch}
           />
         )
       })}

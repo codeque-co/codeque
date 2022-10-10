@@ -129,7 +129,7 @@ export function QueryEditor({
         customHighlight={queryCustomHighlight}
         maxH={'35vh'}
         border="1px solid"
-        borderColor={themeType === 'dark' ? 'transparent' : 'blue.200'}
+        borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
       />
       <Flex height="20px" alignItems="center" mt="2">
         {queryHint && (

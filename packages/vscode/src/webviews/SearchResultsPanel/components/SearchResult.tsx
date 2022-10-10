@@ -1,4 +1,4 @@
-import { Flex, Text, Link, Checkbox } from '@chakra-ui/react'
+import { Flex, Text, Link, Checkbox, Button } from '@chakra-ui/react'
 import { CodeBlock } from '../../components/CodeBlock'
 import dedent from 'dedent'
 import { MatchWithFileInfo, Match } from '@codeque/core'
@@ -10,10 +10,12 @@ import {
 import { eventBusInstance } from '../../../EventBus'
 import { useThemeType } from '../../components/useThemeType'
 import { useEffect, useState } from 'react'
+import { IoMdClose } from 'react-icons/io'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
   getRelativePath: (filePath: string) => string | undefined
+  removeMatch: (filePath: string, start: number, end: number) => void
 }
 
 const highlightColorOnLight = 'rgb(249,245,182)'
@@ -33,14 +35,18 @@ const getBorderColor = (
     return theme.plain.backgroundColor
   }
 
-  if ((isDarkTheme && isFocused) || (!isDarkTheme && !isFocused)) {
-    return 'blue.200'
+  if (!isDarkTheme && !isFocused) {
+    return 'gray.300'
   }
 
-  return 'gray.700'
+  return 'blue.200'
 }
 
-export function SearchResult({ match, getRelativePath }: SearchResultProps) {
+export function SearchResult({
+  match,
+  getRelativePath,
+  removeMatch,
+}: SearchResultProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [isChecked, setIsChecked] = useState(false)
   const [isResultFocused, setIsResultFocused] = useState(false)
@@ -83,6 +89,7 @@ export function SearchResult({ match, getRelativePath }: SearchResultProps) {
         borderColor={borderColor}
         transition="border 0.3s ease-in-out"
         backgroundColor="var(--vscode-editor-background)"
+        maxWidth="100%"
       >
         <Link
           onClick={(ev) => {
@@ -95,6 +102,13 @@ export function SearchResult({ match, getRelativePath }: SearchResultProps) {
             })
           }}
           fontWeight="500"
+          style={{
+            direction: 'rtl',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            maxWidth: '90%',
+          }}
         >
           <Text as="span">{getRelativePath(match.filePath)}</Text>
           <Text as="span">:</Text>
@@ -106,16 +120,27 @@ export function SearchResult({ match, getRelativePath }: SearchResultProps) {
             {match.loc.start.column}
           </Text>
         </Link>
+        <Flex
+          onClick={(e) => {
+            e.stopPropagation()
+            removeMatch(match.filePath, match.start, match.end)
+          }}
+          justifyContent="center"
+          alignItems="center"
+          ml="3"
+          _hover={{ background: highlightTheme.plain.backgroundColor }}
+          borderRadius="md"
+          width="18px"
+        >
+          <IoMdClose />
+        </Flex>
         <Checkbox
           ml="auto"
           isChecked={isChecked}
           onChange={(ev) => {
             const checked = ev.target.checked
             setIsChecked(checked)
-
-            if (checked) {
-              setIsExpanded(false)
-            }
+            setIsExpanded(!checked)
           }}
         />
       </Flex>
@@ -124,6 +149,9 @@ export function SearchResult({ match, getRelativePath }: SearchResultProps) {
           padding="5"
           background={highlightTheme.plain.backgroundColor}
           overflowX="auto"
+          border={themeType !== 'dark' ? '1px solid' : ''}
+          borderTopWidth={0}
+          borderColor="gray.300"
         >
           <CodeBlock
             startLineNumber={match.extendedCodeFrame?.startLine}

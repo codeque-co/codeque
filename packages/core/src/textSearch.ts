@@ -34,12 +34,19 @@ const getMatchPosition = (match: string, fileContents: string) => {
 
 const maxResultsLimit = 10000
 
+type QueryWithShallowQuery = {
+  regexpQuery: RegExp
+  shallowQuery: string[]
+}
+
 const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
   const regExpFlags = 'gm' + (caseInsensitive ? 'i' : '')
 
   if (queryCode.length === 0) {
     return null
   }
+
+  const isWildcardRegExp = /\$\$\$?m?/g
 
   let parts = queryCode
     .split(/"/g)
@@ -51,8 +58,6 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
 
     const zipParts = (parts: string[]) => {
       let result = ''
-
-      const isWildcardRegExp = /\$\$\$?m?/g
 
       for (let i = 0; i < parts.length; i++) {
         const currentPart = parts[i]
@@ -160,7 +165,18 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
     regExpFlags,
   )
 
-  return query
+  let shallowQuery = null
+  const queryStartsWithWildcard = queryCode.startsWith('$$')
+  const queryEndsWithWildcard =
+    queryCode.endsWith('$$') || queryCode.endsWith('$$m')
+  console.log(queryStartsWithWildcard, queryEndsWithWildcard)
+
+  if (queryStartsWithWildcard || queryEndsWithWildcard) {
+    const queryWithoutWildcards = queryCode.replace(isWildcardRegExp, ' ')
+    shallowQuery = queryWithoutWildcards.match(/\w+/g)
+  }
+
+  return { regexpQuery: query, shallowQuery } as QueryWithShallowQuery
 }
 
 type TextSearchArgs = FileSystemSearchArgs & {
@@ -175,7 +191,7 @@ export function textSearch({
 }: TextSearchArgs): SearchResults {
   const queries = queryCodes
     .map((queryCode) => prepareQuery(queryCode, caseInsensitive))
-    .filter(Boolean) as RegExp[]
+    .filter((query) => Boolean(query?.regexpQuery)) as QueryWithShallowQuery[]
 
   if (queries.length === 0) {
     return {
@@ -197,42 +213,49 @@ export function textSearch({
       const fileContent = getFileContent(filePath)
 
       for (const query of queries) {
-        const matches = fileContent.match(query) ?? []
-
-        let contentToMatchPosition = fileContent
-
-        const transformedMatches = matches.map((match) => {
-          const matchPositionData = getMatchPosition(
-            match,
-            contentToMatchPosition,
+        if (
+          query.shallowQuery === null ||
+          query.shallowQuery.every((subShallowQuery) =>
+            fileContent.includes(subShallowQuery),
           )
+        ) {
+          const matches = fileContent.match(query.regexpQuery) ?? []
 
-          // replace match in content to properly find the same match in the source file
-          // For multiline matches we have to keep new line chars in order to properly determine lines for subsequent matches
-          const matchGhost = match.replace(/\S/g, ' ') // replace any non-white space with a space char
+          let contentToMatchPosition = fileContent
 
-          contentToMatchPosition = contentToMatchPosition.replace(
-            match,
-            matchGhost,
-          )
+          const transformedMatches = matches.map((match) => {
+            const matchPositionData = getMatchPosition(
+              match,
+              contentToMatchPosition,
+            )
 
-          const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
-            matchPositionData,
-            fileContent,
-          )
+            // replace match in content to properly find the same match in the source file
+            // For multiline matches we have to keep new line chars in order to properly determine lines for subsequent matches
+            const matchGhost = match.replace(/\S/g, ' ') // replace any non-white space with a space char
 
-          return {
-            ...matchPositionData,
-            code: match,
-            extendedCodeFrame: {
-              code: extendedCodeFrame,
-              startLine: matchPositionData.loc.start.line + newStartLine,
-            },
-            query: query.toString(),
-            filePath,
-          }
-        })
-        allMatches.push(...transformedMatches)
+            contentToMatchPosition = contentToMatchPosition.replace(
+              match,
+              matchGhost,
+            )
+
+            const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
+              matchPositionData,
+              fileContent,
+            )
+
+            return {
+              ...matchPositionData,
+              code: match,
+              extendedCodeFrame: {
+                code: extendedCodeFrame,
+                startLine: matchPositionData.loc.start.line + newStartLine,
+              },
+              query: query.toString(),
+              filePath,
+            }
+          })
+          allMatches.push(...transformedMatches)
+        }
       }
     } catch (e) {
       searchErrors.push(e)

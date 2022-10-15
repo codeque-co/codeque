@@ -171,4 +171,24 @@ describe('Text search mode', () => {
 
     expect(matches).toHaveLength(1)
   })
+
+  it('Should match with wildcard on start of query', () => {
+    const { matches } = searchInFileSystem({
+      queryCodes: [`$$$m<  Avatar.Text`],
+      filePaths: filesList,
+      mode: 'text',
+    })
+
+    expect(matches).toHaveLength(4)
+  })
+
+  it('Should match with wildcard on end of query', () => {
+    const { matches } = searchInFileSystem({
+      queryCodes: [`<  Avatar.Text$$$m`],
+      filePaths: filesList,
+      mode: 'text',
+    })
+
+    expect(matches).toHaveLength(4)
+  })
 })

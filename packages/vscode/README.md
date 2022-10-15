@@ -6,6 +6,11 @@ It's pre-release, Readme will be updated later :)
 
 For more information visit [codeque.co](http://codeque.co) website
 
+Apart from all search features provided by CodeQue core, VScode extension offers a handy UI for managing search results.
+Search results can be removed, collapsed or marked as done making it easy to iterate over long list of matches.
+
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/CodeQue-vscode.png"/>
+
 ## Development
 
 Run `yarn watch:extension` and `yarn watch:webviews`

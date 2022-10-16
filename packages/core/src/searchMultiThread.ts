@@ -1,16 +1,28 @@
 import { cpus } from 'os'
 import { Worker } from 'worker_threads'
-import type { FileSystemSearchArgs, SearchResults } from './types'
+import {
+  FileSystemSearchArgs,
+  SearchResults,
+  WorkerOutboundMessage,
+  SearchWorkerData,
+  HardStopFlag,
+} from './types'
 
 const coresCount = Math.round(cpus().length / 2)
 
 export const searchMultiThread = async ({
   filePaths,
+  onPartialResult,
+  hardStopFlag,
+  maxResultsLimit,
   ...params
-}: FileSystemSearchArgs) => {
+}: FileSystemSearchArgs & { hardStopFlag?: HardStopFlag }) => {
   const tasks = []
   const chunksCount = params.mode === 'text' ? 1 : coresCount
   const chunkSize = Math.round(filePaths.length / chunksCount)
+  const maxResultsPerChunk = maxResultsLimit
+    ? Math.round(maxResultsLimit / chunksCount)
+    : undefined
 
   for (let i = 0; i < chunksCount; i++) {
     const startIndex = i * chunkSize
@@ -21,14 +33,34 @@ export const searchMultiThread = async ({
         workerData: {
           ...params,
           filePaths: filePathsSlice,
-        },
+          reportEachMatch: onPartialResult !== undefined,
+          maxResultsLimit: maxResultsPerChunk,
+        } as SearchWorkerData,
       })
-      worker.on('message', resolve)
+      worker.postMessage({ type: 'TEST_MSG' })
+
+      if (hardStopFlag) {
+        hardStopFlag.addStopListener(async () => {
+          await worker.terminate()
+
+          resolve({ errors: [], matches: [], hints: [] })
+        })
+      }
+
+      worker.on('message', (message: WorkerOutboundMessage) => {
+        if (message.type === 'PARTIAL_RESULT') {
+          onPartialResult?.(message.data)
+        } else {
+          resolve(message.data)
+        }
+      })
+
       worker.on('error', reject)
 
       worker.on('exit', (code) => {
-        if (code !== 0)
+        if (code !== 0 && !hardStopFlag?.stopSearch) {
           reject(new Error(`Worker stopped with exit code ${code}`))
+        }
       })
     })
 

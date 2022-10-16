@@ -2,6 +2,12 @@ import { StateShape } from './StateManager'
 import { Match } from '@codeque/core'
 import { ExtendedSearchResults } from './types'
 
+type ResultsEventData = {
+  results: ExtendedSearchResults
+  time: number
+  files: string[]
+}
+
 type EventTypes = {
   'sidebar-panel-opened': null
   'results-panel-opened': null
@@ -16,13 +22,11 @@ type EventTypes = {
   'open-search-from-selection': null
   'start-search': null
   'search-started': null
-  'have-results': {
-    results: ExtendedSearchResults
-    time: number
-    files: string[]
-  }
+  'have-results': ResultsEventData
+  'have-partial-results': ResultsEventData
   'settings-changed': Partial<StateShape>
   'set-query': string | null
+  'stop-search': null
 }
 
 type EventObjectTypes<T extends keyof EventTypes> = {
@@ -53,6 +57,8 @@ export class EventBus {
     'start-search': [],
     'search-started': [],
     'have-results': [],
+    'have-partial-results': [],
+    'stop-search': [],
   }
   public env = 'extension'
 

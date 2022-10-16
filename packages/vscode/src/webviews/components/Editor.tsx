@@ -70,7 +70,7 @@ export function Editor({
             minHeight: '100%',
             whiteSpace: 'pre',
             overflow: 'initial',
-            float: 'left'
+            float: 'left',
           }}
           textareaClassName={customTextAreaCn}
         />

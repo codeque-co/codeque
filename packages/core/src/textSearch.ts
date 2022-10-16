@@ -1,5 +1,5 @@
 import { getExtendedCodeFrame } from './utils'
-import { FileSystemSearchArgs, SearchResults } from './types'
+import { FileSystemSearchArgs, SearchResults, Matches } from './types'
 
 // We process '$' separately
 const nonIdentifierOrKeyword = /([^\w\s$])/
@@ -31,8 +31,6 @@ const getMatchPosition = (match: string, fileContents: string) => {
     },
   }
 }
-
-const maxResultsLimit = 10000
 
 type QueryWithShallowQuery = {
   regexpQuery: RegExp
@@ -169,7 +167,6 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
   const queryStartsWithWildcard = queryCode.startsWith('$$')
   const queryEndsWithWildcard =
     queryCode.endsWith('$$') || queryCode.endsWith('$$m')
-  console.log(queryStartsWithWildcard, queryEndsWithWildcard)
 
   if (queryStartsWithWildcard || queryEndsWithWildcard) {
     const queryWithoutWildcards = queryCode.replace(isWildcardRegExp, ' ')
@@ -181,6 +178,8 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
 
 type TextSearchArgs = FileSystemSearchArgs & {
   getFileContent: (filePath: string) => string
+  onPartialResult?: (matches: Matches) => void
+  maxResultsLimit?: number
 }
 
 export function textSearch({
@@ -188,6 +187,8 @@ export function textSearch({
   filePaths,
   caseInsensitive,
   getFileContent,
+  onPartialResult,
+  maxResultsLimit,
 }: TextSearchArgs): SearchResults {
   const queries = queryCodes
     .map((queryCode) => prepareQuery(queryCode, caseInsensitive))
@@ -205,7 +206,7 @@ export function textSearch({
   const allMatches = []
 
   for (const filePath of filePaths) {
-    if (allMatches.length > maxResultsLimit) {
+    if (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) {
       break
     }
 
@@ -254,6 +255,11 @@ export function textSearch({
               filePath,
             }
           })
+
+          if (onPartialResult && transformedMatches.length > 0) {
+            onPartialResult(transformedMatches)
+          }
+
           allMatches.push(...transformedMatches)
         }
       }

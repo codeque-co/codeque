@@ -75,8 +75,32 @@ const Panel = () => {
     setNextSearchIsFromSelection(false)
   }, [])
 
+  const handlePartialResults = useCallback((data: ResultsObj) => {
+    setResults((partialResults) => ({
+      matches: [...(partialResults?.matches ?? []), ...data.results.matches],
+      relativePathsMap: {
+        ...partialResults?.relativePathsMap,
+        ...data.results.relativePathsMap,
+      },
+      groupedMatches: {},
+      hints: [],
+      errors: [],
+    }))
+
+    setFilesList((partialFilesList) => [
+      ...(partialFilesList ?? []),
+      ...data.files,
+    ])
+
+    setTime(data.time)
+    setDisplayLimit(defaultDisplayLimit)
+    setNextSearchIsFromSelection(false)
+  }, [])
+
   const handleSearchStart = useCallback(() => {
     setIsLoading(true)
+    setResults(undefined)
+    setFilesList([])
   }, [])
 
   const startSearch = useCallback(
@@ -139,6 +163,17 @@ const Panel = () => {
       eventBusInstance.removeListener('have-results', handleResults)
     }
   }, [handleResults])
+
+  useEffect(() => {
+    eventBusInstance.addListener('have-partial-results', handlePartialResults)
+
+    return () => {
+      eventBusInstance.removeListener(
+        'have-partial-results',
+        handlePartialResults,
+      )
+    }
+  }, [handlePartialResults])
 
   useEffect(() => {
     const setNextSearchFromSelection = () => {
@@ -235,6 +270,10 @@ const Panel = () => {
     [results],
   )
 
+  const stopSearch = useCallback(() => {
+    eventBusInstance.dispatch('stop-search')
+  }, [])
+
   return (
     <Providers>
       <Flex height="98vh" flexDir="column">
@@ -252,19 +291,19 @@ const Panel = () => {
           filesCount={filesList?.length}
           matchesCount={results?.matches?.length}
           matchedFilesCount={matchedFilesCount}
+          searchInProgress={isLoading}
+          stopSearch={stopSearch}
         />
-        {isLoading ? (
-          <Spinner margin="auto" />
-        ) : (
-          <SearchResultsList
-            matches={results?.matches ?? []}
-            getRelativePath={getRelativePath}
-            displayLimit={displayLimit}
-            extendDisplayLimit={extendDisplayLimit}
-            showAllResults={showAllResults}
-            removeMatch={removeMatch}
-          />
-        )}
+
+        <SearchResultsList
+          isLoading={isLoading}
+          matches={results?.matches ?? []}
+          getRelativePath={getRelativePath}
+          displayLimit={displayLimit}
+          extendDisplayLimit={extendDisplayLimit}
+          showAllResults={showAllResults}
+          removeMatch={removeMatch}
+        />
       </Flex>
     </Providers>
   )

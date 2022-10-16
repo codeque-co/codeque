@@ -9,6 +9,7 @@ import { spawnSync } from 'child_process'
 
 //@ts-ignore
 import escapeGlob from 'glob-escape'
+import { HardStopFlag } from './types'
 
 const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
 
@@ -126,6 +127,17 @@ export const filterIncludeExclude = ({
     .map((p) => path.join(searchRoot, p))
 }
 
+type GetFilesListArgs = {
+  searchRoot: string
+  entryPoint?: string
+  byGitChanges?: boolean
+  omitGitIgnore?: boolean
+  ignoreNodeModules?: boolean
+  exclude?: string[]
+  include?: string[]
+  hardStopFlag?: HardStopFlag
+}
+
 export const getFilesList = async ({
   searchRoot,
   entryPoint = undefined,
@@ -134,15 +146,8 @@ export const getFilesList = async ({
   ignoreNodeModules = true,
   exclude = [],
   include = undefined,
-}: {
-  searchRoot: string
-  entryPoint?: string
-  byGitChanges?: boolean
-  omitGitIgnore?: boolean
-  ignoreNodeModules?: boolean
-  exclude?: string[]
-  include?: string[]
-}) => {
+  hardStopFlag,
+}: GetFilesListArgs) => {
   const measureStop = measureStart('getFiles')
   let filesList: string[] = []
 
@@ -186,6 +191,10 @@ export const getFilesList = async ({
       dir: string,
       parentIgnore: string[],
     ): Promise<string[]> => {
+      if (hardStopFlag?.stopSearch) {
+        return []
+      }
+
       const localIgnore = [...parentIgnore]
 
       if (!omitGitIgnore) {

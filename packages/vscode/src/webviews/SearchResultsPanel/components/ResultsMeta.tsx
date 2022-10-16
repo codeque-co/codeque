@@ -1,17 +1,24 @@
 import { Button, Flex, Text } from '@chakra-ui/react'
 type ResultsMetaProps = {
-  time: number | undefined
-  filesCount: number | undefined
-  matchesCount: number | undefined
-  matchedFilesCount: number | undefined
+  time: number | string | undefined
+  filesCount: number | string | undefined
+  matchesCount: number | string | undefined
+  matchedFilesCount: number | string | undefined
   startSearch: (useSelectionIfAvailable: boolean) => void
+  searchInProgress: boolean
+  stopSearch: () => void
 }
+
+const noValue = 'n/a'
+
 export function ResultsMeta({
-  time,
-  filesCount,
-  matchesCount,
-  matchedFilesCount,
+  time = noValue,
+  filesCount = noValue,
+  matchesCount = noValue,
+  matchedFilesCount = noValue,
   startSearch,
+  searchInProgress,
+  stopSearch,
 }: ResultsMetaProps) {
   return (
     <Flex mb="4" alignItems="center">
@@ -37,13 +44,19 @@ export function ResultsMeta({
       )}
 
       <Button
-        onClick={() => startSearch(true)}
+        onClick={() => {
+          if (searchInProgress) {
+            stopSearch()
+          } else {
+            startSearch(true)
+          }
+        }}
         size="sm"
         width="100px"
         marginLeft="auto"
         colorScheme="blue"
       >
-        Search!
+        {searchInProgress ? 'Stop' : 'Search!'}
       </Button>
     </Flex>
   )

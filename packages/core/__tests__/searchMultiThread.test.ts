@@ -53,3 +53,57 @@ it('should search using multiple threads and give the same matches count as sing
 
   expect(compareResults).toBeTruthy()
 })
+
+it('Should report each match separately for structural search', async () => {
+  const filesList = await getFilesList({
+    searchRoot: path.resolve(__dirname, 'search', '__fixtures__'),
+    omitGitIgnore: true,
+  })
+
+  const query = `
+    () => $$$
+  `
+
+  const onPartialResultMock = jest.fn()
+
+  const { matches } = await searchMultiThread({
+    mode: 'exact',
+    filePaths: filesList,
+    queryCodes: [query],
+    onPartialResult: onPartialResultMock,
+  })
+
+  const countOfResultsFromPartialReport = onPartialResultMock.mock.calls.reduce(
+    (count, [partialResults]) => count + partialResults.length,
+    0,
+  )
+
+  expect(countOfResultsFromPartialReport).toBe(matches.length)
+})
+
+it('Should report each match separately for structural search', async () => {
+  const filesList = await getFilesList({
+    searchRoot: path.resolve(__dirname, 'search', '__fixtures__'),
+    omitGitIgnore: true,
+  })
+
+  const query = `
+    () => $$$
+  `
+
+  const onPartialResultMock = jest.fn()
+
+  const { matches } = await searchMultiThread({
+    mode: 'text',
+    filePaths: filesList,
+    queryCodes: [query],
+    onPartialResult: onPartialResultMock,
+  })
+
+  const countOfResultsFromPartialReport = onPartialResultMock.mock.calls.reduce(
+    (count, [partialResults]) => count + partialResults.length,
+    0,
+  )
+
+  expect(countOfResultsFromPartialReport).toBe(matches.length)
+})

@@ -31,12 +31,20 @@ export type PoorNodeType = {
   [key: string]: string | number | boolean | PoorNodeType[] | PoorNodeType
 }
 
+export type HardStopFlag = {
+  stopSearch: boolean
+  addStopListener: (listener: () => void) => void
+  destroy: () => void
+}
+
 export type FileSystemSearchArgs = {
   filePaths: string[]
   queryCodes: string[]
   mode: Mode
   caseInsensitive?: boolean
   debug?: boolean
+  onPartialResult?: (matches: Matches) => void
+  maxResultsLimit?: number
 }
 
 export type SearchResults = {
@@ -51,4 +59,18 @@ export type Hint = {
     content: string
     type: 'text' | 'code'
   }>
+}
+
+export type WorkerOutboundMessage =
+  | {
+      type: 'ALL_RESULTS'
+      data: SearchResults
+    }
+  | {
+      type: 'PARTIAL_RESULT'
+      data: Matches
+    }
+
+export type SearchWorkerData = FileSystemSearchArgs & {
+  reportEachMatch: boolean
 }

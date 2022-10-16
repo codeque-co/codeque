@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react'
+import { Button, Flex, Text, Spinner } from '@chakra-ui/react'
 import { SearchResults } from '@codeque/core'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { useThemeType } from '../../components/useThemeType'
@@ -11,6 +11,7 @@ type SearchResultsListProps = {
   extendDisplayLimit: () => void
   showAllResults: () => void
   removeMatch: (filePath: string, start: number, end: number) => void
+  isLoading: boolean
 }
 
 export function SearchResultsList({
@@ -20,6 +21,7 @@ export function SearchResultsList({
   showAllResults,
   extendDisplayLimit,
   removeMatch,
+  isLoading,
 }: SearchResultsListProps) {
   const themeType = useThemeType()
   const highlightTheme = themeType === 'dark' ? darkTheme : lightTheme
@@ -32,7 +34,7 @@ export function SearchResultsList({
         justifyContent="center"
         alignItems="center"
       >
-        <Text>No results found</Text>
+        {isLoading ? <Spinner margin="auto" /> : <Text>No results found</Text>}
       </Flex>
     )
   }
@@ -61,6 +63,7 @@ export function SearchResultsList({
           </Button>
         </Flex>
       ) : null}
+      {isLoading ? <Spinner margin="auto" /> : null}
     </Flex>
   )
 }

@@ -93,7 +93,7 @@ describe('Utils', () => {
       const expectedCodeFrame = "import a from 'b';" + '\n'
 
       expect(getExtendedCodeFrame({ start, end }, code)[0]).toBe(
-        expectedCodeFrame
+        expectedCodeFrame,
       )
     })
 
@@ -119,7 +119,7 @@ describe('Utils', () => {
       `
 
       expect(getExtendedCodeFrame({ start, end }, code)[0]).toBe(
-        expectedCodeFrame
+        expectedCodeFrame,
       )
     })
 
@@ -141,7 +141,7 @@ describe('Utils', () => {
       const expectedCodeFrame = '\n' + "const zzz = 'zzz'"
 
       expect(getExtendedCodeFrame({ start, end }, code)[0]).toBe(
-        expectedCodeFrame
+        expectedCodeFrame,
       )
     })
 
@@ -168,7 +168,7 @@ describe('Utils', () => {
       `
 
       expect(getExtendedCodeFrame({ start, end }, code)[0]).toBe(
-        expectedCodeFrame
+        expectedCodeFrame,
       )
     })
 
@@ -197,7 +197,7 @@ describe('Utils', () => {
       `
 
       expect(getExtendedCodeFrame({ start, end }, code)[0]).toBe(
-        expectedCodeFrame
+        expectedCodeFrame,
       )
     })
   })

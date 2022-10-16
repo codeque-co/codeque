@@ -49,8 +49,6 @@ export class StateManager {
       ...this.defaultState,
       ...savedStateParsed,
     }
-
-    console.log('restored state', this.localState)
   }
 
   private undefinedToNull = (state: StateShape) => {
@@ -97,7 +95,6 @@ export class StateManager {
       this.getStateDiff(oldState, newState),
     )
 
-    console.log('persisting state', newState)
     this.workspaceState.update(this.stateKey, JSON.stringify(newState))
   }
 

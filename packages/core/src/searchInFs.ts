@@ -12,6 +12,8 @@ export const searchInFileSystem = ({
   queryCodes,
   caseInsensitive = false,
   debug = false,
+  onPartialResult,
+  maxResultsLimit,
 }: FileSystemSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
@@ -25,6 +27,8 @@ export const searchInFileSystem = ({
       mode,
       queryCodes,
       caseInsensitive,
+      onPartialResult,
+      maxResultsLimit,
     })
   }
 
@@ -59,6 +63,10 @@ export const searchInFileSystem = ({
   )
 
   for (const filePath of filePaths) {
+    if (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) {
+      break
+    }
+
     try {
       log('Parse file')
       const measureReadFile = measureStart('readFile')
@@ -72,11 +80,16 @@ export const searchInFileSystem = ({
         fileContent,
         ...settings,
       })
+      const dedupedFileMatches = dedupMatches(fileMatches, log, debug)
 
-      allMatches.push(...fileMatches)
+      if (onPartialResult && dedupedFileMatches.length > 0) {
+        onPartialResult(dedupedFileMatches)
+      }
 
-      if (fileMatches.length > 0) {
-        log(filePath, 'matches', fileMatches)
+      allMatches.push(...dedupedFileMatches)
+
+      if (dedupedFileMatches.length > 0) {
+        log(filePath, 'matches', dedupedFileMatches)
 
         if (debug) {
           break
@@ -93,7 +106,7 @@ export const searchInFileSystem = ({
   }
 
   return {
-    matches: dedupMatches(allMatches, log, debug),
+    matches: allMatches,
     errors: searchErrors,
     hints: queries.map(({ hints }) => hints),
   }

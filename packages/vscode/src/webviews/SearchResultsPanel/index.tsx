@@ -242,11 +242,16 @@ const Panel = () => {
 
     document.addEventListener('selectionchange', handleSelectionChangeDebounced)
 
+    // For some reason selectionchange event is not fired if we remove selected text using `backspace`, `delete`, `ctrl+x`
+    document.addEventListener('keyup', handleSelectionChangeDebounced)
+
     return () => {
       document.removeEventListener(
         'selectionchange',
         handleSelectionChangeDebounced,
       )
+
+      document.removeEventListener('keypress', handleSelectionChangeDebounced)
     }
   }, [])
 

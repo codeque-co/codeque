@@ -83,7 +83,7 @@ export const searchInStrings = ({
         }
       }
     } catch (e) {
-      searchErrors.push(e)
+      searchErrors.push((e as Error).message)
 
       if (debug) {
         console.error(file.path, e)

@@ -13,7 +13,7 @@ import { Flex, Spinner } from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
-import { simpleDebounce } from '../utils'
+import { simpleDebounce } from '../../utils'
 import { Matches } from '@codeque/core'
 
 //@ts-ignore - Add typings
@@ -295,6 +295,7 @@ const Panel = () => {
           startSearch={startSearch}
           filesCount={filesList?.length}
           matchesCount={results?.matches?.length}
+          errors={results?.errors}
           matchedFilesCount={matchedFilesCount}
           searchInProgress={isLoading}
           stopSearch={stopSearch}

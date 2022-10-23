@@ -47,10 +47,24 @@ export type FileSystemSearchArgs = {
   maxResultsLimit?: number
 }
 
+export type ParseError = {
+  text: string
+  location?: Position
+  code?: string
+  reasonCode?: string
+}
+
+export type ParsedQuery = {
+  queryNode: PoorNodeType
+  uniqueTokens: string[]
+  hints: Hint[]
+  error: ParseError | null
+}
+
 export type SearchResults = {
   matches: Matches
   hints: Hint[][] // array of hints for each query
-  errors: Array<any>
+  errors: Array<{ filePath: string; error: string } | ParsedQuery | string>
 }
 
 export type Hint = {

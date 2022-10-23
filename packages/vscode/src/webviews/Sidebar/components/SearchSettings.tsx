@@ -16,7 +16,7 @@ import { eventBusInstance } from '../../../EventBus'
 import { StateShape } from '../../../StateManager'
 import { CaseType } from '../../../types'
 import { reactSelectStyles } from '../../components/reactSelectStyles'
-import { simpleDebounce } from '../../utils'
+import { simpleDebounce } from '../../../utils'
 
 type SearchSettingsProps = {
   initialSettings: StateShape

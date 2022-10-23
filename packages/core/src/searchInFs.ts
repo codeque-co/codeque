@@ -96,7 +96,10 @@ export const searchInFileSystem = ({
         }
       }
     } catch (e) {
-      searchErrors.push(e)
+      searchErrors.push({
+        filePath,
+        error: (e as { message: string })?.message,
+      })
 
       if (debug) {
         console.error(filePath, e)

@@ -14,7 +14,7 @@ import {
   anyStringWildcardRegExp,
   SPACE_CHAR,
 } from './astUtils'
-import { Hint, PoorNodeType, Position } from './types'
+import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
 import { wildcardChar, disallowedWildcardRegExp } from './astUtils'
 
@@ -86,9 +86,9 @@ const getUniqueTokens = (
     const nodeVal = queryNode[key]
 
     if (isNodeArray(nodeVal as PoorNodeType[])) {
-      ;(nodeVal as PoorNodeType[]).forEach((node) =>
-        getUniqueTokens(node, caseInsensitive, tokens),
-      )
+      const _nodeVal = nodeVal as PoorNodeType[]
+
+      _nodeVal.forEach((node) => getUniqueTokens(node, caseInsensitive, tokens))
     } else {
       getUniqueTokens(nodeVal as PoorNodeType, caseInsensitive, tokens)
     }
@@ -99,20 +99,6 @@ const getUniqueTokens = (
 
 const extractQueryNode = (fileNode: PoorNodeType) => {
   return unwrapExpressionStatement(getBody(fileNode)[0])
-}
-
-type ParseError = {
-  text: string
-  location?: Position
-  code?: string
-  reasonCode?: string
-}
-
-export type ParsedQuery = {
-  queryNode: PoorNodeType
-  uniqueTokens: string[]
-  hints: Hint[]
-  error: ParseError | null
 }
 
 const getHints = (queryCode: string, error?: ParseError | null) => {

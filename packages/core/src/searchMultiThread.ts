@@ -37,7 +37,6 @@ export const searchMultiThread = async ({
           maxResultsLimit: maxResultsPerChunk,
         } as SearchWorkerData,
       })
-      worker.postMessage({ type: 'TEST_MSG' })
 
       if (hardStopFlag) {
         hardStopFlag.addStopListener(async () => {
@@ -69,7 +68,7 @@ export const searchMultiThread = async ({
 
   const result = await Promise.all(tasks)
 
-  return result.reduce(
+  const mergedResults = result.reduce(
     (allResults, partialResult) => {
       return {
         matches: [...allResults.matches, ...partialResult.matches],
@@ -83,4 +82,6 @@ export const searchMultiThread = async ({
       hints: [],
     },
   )
+
+  return mergedResults
 }

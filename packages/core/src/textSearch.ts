@@ -264,7 +264,7 @@ export function textSearch({
         }
       }
     } catch (e) {
-      searchErrors.push(e)
+      searchErrors.push((e as Error).message)
     }
   }
 

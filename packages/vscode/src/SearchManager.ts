@@ -6,29 +6,96 @@ import {
   SearchResults,
   HardStopFlag,
   createHardStopFlag,
+  filterIncludeExclude,
 } from '@codeque/core'
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape } from './StateManager'
+import { simpleDebounce } from './utils'
 export class SearchManager {
   private root: string | undefined
   private searchRunning = false
   private currentSearchHardStopFlag: HardStopFlag | undefined
   private currentFilesGetHardStopFlag: HardStopFlag | undefined
   private maxResultsLimit = 10000
+  private filesListState = {
+    isWatching: false,
+    state: 'idle' as 'idle' | 'processing' | 'error' | 'ready',
+    list: [] as string[],
+    watcher: null as vscode.FileSystemWatcher | null,
+  }
+  private lastSearchSettings: StateShape | undefined
 
   constructor(private readonly stateManager: StateManager) {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
 
     this.root = this.getRoot()
+    this.maybeStartWatchingFilesList()
   }
 
   private getRoot() {
     return vscode.workspace.workspaceFolders?.[0] !== undefined
       ? vscode.workspace.workspaceFolders[0].uri.path
       : undefined
+  }
+
+  private async getFilesListForBasicSearch() {
+    this.filesListState.state = 'processing'
+    const lastSearchSettings = this.lastSearchSettings
+
+    if (this.root && lastSearchSettings !== undefined) {
+      if (
+        !lastSearchSettings.searchIgnoredFiles &&
+        !lastSearchSettings.searchNodeModules &&
+        !lastSearchSettings.entryPoint
+      ) {
+        try {
+          this.filesListState.list = await getFilesList({
+            searchRoot: this.root,
+            ignoreNodeModules: true,
+            omitGitIgnore: false,
+          })
+
+          this.filesListState.state = 'ready'
+
+          return
+        } catch (e) {
+          this.filesListState.state = 'error'
+
+          vscode.window.showErrorMessage(
+            'Search error: Failed to get files list: ' + (e as Error)?.message,
+          )
+
+          return
+        }
+      }
+    }
+
+    this.filesListState.state = 'idle'
+  }
+
+  private maybeStartWatchingFilesList() {
+    if (this.root && !this.filesListState.isWatching) {
+      this.filesListState.isWatching = true
+
+      this.filesListState.watcher = vscode.workspace.createFileSystemWatcher(
+        // It's fine to watch everything, as it do not include node_modules by default
+        new vscode.RelativePattern(this.root, '**'),
+        false,
+        true,
+        false,
+      )
+
+      const handleFileChangeDebounced = simpleDebounce(
+        () => this.getFilesListForBasicSearch(),
+        100,
+      )
+
+      this.filesListState.watcher.onDidCreate(handleFileChangeDebounced)
+      this.filesListState.watcher.onDidDelete(handleFileChangeDebounced)
+    }
   }
 
   private startSearch = () => {
@@ -65,8 +132,11 @@ export class SearchManager {
   }
 
   public performSearch = async (settings: StateShape) => {
+    this.lastSearchSettings = settings
+
     if (this.root === undefined) {
       this.root = this.getRoot()
+      this.maybeStartWatchingFilesList()
     }
 
     const searchStart = Date.now()
@@ -82,16 +152,34 @@ export class SearchManager {
           this.searchRunning = true
           eventBusInstance.dispatch('search-started')
 
-          files = await getFilesList({
-            searchRoot: this.root,
-            ignoreNodeModules: !settings.searchNodeModules,
-            omitGitIgnore: settings.searchIgnoredFiles,
-            include:
-              settings.include?.length > 0 ? settings.include : undefined,
-            exclude: settings.exclude,
-            entryPoint: settings.entryPoint ?? undefined,
-            hardStopFlag: this.currentFilesGetHardStopFlag,
-          })
+          if (
+            !settings.searchIgnoredFiles &&
+            !settings.searchNodeModules &&
+            !settings.entryPoint
+          ) {
+            if (this.filesListState.state === 'idle') {
+              await this.getFilesListForBasicSearch()
+            }
+
+            files = filterIncludeExclude({
+              searchRoot: this.root,
+              filesList: this.filesListState.list,
+              exclude: settings.exclude,
+              include:
+                settings.include?.length > 0 ? settings.include : undefined,
+            })
+          } else {
+            files = await getFilesList({
+              searchRoot: this.root,
+              ignoreNodeModules: !settings.searchNodeModules,
+              omitGitIgnore: settings.searchIgnoredFiles,
+              include:
+                settings.include?.length > 0 ? settings.include : undefined,
+              exclude: settings.exclude,
+              entryPoint: settings.entryPoint ?? undefined,
+              hardStopFlag: this.currentFilesGetHardStopFlag,
+            })
+          }
 
           const getFilesEnd = Date.now()
 
@@ -197,5 +285,10 @@ export class SearchManager {
 
       this.searchRunning = false
     }
+  }
+  public dispose() {
+    this.filesListState.watcher?.dispose()
+    eventBusInstance.removeListener('start-search', this.startSearch)
+    eventBusInstance.removeListener('stop-search', this.stopCurrentSearch)
   }
 }

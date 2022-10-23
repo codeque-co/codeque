@@ -4,6 +4,9 @@ import { SearchResultsPanel } from './SearchResultsPanel'
 import { StateManager } from './StateManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
+import { SearchManager } from './SearchManager'
+
+let dispose = (() => undefined) as () => void
 
 export function activate(context: vscode.ExtensionContext) {
   const { extensionUri } = context
@@ -30,13 +33,9 @@ export function activate(context: vscode.ExtensionContext) {
     stateManager,
   )
 
-  try {
-    const { SearchManager } = require('./SearchManager.ts')
-    const searchManager = new SearchManager(stateManager)
-  } catch (e: any) {
-    vscode.window.showErrorMessage('Failed create search manager ' + e.message)
-  }
+  const searchManager = new SearchManager(stateManager)
 
+  dispose = searchManager.dispose
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
   )
@@ -104,5 +103,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+  dispose()
   void 0
 }

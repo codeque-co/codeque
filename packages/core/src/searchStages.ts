@@ -19,9 +19,8 @@ import {
   anyStringWildcardRegExp,
 } from './astUtils'
 import { getExtendedCodeFrame } from './utils'
-import { ParsedQuery } from './parseQuery'
 import { Logger } from './logger'
-import { Match, Matches, Mode, PoorNodeType } from './types'
+import { Match, Matches, Mode, PoorNodeType, ParsedQuery } from './types'
 
 export const dedupMatches = (
   matches: Matches,

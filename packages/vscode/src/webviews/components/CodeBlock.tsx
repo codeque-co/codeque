@@ -22,7 +22,7 @@ export function CodeBlock({
         ...theme.plain,
         whiteSpace: 'pre',
         fontFamily: 'SFMono-Regular,Menlo,Monaco,Consolas,monospace', // taken from chakra defaults
-        display: isMultiLine ? 'block' : 'inline'
+        display: isMultiLine ? 'block' : 'inline',
       }}
     >
       <Highlight theme={theme} highlight={highlight} {...props}>

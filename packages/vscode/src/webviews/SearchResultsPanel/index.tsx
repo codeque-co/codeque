@@ -229,7 +229,13 @@ const Panel = () => {
 
   useEffect(() => {
     const handleSelectionChangeDebounced = simpleDebounce(() => {
-      const text = window?.getSelection()?.toString() ?? null
+      let text = window?.getSelection()?.toString() ?? null
+
+      // Remove line numbers (unfortunately) selected from search result
+      if (text !== null) {
+        const lines = text.split(/\n/)
+        text = lines.map((line) => line.replace(/^(\d)+/, '')).join('\n')
+      }
 
       if (text !== selectedText.current) {
         selectedText.current = text

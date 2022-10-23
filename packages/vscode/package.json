@@ -101,6 +101,7 @@
 		"@emotion/styled": "^11.9.3",
 		"@types/react": "^18.0.15",
 		"@types/react-dom": "^18.0.6",
+		"copy-to-clipboard": "^3.3.2",
 		"dedent": "^0.7.0",
 		"framer-motion": "^6.5.1",
 		"prism-react-renderer": "^1.3.5",

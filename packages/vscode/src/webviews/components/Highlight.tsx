@@ -32,7 +32,7 @@ export function Highlight({
   theme = darkTheme,
   customHighlight,
   highlight,
-  startLineNumber
+  startLineNumber,
 }: HighlightProps) {
   const safeStartLineNumber = startLineNumber ?? 0
 
@@ -87,7 +87,7 @@ export function Highlight({
                       width:
                         (tokens.length + showLineNumber).toString().length * 8 +
                         10 +
-                        'px'
+                        'px',
                     }}
                   >
                     {showLineNumber}
@@ -142,7 +142,7 @@ export function Highlight({
                             lineCurrentChar + token.content.length <= endCol)
                         )
                       }
-                    }
+                    },
                   )?.style
 
                   lineCurrentChar += token.content.length
@@ -154,9 +154,9 @@ export function Highlight({
                           const props = customGetTokenProps(
                             {
                               token: splitToken,
-                              key: `${key}.${i}`
+                              key: `${key}.${i}`,
                             },
-                            getTokenProps
+                            getTokenProps,
                           )
 
                           return (
@@ -172,7 +172,7 @@ export function Highlight({
 
                   const props = customGetTokenProps(
                     { token: token, key: key },
-                    getTokenProps
+                    getTokenProps,
                   )
 
                   return (
@@ -205,18 +205,18 @@ const maybeSplitJSXToken = (token: Token) => {
 
     tokens.push({
       types: ['plain-text'],
-      content: initialWhitespace
+      content: initialWhitespace,
     })
 
     if (trimmed.includes('</')) {
       tokens.push({
         types: ['tag', 'punctuation'],
-        content: '</'
+        content: '</',
       })
     } else if (trimmed.includes('<')) {
       tokens.push({
         types: ['tag', 'punctuation'],
-        content: '<'
+        content: '<',
       })
     }
 
@@ -224,18 +224,18 @@ const maybeSplitJSXToken = (token: Token) => {
 
     tokens.push({
       types: ['tag', 'class-name'],
-      content: trimmed.match(identifierMatcher)?.[0] as string
+      content: trimmed.match(identifierMatcher)?.[0] as string,
     })
 
     if (trimmed.includes('/>')) {
       tokens.push({
         types: ['tag', 'punctuation'],
-        content: '/>'
+        content: '/>',
       })
     } else if (trimmed.includes('>')) {
       tokens.push({
         types: ['tag', 'punctuation'],
-        content: '>'
+        content: '>',
       })
     }
 
@@ -250,10 +250,10 @@ const customGetTokenProps = (
   defaultGetTokenProps: (input: { token: Token; key: number }) => {
     children: React.ReactNode
     style?: Record<string, unknown>
-  }
+  },
 ) => {
   const defaultProps = defaultGetTokenProps(
-    input as { token: Token; key: number }
+    input as { token: Token; key: number },
   )
 
   let isWildcard = false
@@ -273,9 +273,9 @@ const customGetTokenProps = (
       ...(isWildcard
         ? {
             color: codeRed,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }
-        : {})
-    }
+        : {}),
+    },
   }
 }

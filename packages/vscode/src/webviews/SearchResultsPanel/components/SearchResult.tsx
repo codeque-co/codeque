@@ -1,16 +1,26 @@
-import { Flex, Text, Link, Checkbox, Button } from '@chakra-ui/react'
+import {
+  Checkbox,
+  Flex,
+  IconButton,
+  Link,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react'
+import { Match, MatchWithFileInfo } from '@codeque/core'
+import { useEffect, useState } from 'react'
+import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
+import { IoMdClose } from 'react-icons/io'
+import { MdContentCopy } from 'react-icons/md'
+import { eventBusInstance } from '../../../EventBus'
 import { CodeBlock } from '../../components/CodeBlock'
-import dedent from 'dedent'
-import { MatchWithFileInfo, Match } from '@codeque/core'
 import {
   darkTheme,
   lightTheme,
   MyPrismTheme,
 } from '../../components/codeHighlightThemes'
-import { eventBusInstance } from '../../../EventBus'
+import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
-import { useEffect, useState } from 'react'
-import { IoMdClose } from 'react-icons/io'
+import { useCopyToClipboard } from '../../components/useCopyToClipboard'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
@@ -55,6 +65,12 @@ export function SearchResult({
     eventBusInstance.dispatch('open-file', data)
   }
 
+  const relativeFilePath = getRelativePath(match.filePath)
+  const matchStartLine = match.loc.start.line
+  // Vscode columns are indexed from 1, while result is indexed from 0
+  const matchStartCol = match.loc.start.column + 1
+  const fullFilePath = `${relativeFilePath}:${matchStartLine}:${matchStartCol}`
+  const [hasCopiedFilePath, copyFilePath] = useCopyToClipboard(fullFilePath)
   const themeType = useThemeType()
   const highlightTheme = themeType === 'dark' ? darkTheme : lightTheme
   const matchHighlight = [{ ...match.loc, style: matchHighlightStyle }]
@@ -64,6 +80,16 @@ export function SearchResult({
     isResultFocused,
     highlightTheme,
   )
+
+  const iconButtonStyleResetProps = {
+    variant: 'ghost',
+    height: 'auto',
+    minWidth: '18px',
+    width: '18px',
+    _hover: { background: highlightTheme.plain.backgroundColor },
+    _active: { background: highlightTheme.plain.backgroundColor },
+    size: 'sm',
+  }
 
   useEffect(() => {
     const handleWindowFocus = () => {
@@ -81,8 +107,7 @@ export function SearchResult({
     <Flex flexDir="column" mb="4">
       <Flex
         p="2"
-        cursor="pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
+        // onClick={() => setIsExpanded(!isExpanded)}
         position="sticky"
         top="0px"
         border="1px solid"
@@ -91,6 +116,15 @@ export function SearchResult({
         backgroundColor="var(--vscode-editor-background)"
         maxWidth="100%"
       >
+        <IconButton
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-label="expand/collapse button"
+          icon={
+            isExpanded ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />
+          }
+          {...iconButtonStyleResetProps}
+          mr="2"
+        />
         <Link
           onClick={(ev) => {
             ev.stopPropagation()
@@ -110,38 +144,52 @@ export function SearchResult({
             maxWidth: '90%',
           }}
         >
-          <Text as="span">{getRelativePath(match.filePath)}</Text>
+          <Text as="span">{relativeFilePath}</Text>
           <Text as="span">:</Text>
           <Text as="span" color="#c792ea">
-            {match.loc.start.line}
+            {matchStartLine}
           </Text>
           <Text as="span">:</Text>
           <Text as="span" color="#ffcb8b">
-            {match.loc.start.column}
+            {matchStartCol}
           </Text>
         </Link>
-        <Flex
-          onClick={(e) => {
-            e.stopPropagation()
-            removeMatch(match.filePath, match.start, match.end)
-          }}
-          justifyContent="center"
-          alignItems="center"
-          ml="3"
-          _hover={{ background: highlightTheme.plain.backgroundColor }}
-          borderRadius="md"
-          width="18px"
-        >
-          <IoMdClose />
+        <Flex ml="2" mr="auto" width="100%">
+          <IconButton
+            aria-label="copy file path"
+            icon={<MdContentCopy />}
+            {...iconButtonStyleResetProps}
+            onClick={copyFilePath}
+          />
+          {hasCopiedFilePath && (
+            <Tooltip label="Copied to clipboard!" defaultIsOpen={true}>
+              <span />
+            </Tooltip>
+          )}
         </Flex>
         <Checkbox
-          ml="auto"
+          ml="3"
           isChecked={isChecked}
           onChange={(ev) => {
             const checked = ev.target.checked
             setIsChecked(checked)
             setIsExpanded(!checked)
           }}
+        >
+          Done
+        </Checkbox>
+        <DoubleClickButton
+          iconButton
+          icon={<IoMdClose />}
+          confirmText="Click again to remove"
+          {...iconButtonStyleResetProps}
+          onClick={(e) => {
+            e.stopPropagation()
+            removeMatch(match.filePath, match.start, match.end)
+          }}
+          ml="3"
+          borderRadius="md"
+          tooltipPlacement="bottom-end"
         />
       </Flex>
       {isExpanded ? (

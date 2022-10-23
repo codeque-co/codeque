@@ -154,7 +154,7 @@ export function SearchResult({
             {matchStartCol}
           </Text>
         </Link>
-        <Flex ml="2" mr="auto" width="100%">
+        <Flex ml="2" mr="auto">
           <IconButton
             aria-label="copy file path"
             icon={<MdContentCopy />}

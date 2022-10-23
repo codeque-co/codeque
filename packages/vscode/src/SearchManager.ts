@@ -7,6 +7,7 @@ import {
   HardStopFlag,
   createHardStopFlag,
   filterIncludeExclude,
+  SearchInFileError,
 } from '@codeque/core'
 import path from 'path'
 import * as vscode from 'vscode'
@@ -117,7 +118,11 @@ export class SearchManager {
     searchRoot: string,
   ) => {
     const groupedMatches = groupMatchesByFile(searchResults.matches)
-    const filePaths = Object.keys(groupedMatches)
+    const filePathsFromErrors = searchResults.errors
+      .map((e) => (e as SearchInFileError)?.filePath)
+      .filter(Boolean)
+
+    const filePaths = Object.keys(groupedMatches).concat(filePathsFromErrors)
     const relativePathsMap = filePaths.reduce((map, filePath) => {
       map[filePath] = path.relative(searchRoot, filePath)
 

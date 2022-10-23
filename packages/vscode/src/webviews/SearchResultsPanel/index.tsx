@@ -305,6 +305,7 @@ const Panel = () => {
           matchedFilesCount={matchedFilesCount}
           searchInProgress={isLoading}
           stopSearch={stopSearch}
+          getRelativePath={getRelativePath}
         />
 
         <SearchResultsList

@@ -61,10 +61,12 @@ export type ParsedQuery = {
   error: ParseError | null
 }
 
+export type SearchInFileError = { filePath: string; error: string }
+
 export type SearchResults = {
   matches: Matches
   hints: Hint[][] // array of hints for each query
-  errors: Array<{ filePath: string; error: string } | ParsedQuery | string>
+  errors: Array<SearchInFileError | ParsedQuery | string>
 }
 
 export type Hint = {

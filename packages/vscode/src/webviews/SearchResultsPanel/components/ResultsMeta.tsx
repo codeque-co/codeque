@@ -63,8 +63,12 @@ export function ResultsMeta({
         width="100px"
         marginLeft="auto"
         colorScheme="blue"
+        isLoading={searchInProgress}
+        loadingText="Stop"
+        // isLoading disables button by default
+        disabled={false}
       >
-        {searchInProgress ? 'Stop' : 'Search!'}
+        Search!
       </Button>
     </Flex>
   )

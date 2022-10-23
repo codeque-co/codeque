@@ -63,7 +63,11 @@ export function SearchResultsList({
           </Button>
         </Flex>
       ) : null}
-      {isLoading ? <Spinner margin="auto" /> : null}
+      {isLoading ? (
+        <Flex justifyContent="center" mt="5" mb="5">
+          <Spinner margin="auto" />
+        </Flex>
+      ) : null}
     </Flex>
   )
 }

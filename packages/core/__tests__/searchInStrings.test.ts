@@ -6,8 +6,9 @@ describe('Search in strings', () => {
       console.log(...args)
       throw new Error('FS module is not allowed in search in strings')
     }
+
     return {
-      readFileSync: throwOnUsage
+      readFileSync: throwOnUsage,
     }
   })
 
@@ -49,15 +50,16 @@ describe('Search in strings', () => {
       files: [
         {
           content: file1,
-          path: 'file1.js'
+          path: 'file1.js',
         },
         {
           content: file2,
-          path: 'file2.json'
-        }
-      ]
+          path: 'file2.json',
+        },
+      ],
     })
 
     expect(results.matches.length).toBe(2)
+    expect(results.errors).toHaveLength(0)
   })
 })

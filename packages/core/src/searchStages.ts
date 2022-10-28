@@ -443,6 +443,37 @@ const compareNodes = (
     }
   }
 
+  // Support for matching JSXElements without children regardless closing/opening tag
+
+  if (
+    !isExact &&
+    (queryNode.type as string) === 'JSXElement' &&
+    (fileNode.type as string) === 'JSXElement' &&
+    (queryNode.children as []).length === 0
+  ) {
+    measureCompare()
+
+    return {
+      levelMatch: true,
+      queryKeysToTraverse: ['openingElement'],
+      fileKeysToTraverse,
+    }
+  }
+
+  if (
+    !isExact &&
+    (queryNode.type as string) === 'JSXOpeningElement' &&
+    (fileNode.type as string) === 'JSXOpeningElement'
+  ) {
+    measureCompare()
+
+    return {
+      levelMatch: true,
+      queryKeysToTraverse: ['name', 'attributes'],
+      fileKeysToTraverse,
+    }
+  }
+
   if (
     queryKeys.length !== fileKeys.length ||
     fileNode.type !== queryNode.type
@@ -532,15 +563,20 @@ const traverseAndMatch = (
    */
 
   if (foundMatchStart) {
-    const query = generate(queryNode as any).code
-    const code = generate(currentNode as any, {
-      jsescOption: { compact: false },
-      retainFunctionParens: true,
-    }).code
-
+    // We keep logs in IIFE to get the whole logic removed during build
     log(
       'foundMatchStart:\n',
-      code,
+      (() => {
+        try {
+          return generate(currentNode as any, {
+            jsescOption: { compact: false },
+            retainFunctionParens: true,
+          }).code
+        } catch (e) {
+          // It's not possible to generate code for some nodes like TSTypeParameterInstantiation
+          return `Could not generate code for node ${currentNode.type}`
+        }
+      })(),
       '\n',
       generate(queryNode as any).code,
       '\n'.padEnd(10, '_'),
@@ -555,7 +591,6 @@ const traverseAndMatch = (
         start: currentNode.start as number,
         end: currentNode.end as number,
         loc: currentNode.loc as Match['loc'],
-        query: query.toString(),
       })
     }
   }
@@ -643,7 +678,7 @@ export const searchFileContent = ({
     const measureSearch = measureStart('search')
 
     programBody.forEach((bodyPart) => {
-      for (const { queryNode } of queries) {
+      for (const { queryNode, queryCode } of queries) {
         const matches = traverseAndMatch(bodyPart, queryNode, settings)
 
         allMatches.push(
@@ -657,6 +692,7 @@ export const searchFileContent = ({
             return {
               filePath,
               ...match,
+              query: queryCode,
               code,
               extendedCodeFrame: {
                 code: extendedCodeFrame,

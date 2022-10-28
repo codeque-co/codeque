@@ -1,7 +1,7 @@
 module.exports = {
   presets: [
     ['@babel/preset-env', { targets: { node: 'current' } }],
-    '@babel/preset-typescript'
+    '@babel/preset-typescript',
   ],
   plugins: [
     [
@@ -9,10 +9,10 @@ module.exports = {
       {
         root: __dirname + '/src',
         rootPathSuffix: './',
-        rootPathPrefix: '/'
-      }
+        rootPathPrefix: '/',
+      },
     ],
-    './tools/babel.plugins.js'
+    './tools/babel.plugins.js',
   ],
-  ignore: ['dist', 'node_modules', '__tests__']
+  ignore: ['dist', 'node_modules', '__tests__'],
 }

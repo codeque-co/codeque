@@ -51,13 +51,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(4)
+    expect(errors.length).toBe(0)
   })
 
   it('should match exact function with body', () => {
@@ -77,13 +78,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
     expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 
@@ -106,12 +108,13 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with body statements in order but without all statements', () => {
@@ -131,13 +134,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should not match function with body statements in different order', () => {
@@ -158,13 +162,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
   })
 
   it('should not match function with body statements in different order without all statements', () => {
@@ -184,13 +189,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with body statements in different order', () => {
@@ -211,13 +217,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with body statements in different order without all statements', () => {
@@ -237,13 +244,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with 2 arguments', () => {
@@ -253,13 +261,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with 2 arguments using double wildcard', () => {
@@ -269,13 +278,14 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function with 3 arguments', () => {
@@ -285,12 +295,13 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 })

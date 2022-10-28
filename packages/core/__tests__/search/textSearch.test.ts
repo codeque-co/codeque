@@ -22,10 +22,11 @@ describe('Text search mode', () => {
 
     expect(results.matches.length).toBe(7)
     expect(results.matches[0].code).toBe('const { colors } = useTheme(')
+    expect(results.errors).toHaveLength(0)
   })
 
   it('Should match code with optional single line wildcard which exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Text $$ label="XD" />
@@ -36,10 +37,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(1)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match code with optional single line wildcard which not exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Text style={styles.avatar} label="XD" $$ />
@@ -50,10 +52,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(2)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match code with optional multi line wildcard which exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Text
@@ -67,10 +70,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(2)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match code with optional multi line wildcard which not exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Icon
@@ -85,10 +89,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(1)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match code with required single line wildcard which exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Text $$$ label="XD" />
@@ -99,10 +104,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(1)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should not match code with required single line wildcard which not exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Text style={sty$$$les.avatar} label="XD" />
@@ -113,10 +119,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(0)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match code with required multi line wildcard which exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.$$$
@@ -130,10 +137,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(2)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should not match code with required multi line wildcard which not exist', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <Avatar.Icon
@@ -148,10 +156,11 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(0)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match space agnostic code', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
         <  Avatar.Text
@@ -170,25 +179,28 @@ describe('Text search mode', () => {
     })
 
     expect(matches).toHaveLength(1)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match with wildcard on start of query', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [`$$$m<  Avatar.Text`],
       filePaths: filesList,
       mode: 'text',
     })
 
     expect(matches).toHaveLength(4)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should match with wildcard on end of query', () => {
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       queryCodes: [`<  Avatar.Text$$$m`],
       filePaths: filesList,
       mode: 'text',
     })
 
     expect(matches).toHaveLength(4)
+    expect(errors).toHaveLength(0)
   })
 })

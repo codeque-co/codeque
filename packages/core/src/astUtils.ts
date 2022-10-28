@@ -193,7 +193,9 @@ export const anyStringWildcardRegExp = new RegExp(
 export const identifierWildcard = wildcardChar + wildcardChar
 export const nodesTreeWildcard = identifierWildcard + wildcardChar
 
-export const disallowedWildcardRegExp = new RegExp(`(\\${wildcardChar}){4,}`)
+export const disallowedWildcardRegExp = new RegExp(
+  `(\\${wildcardChar}){4,}(?!\\{)`,
+)
 
 export const removeIdentifierRefFromWildcard = (name: string) => {
   const containsWildcardRegExp = new RegExp(`^\\${wildcardChar}`)

@@ -20,13 +20,14 @@ describe('JSX', () => {
         IconButton
       } from 'react-native-paper'
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('Should not find any imports including some keys when order changed', () => {
@@ -36,46 +37,49 @@ describe('JSX', () => {
         Button,
       } from 'react-native-paper'
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include-with-order',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find all imports of library', () => {
     const query = `
       import $$$ from 'react-native';
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(41)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all default imports of a dependency', () => {
     const query = `
       import $$ from '../ScreenWrapper';
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(33)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all default imports with case insensitive query', () => {
     const query = `
       import $$screenwrapper from '../screenwrapper';
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
@@ -83,32 +87,35 @@ describe('JSX', () => {
     })
 
     expect(matches.length).toBe(33)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all aliased imports of a dependency', () => {
     const query = `
       import { Provider as $$ } from 'react-native-paper';
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find all imports with both default and named', () => {
     const query = `
       import $$, { $$$ } from '$$'; 
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find all aliased reexports ', () => {
@@ -116,12 +123,13 @@ describe('JSX', () => {
     const query = `
       export { $$ as $$$ } from '$$'; 
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(matches.length).toBe(6)
+    expect(errors.length).toBe(0)
   })
 })

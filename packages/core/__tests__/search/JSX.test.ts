@@ -3,6 +3,7 @@ import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('JSX', () => {
   let filesList = [] as string[]
@@ -52,12 +53,13 @@ describe('JSX', () => {
 
   it('Should find all self-closing JSX', () => {
     const query = `<$$ />`
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(148)
+    expect(matches.length).toBe(485)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find JSX by tag name and prop', () => {
@@ -65,7 +67,7 @@ describe('JSX', () => {
       <Drawer.Section title="Preferences">
       </Drawer.Section>
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
@@ -93,26 +95,29 @@ describe('JSX', () => {
     `
 
     expect(compareCode(matches[0].code, resultCode)).toBeTruthy()
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find JSX by prop name', () => {
     const query = `<$$ value={$$$} />`
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
     expect(matches.length).toBe(41)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find JSX by text content', () => {
     const query = `<Text>RTL</Text>`
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
     })
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find JSX by text content regardless formatting', () => {
@@ -122,34 +127,37 @@ describe('JSX', () => {
         Download
       </Button>
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: [query],
     })
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
     const query = `<Text>r$$L</Text>`
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query],
       caseInsensitive: true,
     })
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find JSX by text content case insensitive', () => {
     const query = `<Text>rtl</Text>`
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       caseInsensitive: true,
       queryCodes: [query],
     })
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find exact multiline JSX', () => {
@@ -164,13 +172,14 @@ describe('JSX', () => {
         />
       </View>
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: [query],
     })
 
     expect(compareCode(matches[0].code, query)).toBeTruthy()
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find components using useTheme() hook', () => {
@@ -184,20 +193,24 @@ describe('JSX', () => {
       } from 'react-native-paper';
     `
 
-    const { matches: resultsUsage } = searchInFileSystem({
+    const { matches: resultsUsage, errors: errorsUsage } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [usageQuery],
     })
 
-    const { matches: resultsImport } = searchInFileSystem({
-      mode: 'include',
-      filePaths: filesList,
-      queryCodes: [importQuery],
-    })
+    const { matches: resultsImport, errors: errorsImport } = searchInFileSystem(
+      {
+        mode: 'include',
+        filePaths: filesList,
+        queryCodes: [importQuery],
+      },
+    )
     expect(resultsImport.length).not.toBe(0)
 
     expect(resultsImport.length).toBe(resultsUsage.length)
+    expect(errorsUsage).toHaveLength(0)
+    expect(errorsImport).toHaveLength(0)
   })
 
   it('Should find all usages of component passed as a prop', () => {
@@ -214,13 +227,14 @@ describe('JSX', () => {
         $$={IconButton}
       />
     `
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: [query1, query2],
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('Should find all anonymous functions passed as a prop', () => {
@@ -238,7 +252,7 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -255,6 +269,7 @@ describe('JSX', () => {
 
     expect(matches.length).toBe(190)
     expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all anonymous functions passed as event listener handler', () => {
@@ -272,7 +287,7 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -289,6 +304,7 @@ describe('JSX', () => {
 
     expect(matches.length).toBe(164)
     expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all Elements pretending to be a wrapper', () => {
@@ -302,13 +318,14 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(34)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should find all title prop values which are strings', () => {
@@ -329,13 +346,14 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(78)
+    expect(errors).toHaveLength(0)
   })
 
   it('Should ignore all empty JSXText in search', () => {
@@ -347,13 +365,14 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockedFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
+    expect(errors.length).toBe(0)
 
     expect(
       compareCode(
@@ -376,7 +395,7 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       caseInsensitive: true,
       filePaths: mockedFilesList,
@@ -384,6 +403,7 @@ describe('JSX', () => {
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
 
     expect(
       compareCode(
@@ -395,5 +415,132 @@ describe('JSX', () => {
       `,
       ),
     ).toBeTruthy()
+  })
+
+  describe('Self and not self closing JSX tags in include mode', () => {
+    it('Self-closing JSX tag in query should match also not self-closing tags', () => {
+      const fileContent = `
+      <Comp>asd</Comp>;
+      <Comp filed={5}>bbc</Comp>;
+      
+      <Comp/>;
+      <Comp prop="val"/>
+    
+    `
+
+      const queries = [
+        `
+      <Comp />
+    `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(4)
+      expect(errors.length).toBe(0)
+    })
+
+    it('Not self-closing JSX tag in query should match also self-closing tags', () => {
+      const fileContent = `
+        <Comp>asd</Comp>;
+        <Comp filed={5}>bbc</Comp>;
+        
+        <Comp/>;
+        <Comp prop="val"/>
+      
+      `
+
+      const queries = [
+        `
+        <Comp></Comp>
+      `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(4)
+      expect(errors.length).toBe(0)
+    })
+
+    it('Not self-closing JSX tag with children in query should not match self-closing tags', () => {
+      const fileContent = `  
+      <Comp/>;
+      <Comp prop="val"/>
+    
+    `
+
+      const queries = [
+        `
+      <Comp>asd</Comp>
+    `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(0)
+      expect(errors.length).toBe(0)
+    })
+
+    it('Self-closing JSX tag with prop in query should match also not self-closing tag with prop', () => {
+      const fileContent = `
+      <Comp>asd</Comp>;
+      <Comp filed={5}>bbc</Comp>;
+      
+      <Comp/>;
+      <Comp filed={5}/>
+    
+    `
+
+      const queries = [
+        `
+      <Comp filed={5} />
+    `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(2)
+      expect(errors.length).toBe(0)
+    })
   })
 })

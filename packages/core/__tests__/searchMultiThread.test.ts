@@ -29,19 +29,22 @@ it('should search using multiple threads and give the same matches count as sing
     () => $$$
   `
 
-  const { matches: resultsSingle } = searchInFileSystem({
+  const { matches: resultsSingle, errors: errorsSingle } = searchInFileSystem({
     mode: 'exact',
     filePaths: filesList,
     queryCodes: [query],
   })
 
-  const { matches: resultsMulti } = await searchMultiThread({
-    mode: 'exact',
-    filePaths: filesList,
-    queryCodes: [query],
-  })
+  const { matches: resultsMulti, errors: errorsMulti } =
+    await searchMultiThread({
+      mode: 'exact',
+      filePaths: filesList,
+      queryCodes: [query],
+    })
 
   expect(resultsMulti.length).toBe(204)
+  expect(errorsMulti).toHaveLength(0)
+  expect(errorsSingle).toHaveLength(0)
 
   expect(resultsMulti.length).toBe(resultsSingle.length)
 

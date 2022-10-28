@@ -81,13 +81,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match exact object case insensitive', () => {
@@ -103,7 +104,7 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       caseInsensitive: true,
@@ -111,6 +112,7 @@ describe('Types', () => {
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match nested object property with wildcard', () => {
@@ -124,13 +126,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match nested object with wildcard', () => {
@@ -142,13 +145,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should find repeating pattern in nested object several times', () => {
@@ -160,7 +164,7 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
@@ -185,6 +189,7 @@ describe('Types', () => {
     `
 
     expect(matches.length).toBe(4)
+    expect(errors.length).toBe(0)
 
     expect(compareCode(`(${matches[0].code})`, firstMatch)).toBeTruthy()
   })
@@ -196,13 +201,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function in object', () => {
@@ -215,13 +221,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match possibly repeated object properties', async () => {
@@ -242,13 +249,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match equivalent object keys', () => {
@@ -265,12 +273,13 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)
+    expect(errors.length).toBe(0)
   })
 })

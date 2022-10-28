@@ -61,13 +61,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match type concatenation with one wildcard with not matching order', () => {
@@ -77,13 +78,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match string enumeration type with exact mode', () => {
@@ -93,13 +95,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match string enumeration type with include mode', () => {
@@ -109,13 +112,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(3)
+    expect(errors.length).toBe(0)
   })
 
   it('should match generic type parametrization', () => {
@@ -127,13 +131,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)
+    expect(errors.length).toBe(0)
   })
 
   it('should match indexed object type with wildcard', () => {
@@ -145,13 +150,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match some indexed object type with partially wildcard identifier', () => {
@@ -163,13 +169,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match some indexed object type', () => {
@@ -181,13 +188,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match types union inside indexed object type', () => {
@@ -199,13 +207,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match some random generic type', () => {
@@ -215,13 +224,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match wildcard as generic param', () => {
@@ -231,13 +241,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match wildcard as conditional extends part', () => {
@@ -247,13 +258,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match wildcard in conditional type', () => {
@@ -263,13 +275,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match wildcard as conditional type', () => {
@@ -279,13 +292,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match type parameter wildcard', () => {
@@ -295,13 +309,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match function declaration with returnType by query without returnType', () => {
@@ -315,13 +330,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude } = searchInFileSystem({
-      mode: 'include',
-      filePaths: mockFilesList,
-      queryCodes: queries,
-    })
+    const { matches: matchesInclude, errors: errorsInclude } =
+      searchInFileSystem({
+        mode: 'include',
+        filePaths: mockFilesList,
+        queryCodes: queries,
+      })
 
-    const { matches: matchesExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
@@ -329,6 +345,8 @@ describe('Types', () => {
 
     expect(matchesInclude.length).toBe(1)
     expect(matchesExact.length).toBe(0)
+    expect(errorsExact.length).toBe(0)
+    expect(errorsInclude.length).toBe(0)
   })
 
   it('should match function declaration with param typeAnnotation by query without param typeAnnotation', () => {
@@ -342,13 +360,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude } = searchInFileSystem({
-      mode: 'include',
-      filePaths: mockFilesList,
-      queryCodes: queries,
-    })
+    const { matches: matchesInclude, errors: errorsInclude } =
+      searchInFileSystem({
+        mode: 'include',
+        filePaths: mockFilesList,
+        queryCodes: queries,
+      })
 
-    const { matches: matchesExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
@@ -356,6 +375,8 @@ describe('Types', () => {
 
     expect(matchesInclude.length).toBe(1)
     expect(matchesExact.length).toBe(0)
+    expect(errorsExact.length).toBe(0)
+    expect(errorsInclude.length).toBe(0)
   })
 
   it('should match function declaration with types by query without types', () => {
@@ -369,13 +390,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude } = searchInFileSystem({
-      mode: 'include',
-      filePaths: mockFilesList,
-      queryCodes: queries,
-    })
+    const { matches: matchesInclude, errors: errorsInclude } =
+      searchInFileSystem({
+        mode: 'include',
+        filePaths: mockFilesList,
+        queryCodes: queries,
+      })
 
-    const { matches: matchesExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
@@ -383,6 +405,8 @@ describe('Types', () => {
 
     expect(matchesInclude.length).toBe(1)
     expect(matchesExact.length).toBe(0)
+    expect(errorsExact.length).toBe(0)
+    expect(errorsInclude.length).toBe(0)
   })
 
   it('should match call expression with typesParameters by query without typesParameters', () => {
@@ -392,13 +416,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude } = searchInFileSystem({
-      mode: 'include',
-      filePaths: mockFilesList,
-      queryCodes: queries,
-    })
+    const { matches: matchesInclude, errors: errorsInclude } =
+      searchInFileSystem({
+        mode: 'include',
+        filePaths: mockFilesList,
+        queryCodes: queries,
+      })
 
-    const { matches: matchesExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
@@ -406,6 +431,8 @@ describe('Types', () => {
 
     expect(matchesInclude.length).toBe(1)
     expect(matchesExact.length).toBe(0)
+    expect(errorsExact.length).toBe(0)
+    expect(errorsInclude.length).toBe(0)
   })
 
   it('should match some interface', () => {
@@ -417,13 +444,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match interface with wildcard in extends', () => {
@@ -434,13 +462,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match interface with wildcard in extends with type param', () => {
@@ -451,13 +480,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match interface with extends with double wildcard', () => {
@@ -469,13 +499,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(2)
+    expect(errors.length).toBe(0)
   })
 
   it('should match optional interface filed in include mode 1', () => {
@@ -487,13 +518,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match optional interface filed in include mode 2', () => {
@@ -505,13 +537,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should match optional interface filed in exact mode', () => {
@@ -524,13 +557,14 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should not match optional interface filed in exact mode if not marked as optional', () => {
@@ -543,12 +577,13 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'exact',
       filePaths: mockFilesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
   })
 })

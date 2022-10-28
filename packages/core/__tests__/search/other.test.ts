@@ -22,13 +22,14 @@ describe('Other', () => {
       `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
   })
 
   it('should not include the same result twice 2', () => {
@@ -57,12 +58,30 @@ describe('Other', () => {
     `,
     ]
 
-    const { matches } = searchInFileSystem({
+    const { matches, errors } = searchInFileSystem({
       mode: 'include',
       filePaths: filesList,
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(190)
+    expect(errors).toHaveLength(0)
+  })
+
+  it('should match anything', () => {
+    const queries = [
+      `
+      $$$
+      `,
+    ]
+
+    const { matches, errors } = searchInFileSystem({
+      mode: 'include',
+      filePaths: filesList,
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(16998)
+    expect(errors.length).toBe(0)
   })
 })

@@ -230,11 +230,13 @@ export const parseQueries = (
 
     measureGetUniqueTokens()
 
-    const hints = getHints(queryCodes[i], error)
+    const queryCode = queryCodes[i]
+    const hints = getHints(queryCode, error)
 
     return {
       hints,
       queryNode,
+      queryCode,
       uniqueTokens,
       error,
     }

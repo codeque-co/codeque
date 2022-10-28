@@ -56,6 +56,7 @@ export type ParseError = {
 
 export type ParsedQuery = {
   queryNode: PoorNodeType
+  queryCode: string
   uniqueTokens: string[]
   hints: Hint[]
   error: ParseError | null

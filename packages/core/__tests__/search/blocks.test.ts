@@ -2,6 +2,7 @@ import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('blocks', () => {
   let filesList = [] as string[]
@@ -72,6 +73,49 @@ describe('blocks', () => {
     })
 
     expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
+  })
+
+  it('should match contents inside catch block', () => {
+    const fileContent = `
+        try {
+          someFn()
+        }
+        catch (e) {
+          const a = 'b'
+          const b = 'a'
+          throw Error('some')
+        }
+
+        function some() {
+          throw Error('some')
+
+          const a = 'b'
+        }
+      `
+
+    const queries = [
+      `
+      {
+        const a = 'b'
+        throw Error('some')
+      }
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
   })
 })

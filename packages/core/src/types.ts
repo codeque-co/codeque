@@ -12,15 +12,16 @@ export type Match = {
     start: Position
     end: Position
   }
-  code: string
-  query: string
+  node: PoorNodeType
 }
 export type ExtendedCodeFrame = {
   code: string
   startLine: number
 }
 
-export type MatchWithFileInfo = Match & {
+export type MatchWithFileInfo = Omit<Match, 'node'> & {
+  query: string
+  code: string
   filePath: string
   extendedCodeFrame?: ExtendedCodeFrame
 }
@@ -60,6 +61,7 @@ export type ParsedQuery = {
   uniqueTokens: string[]
   hints: Hint[]
   error: ParseError | null
+  isMultistatement: boolean
 }
 
 export type SearchInFileError = { filePath: string; error: string }

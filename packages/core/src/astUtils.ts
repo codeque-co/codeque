@@ -18,6 +18,12 @@ export const unwrapExpressionStatement = (node: PoorNodeType) => {
   return node as PoorNodeType
 }
 
+export const createBlockStatementNode = (body: PoorNodeType[]) => ({
+  type: 'BlockStatement',
+  body,
+  directives: [], // whatever it is
+})
+
 export const astPropsToSkip = [
   'loc',
   'start',
@@ -274,7 +280,7 @@ export const prepareCodeResult = ({
   start,
   end,
   loc,
-}: { fileContent: string } & Omit<Match, 'code' | 'query'>) => {
+}: { fileContent: string } & Omit<Match, 'node'>) => {
   const frame = fileContent.substring(start - loc.start.column, end)
   const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
 

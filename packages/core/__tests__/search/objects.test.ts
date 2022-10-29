@@ -207,7 +207,7 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
+    expect(matches.length).toBe(1) // It used to be 0, but now `{}` matches program as a block matches program
     expect(errors.length).toBe(0)
   })
 

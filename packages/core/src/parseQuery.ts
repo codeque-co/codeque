@@ -16,7 +16,11 @@ import {
 } from './astUtils'
 import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
 import { measureStart } from './utils'
-import { wildcardChar, disallowedWildcardRegExp } from './astUtils'
+import {
+  wildcardChar,
+  disallowedWildcardRegExp,
+  createBlockStatementNode,
+} from './astUtils'
 
 const MIN_TOKEN_LEN = 2
 
@@ -98,7 +102,19 @@ const getUniqueTokens = (
 }
 
 const extractQueryNode = (fileNode: PoorNodeType) => {
-  return unwrapExpressionStatement(getBody(fileNode)[0])
+  const queryBody = getBody(fileNode)
+
+  if (queryBody.length === 1) {
+    return {
+      queryNode: unwrapExpressionStatement(queryBody[0]),
+      isMultistatement: false,
+    }
+  }
+
+  return {
+    queryNode: createBlockStatementNode(queryBody),
+    isMultistatement: true,
+  }
 }
 
 const getHints = (queryCode: string, error?: ParseError | null) => {
@@ -162,6 +178,7 @@ export const parseQueries = (
 
         return {
           queryNode: {},
+          isMultistatement: false,
           error: {
             text: 'More than three wildcard chars are not allowed',
             ...(colNum !== null && lineIdx !== null
@@ -182,8 +199,11 @@ export const parseQueries = (
           parseOptions,
         ) as unknown as PoorNodeType
 
+        const { queryNode, isMultistatement } = extractQueryNode(parsedAsIs)
+
         return {
-          queryNode: extractQueryNode(parsedAsIs),
+          queryNode,
+          isMultistatement,
           error: null,
         }
       } catch (e) {
@@ -203,44 +223,52 @@ export const parseQueries = (
           parseOptions,
         ) as unknown as PoorNodeType
 
+        const { queryNode } = extractQueryNode(parsedAsExp)
+
         return {
-          queryNode: extractQueryNode(parsedAsExp),
+          queryNode,
+          isMultistatement: false, // single expression cannot be multistatement
           error: null,
         }
       } catch (e) {
         return {
           queryNode: {},
+          isMultistatement: false,
           error: originalError,
         }
       }
     })
-    .map(({ error, queryNode }) => ({
+    .map(({ error, queryNode, isMultistatement }) => ({
       queryNode,
       error: !queryNode ? { text: 'Empty query!' } : error,
+      isMultistatement,
     }))
 
-  const queries = inputQueryNodes.map(({ queryNode, error }, i) => {
-    const measureGetUniqueTokens = measureStart('getUniqueTokens')
+  const queries = inputQueryNodes.map(
+    ({ queryNode, error, isMultistatement }, i) => {
+      const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
-    const uniqueTokens = queryNode
-      ? [...getUniqueTokens(queryNode, caseInsensitive)].filter(
-          (token) => typeof token !== 'string' || token.length > 0,
-        )
-      : []
+      const uniqueTokens = queryNode
+        ? [...getUniqueTokens(queryNode, caseInsensitive)].filter(
+            (token) => typeof token !== 'string' || token.length > 0,
+          )
+        : []
 
-    measureGetUniqueTokens()
+      measureGetUniqueTokens()
 
-    const queryCode = queryCodes[i]
-    const hints = getHints(queryCode, error)
+      const queryCode = queryCodes[i]
+      const hints = getHints(queryCode, error)
 
-    return {
-      hints,
-      queryNode,
-      queryCode,
-      uniqueTokens,
-      error,
-    }
-  })
+      return {
+        hints,
+        queryNode,
+        queryCode,
+        uniqueTokens,
+        error,
+        isMultistatement,
+      }
+    },
+  )
 
   return [queries, queries.filter(({ error }) => error !== null).length === 0]
 }

@@ -17,6 +17,7 @@ import {
   prepareCodeResult,
   shouldCompareNode,
   anyStringWildcardRegExp,
+  createBlockStatementNode,
 } from './astUtils'
 import { getExtendedCodeFrame } from './utils'
 import { Logger } from './logger'
@@ -474,6 +475,19 @@ const compareNodes = (
     }
   }
 
+  // Support for multi-statement search in program body
+
+  if (
+    (queryNode.type as string) === 'BlockStatement' &&
+    (fileNode.type as string) === 'Program'
+  ) {
+    return {
+      levelMatch: true,
+      queryKeysToTraverse: ['body'],
+      fileKeysToTraverse,
+    }
+  }
+
   if (
     queryKeys.length !== fileKeys.length ||
     fileNode.type !== queryNode.type
@@ -591,7 +605,8 @@ const traverseAndMatch = (
         start: currentNode.start as number,
         end: currentNode.end as number,
         loc: currentNode.loc as Match['loc'],
-      })
+        node: currentNode,
+      } as Match)
     }
   }
 
@@ -674,35 +689,63 @@ export const searchFileContent = ({
     ) as unknown as PoorNodeType
 
     measureParseFile()
-    const programBody = getBody(fileNode)
+    const programNode = fileNode.program as PoorNodeType
     const measureSearch = measureStart('search')
 
-    programBody.forEach((bodyPart) => {
-      for (const { queryNode, queryCode } of queries) {
-        const matches = traverseAndMatch(bodyPart, queryNode, settings)
+    for (const { queryNode, queryCode, isMultistatement } of queries) {
+      const matches = traverseAndMatch(programNode, queryNode, settings).map(
+        (match) => {
+          if (!isMultistatement) {
+            return match
+          }
+          /**
+           * For multi-statement queries we search where exactly statements are located within parent node
+           */
 
-        allMatches.push(
-          ...matches.map((match) => {
-            const code = prepareCodeResult({ fileContent, ...match })
-            const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
-              match,
-              fileContent,
+          const statements = queryNode.body as PoorNodeType[]
+
+          const subMatches = statements
+            .map((statement) =>
+              traverseAndMatch(match.node, statement, settings),
             )
+            .flat()
+            .sort((matchA, matchB) => matchA.start - matchB.end)
 
-            return {
-              filePath,
-              ...match,
-              query: queryCode,
-              code,
-              extendedCodeFrame: {
-                code: extendedCodeFrame,
-                startLine: match.loc.start.line + newStartLine,
-              },
-            }
-          }),
-        )
-      }
-    })
+          const firstSubMatch = subMatches[0]
+          const lastSubMatch = subMatches[subMatches.length - 1]
+
+          return {
+            start: firstSubMatch.start,
+            end: lastSubMatch.end,
+            loc: {
+              start: firstSubMatch.loc.start,
+              end: lastSubMatch.loc.end,
+            },
+          }
+        },
+      )
+
+      allMatches.push(
+        ...matches.map((match) => {
+          const code = prepareCodeResult({ fileContent, ...match })
+          const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
+            match,
+            fileContent,
+          )
+
+          return {
+            filePath,
+            ...match,
+            query: queryCode,
+            code,
+            extendedCodeFrame: {
+              code: extendedCodeFrame,
+              startLine: match.loc.start.line + newStartLine,
+            },
+          }
+        }),
+      )
+    }
 
     measureSearch()
   }

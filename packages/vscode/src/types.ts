@@ -1,8 +1,8 @@
-import { Mode, SearchResults, Match } from '@codeque/core'
+import { SearchResults, MatchWithFileInfo } from '@codeque/core'
 
 export type CaseType = 'sensitive' | 'insensitive'
 
 export type ExtendedSearchResults = SearchResults & {
   relativePathsMap: Record<string, string>
-  groupedMatches: Record<string, Match[]>
+  groupedMatches: Record<string, MatchWithFileInfo[]>
 }

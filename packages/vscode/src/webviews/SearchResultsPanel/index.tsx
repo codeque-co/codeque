@@ -109,6 +109,8 @@ const Panel = () => {
         eventBusInstance.dispatch('set-settings', {
           query: selectedText.current,
         })
+
+        setQuery(selectedText.current)
       }
 
       eventBusInstance.dispatch('start-search')

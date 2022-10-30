@@ -3,70 +3,59 @@ import { compareCode } from '/astUtils'
 import path from 'path'
 import fs from 'fs'
 import { getFilesList } from '/getFilesList'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Types', () => {
-  const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
-  const filesList = [tempFilePath]
+  const testFile = `
+    ({
+      a : {
+        b : {
+          a : {
+            b : {
+              a : {
+                b : {
 
-  beforeAll(() => {
-    fs.writeFileSync(
-      tempFilePath,
-      `
-      ({
-        a : {
-          b : {
-            a : {
-              b : {
-                a : {
-                  b : {
-
-                  }
                 }
               }
             }
           }
         }
-      });
-
-      const obj = {
-        someKey: someVal,
-        someOtherKey: {
-          a:5
-        },
-        other: 'other'
       }
+    });
 
-      const objWithFn = {
-        someKey: someVal,
-        fn: () => obj.other
-      }
+    const obj = {
+      someKey: someVal,
+      someOtherKey: {
+        a:5
+      },
+      other: 'other'
+    }
 
-      const objWithEquivalentKeys1 = {
-        5: "val1",
-      }
+    const objWithFn = {
+      someKey: someVal,
+      fn: () => obj.other
+    }
 
-      const objWithEquivalentKeys2 = {
-        ["5"]: "val2",
-      }
+    const objWithEquivalentKeys1 = {
+      5: "val1",
+    }
 
-      const objWithEquivalentKeys3 = {
-        "5": "val3"
-      }
+    const objWithEquivalentKeys2 = {
+      ["5"]: "val2",
+    }
 
-      const objWithEquivalentKeys4 = {
-        "aaa": "val4"
-      }
+    const objWithEquivalentKeys3 = {
+      "5": "val3"
+    }
 
-      const objWithEquivalentKeys5 = {
-        aaa: "val5"
-      }
-    `,
-    )
-  })
+    const objWithEquivalentKeys4 = {
+      "aaa": "val4"
+    }
 
-  afterAll(() => {
-    fs.unlinkSync(tempFilePath)
-  })
+    const objWithEquivalentKeys5 = {
+      aaa: "val5"
+    }
+  `
 
   it('should match exact object', () => {
     const queries = [
@@ -81,9 +70,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -104,9 +98,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       caseInsensitive: true,
       queryCodes: queries,
     })
@@ -126,9 +125,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -145,9 +149,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -164,9 +173,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -201,9 +215,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -221,9 +240,14 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
@@ -273,13 +297,43 @@ describe('Types', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
       queryCodes: queries,
     })
 
     expect(matches.length).toBe(5)
+    expect(errors.length).toBe(0)
+  })
+
+  it('should match destructured object property before rename', () => {
+    const testFile = `
+      const { node: someNode } = useForm()
+    `
+    const queries = [
+      `
+        const { node } = useForm()
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
+      queryCodes: queries,
+    })
+
+    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
   })
 })

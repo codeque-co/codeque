@@ -510,6 +510,35 @@ const compareNodes = (
     }
   }
 
+  // Support for matching object properties in destructuring before re-assignment
+  if (
+    !isExact &&
+    // Both are ObjectProperty
+    (queryNode.type as string) === 'ObjectProperty' &&
+    (fileNode.type as string) === 'ObjectProperty' &&
+    // Both has same key identifier
+    (queryNode.key as PoorNodeType).type === 'Identifier' &&
+    (fileNode.key as PoorNodeType).type === 'Identifier' &&
+    (queryNode.key as PoorNodeType).name ===
+      (fileNode.key as PoorNodeType).name &&
+    // Both has different value identifier
+    (queryNode.value as PoorNodeType).type === 'Identifier' &&
+    (fileNode.value as PoorNodeType).type === 'Identifier' &&
+    (queryNode.value as PoorNodeType).name !==
+      (fileNode.value as PoorNodeType).name
+  ) {
+    // We skip comparing value if query does not have re-assignment
+    const keysToTraverse = ['key']
+
+    return {
+      levelMatch: true,
+      queryKeysToTraverseForValidatingMatch:
+        keysToTraverse.map(queryKeysMapper),
+      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
+    }
+  }
+
   // Support for object property strings, identifiers and numbers comparison
   if (
     !isExact &&

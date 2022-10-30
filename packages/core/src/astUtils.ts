@@ -31,7 +31,9 @@ export const astPropsToSkip = [
   'extra',
   'trailingComments',
   'leadingComments',
+  'tail', // Support for partial matching of template literals
 ]
+
 export const IdentifierTypes = [
   'Identifier',
   'JSXIdentifier',
@@ -83,6 +85,7 @@ export const getSetsOfKeysToCompare = (
    *    Exclude from file node all properties that
    *    - are not present on query node or their value is falsy on query node (not specified)
    *    - and are marked as optional in babel types
+   *    - or are `tail` property from TemplateElement
    */
 
   const fileKeysToRemove = exactFileKeys.filter(

@@ -1,6 +1,7 @@
 import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import fs from 'fs'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Types', () => {
   const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
@@ -251,5 +252,59 @@ describe('Types', () => {
 
     expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+  })
+
+  it('should match different parts of template literals with include mode', () => {
+    const fileContent = '`pre${c}pre${fn()}post`'
+
+    // Cannot execute in one query because longest match shadow others
+    const queries1 = ['`${fn()}`']
+    const queries2 = ['`pre${fn()}`']
+    const queries3 = ['`pre${fn()}post`']
+
+    const { matches: matches1, errors: errors1 } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries1,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches1.length).toBe(1)
+    expect(errors1.length).toBe(0)
+
+    const { matches: matches2, errors: errors2 } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries2,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches2.length).toBe(1)
+    expect(errors2.length).toBe(0)
+
+    const { matches: matches3, errors: errors3 } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries3,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches3.length).toBe(1)
+    expect(errors3.length).toBe(0)
   })
 })

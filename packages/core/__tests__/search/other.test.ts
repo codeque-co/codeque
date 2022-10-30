@@ -81,7 +81,7 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(17046)
+    expect(matches.length).toBe(17045)
     expect(errors.length).toBe(0)
   })
 })

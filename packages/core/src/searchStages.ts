@@ -19,7 +19,7 @@ import {
   anyStringWildcardRegExp,
   createBlockStatementNode,
 } from './astUtils'
-import { getExtendedCodeFrame } from './utils'
+import { getExtendedCodeFrame, getKeyFromObject } from './utils'
 import { Logger } from './logger'
 import { Match, Matches, Mode, PoorNodeType, ParsedQuery } from './types'
 
@@ -70,11 +70,36 @@ const validateMatch = (
 
   logStepStart('validate')
 
-  const { levelMatch, queryKeysToTraverse } = compareNodes(
-    currentNode,
-    currentQueryNode,
-    settings,
-  )
+  const {
+    levelMatch,
+    queryKeysToTraverseForValidatingMatch,
+    fileKeysToTraverseForValidatingMatch,
+  } = compareNodes(currentNode, currentQueryNode, settings)
+
+  if (
+    fileKeysToTraverseForValidatingMatch.length !==
+    queryKeysToTraverseForValidatingMatch.length
+  ) {
+    throw new Error(
+      'Count of keys to validate in query and file does not match',
+    )
+  }
+
+  if (
+    fileKeysToTraverseForValidatingMatch.some((fileKey) => {
+      return fileKey.includes('.')
+    })
+  ) {
+    log('validating match with nested file key')
+  }
+
+  if (
+    queryKeysToTraverseForValidatingMatch.some((queryKey) => {
+      return queryKey.includes('.')
+    })
+  ) {
+    log('validating match with nested query key')
+  }
 
   if (!levelMatch) {
     try {
@@ -91,20 +116,31 @@ const validateMatch = (
 
     return false
   } else {
-    if (queryKeysToTraverse.length > 0) {
-      for (const keyToTraverse of queryKeysToTraverse) {
-        log('validate: keyToTraverse', keyToTraverse)
-        log('validate: file val', currentNode[keyToTraverse])
-        log('validate: query val', currentQueryNode[keyToTraverse])
+    if (queryKeysToTraverseForValidatingMatch.length > 0) {
+      for (let i = 0; i < queryKeysToTraverseForValidatingMatch.length; i++) {
+        const queryKeyToTraverse = queryKeysToTraverseForValidatingMatch[i]
+        const fileKeyToTraverse = fileKeysToTraverseForValidatingMatch[i]
 
-        if (Array.isArray(currentNode[keyToTraverse] as PoorNodeType[])) {
+        const queryValue = getKeyFromObject(
+          currentQueryNode,
+          queryKeyToTraverse,
+        )
+        const fileValue = getKeyFromObject(currentNode, fileKeyToTraverse)
+
+        log('validate: queryKeyToTraverse', queryKeyToTraverse)
+        log('validate: fileKeyToTraverse', fileKeyToTraverse)
+
+        log('validate: query val', queryValue)
+        log('validate: file val', fileValue)
+
+        if (Array.isArray(fileValue as PoorNodeType[])) {
           log('validate: is array')
-          const nodesArr = (
-            currentNode[keyToTraverse] as PoorNodeType[]
-          ).filter(shouldCompareNode)
-          const queryNodesArr = (
-            currentQueryNode[keyToTraverse] as PoorNodeType[]
-          ).filter(shouldCompareNode)
+          const nodesArr = (fileValue as PoorNodeType[]).filter(
+            shouldCompareNode,
+          )
+          const queryNodesArr = (queryValue as PoorNodeType[]).filter(
+            shouldCompareNode,
+          )
 
           if (isExact) {
             if (nodesArr.length !== queryNodesArr.length) {
@@ -179,10 +215,8 @@ const validateMatch = (
         } else {
           log('validate: is Node')
 
-          const newCurrentNode = currentNode[keyToTraverse] as PoorNodeType
-          const newCurrentQueryNode = currentQueryNode[
-            keyToTraverse
-          ] as PoorNodeType
+          const newCurrentNode = fileValue as PoorNodeType
+          const newCurrentQueryNode = queryValue as PoorNodeType
           log('validate: newCurrentNode', newCurrentNode)
           log('validate: newCurrentQueryNode', newCurrentQueryNode)
 
@@ -203,15 +237,33 @@ const validateMatch = (
   }
 }
 
+type CompareNodesReturnType = {
+  levelMatch: boolean
+  queryKeysToTraverseForValidatingMatch: string[]
+  fileKeysToTraverseForValidatingMatch: string[]
+  fileKeysToTraverseForOtherMatches: string[]
+}
+
+const keyWithPrefix = (prefix: string) => (key: string) =>
+  prefix ? `${prefix}.${key}` : key
+
 const compareNodes = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  {
+  searchSettings: SearchSettings,
+  /** Params used to support comparing nodes which are not on the same level */
+  queryKeysPrefix = '',
+  fileKeysPrefix = '',
+): CompareNodesReturnType => {
+  const {
     mode,
     caseInsensitive,
     logger: { log, logStepEnd, logStepStart },
-  }: SearchSettings,
-) => {
+  } = searchSettings
+
+  const queryKeysMapper = keyWithPrefix(queryKeysPrefix)
+  const fileKeysMapper = keyWithPrefix(fileKeysPrefix)
+
   const measureCompare = measureStart('compare')
   logStepStart('compare')
   const isExact = mode === 'exact'
@@ -221,13 +273,18 @@ const compareNodes = (
     isExact,
   )
 
-  log('compare: node type', fileNode.type)
+  log(
+    'compare: query node type',
+    queryNode.type,
+    'file node type',
+    fileNode.type,
+  )
 
   log('compare: queryKeys', queryKeys)
   log('compare: fileKeys', fileKeys)
 
-  const queryKeysToTraverse: string[] = []
-  const fileKeysToTraverse: string[] = []
+  const keysToTraverseForValidatingMatch: string[] = []
+  const fileKeysToTraverseForOtherMatches: string[] = []
 
   if (fileNode.type === 'JSXText') {
     log('pre JSX Text', fileNode.value)
@@ -246,7 +303,7 @@ const compareNodes = (
       isNode(fileValue as PoorNodeType) ||
       isNodeArray(fileValue as PoorNodeType[])
     ) {
-      fileKeysToTraverse.push(key)
+      fileKeysToTraverseForOtherMatches.push(key)
     }
   })
 
@@ -260,9 +317,37 @@ const compareNodes = (
     // support using '$$' wildcard for TS keywords like 'never', 'boolean' etc.
     return {
       levelMatch: true,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
+  }
+
+  // Support for matching function params with default value or object/array destructuring with default value
+
+  // Since we comparing query node with nested node from file, we have to do so before wildcards comparison
+  if (
+    !isExact &&
+    (queryNode.type as string) === 'Identifier' &&
+    (fileNode.type as string) === 'AssignmentPattern' &&
+    (fileNode.left as PoorNodeType)?.type === 'Identifier'
+  ) {
+    log('comparing assignment pattern with identifier')
+
+    // By comparing nodes this way, we support wildcards in compared identifiers
+    return compareNodes(
+      fileNode.left as PoorNodeType,
+      queryNode,
+      searchSettings,
+      queryKeysMapper(''),
+      fileKeysMapper('left'),
+    )
+  }
+
+  if (queryNode.type === 'Identifier' && fileNode.type === 'Identifier') {
+    log('Comparing identifiers')
+    log('Query identifier', queryNode)
+    log('File identifier', fileNode)
   }
 
   // Support for wildcards in all nodes
@@ -270,6 +355,7 @@ const compareNodes = (
     IdentifierTypes.includes(queryNode.type as string) &&
     (queryNode.name as string).includes(identifierWildcard)
   ) {
+    log('comparing wildcard')
     let levelMatch
 
     const nameWithoutRef = removeIdentifierRefFromWildcard(
@@ -300,15 +386,18 @@ const compareNodes = (
       )
     })
 
-    const queryKeysToTraverse =
+    const queryKeysToTraverseForValidatingMatch =
       nameWithoutRef !== nodesTreeWildcard ? queryKeysWithNodes : []
 
     measureCompare()
 
     return {
       levelMatch,
-      queryKeysToTraverse,
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch:
+        queryKeysToTraverseForValidatingMatch.map(queryKeysMapper),
+      fileKeysToTraverseForValidatingMatch:
+        queryKeysToTraverseForValidatingMatch.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -321,8 +410,9 @@ const compareNodes = (
 
     return {
       levelMatch: true,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -338,8 +428,9 @@ const compareNodes = (
 
     return {
       levelMatch: true,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -358,8 +449,9 @@ const compareNodes = (
 
     return {
       levelMatch: levelMatch,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      fileKeysToTraverseForValidatingMatch: [],
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -375,8 +467,9 @@ const compareNodes = (
 
     return {
       levelMatch: levelMatch,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      fileKeysToTraverseForValidatingMatch: [],
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -395,8 +488,9 @@ const compareNodes = (
 
     return {
       levelMatch: levelMatch,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      fileKeysToTraverseForValidatingMatch: [],
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -410,8 +504,9 @@ const compareNodes = (
 
     return {
       levelMatch: true,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      fileKeysToTraverseForValidatingMatch: [],
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -436,10 +531,15 @@ const compareNodes = (
     if (queryKeyValue == fileKeyValue) {
       measureCompare()
 
+      const keysToTraverse = ['value']
+
       return {
         levelMatch: true,
-        queryKeysToTraverse: ['value'],
-        fileKeysToTraverse,
+        queryKeysToTraverseForValidatingMatch:
+          keysToTraverse.map(queryKeysMapper),
+        fileKeysToTraverseForValidatingMatch:
+          keysToTraverse.map(fileKeysMapper),
+        fileKeysToTraverseForOtherMatches,
       }
     }
   }
@@ -453,11 +553,14 @@ const compareNodes = (
     (queryNode.children as []).length === 0
   ) {
     measureCompare()
+    const keysToTraverse = ['openingElement']
 
     return {
       levelMatch: true,
-      queryKeysToTraverse: ['openingElement'],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch:
+        keysToTraverse.map(queryKeysMapper),
+      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -467,11 +570,14 @@ const compareNodes = (
     (fileNode.type as string) === 'JSXOpeningElement'
   ) {
     measureCompare()
+    const keysToTraverse = ['name', 'attributes']
 
     return {
       levelMatch: true,
-      queryKeysToTraverse: ['name', 'attributes'],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch:
+        keysToTraverse.map(queryKeysMapper),
+      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -481,10 +587,14 @@ const compareNodes = (
     (queryNode.type as string) === 'BlockStatement' &&
     (fileNode.type as string) === 'Program'
   ) {
+    const keysToTraverse = ['body']
+
     return {
       levelMatch: true,
-      queryKeysToTraverse: ['body'],
-      fileKeysToTraverse,
+      queryKeysToTraverseForValidatingMatch:
+        keysToTraverse.map(queryKeysMapper),
+      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -496,8 +606,9 @@ const compareNodes = (
 
     return {
       levelMatch: false,
-      queryKeysToTraverse: [],
-      fileKeysToTraverse,
+      fileKeysToTraverseForValidatingMatch: [],
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
     }
   }
 
@@ -513,7 +624,7 @@ const compareNodes = (
       isNodeArray(queryValue as PoorNodeType[]) ||
       isNodeArray(fileValue as PoorNodeType[])
     ) {
-      queryKeysToTraverse.push(key)
+      keysToTraverseForValidatingMatch.push(key)
     } else {
       primitivePropsCount++
 
@@ -534,8 +645,26 @@ const compareNodes = (
     }
   })
 
-  log('compare: queryKeysToTraverse', queryKeysToTraverse)
-  log('compare: fileKeysToTraverse', fileKeysToTraverse)
+  const queryKeysToTraverseForValidatingMatch =
+    keysToTraverseForValidatingMatch.map(queryKeysMapper)
+  const fileKeysToTraverseForValidatingMatch =
+    keysToTraverseForValidatingMatch.map(fileKeysMapper)
+
+  log(
+    'compare: queryKeysToTraverseForValidatingMatch',
+    queryKeysToTraverseForValidatingMatch,
+  )
+
+  log(
+    'compare: fileKeysToTraverseForValidatingMatch',
+    fileKeysToTraverseForValidatingMatch,
+  )
+
+  log(
+    'compare: fileKeysToTraverseForOtherMatches',
+    fileKeysToTraverseForOtherMatches,
+  )
+
   logStepEnd('compare')
   measureCompare()
 
@@ -544,8 +673,9 @@ const compareNodes = (
       primitivePropsCount !== 0 &&
       primitivePropsCount === matchingPrimitivePropsCount &&
       queryKeys.every((key) => fileKeys.includes(key)),
-    queryKeysToTraverse,
-    fileKeysToTraverse,
+    queryKeysToTraverseForValidatingMatch,
+    fileKeysToTraverseForValidatingMatch,
+    fileKeysToTraverseForOtherMatches,
   }
 }
 
@@ -564,7 +694,7 @@ const traverseAndMatch = (
   /**
    * LOOK FOR MATCH START
    */
-  const { levelMatch, fileKeysToTraverse } = compareNodes(
+  const { levelMatch, fileKeysToTraverseForOtherMatches } = compareNodes(
     currentNode,
     queryNode,
     settings,
@@ -614,7 +744,7 @@ const traverseAndMatch = (
    * TRAVERSE TO FIND NEW MATCHES START
    */
 
-  const nestedMatches = fileKeysToTraverse
+  const nestedMatches = fileKeysToTraverseForOtherMatches
     .map((key) => {
       if (currentNode[key] !== undefined) {
         if (isNode(currentNode[key] as PoorNodeType)) {

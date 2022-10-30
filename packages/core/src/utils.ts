@@ -188,3 +188,17 @@ export const groupMatchesByFile = (matches: Matches) => {
     return grouped
   }, {} as Record<string, Matches>)
 }
+
+export function getKeyFromObject<O extends Record<string, unknown>>(
+  object: O,
+  key: string,
+) {
+  const keyParts = key.split('.')
+  let val: any = object
+
+  for (const keyPart of keyParts) {
+    val = val[keyPart]
+  }
+
+  return val
+}

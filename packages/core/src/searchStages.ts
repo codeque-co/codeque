@@ -18,6 +18,7 @@ import {
   shouldCompareNode,
   anyStringWildcardRegExp,
   createBlockStatementNode,
+  sanitizeTemplateElement,
 } from './astUtils'
 import { getExtendedCodeFrame, getKeyFromObject } from './utils'
 import { Logger } from './logger'
@@ -294,6 +295,14 @@ const compareNodes = (
 
   if (queryNode.type === 'JSXText') {
     sanitizeJSXText(queryNode)
+  }
+
+  if (fileNode.type === 'TemplateElement') {
+    sanitizeTemplateElement(fileNode)
+  }
+
+  if (queryNode.type === 'TemplateElement') {
+    sanitizeTemplateElement(queryNode)
   }
 
   fileKeys.forEach((key) => {

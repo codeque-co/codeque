@@ -123,6 +123,13 @@ export const sanitizeJSXText = (node: PoorNodeType) => {
   node.extra.rawValue = normalizeText(node.extra.rawValue)
 }
 
+export const sanitizeTemplateElement = (node: PoorNodeType) => {
+  //@ts-ignore
+  node.value.raw = normalizeText(node.value.raw)
+  //@ts-ignore
+  node.value.cooked = normalizeText(node.value.cooked)
+}
+
 export const parseOptions = {
   sourceType: 'module',
   plugins: ['typescript', 'jsx', 'decorators-legacy'],

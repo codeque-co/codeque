@@ -307,4 +307,29 @@ describe('Types', () => {
     expect(matches3.length).toBe(1)
     expect(errors3.length).toBe(0)
   })
+
+  it('should match multiline template literals with include mode', () => {
+    const fileContent = `
+      \`pre\${id}
+      
+      post
+      \``
+
+    const queries = ['`pre${id}post`']
+
+    const { matches: matches, errors: errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches.length).toBe(1)
+    expect(errors.length).toBe(0)
+  })
 })

@@ -543,4 +543,60 @@ describe('JSX', () => {
       expect(errors.length).toBe(0)
     })
   })
+
+  describe('JSXIdentifiers like Identifiers', () => {
+    it('Should match JSXIdentifier when looking for Identifier', () => {
+      const fileContent = `
+        <Comp>asd</Comp>;
+      `
+
+      const queries = [
+        `
+        Comp;
+      `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(2)
+      expect(errors.length).toBe(0)
+    })
+
+    it('Should match JSXIdentifier when looking for Identifier wildcard', () => {
+      const fileContent = `
+        <Comp>asd</Comp>;
+      `
+
+      const queries = [
+        `
+          Co$$;
+        `,
+      ]
+
+      const { matches, errors } = searchInStrings({
+        mode: 'include',
+        caseInsensitive: true,
+        queryCodes: queries,
+        files: [
+          {
+            path: 'mock',
+            content: fileContent,
+          },
+        ],
+      })
+
+      expect(matches.length).toBe(2)
+      expect(errors.length).toBe(0)
+    })
+  })
 })

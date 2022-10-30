@@ -323,9 +323,12 @@ const compareNodes = (
     }
   }
 
-  // Support for matching function params with default value or object/array destructuring with default value
+  /*
+    Support for matching function params with default value or object/array destructuring with default value
 
-  // Since we comparing query node with nested node from file, we have to do so before wildcards comparison
+    Since we comparing query node with nested node from file, we have to do so before wildcards 
+    comparison
+  */
   if (
     !isExact &&
     (queryNode.type as string) === 'Identifier' &&
@@ -342,12 +345,6 @@ const compareNodes = (
       queryKeysMapper(''),
       fileKeysMapper('left'),
     )
-  }
-
-  if (queryNode.type === 'Identifier' && fileNode.type === 'Identifier') {
-    log('Comparing identifiers')
-    log('Query identifier', queryNode)
-    log('File identifier', fileNode)
   }
 
   // Support for wildcards in all nodes
@@ -368,7 +365,8 @@ const compareNodes = (
       const regex = patternToRegex(nameWithoutRef, caseInsensitive)
 
       levelMatch =
-        fileNode.type === queryNode.type && regex.test(fileNode.name as string)
+        IdentifierTypes.includes(fileNode.type as string) &&
+        regex.test(fileNode.name as string)
 
       if (isExact) {
         levelMatch =
@@ -623,6 +621,21 @@ const compareNodes = (
       queryKeysToTraverseForValidatingMatch:
         keysToTraverse.map(queryKeysMapper),
       fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
+      fileKeysToTraverseForOtherMatches,
+    }
+  }
+
+  // Support for matching JSXIdentifier using Identifier in query
+
+  if (
+    (queryNode.type as string) === 'Identifier' &&
+    (fileNode.type as string) === 'JSXIdentifier' &&
+    queryNode.name === fileNode.name
+  ) {
+    return {
+      levelMatch: true,
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForValidatingMatch: [],
       fileKeysToTraverseForOtherMatches,
     }
   }

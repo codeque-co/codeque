@@ -103,6 +103,11 @@ export function SearchResult({
     }
   }, [])
 
+  const extendedCodeFrame = match.extendedCodeFrame
+  const firstCharIsWhitespace = /\s/.test(
+    match.extendedCodeFrame?.code[0] ?? '',
+  )
+
   return (
     <Flex flexDir="column" mb="4">
       <Flex
@@ -202,15 +207,15 @@ export function SearchResult({
           borderColor="gray.300"
         >
           <CodeBlock
-            startLineNumber={match.extendedCodeFrame?.startLine}
+            startLineNumber={extendedCodeFrame?.startLine}
             theme={highlightTheme}
             dedent={
-              (match.extendedCodeFrame?.startLine as number) >=
-              match.loc.start.line
+              firstCharIsWhitespace &&
+              (extendedCodeFrame?.startLine as number) >= match.loc.start.line
             }
             // customHighlight={matchHighlight}
           >
-            {match.extendedCodeFrame?.code as string}
+            {extendedCodeFrame?.code as string}
           </CodeBlock>
         </Flex>
       ) : null}

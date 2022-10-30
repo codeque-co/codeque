@@ -163,5 +163,12 @@ describe('AST utils', () => {
     expect(removeIdentifierRefFromWildcard('$$something')).toBe('$$something')
     expect(removeIdentifierRefFromWildcard('$$_something')).toBe('$$')
     expect(removeIdentifierRefFromWildcard('asd$$_ref')).toBe('asd$$_ref')
+    // should not remove if ref is another wildcard
+    expect(removeIdentifierRefFromWildcard('$$$_$$')).toBe('$$$_$$')
+
+    // should not remove if ref is in the middle of string
+    expect(removeIdentifierRefFromWildcard('$$$_notRef_$$')).toBe(
+      '$$$_notRef_$$',
+    )
   })
 })

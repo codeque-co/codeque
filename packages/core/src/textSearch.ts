@@ -1,8 +1,5 @@
-import { getExtendedCodeFrame } from './utils'
+import { getExtendedCodeFrame, nonIdentifierOrKeyword } from './utils'
 import { FileSystemSearchArgs, SearchResults, Matches } from './types'
-
-// We process '$' separately
-const nonIdentifierOrKeyword = /([^\w\s$])/
 
 const getMatchPosition = (match: string, fileContents: string) => {
   const start = fileContents.indexOf(match)

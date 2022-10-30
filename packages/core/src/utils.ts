@@ -39,7 +39,21 @@ export const patternToRegex = (str: string, caseInsensitive = false) => {
     throw new Error(`More than 3 wildcards chars are not allowed "${str}"`)
   }
 
-  const strWithReplacedWildcards = str
+  const charsToEscape = str.match(nonIdentifierOrKeywordGlobal)
+  let escapedString = str
+
+  if (charsToEscape !== null) {
+    const uniqueCharsToEscape = [...new Set(charsToEscape)]
+
+    uniqueCharsToEscape.forEach((char) => {
+      escapedString = escapedString.replace(
+        new RegExp(`\\${char}`, 'g'),
+        `\\${char}`,
+      )
+    })
+  }
+
+  const strWithReplacedWildcards = escapedString
     .replace(requiredStringWildcardRegExp, '.+?')
     .replace(optionalStringWildcardRegExp, '.*?')
 
@@ -202,3 +216,7 @@ export function getKeyFromObject<O extends Record<string, unknown>>(
 
   return val
 }
+
+// We process '$' separately
+export const nonIdentifierOrKeyword = /([^\w\s$])/
+const nonIdentifierOrKeywordGlobal = new RegExp(nonIdentifierOrKeyword, 'g')

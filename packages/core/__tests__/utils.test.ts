@@ -1,68 +1,84 @@
 import { patternToRegex, getExtendedCodeFrame } from '/utils'
 import dedent from 'dedent'
+import { regExpTest } from '../src/utils'
 
 describe('Utils', () => {
   describe('should transform strings to regexes', () => {
     it('should match JSX event listeners props ', () => {
       const pattern = 'on$$'
       const regex = patternToRegex(pattern)
-
-      expect(regex.test('onClick')).toBeTruthy()
-      expect(regex.test('onHover')).toBeTruthy()
+      regExpTest
+      expect(regExpTest(regex, 'onClick')).toBeTruthy()
+      expect(regExpTest(regex, 'onHover')).toBeTruthy()
     })
 
     it('should match any string', () => {
       const pattern = '$$'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('react-native-image')).toBeTruthy()
-      expect(regex.test('Some sentence with words')).toBeTruthy()
+      expect(regExpTest(regex, 'react-native-image')).toBeTruthy()
+      expect(regExpTest(regex, 'Some sentence with words')).toBeTruthy()
     })
 
     it('should not match some strings with non-optional wildcard', () => {
       const pattern = 'react-native-$$$'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('react-native-')).toBeFalsy()
-      expect(regex.test('react-native')).toBeFalsy()
-      expect(regex.test('preact-native')).toBeFalsy()
+      expect(regExpTest(regex, 'react-native-')).toBeFalsy()
+      expect(regExpTest(regex, 'react-native')).toBeFalsy()
+      expect(regExpTest(regex, 'preact-native')).toBeFalsy()
     })
 
     it('should not match some strings with optional wildcard', () => {
       const pattern = 'react-native-$$'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('react-native-')).toBeTruthy()
-      expect(regex.test('react-native')).toBeFalsy()
-      expect(regex.test('preact-native')).toBeFalsy()
+      expect(regExpTest(regex, 'react-native-')).toBeTruthy()
+      expect(regExpTest(regex, 'react-native')).toBeFalsy()
+      expect(regExpTest(regex, 'preact-native')).toBeFalsy()
     })
 
     it('should match multiple wildcards in pattern', () => {
       const pattern = '../$$$/$$/file'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('../dir/somedir/file')).toBeTruthy()
-      expect(regex.test('../dir//file')).toBeTruthy()
-      expect(regex.test('..//file')).toBeFalsy()
-      expect(regex.test('preact-native')).toBeFalsy()
+      expect(regExpTest(regex, '../dir/somedir/file')).toBeTruthy()
+      expect(regExpTest(regex, '../dir\\somedir/file')).toBeFalsy()
+      expect(regExpTest(regex, '../dir//file')).toBeTruthy()
+      expect(regExpTest(regex, '..//file')).toBeFalsy()
+      expect(regExpTest(regex, 'preact-native')).toBeFalsy()
+    })
+
+    it('should not match multiple wildcards in pattern 1', () => {
+      const pattern = '$$_$$'
+      const regex = patternToRegex(pattern)
+
+      expect(regExpTest(regex, 'withoutDash')).toBeFalsy()
+    })
+
+    it('should not match multiple wildcards in pattern 2', () => {
+      const pattern = '$$|Text|$$'
+      const regex = patternToRegex(pattern)
+
+      expect(regExpTest(regex, 'withoutDash')).toBeFalsy()
     })
 
     it('should match wildcard on pattern start', () => {
       const pattern = '$$/file'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('../dir/somedir/file')).toBeTruthy()
-      expect(regex.test('..///file')).toBeTruthy()
-      expect(regex.test('react-native/file')).toBeTruthy()
-      expect(regex.test('react-native/files')).toBeFalsy()
-      expect(regex.test('/files')).toBeFalsy()
+      expect(regExpTest(regex, '../dir/somedir/file')).toBeTruthy()
+      expect(regExpTest(regex, '..///file')).toBeTruthy()
+      expect(regExpTest(regex, 'react-native/file')).toBeTruthy()
+      expect(regExpTest(regex, 'react-native/files')).toBeFalsy()
+      expect(regExpTest(regex, '/files')).toBeFalsy()
     })
 
     it('should match space by wildcard', () => {
       const pattern = 'some$$string'
       const regex = patternToRegex(pattern)
 
-      expect(regex.test('some string')).toBeTruthy()
+      expect(regExpTest(regex, 'some string')).toBeTruthy()
     })
 
     it('should throw due to invalid string wildcard', () => {
@@ -74,7 +90,7 @@ describe('Utils', () => {
       const pattern = 'some$$file'
       const regex = patternToRegex(pattern, true)
 
-      expect(regex.test('Some filE')).toBeTruthy()
+      expect(regExpTest(regex, 'Some filE')).toBeTruthy()
     })
 
     it('should get extended code frame for one line match near file start', () => {

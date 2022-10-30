@@ -375,7 +375,7 @@ const compareNodes = (
 
       levelMatch =
         IdentifierTypes.includes(fileNode.type as string) &&
-        regex.test(fileNode.name as string)
+        regExpTest(regex, fileNode.name as string)
 
       if (isExact) {
         levelMatch =
@@ -451,7 +451,7 @@ const compareNodes = (
   // Support for wildcards in strings
   if (isStringWithWildcard) {
     const regex = patternToRegex(queryNode.value as string, caseInsensitive)
-    const levelMatch = regex.test(fileNode.value as string)
+    const levelMatch = regExpTest(regex, fileNode.value as string)
     measureCompare()
 
     return {
@@ -469,7 +469,7 @@ const compareNodes = (
     regExpTest(anyStringWildcardRegExp, queryNode.value as string)
   ) {
     const regex = patternToRegex(queryNode.value as string, caseInsensitive)
-    const levelMatch = regex.test(fileNode.value as string)
+    const levelMatch = regExpTest(regex, fileNode.value as string)
     measureCompare()
 
     return {

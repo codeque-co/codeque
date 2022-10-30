@@ -1,6 +1,7 @@
 import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Other', () => {
   let filesList = [] as string[]
@@ -82,6 +83,30 @@ describe('Other', () => {
     })
 
     expect(matches.length).toBe(17045)
+    expect(errors.length).toBe(0)
+  })
+
+  it('Should properly match identifiers with multiple wildcard sections', () => {
+    const fileContent = `
+      varOne;
+      var_two;
+    `
+
+    const queries = [`$$_$$`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'exact',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
   })
 })

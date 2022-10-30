@@ -215,7 +215,7 @@ export const disallowedWildcardRegExp = new RegExp(
 
 export const removeIdentifierRefFromWildcard = (name: string) => {
   const containsWildcardRegExp = new RegExp(`^\\${wildcardChar}`)
-  const removeIdRefRegExp = new RegExp(`(?<=(\\${wildcardChar}){2,3})_.*`)
+  const removeIdRefRegExp = new RegExp(`(?<=(\\${wildcardChar}){2,3})_(\\w)+$`)
 
   if (containsWildcardRegExp.test(name)) {
     return name.replace(removeIdRefRegExp, '')

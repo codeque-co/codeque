@@ -599,4 +599,31 @@ describe('JSX', () => {
       expect(errors.length).toBe(0)
     })
   })
+
+  it('Should not match too much values using wildcards in JSXText', () => {
+    const fileContent = `
+      <title>Edit Client - Dweet</title>
+    `
+
+    const queries = [
+      `
+        <title>$$| Dweet |$$</title>;
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(matches.length).toBe(0)
+    expect(errors.length).toBe(0)
+  })
 })

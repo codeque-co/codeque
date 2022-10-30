@@ -116,7 +116,7 @@ export class SearchResultsPanel {
       this.sendInitialDataToWebview,
     )
 
-    eventBusInstance.addListener('set-query', this.setQueryData)
+    eventBusInstance.addListener('set-query-in-settings', this.setQueryData)
     eventBusInstance.addListener('open-file', this.openFile)
 
     eventBusInstance.addListenerOnce('results-panel-opened', () => {
@@ -129,7 +129,11 @@ export class SearchResultsPanel {
         this.sendInitialDataToWebview,
       )
 
-      eventBusInstance.removeListener('set-query', this.setQueryData)
+      eventBusInstance.removeListener(
+        'set-query-in-settings',
+        this.setQueryData,
+      )
+
       eventBusInstance.removeListener('open-file', this.openFile)
 
       eventBusInstance.removeTransport(postMessage)

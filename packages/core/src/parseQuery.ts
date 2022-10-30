@@ -193,6 +193,14 @@ export const parseQueries = (
         }
       }
 
+      if (queryText.trim().length === 0) {
+        return {
+          queryNode: null,
+          error: { text: 'Empty query!' },
+          isMultistatement: false,
+        }
+      }
+
       try {
         const parsedAsIs = parse(
           queryText,

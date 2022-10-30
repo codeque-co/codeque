@@ -5,6 +5,7 @@ import { StateManager } from './StateManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
+import { parseQueries } from '@codeque/core'
 
 let dispose = (() => undefined) as () => void
 
@@ -56,17 +57,27 @@ export function activate(context: vscode.ExtensionContext) {
 
       let selectedCode: string | null = ''
 
+      const state = stateManager.getState()
+
       if (activeTextEditor) {
         selectedCode = activeTextEditor.document.getText(
           activeTextEditor.selection,
         )
       } else {
-        selectedCode = stateManager.getState().webviewTextSelection
+        selectedCode = state.webviewTextSelection
       }
 
-      if (selectedCode) {
+      const newQuery =
+        selectedCode && /^\s/.test(selectedCode)
+          ? dedent(selectedCode)
+          : selectedCode
+
+      if (newQuery) {
+        const [, queryParseOk] = parseQueries([newQuery], false)
+
         stateManager.setState({
-          query: dedent(selectedCode),
+          query: newQuery,
+          mode: !queryParseOk && state.mode !== 'text' ? 'text' : state.mode,
         })
       }
 
@@ -74,8 +85,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       await openSidebar()
 
-      if (selectedCode) {
+      if (newQuery) {
         eventBusInstance.dispatch('open-search-from-selection')
+        eventBusInstance.dispatch('set-query-on-ui', newQuery)
         eventBusInstance.dispatch('start-search')
       }
     }),

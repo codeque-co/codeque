@@ -50,11 +50,6 @@ const Panel = () => {
   const selectedText = useRef<string | null>(null)
 
   const handleSettingsChanged = useCallback((data: Partial<StateShape>) => {
-    if (data.query !== undefined) {
-      setLastSearchedQuery(data.query) // to block first auto search
-      setQuery(data.query)
-    }
-
     if (data.mode !== undefined) {
       setMode(data.mode)
     }
@@ -62,7 +57,12 @@ const Panel = () => {
 
   const handleInitialSettings = useCallback((data: StateShape) => {
     setInitialSettingsReceived(true)
-    setLastSearchedQuery(data.query) // to block first auto search
+
+    if (data.query !== undefined) {
+      setLastSearchedQuery(data.query) // to block first auto search
+      setQuery(data.query)
+    }
+
     handleSettingsChanged(data)
   }, [])
 
@@ -94,13 +94,13 @@ const Panel = () => {
 
     setTime(data.time)
     setDisplayLimit(defaultDisplayLimit)
-    setNextSearchIsFromSelection(false)
   }, [])
 
-  const handleSearchStart = useCallback(() => {
+  const handleSearchStart = useCallback((query: string) => {
     setIsLoading(true)
     setResults(undefined)
     setFilesList([])
+    setLastSearchedQuery(query)
   }, [])
 
   const startSearch = useCallback(
@@ -119,7 +119,7 @@ const Panel = () => {
   const handleQueryChangeDebounced = useMemo(
     () =>
       simpleDebounce((query: string, hasQueryError: boolean) => {
-        eventBusInstance.dispatch('set-query', query)
+        eventBusInstance.dispatch('set-query-in-settings', query)
 
         if (!hasQueryError) {
           startSearch()
@@ -200,6 +200,14 @@ const Panel = () => {
       eventBusInstance.removeListener('search-started', handleSearchStart)
     }
   }, [handleSearchStart])
+
+  useEffect(() => {
+    eventBusInstance.addListener('set-query-on-ui', setQuery)
+
+    return () => {
+      eventBusInstance.removeListener('set-query-on-ui', setQuery)
+    }
+  }, [setQuery])
 
   const matchedFilesCount = results
     ? Object.keys(results?.groupedMatches ?? {}).length

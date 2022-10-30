@@ -155,7 +155,7 @@ export class SearchManager {
           this.currentSearchHardStopFlag = createHardStopFlag()
 
           this.searchRunning = true
-          eventBusInstance.dispatch('search-started')
+          eventBusInstance.dispatch('search-started', settings.query)
 
           if (
             !settings.searchIgnoredFiles &&

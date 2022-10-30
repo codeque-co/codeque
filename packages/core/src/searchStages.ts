@@ -22,7 +22,14 @@ import {
 } from './astUtils'
 import { getExtendedCodeFrame, getKeyFromObject } from './utils'
 import { Logger } from './logger'
-import { Match, Matches, Mode, PoorNodeType, ParsedQuery } from './types'
+import {
+  Match,
+  Matches,
+  Mode,
+  PoorNodeType,
+  ParsedQuery,
+  NotNullParsedQuery,
+} from './types'
 
 export const dedupMatches = (
   matches: Matches,
@@ -837,7 +844,7 @@ const traverseAndMatch = (
 }
 
 type SearchFileContentArgs = SearchSettings & {
-  queries: ParsedQuery[]
+  queries: NotNullParsedQuery[]
   filePath: string
   fileContent: string
 }

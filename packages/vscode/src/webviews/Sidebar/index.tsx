@@ -18,8 +18,10 @@ const Sidebar = () => {
     eventBusInstance.dispatch('start-search')
   }, [])
 
-  const handleDefaultSettings = useCallback((data: StateShape) => {
-    setInitialSettings(data)
+  const handleInitialSettings = useCallback((data: Partial<StateShape>) => {
+    setInitialSettings(
+      (prevSettings) => ({ ...prevSettings, ...data } as StateShape),
+    )
   }, [])
 
   const handleResultsPanelVisibilityChange = useCallback((data: boolean) => {
@@ -47,12 +49,14 @@ const Sidebar = () => {
   }, [])
 
   useEffect(() => {
-    eventBusInstance.addListener('initial-settings', handleDefaultSettings)
+    eventBusInstance.addListener('initial-settings', handleInitialSettings)
+    eventBusInstance.addListener('settings-changed', handleInitialSettings)
 
     return () => {
-      eventBusInstance.removeListener('initial-settings', handleDefaultSettings)
+      eventBusInstance.removeListener('initial-settings', handleInitialSettings)
+      eventBusInstance.removeListener('settings-changed', handleInitialSettings)
     }
-  }, [handleDefaultSettings])
+  }, [handleInitialSettings])
 
   useEffect(() => {
     eventBusInstance.addListener(

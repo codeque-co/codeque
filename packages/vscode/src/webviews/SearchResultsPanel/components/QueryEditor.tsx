@@ -94,7 +94,7 @@ export function QueryEditor({
         const error = matches.errors[0]
 
         // indicates query parse error
-        if ('queryNode' in error) {
+        if (typeof error === 'object' && 'queryNode' in error) {
           if (mode !== 'text' && hint) {
             // Don't display error when there are hints available
 
@@ -105,6 +105,11 @@ export function QueryEditor({
               location: error.error.location,
             })
           }
+        } else {
+          setQueryError({
+            text: error,
+            location: { line: 0, column: 0 },
+          })
         }
       }
     } catch (e) {

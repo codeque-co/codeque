@@ -11,7 +11,7 @@ import {
 import Creatable from 'react-select/creatable'
 
 import { Mode } from '@codeque/core'
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { eventBusInstance } from '../../../EventBus'
 import { StateShape } from '../../../StateManager'
 import { CaseType } from '../../../types'
@@ -56,6 +56,14 @@ export function SearchSettings({
   const [entryPoint, setEntryPoint] = useState(
     initialSettings?.entryPoint ?? '',
   )
+
+  // Handle initial settings change from backend
+  useEffect(() => {
+    // We handle only mode change for now
+    if (initialSettings.mode) {
+      setMode(initialSettings.mode)
+    }
+  }, [initialSettings])
 
   const handleModeChange = useCallback(
     (mode: Mode) => {

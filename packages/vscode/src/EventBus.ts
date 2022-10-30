@@ -21,11 +21,12 @@ type EventTypes = {
   }
   'open-search-from-selection': null
   'start-search': null
-  'search-started': null
+  'search-started': string
   'have-results': ResultsEventData
   'have-partial-results': ResultsEventData
   'settings-changed': Partial<StateShape>
-  'set-query': string | null
+  'set-query-in-settings': string | null
+  'set-query-on-ui': string
   'stop-search': null
 }
 
@@ -50,7 +51,8 @@ export class EventBus {
     'results-panel-visibility': [],
     'initial-settings': [],
     'set-settings': [],
-    'set-query': [],
+    'set-query-in-settings': [],
+    'set-query-on-ui': [],
     'settings-changed': [],
     'open-file': [],
     'open-search-from-selection': [],

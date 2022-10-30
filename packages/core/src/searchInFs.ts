@@ -3,7 +3,12 @@ import { measureStart, logMetrics } from './utils'
 import { createLogger } from './logger'
 import { parseQueries } from './parseQuery'
 import { searchFileContent, SearchSettings, dedupMatches } from './searchStages'
-import { FileSystemSearchArgs, Matches, SearchResults } from './types'
+import {
+  FileSystemSearchArgs,
+  Matches,
+  SearchResults,
+  NotNullParsedQuery,
+} from './types'
 import { textSearch } from './textSearch'
 
 export const searchInFileSystem = ({
@@ -75,7 +80,7 @@ export const searchInFileSystem = ({
       measureReadFile()
 
       const fileMatches = searchFileContent({
-        queries,
+        queries: queries as NotNullParsedQuery[],
         filePath,
         fileContent,
         ...settings,

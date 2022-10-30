@@ -4,7 +4,7 @@ import { dedupMatches, SearchSettings, searchFileContent } from './searchStages'
 import { textSearch } from './textSearch'
 import { createLogger } from './logger'
 import { FileSystemSearchArgs, Matches } from './types'
-import { SearchResults } from './types'
+import { SearchResults, NotNullParsedQuery } from './types'
 
 type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {
   files: {
@@ -67,7 +67,7 @@ export const searchInStrings = ({
   for (const file of files) {
     try {
       const fileMatches = searchFileContent({
-        queries,
+        queries: queries as NotNullParsedQuery[],
         filePath: file.path,
         fileContent: file.content,
         ...settings,

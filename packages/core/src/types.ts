@@ -56,12 +56,16 @@ export type ParseError = {
 }
 
 export type ParsedQuery = {
-  queryNode: PoorNodeType
+  queryNode: PoorNodeType | null
   queryCode: string
   uniqueTokens: string[]
   hints: Hint[]
   error: ParseError | null
   isMultistatement: boolean
+}
+
+export type NotNullParsedQuery = Omit<ParsedQuery, 'queryNode'> & {
+  queryNode: PoorNodeType
 }
 
 export type SearchInFileError = { filePath: string; error: string }

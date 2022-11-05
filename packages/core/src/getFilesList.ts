@@ -56,7 +56,6 @@ const getFilesListByGitChanges = async (root: string) => {
 
 export const pathSeparatorChar = path.sep
 export const fsRoot = path.parse(process.cwd()).root
-console.log('fs root', fsRoot)
 
 const getGitIgnoreContentForDirectory = async (dirPath: string) => {
   const gitignorePathSeparator = '/'
@@ -64,9 +63,7 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
   try {
     const gitignorePath = path.join(dirPath, '.gitignore')
 
-    const gitignoreFileContent = (
-      await fs.readFile(gitignorePath)
-    ).toString()
+    const gitignoreFileContent = (await fs.readFile(gitignorePath)).toString()
     const lines = gitignoreFileContent.split('\n').map((line) => line.trim())
     const nonCommentedNonEmptyLines = lines
       .filter((line) => !/^(\s*)#/.test(line))
@@ -82,7 +79,10 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
       ) {
         // pattern should be relative to .gitignore location directory
         // `ignore` does not allow absolute paths, so we have to hack by removing initial '/' or 'C:\'
-       const fsPosixPathWithuotRoot = dirPath.replace(fsRoot,'').replace(/\\/g, '\/')
+        const fsPosixPathWithuotRoot = dirPath
+          .replace(fsRoot, '')
+          .replace(/\\/g, '/')
+
         return `${fsPosixPathWithuotRoot}${gitignorePathSeparator}${line}`
       }
 
@@ -92,7 +92,7 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
 
     gitignore = maybeRelativeToDir
   } catch (e) {
-    e;
+    e
   }
 
   return gitignore
@@ -165,17 +165,20 @@ export const getFilesList = async ({
 
     // Get parent to root gitignore
     if (!omitGitIgnore) {
-      const searchRootSegments = searchRoot.replace(fsRoot,'').split(pathSeparatorChar)
+      const searchRootSegments = searchRoot
+        .replace(fsRoot, '')
+        .split(pathSeparatorChar)
 
       const pathSegmentsToSystemRoot = []
 
-      for (let i =0; i < searchRootSegments.length; i++) {
+      for (let i = 0; i < searchRootSegments.length; i++) {
         let currentPath = searchRootSegments.slice(0, i).join(pathSeparatorChar)
 
         currentPath = fsRoot + currentPath
 
         pathSegmentsToSystemRoot.push(currentPath)
       }
+
       const parentDirsIgnore = (
         await Promise.all(
           pathSegmentsToSystemRoot.map((parentPath) =>
@@ -193,7 +196,6 @@ export const getFilesList = async ({
       dir: string,
       parentIgnore: string[],
     ): Promise<string[]> => {
-
       if (hardStopFlag?.stopSearch) {
         return []
       }

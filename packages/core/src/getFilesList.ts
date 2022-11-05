@@ -54,14 +54,18 @@ const getFilesListByGitChanges = async (root: string) => {
   return filesList
 }
 
-const pathSeparatorChar = '/'
+export const pathSeparatorChar = path.sep
+export const fsRoot = path.parse(process.cwd()).root
+console.log('fs root', fsRoot)
 
 const getGitIgnoreContentForDirectory = async (dirPath: string) => {
+  const gitignorePathSeparator = '/'
   let gitignore: string[] = []
-
   try {
+    const gitignorePath = path.join(dirPath, '.gitignore')
+
     const gitignoreFileContent = (
-      await fs.readFile(path.join(dirPath, '.gitignore'))
+      await fs.readFile(gitignorePath)
     ).toString()
     const lines = gitignoreFileContent.split('\n').map((line) => line.trim())
     const nonCommentedNonEmptyLines = lines
@@ -71,14 +75,15 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
     const maybeRelativeToDir = nonCommentedNonEmptyLines.map((line) => {
       if (
         // Pattern starts with dir separator eg. /some
-        line.startsWith(pathSeparatorChar) ||
+        line.startsWith(gitignorePathSeparator) ||
         // Pattern contains dir separator as not last char and is not path beginning wildcard eg. some/path, but not **/some/path
-        (!line.startsWith('**/') &&
-          line.substring(0, line.length - 1).includes(pathSeparatorChar))
+        (!line.startsWith(`**${gitignorePathSeparator}`) &&
+          line.substring(0, line.length - 1).includes(gitignorePathSeparator))
       ) {
         // pattern should be relative to .gitignore location directory
-        // `ignore` does not allow absolute paths, so we have to hack by removing initial '/'
-        return path.join(dirPath, line).substring(1)
+        // `ignore` does not allow absolute paths, so we have to hack by removing initial '/' or 'C:\'
+       const fsPosixPathWithuotRoot = dirPath.replace(fsRoot,'').replace(/\\/g, '\/')
+        return `${fsPosixPathWithuotRoot}${gitignorePathSeparator}${line}`
       }
 
       // pattern should not be relative to .gitignore location directory, eg. '*.json', '**/someFile', 'dist/'
@@ -87,7 +92,7 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
 
     gitignore = maybeRelativeToDir
   } catch (e) {
-    e
+    e;
   }
 
   return gitignore
@@ -160,20 +165,17 @@ export const getFilesList = async ({
 
     // Get parent to root gitignore
     if (!omitGitIgnore) {
-      const searchRootSegments = searchRoot.split(pathSeparatorChar)
+      const searchRootSegments = searchRoot.replace(fsRoot,'').split(pathSeparatorChar)
 
       const pathSegmentsToSystemRoot = []
 
-      for (let i = 1; i < searchRootSegments.length; i++) {
+      for (let i =0; i < searchRootSegments.length; i++) {
         let currentPath = searchRootSegments.slice(0, i).join(pathSeparatorChar)
 
-        if (!currentPath.startsWith(pathSeparatorChar)) {
-          currentPath = pathSeparatorChar + currentPath
-        }
+        currentPath = fsRoot + currentPath
 
         pathSegmentsToSystemRoot.push(currentPath)
       }
-
       const parentDirsIgnore = (
         await Promise.all(
           pathSegmentsToSystemRoot.map((parentPath) =>
@@ -191,6 +193,7 @@ export const getFilesList = async ({
       dir: string,
       parentIgnore: string[],
     ): Promise<string[]> => {
+
       if (hardStopFlag?.stopSearch) {
         return []
       }
@@ -199,7 +202,6 @@ export const getFilesList = async ({
 
       if (!omitGitIgnore) {
         const gitignore = await getGitIgnoreContentForDirectory(dir)
-
         localIgnore.push(...gitignore)
       }
 
@@ -213,10 +215,10 @@ export const getFilesList = async ({
       const absolutePaths = entriesList.map((entry) => path.join(dir, entry))
 
       const filteredAbsolutePaths = ignoreInstance
-        // remove initial '/' as ignore instance is not allowing for absolute paths
-        .filter(absolutePaths.map((p) => p.substring(1)))
-        // add initial '/' back
-        .map((p) => `/${p}`)
+        // remove initial '/' or 'C:\' as ignore instance is not allowing for absolute paths
+        .filter(absolutePaths.map((p) => p.replace(fsRoot, '')))
+        // add initial '/' or 'C:\' back
+        .map((p) => `${fsRoot}${p}`)
 
       let directories = await asyncFilter(
         filteredAbsolutePaths,

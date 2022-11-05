@@ -1,7 +1,6 @@
 import mockFs from 'mock-fs'
-import { getFilesList } from '/getFilesList'
+import { getFilesList, fsRoot, filterIncludeExclude } from '/getFilesList'
 import dedent from 'dedent'
-import { filterIncludeExclude } from '../src/getFilesList'
 
 afterEach(() => {
   mockFs.restore()
@@ -11,9 +10,13 @@ const cwd = process.cwd()
 const removeCwd = (filePaths: string[]) =>
   filePaths.map((filePath) => filePath.replace(cwd, ''))
 
+const root = `${fsRoot}root`
+
+const toPlatformSpecificPath = (p:string) => process.platform.includes('win') ? p.replace(/\//g,'\\'):p
+
 it('should return files list without gitignore', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -30,22 +33,22 @@ it('should return files list without gitignore', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' }),
+    await getFilesList({ searchRoot: toPlatformSpecificPath(`${root}/project`)}),
   )
   mockFs.restore()
-
+console.log('files list', filesList)
   expect(filesList).toMatchObject([
-    '/root/project/fileA.ts',
-    '/root/project/fileB.js',
-    '/root/project/src/fileC.tsx',
-    '/root/project/src/fileD.jsx',
-    '/root/project/src/config/fileE.json',
-  ])
+    `${root}/project/fileA.ts`,
+    `${root}/project/fileB.js`,
+    `${root}/project/src/fileC.tsx`,
+    `${root}/project/src/fileD.jsx`,
+    `${root}/project/src/config/fileE.json`,
+  ].map(toPlatformSpecificPath))
 })
 
 it('should return files for project root with gitignore', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -63,21 +66,21 @@ it('should return files for project root with gitignore', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' }),
+    await getFilesList({ searchRoot: toPlatformSpecificPath(`${root}/project`) }),
   )
   mockFs.restore()
 
   expect(filesList).toMatchObject([
-    '/root/project/fileA.ts',
-    '/root/project/fileB.js',
-    '/root/project/src/fileC.tsx',
-    '/root/project/src/fileD.jsx',
-  ])
+    `${root}/project/fileA.ts`,
+    `${root}/project/fileB.js`,
+    `${root}/project/src/fileC.tsx`,
+    `${root}/project/src/fileD.jsx`,
+  ].map(toPlatformSpecificPath))
 })
 
 it('should return files for project root with two gitignores', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -97,20 +100,20 @@ it('should return files for project root with two gitignores', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' }),
+    await getFilesList({ searchRoot: toPlatformSpecificPath(`${root}/project`) }),
   )
   mockFs.restore()
 
   expect(filesList).toMatchObject([
-    '/root/project/fileA.ts',
-    '/root/project/fileB.js',
-    '/root/project/src/fileD.jsx',
-  ])
+    `${root}/project/fileA.ts`,
+    `${root}/project/fileB.js`,
+    `${root}/project/src/fileD.jsx`,
+  ].map(toPlatformSpecificPath))
 })
 
 it('should return files for monorepo with gitignores in subdirs', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         '.gitignore': 'dist',
@@ -156,27 +159,27 @@ it('should return files for monorepo with gitignores in subdirs', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project' }),
+    await getFilesList({ searchRoot: toPlatformSpecificPath(`${root}/project`) }),
   )
   mockFs.restore()
 
   expect(filesList.sort()).toMatchObject(
     [
-      '/root/project/fileA.ts',
-      '/root/project/packageA/src/fileE.json',
-      '/root/project/packageA/fileC.tsx',
-      '/root/project/packageA/ignoreInB/file.ts',
-      '/root/project/packageB/fileC.tsx',
-      '/root/project/packageB/fileD.jsx',
-      '/root/project/packageB/ignoreInA/file.ts',
-      '/root/project/packageB/src/fileE.json',
-    ].sort(),
+      `${root}/project/fileA.ts`,
+      `${root}/project/packageA/src/fileE.json`,
+      `${root}/project/packageA/fileC.tsx`,
+      `${root}/project/packageA/ignoreInB/file.ts`,
+      `${root}/project/packageB/fileC.tsx`,
+      `${root}/project/packageB/fileD.jsx`,
+      `${root}/project/packageB/ignoreInA/file.ts`,
+      `${root}/project/packageB/src/fileE.json`,
+    ].sort().map(toPlatformSpecificPath),
   )
 })
 
 it('should return files for project root with omitting gitignore', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -194,23 +197,23 @@ it('should return files for project root with omitting gitignore', async () => {
   })
 
   const filesList = removeCwd(
-    await getFilesList({ searchRoot: '/root/project', omitGitIgnore: true }),
+    await getFilesList({ searchRoot: toPlatformSpecificPath(`${root}/project`), omitGitIgnore: true }),
   )
   mockFs.restore()
 
   expect(filesList).toMatchObject([
-    '/root/project/fileA.ts',
-    '/root/project/fileB.js',
-    '/root/project/src/fileC.tsx',
-    '/root/project/src/fileD.jsx',
-    '/root/project/src/config/fileE.json',
-  ])
+    `${root}/project/fileA.ts`,
+    `${root}/project/fileB.js`,
+    `${root}/project/src/fileC.tsx`,
+    `${root}/project/src/fileD.jsx`,
+    `${root}/project/src/config/fileE.json`,
+  ].map(toPlatformSpecificPath))
 })
 
 // We will add option to search in ignored files, so that exception is not needed
 it.skip('should return files for project root ignored by parent gitignore, but ignore the nested directories', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -247,12 +250,12 @@ it.skip('should return files for project root ignored by parent gitignore, but i
   expect(filesList).toMatchObject([
     '/root/project/src/config/fileE.json',
     '/root/project/src/config/dir/config/fileG.ts',
-  ])
+  ].map(toPlatformSpecificPath))
 })
 
 it('should ignore files from parent .gitignore', async () => {
   mockFs({
-    '/root': {
+    [root]: {
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',
@@ -280,60 +283,60 @@ it('should ignore files from parent .gitignore', async () => {
 
   const filesList = removeCwd(
     await getFilesList({
-      searchRoot: '/root/project/src',
+      searchRoot: toPlatformSpecificPath(`${root}/project/src`),
     }),
   )
 
   mockFs.restore()
 
   expect(filesList).toMatchObject([
-    '/root/project/src/fileC.tsx',
-    '/root/project/src/fileD.jsx',
-    '/root/project/src/config/dir/config/fileG.ts',
-  ])
+    `${root}/project/src/fileC.tsx`,
+    `${root}/project/src/fileD.jsx`,
+    `${root}/project/src/config/dir/config/fileG.ts`,
+  ].map(toPlatformSpecificPath))
 })
 
 it('should filter out excluded files', () => {
   const filteredList = filterIncludeExclude({
-    searchRoot: '/root/project',
+    searchRoot: toPlatformSpecificPath(`${root}/project`),
     filesList: [
-      '/root/project/dir/file',
-      '/root/project/dist/file1',
-      '/root/project/src/index.ts',
+      `${root}/project/dir/file`,
+      `${root}/project/dist/file1`,
+      `${root}/project/src/index.ts`,
     ],
     include: undefined,
     exclude: ['**/file', 'dist/file*'],
   })
 
-  expect(filteredList).toMatchObject(['/root/project/src/index.ts'])
+  expect(filteredList).toMatchObject([`${root}/project/src/index.ts`].map(toPlatformSpecificPath))
 })
 
 it('should only list included files', () => {
   const filteredList = filterIncludeExclude({
-    searchRoot: '/root/project',
+    searchRoot: toPlatformSpecificPath(`${root}/project`),
     filesList: [
-      '/root/project/dir/file',
-      '/root/project/dist/file1',
-      '/root/project/src/index.ts',
+      `${root}/project/dir/file`,
+      `${root}/project/dist/file1`,
+      `${root}/project/src/index.ts`,
     ],
     include: ['**/index.*'],
     exclude: [],
   })
 
-  expect(filteredList).toMatchObject(['/root/project/src/index.ts'])
+  expect(filteredList).toMatchObject([`${root}/project/src/index.ts`].map(toPlatformSpecificPath))
 })
 
 it('should only list included files, but not excluded ones', () => {
   const filteredList = filterIncludeExclude({
-    searchRoot: '/root/project',
+    searchRoot: toPlatformSpecificPath(`${root}/project`),
     filesList: [
-      '/root/project/dir/file',
-      '/root/project/dist/file1',
-      '/root/project/src/index.ts',
+      `${root}/project/dir/file`,
+      `${root}/project/dist/file1`,
+      `${root}/project/src/index.ts`,
     ],
     include: ['di*/**'],
     exclude: ['dir/**'],
   })
 
-  expect(filteredList).toMatchObject(['/root/project/dist/file1'])
+  expect(filteredList).toMatchObject([`${root}/project/dist/file1`].map(toPlatformSpecificPath))
 })

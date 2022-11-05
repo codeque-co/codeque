@@ -111,6 +111,7 @@ const Panel = () => {
         })
 
         setQuery(selectedText.current)
+        setNextSearchIsFromSelection(true)
       }
 
       eventBusInstance.dispatch('start-search')

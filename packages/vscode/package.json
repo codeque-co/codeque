@@ -63,7 +63,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn typecheck && yarn run package",
+		"vscode:prepublish": "yarn lint && yarn typecheck && yarn run package",
 		"compile": "webpack",
 		"watch:extension": "webpack --config webpack.extension.config.js --watch",
 		"package:extension": "webpack --config webpack.extension.config.js --mode production",

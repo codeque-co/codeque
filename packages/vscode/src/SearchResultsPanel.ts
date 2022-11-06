@@ -157,7 +157,7 @@ export class SearchResultsPanel {
     filePath: string
     location: Match['loc']
   }) => {
-    const setting: vscode.Uri = vscode.Uri.parse(filePath)
+    const setting: vscode.Uri = vscode.Uri.file(filePath)
 
     vscode.workspace.openTextDocument(setting).then(
       (textDoc: vscode.TextDocument) => {

@@ -107,7 +107,7 @@ describe('multi statements', () => {
 
     expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
-    expect(matches[0].code.split('\n')).toHaveLength(3)
+    expect(matches[0].code.split('\n').filter(Boolean)).toHaveLength(3)
   })
 
   it('should match three expressions in program body and only include them in result (without whole block)', () => {

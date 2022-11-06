@@ -37,9 +37,26 @@ export class SearchManager {
   }
 
   private getRoot() {
-    return vscode.workspace.workspaceFolders?.[0] !== undefined
-      ? vscode.workspace.workspaceFolders[0].uri.path
-      : undefined
+    const isWindows = process.platform.includes('win32')
+
+    const searchRoot =
+      vscode.workspace.workspaceFolders?.[0] !== undefined
+        ? vscode.workspace.workspaceFolders[0].uri.fsPath
+        : undefined
+
+    if (searchRoot !== undefined) {
+      // For some reason vscode return lowercased drive letters on windows :/
+      if (isWindows && /^[a-z]:\\/.test(searchRoot)) {
+        const searchRootFsRoot = path.parse(searchRoot).root
+        const upperCasedSearchRootFsRoot = searchRootFsRoot.toUpperCase()
+
+        return searchRoot.replace(searchRootFsRoot, upperCasedSearchRootFsRoot)
+      }
+
+      return searchRoot
+    }
+
+    return undefined
   }
 
   private async getFilesListForBasicSearch() {
@@ -276,10 +293,12 @@ export class SearchManager {
     } catch (e: any) {
       vscode.window.showErrorMessage('Search error: ' + (e as Error).message)
 
+      console.error(e)
+
       eventBusInstance.dispatch('have-results', {
         results: {
           matches: [],
-          errors: e.message,
+          errors: [e.message],
           hints: [],
           relativePathsMap: {},
           groupedMatches: {},

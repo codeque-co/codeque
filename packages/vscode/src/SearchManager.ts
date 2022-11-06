@@ -38,7 +38,6 @@ export class SearchManager {
 
   private getRoot() {
     const isWindows = process.platform.includes('win32')
-
     const searchRoot =
       vscode.workspace.workspaceFolders?.[0] !== undefined
         ? vscode.workspace.workspaceFolders[0].uri.fsPath
@@ -136,7 +135,7 @@ export class SearchManager {
   ) => {
     const groupedMatches = groupMatchesByFile(searchResults.matches)
     const filePathsFromErrors = searchResults.errors
-      .map((e) => (e as SearchInFileError)?.filePath)
+      .map((e: unknown) => (e as SearchInFileError)?.filePath)
       .filter(Boolean)
 
     const filePaths = Object.keys(groupedMatches).concat(filePathsFromErrors)

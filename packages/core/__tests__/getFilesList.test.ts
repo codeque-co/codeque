@@ -87,6 +87,42 @@ it('should return files for project root with gitignore', async () => {
   )
 })
 
+it('should return files for project root with gitignore with not-normalizes search root and absolute path in ignore', async () => {
+  mockFs({
+    [root]: {
+      project: {
+        'fileA.ts': 'content',
+        'fileB.js': 'content',
+        'fileC.txt': 'content',
+        '.gitignore': '/src/config/fileE.json',
+        src: {
+          'fileC.tsx': '',
+          'fileD.jsx': '',
+          config: {
+            'fileE.json': '',
+          },
+        },
+      },
+    },
+  })
+
+  const filesList = removeCwd(
+    await getFilesList({
+      searchRoot: toPlatformSpecificPath(`${root}/project/`), // not normalizes - '/' at the end
+    }),
+  )
+  mockFs.restore()
+
+  expect(filesList).toMatchObject(
+    [
+      `${root}/project/fileA.ts`,
+      `${root}/project/fileB.js`,
+      `${root}/project/src/fileC.tsx`,
+      `${root}/project/src/fileD.jsx`,
+    ].map(toPlatformSpecificPath),
+  )
+})
+
 it('should return files for project root with two gitignores', async () => {
   mockFs({
     [root]: {
@@ -133,12 +169,12 @@ it('should return files for monorepo with gitignores in subdirs', async () => {
         packageA: {
           'fileC.tsx': '',
           '.gitignore': `
-            ignoreInA/**
+            .ignoreInA/**
           `,
           src: {
             'fileE.json': '',
           },
-          ignoreInA: {
+          '.ignoreInA': {
             'file.ts': 'content',
           },
           ignoreInB: {
@@ -157,7 +193,7 @@ it('should return files for monorepo with gitignores in subdirs', async () => {
           src: {
             'fileE.json': '',
           },
-          ignoreInA: {
+          '.ignoreInA': {
             'file.ts': 'content',
           },
           ignoreInB: {
@@ -186,7 +222,7 @@ it('should return files for monorepo with gitignores in subdirs', async () => {
       `${root}/project/packageA/ignoreInB/file.ts`,
       `${root}/project/packageB/fileC.tsx`,
       `${root}/project/packageB/fileD.jsx`,
-      `${root}/project/packageB/ignoreInA/file.ts`,
+      `${root}/project/packageB/.ignoreInA/file.ts`,
       `${root}/project/packageB/src/fileE.json`,
     ]
       .sort()

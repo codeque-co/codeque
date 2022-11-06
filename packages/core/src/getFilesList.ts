@@ -79,11 +79,14 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
       ) {
         // pattern should be relative to .gitignore location directory
         // `ignore` does not allow absolute paths, so we have to hack by removing initial '/' or 'C:\'
-        const fsPosixPathWithuotRoot = dirPath
+        const fsPosixPathWithoutRoot = dirPath
           .replace(fsRoot, '')
           .replace(/\\/g, '/')
 
-        return `${fsPosixPathWithuotRoot}${gitignorePathSeparator}${line}`
+        //We normalize cos path can end with `/` so there would be '//'
+        return path.normalize(
+          `${fsPosixPathWithoutRoot}${gitignorePathSeparator}${line}`,
+        )
       }
 
       // pattern should not be relative to .gitignore location directory, eg. '*.json', '**/someFile', 'dist/'
@@ -144,7 +147,7 @@ type GetFilesListArgs = {
 }
 
 export const getFilesList = async ({
-  searchRoot,
+  searchRoot: _searchRoot,
   entryPoint = undefined,
   byGitChanges = false,
   omitGitIgnore = false,
@@ -153,6 +156,7 @@ export const getFilesList = async ({
   include = undefined,
   hardStopFlag,
 }: GetFilesListArgs) => {
+  const searchRoot = path.normalize(_searchRoot)
   const measureStop = measureStart('getFiles')
   let filesList: string[] = []
 

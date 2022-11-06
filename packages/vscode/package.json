@@ -7,7 +7,7 @@
 		"type": "git",
 		"url": "https://github.com/codeque-co/codeque"
 	},
-	"version": "0.11.1",
+	"version": "0.12.0",
 	"engines": {
 		"vscode": "^1.68.0",
 		"node": ">=14"
@@ -63,7 +63,7 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn lint && yarn typecheck && yarn run package",
+		"vscode:prepublish": "yarn typecheck && yarn run package",
 		"compile": "webpack",
 		"watch:extension": "webpack --config webpack.extension.config.js --watch",
 		"package:extension": "webpack --config webpack.extension.config.js --mode production",

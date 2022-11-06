@@ -60,8 +60,32 @@ export function SearchSettings({
   // Handle initial settings change from backend
   useEffect(() => {
     // We handle only mode change for now
-    if (initialSettings.mode) {
+    if (initialSettings.mode !== undefined) {
       setMode(initialSettings.mode)
+    }
+
+    if (initialSettings.caseType !== undefined) {
+      setCase(initialSettings.caseType)
+    }
+
+    if (initialSettings.entryPoint !== undefined) {
+      setEntryPoint(initialSettings.entryPoint ?? '')
+    }
+
+    if (initialSettings.include !== undefined) {
+      setInclude(getOptionsFromArray(initialSettings?.include ?? []))
+    }
+
+    if (initialSettings.exclude !== undefined) {
+      setExclude(getOptionsFromArray(initialSettings?.exclude ?? []))
+    }
+
+    if (initialSettings.searchIgnoredFiles !== undefined) {
+      setSearchIgnoredFiles(initialSettings.searchIgnoredFiles)
+    }
+
+    if (initialSettings.searchNodeModules !== undefined) {
+      setSearchNodeModules(initialSettings.searchNodeModules)
     }
   }, [initialSettings])
 

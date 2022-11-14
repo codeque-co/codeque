@@ -25,7 +25,7 @@
 		"regexp search"
 	],
 	"activationEvents": [
-		"onView:codeque-sidebar"
+		"onStartupFinished"
 	],
 	"license": "SEE LICENSE IN LICENSE.md",
 	"main": "./dist/extension.js",

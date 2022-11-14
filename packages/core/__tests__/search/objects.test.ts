@@ -336,4 +336,48 @@ describe('Types', () => {
     expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
   })
+
+  it('should match OptionalMemberExpression and non-optional MemberExpression interchangeably in include mode object property before rename', () => {
+    const testFile = `
+      obj?.field?.field
+      obj.field.field
+      obj?.field.field
+      obj.field?.field
+    `
+
+    const query1 = `
+        obj.field.field
+      `
+    const query2 = `
+        obj?.field?.field
+      `
+
+    const { matches: matches1, errors: errors1 } = searchInStrings({
+      mode: 'include',
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
+      queryCodes: [query1],
+    })
+
+    const { matches: matches2, errors: errors2 } = searchInStrings({
+      mode: 'include',
+      files: [
+        {
+          path: 'mock',
+          content: testFile,
+        },
+      ],
+      queryCodes: [query2],
+    })
+
+    expect(matches1.length).toBe(4)
+    expect(errors1.length).toBe(0)
+
+    expect(matches2.length).toBe(4)
+    expect(errors2.length).toBe(0)
+  })
 })

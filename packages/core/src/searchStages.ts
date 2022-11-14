@@ -588,7 +588,6 @@ const compareNodes = (
   }
 
   // Support for matching JSXElements without children regardless closing/opening tag
-
   if (
     !isExact &&
     (queryNode.type as string) === 'JSXElement' &&
@@ -668,6 +667,32 @@ const compareNodes = (
       levelMatch: true,
       queryKeysToTraverseForValidatingMatch: [],
       fileKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches,
+    }
+  }
+
+  // Support for matching optional flag in MemberExpressions
+
+  const memberExpressionsNodeTypes = [
+    'MemberExpression',
+    'OptionalMemberExpression',
+  ]
+
+  if (
+    !isExact &&
+    memberExpressionsNodeTypes.includes(queryNode.type as string) &&
+    memberExpressionsNodeTypes.includes(fileNode.type as string) &&
+    queryNode.computed === fileNode.computed // this could be also supported in more flexible way
+  ) {
+    /**
+     We skip comparing 'optional' property on the nodes, to match them interchangeably
+    */
+    const keysToTraverseForValidatingMatch = ['object', 'property']
+
+    return {
+      levelMatch: true,
+      queryKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
+      fileKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
       fileKeysToTraverseForOtherMatches,
     }
   }

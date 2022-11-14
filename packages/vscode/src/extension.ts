@@ -1,11 +1,13 @@
 import * as vscode from 'vscode'
 import { SidebarProvider } from './SidebarProvider'
 import { SearchResultsPanel } from './SearchResultsPanel'
-import { StateManager } from './StateManager'
+import { StateManager, StateShape } from './StateManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
-import { parseQueries } from '@codeque/core'
+import { parseQueries, extensionTester } from '@codeque/core'
+import { sanitizeFsPath } from './nodeUtils'
+import path from 'path'
 
 let dispose = (() => undefined) as () => void
 
@@ -41,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.StatusBarAlignment.Right,
   )
   item.text = '🔍 Open Search'
-  item.command = 'codeque.openSearch'
+  item.command = 'codeque.searchWithOptionalQuerySelectionFromEditor'
   item.show()
 
   context.subscriptions.push(
@@ -51,45 +53,109 @@ export function activate(context: vscode.ExtensionContext) {
     ),
   )
 
+  const openSearchWithOptionalQueryFromEditorSelection = async (
+    newSearchSettings?: Partial<StateShape>,
+  ) => {
+    const { activeTextEditor } = vscode.window
+
+    let selectedCode: string | null = ''
+
+    const state = stateManager.getState()
+
+    if (activeTextEditor) {
+      selectedCode = activeTextEditor.document.getText(
+        activeTextEditor.selection,
+      )
+    } else {
+      selectedCode = state.webviewTextSelection
+    }
+
+    const newQuery =
+      selectedCode && /^\s/.test(selectedCode)
+        ? dedent(selectedCode)
+        : selectedCode
+
+    if (newQuery) {
+      const [, queryParseOk] = parseQueries([newQuery], false)
+
+      stateManager.setState({
+        query: newQuery,
+        mode: !queryParseOk && state.mode !== 'text' ? 'text' : state.mode,
+      })
+    }
+
+    if (newSearchSettings) {
+      stateManager.setState(newSearchSettings)
+    }
+
+    SearchResultsPanel.createOrShow(extensionUri, stateManager)
+
+    await openSidebar()
+
+    if (newQuery) {
+      eventBusInstance.dispatch('open-search-from-selection')
+      eventBusInstance.dispatch('set-query-on-ui', newQuery)
+    }
+
+    if (newQuery || newSearchSettings) {
+      eventBusInstance.dispatch('start-search')
+    }
+  }
+
   context.subscriptions.push(
-    vscode.commands.registerCommand('codeque.openSearch', async () => {
-      const { activeTextEditor } = vscode.window
+    vscode.commands.registerCommand(
+      'codeque.searchWithOptionalQuerySelectionFromEditor',
+      async (data) => {
+        openSearchWithOptionalQueryFromEditorSelection()
+      },
+    ),
+    vscode.commands.registerCommand(
+      'codeque.searchByEntryPoint',
+      async (data) => {
+        const searchPath = sanitizeFsPath(data.fsPath)
+        const searchRoot = searchManager.getRoot()
 
-      let selectedCode: string | null = ''
+        if (!searchRoot) {
+          vscode.window.showErrorMessage(
+            'Search error: Could not determine search root.',
+          )
 
-      const state = stateManager.getState()
+          return
+        }
 
-      if (activeTextEditor) {
-        selectedCode = activeTextEditor.document.getText(
-          activeTextEditor.selection,
-        )
-      } else {
-        selectedCode = state.webviewTextSelection
-      }
+        const relativePath = path.relative(searchRoot, searchPath)
+        const { ext } = path.parse(relativePath)
 
-      const newQuery =
-        selectedCode && /^\s/.test(selectedCode)
-          ? dedent(selectedCode)
-          : selectedCode
+        if (!extensionTester.test(ext)) {
+          vscode.window.showErrorMessage(
+            'Search error: Unsupported entry point file extension: ' + ext,
+          )
 
-      if (newQuery) {
-        const [, queryParseOk] = parseQueries([newQuery], false)
+          return
+        }
 
-        stateManager.setState({
-          query: newQuery,
-          mode: !queryParseOk && state.mode !== 'text' ? 'text' : state.mode,
+        await openSearchWithOptionalQueryFromEditorSelection({
+          entryPoint: relativePath,
         })
+      },
+    ),
+    vscode.commands.registerCommand('codeque.searchInFolder', async (data) => {
+      const searchPath = sanitizeFsPath(data.fsPath)
+      const searchRoot = searchManager.getRoot()
+
+      if (!searchRoot) {
+        vscode.window.showErrorMessage(
+          'Search error: Could not determine search root.',
+        )
+
+        return
       }
 
-      SearchResultsPanel.createOrShow(extensionUri, stateManager)
+      const relativePath = path.relative(searchRoot, searchPath)
 
-      await openSidebar()
-
-      if (newQuery) {
-        eventBusInstance.dispatch('open-search-from-selection')
-        eventBusInstance.dispatch('set-query-on-ui', newQuery)
-        eventBusInstance.dispatch('start-search')
-      }
+      await openSearchWithOptionalQueryFromEditorSelection({
+        include: [`${relativePath}/**`],
+      })
     }),
   )
 

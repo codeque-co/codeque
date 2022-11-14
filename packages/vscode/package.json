@@ -53,14 +53,47 @@
 		},
 		"commands": [
 			{
-				"command": "codeque.openSearch",
-				"title": "Open Search"
+				"command": "codeque.searchWithOptionalQuerySelectionFromEditor",
+				"title": "CQ: Open Search"
+			},
+			{
+				"command": "codeque.searchByEntryPoint",
+				"title": "CQ: Search by Entry Point"
+			},
+			{
+				"command": "codeque.searchInFolder",
+				"title": "CQ: Search in Folder"
 			},
 			{
 				"command": "codeque.refresh",
-				"title": "Refresh extension"
+				"title": "CQ: Refresh extension"
 			}
-		]
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "codeque.searchByEntryPoint",
+					"group": "4_search",
+					"when": "!explorerResourceIsFolder"
+				},
+				{
+					"command": "codeque.searchInFolder",
+					"group": "4_search",
+					"when": "explorerResourceIsFolder"
+				}
+			],
+			"editor/context": [
+				{
+					"group": "navigation",
+					"command": "codeque.searchWithOptionalQuerySelectionFromEditor",
+					"when": "editorHasSelection"
+				},
+				{
+					"group": "navigation",
+					"command": "codeque.searchByEntryPoint"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn lint && yarn typecheck && yarn run package",

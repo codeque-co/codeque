@@ -9,6 +9,7 @@ import {
   filterIncludeExclude,
   SearchInFileError,
 } from '@codeque/core'
+import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
@@ -32,27 +33,23 @@ export class SearchManager {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
 
-    this.root = this.getRoot()
+    this.root = this.determineRoot()
     this.maybeStartWatchingFilesList()
   }
 
-  private getRoot() {
-    const isWindows = process.platform.includes('win32')
+  /**
+   *
+   * todo: refactor to public getRoot =>  this.root || this.determineRoot() (private)
+   * extract logic for fixing the path for windows
+   */
+  private determineRoot() {
     const searchRoot =
       vscode.workspace.workspaceFolders?.[0] !== undefined
         ? vscode.workspace.workspaceFolders[0].uri.fsPath
         : undefined
 
     if (searchRoot !== undefined) {
-      // For some reason vscode return lowercased drive letters on windows :/
-      if (isWindows && /^[a-z]:\\/.test(searchRoot)) {
-        const searchRootFsRoot = path.parse(searchRoot).root
-        const upperCasedSearchRootFsRoot = searchRootFsRoot.toUpperCase()
-
-        return searchRoot.replace(searchRootFsRoot, upperCasedSearchRootFsRoot)
-      }
-
-      return searchRoot
+      return sanitizeFsPath(searchRoot)
     }
 
     return undefined
@@ -152,11 +149,15 @@ export class SearchManager {
     }
   }
 
+  public getRoot = () => {
+    return this.root ?? this.determineRoot()
+  }
+
   public performSearch = async (settings: StateShape) => {
     this.lastSearchSettings = settings
 
     if (this.root === undefined) {
-      this.root = this.getRoot()
+      this.root = this.determineRoot()
       this.maybeStartWatchingFilesList()
     }
 

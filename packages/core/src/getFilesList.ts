@@ -11,7 +11,7 @@ import { spawnSync } from 'child_process'
 import escapeGlob from 'glob-escape'
 import { HardStopFlag } from './types'
 
-const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
+export const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   // dpdm does not support custom search directory :/

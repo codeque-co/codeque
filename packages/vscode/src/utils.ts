@@ -1,3 +1,5 @@
+import path from 'path'
+import * as vscode from 'vscode'
 // eslint-disable-next-line
 export function simpleDebounce<F extends (...args: any) => unknown>(func: F, timeout = 300) {
   let timer: NodeJS.Timeout

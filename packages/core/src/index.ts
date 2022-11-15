@@ -7,6 +7,7 @@ export {
   getFilesList,
   filterIncludeExclude,
   extensionTester,
+  pathToPosix,
 } from './getFilesList'
 export { createHardStopFlag } from './hardStopFlag'
 export * from './types'

@@ -5,7 +5,7 @@ import { StateManager, StateShape } from './StateManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
-import { parseQueries, extensionTester } from '@codeque/core'
+import { parseQueries, extensionTester, pathToPosix } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
 
@@ -154,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
       const relativePath = path.relative(searchRoot, searchPath)
 
       await openSearchWithOptionalQueryFromEditorSelection({
-        include: [`${relativePath}/**`],
+        include: [`${pathToPosix(relativePath)}/**`],
       })
     }),
   )

@@ -12,6 +12,7 @@ import escapeGlob from 'glob-escape'
 import { HardStopFlag } from './types'
 
 export const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
+export const pathToPosix = (fsPath: string) => fsPath.replace(/\\/g, '/')
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   // dpdm does not support custom search directory :/
@@ -79,9 +80,7 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
       ) {
         // pattern should be relative to .gitignore location directory
         // `ignore` does not allow absolute paths, so we have to hack by removing initial '/' or 'C:\'
-        const fsPosixPathWithoutRoot = dirPath
-          .replace(fsRoot, '')
-          .replace(/\\/g, '/')
+        const fsPosixPathWithoutRoot = pathToPosix(dirPath.replace(fsRoot, ''))
 
         //We normalize cos path can end with `/` so there would be '//'
         return path.normalize(
@@ -102,6 +101,7 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
 }
 
 const removeInitialDot = (p: string) => p.replace(/^\.(\\|\/)/, '')
+
 export const filterIncludeExclude = ({
   searchRoot,
   include: _include,

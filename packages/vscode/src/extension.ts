@@ -8,6 +8,7 @@ import { SearchManager } from './SearchManager'
 import { parseQueries, extensionTester, pathToPosix } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
+import { dedentPatched } from './utils'
 
 let dispose = (() => undefined) as () => void
 
@@ -72,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     const newQuery =
       selectedCode && /^\s/.test(selectedCode)
-        ? dedent(selectedCode)
+        ? dedentPatched(selectedCode)
         : selectedCode
 
     if (newQuery) {

@@ -1,6 +1,6 @@
-import dedent from 'dedent'
 import { darkTheme } from './codeHighlightThemes'
 import { Highlight, HighlightProps } from './Highlight'
+import { dedentPatched } from '../../utils'
 
 export type CodeBlockProps = HighlightProps
 
@@ -12,7 +12,7 @@ export function CodeBlock({
   isMultiLine: _isMultiLine,
   ...props
 }: CodeBlockProps) {
-  const code = _dedent ? dedent(children) : children.trimEnd()
+  const code = _dedent ? dedentPatched(children) : children.trimEnd()
 
   const isMultiLine = _isMultiLine ?? code.includes('\n')
 

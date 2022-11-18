@@ -6,7 +6,6 @@ import {
   isNode,
   isNodeArray,
   numericWildcard,
-  parseOptions,
   identifierWildcard,
   unwrapExpressionStatement,
   removeIdentifierRefFromWildcard,
@@ -20,6 +19,7 @@ import {
   wildcardChar,
   disallowedWildcardRegExp,
   createBlockStatementNode,
+  parseCode,
 } from './astUtils'
 
 const MIN_TOKEN_LEN = 2
@@ -202,10 +202,7 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsIs = parse(
-          queryText,
-          parseOptions,
-        ) as unknown as PoorNodeType
+        const parsedAsIs = parseCode(queryText) as unknown as PoorNodeType
 
         const { queryNode, isMultistatement } = extractQueryNode(parsedAsIs)
 
@@ -226,9 +223,8 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsExp = parse(
+        const parsedAsExp = parseCode(
           `(${queryText})`,
-          parseOptions,
         ) as unknown as PoorNodeType
 
         const { queryNode } = extractQueryNode(parsedAsExp)

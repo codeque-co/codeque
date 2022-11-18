@@ -8,7 +8,6 @@ import {
   isNode,
   isNodeArray,
   IdentifierTypes,
-  parseOptions,
   numericWildcard,
   identifierWildcard,
   nodesTreeWildcard,
@@ -19,6 +18,7 @@ import {
   anyStringWildcardRegExp,
   createBlockStatementNode,
   sanitizeTemplateElement,
+  parseCode,
 } from './astUtils'
 import { getExtendedCodeFrame, getKeyFromObject } from './utils'
 import { Logger } from './logger'
@@ -912,10 +912,7 @@ export const searchFileContent = ({
       ? `(${fileContent})`
       : fileContent
 
-    const fileNode = parse(
-      maybeWrappedJSON,
-      parseOptions,
-    ) as unknown as PoorNodeType
+    const fileNode = parseCode(maybeWrappedJSON) as unknown as PoorNodeType
 
     measureParseFile()
     const programNode = fileNode.program as PoorNodeType

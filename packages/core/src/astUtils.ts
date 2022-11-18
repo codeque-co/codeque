@@ -1,4 +1,4 @@
-import { parse, ParserOptions } from '@babel/parser'
+import { parse, ParserOptions, ParserPlugin } from '@babel/parser'
 import { NODE_FIELDS } from '@babel/types'
 import { Match, PoorNodeType } from './types'
 
@@ -130,11 +130,31 @@ export const sanitizeTemplateElement = (node: PoorNodeType) => {
   node.value.cooked = normalizeText(node.value.cooked)
 }
 
-export const parseOptions = {
-  sourceType: 'module',
-  plugins: ['typescript', 'jsx', 'decorators-legacy'],
-  allowReturnOutsideFunction: true,
-} as ParserOptions
+export const parseCode = (code: string) => {
+  const pluginsWithoutJSX = [
+    'typescript',
+    'decorators-legacy',
+  ] as ParserPlugin[]
+  const pluginsWithJSX = [...pluginsWithoutJSX, 'jsx'] as ParserPlugin[]
+
+  const parseOptionsWithJSX = {
+    sourceType: 'module',
+    plugins: pluginsWithJSX,
+    allowReturnOutsideFunction: true,
+  } as ParserOptions
+
+  const parseOptionsWithoutJSX = {
+    sourceType: 'module',
+    plugins: pluginsWithoutJSX,
+    allowReturnOutsideFunction: true,
+  } as ParserOptions
+
+  try {
+    return parse(code, parseOptionsWithJSX)
+  } catch (e) {
+    return parse(code, parseOptionsWithoutJSX)
+  }
+}
 
 const omit = (obj: Record<string, unknown>, keys: string[]) => {
   const newObj = {} as Record<string, unknown>
@@ -181,8 +201,8 @@ export const cleanupAst = (ast: PoorNodeType) => {
 }
 
 export const compareCode = (codeA: string, codeB: string) => {
-  const astA = parse(codeA, parseOptions).program as unknown as PoorNodeType
-  const astB = parse(codeB, parseOptions).program as unknown as PoorNodeType
+  const astA = parseCode(codeA).program as unknown as PoorNodeType
+  const astB = parseCode(codeB).program as unknown as PoorNodeType
 
   const cleanedA = cleanupAst(astA)
   const cleanedB = cleanupAst(astB)

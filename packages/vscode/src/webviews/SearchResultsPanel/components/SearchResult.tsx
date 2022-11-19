@@ -65,7 +65,7 @@ export function SearchResult({
     eventBusInstance.dispatch('open-file', data)
   }
 
-  const relativeFilePath = getRelativePath(match.filePath)
+  let relativeFilePath = getRelativePath(match.filePath)
   const matchStartLine = match.loc.start.line
   // Vscode columns are indexed from 1, while result is indexed from 0
   const matchStartCol = match.loc.start.column + 1
@@ -108,6 +108,12 @@ export function SearchResult({
     match.extendedCodeFrame?.code[0] ?? '',
   )
 
+  const filePathStartsWithDot = relativeFilePath?.startsWith('.')
+
+  if (filePathStartsWithDot) {
+    relativeFilePath = relativeFilePath?.substring(1)
+  }
+
   return (
     <Flex flexDir="column" mb="4">
       <Flex
@@ -141,22 +147,30 @@ export function SearchResult({
             })
           }}
           fontWeight="500"
-          style={{
-            direction: 'rtl',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            maxWidth: '90%',
-          }}
+          maxWidth="calc(100% - 150px)"
+          display="inline-flex"
         >
-          <Text as="span">{relativeFilePath}</Text>
-          <Text as="span">:</Text>
-          <Text as="span" color="#c792ea">
-            {matchStartLine}
-          </Text>
-          <Text as="span">:</Text>
-          <Text as="span" color="#ffcb8b">
-            {matchStartCol}
+          {/** workaround for a problem with initial dot being moved to the end of string when using rtl */}
+          {filePathStartsWithDot && <Text as="span">.</Text>}
+          <Text
+            as="div"
+            style={{
+              textAlign: 'left',
+              direction: 'rtl',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+            }}
+          >
+            <Text as="span">{relativeFilePath}</Text>
+            <Text as="span">:</Text>
+            <Text as="span" color="#c792ea">
+              {matchStartLine}
+            </Text>
+            <Text as="span">:</Text>
+            <Text as="span" color="#ffcb8b">
+              {matchStartCol}
+            </Text>
           </Text>
         </Link>
         <Flex ml="2" mr="auto">

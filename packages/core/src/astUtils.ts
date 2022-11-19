@@ -54,6 +54,17 @@ export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
   )
 }
 
+export const getKeysWithNodes = (node: PoorNodeType, nodeKeys: string[]) => {
+  return nodeKeys.filter((key) => {
+    const fileValue = node[key]
+
+    return (
+      isNode(fileValue as PoorNodeType) ||
+      isNodeArray(fileValue as PoorNodeType[])
+    )
+  })
+}
+
 const isNullOrUndef = (val: any) => val === null || val === undefined
 
 const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
@@ -134,6 +145,8 @@ export const parseCode = (code: string) => {
   const pluginsWithoutJSX = [
     'typescript',
     'decorators-legacy',
+    'importAssertions',
+    'doExpressions',
   ] as ParserPlugin[]
   const pluginsWithJSX = [...pluginsWithoutJSX, 'jsx'] as ParserPlugin[]
 

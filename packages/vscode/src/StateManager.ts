@@ -11,6 +11,7 @@ export type StateShape = {
   exclude: string[]
   searchIgnoredFiles: boolean
   searchNodeModules: boolean
+  searchBigFiles: boolean
   entryPoint: string | null
   webviewTextSelection: string | null
 }
@@ -24,6 +25,7 @@ export class StateManager {
     exclude: [],
     searchIgnoredFiles: false,
     searchNodeModules: false,
+    searchBigFiles: false,
     entryPoint: null,
     webviewTextSelection: null,
   }

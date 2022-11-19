@@ -14,6 +14,8 @@ import { HardStopFlag } from './types'
 export const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
 export const pathToPosix = (fsPath: string) => fsPath.replace(/\\/g, '/')
 
+const bigFileSizeInBytes = 1024 * 100 // 100 kb
+
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   // dpdm does not support custom search directory :/
   const oldProcessCwd = process.cwd
@@ -141,6 +143,7 @@ type GetFilesListArgs = {
   byGitChanges?: boolean
   omitGitIgnore?: boolean
   ignoreNodeModules?: boolean
+  searchBigFiles?: boolean
   exclude?: string[]
   include?: string[]
   hardStopFlag?: HardStopFlag
@@ -152,6 +155,7 @@ export const getFilesList = async ({
   byGitChanges = false,
   omitGitIgnore = false,
   ignoreNodeModules = true,
+  searchBigFiles = false,
   exclude = [],
   include = undefined,
   hardStopFlag,
@@ -248,7 +252,9 @@ export const getFilesList = async ({
         async (pathName) => {
           const stat = await fs.lstat(pathName)
 
-          return stat.isFile()
+          return (
+            stat.isFile() && (stat.size < bigFileSizeInBytes || searchBigFiles)
+          )
         },
       )
 

@@ -63,7 +63,8 @@ export class SearchManager {
       if (
         !lastSearchSettings.searchIgnoredFiles &&
         !lastSearchSettings.searchNodeModules &&
-        !lastSearchSettings.entryPoint
+        !lastSearchSettings.entryPoint &&
+        !lastSearchSettings.searchBigFiles
       ) {
         try {
           this.filesListState.list = await getFilesList({
@@ -177,7 +178,8 @@ export class SearchManager {
           if (
             !settings.searchIgnoredFiles &&
             !settings.searchNodeModules &&
-            !settings.entryPoint
+            !settings.entryPoint &&
+            !settings.searchBigFiles
           ) {
             if (this.filesListState.state === 'idle') {
               await this.getFilesListForBasicSearch()
@@ -200,6 +202,7 @@ export class SearchManager {
               exclude: settings.exclude,
               entryPoint: settings.entryPoint ?? undefined,
               hardStopFlag: this.currentFilesGetHardStopFlag,
+              searchBigFiles: settings.searchBigFiles,
             })
           }
 

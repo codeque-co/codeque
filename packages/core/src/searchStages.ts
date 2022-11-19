@@ -19,6 +19,7 @@ import {
   createBlockStatementNode,
   sanitizeTemplateElement,
   parseCode,
+  getKeysWithNodes,
 } from './astUtils'
 import { getExtendedCodeFrame, getKeyFromObject } from './utils'
 import { Logger } from './logger'
@@ -256,8 +257,8 @@ const keyWithPrefix = (prefix: string) => (key: string) =>
   prefix ? `${prefix}.${key}` : key
 
 const compareNodes = (
-  fileNode: PoorNodeType,
-  queryNode: PoorNodeType,
+  fileNode: PoorNodeType | null,
+  queryNode: PoorNodeType | null,
   searchSettings: SearchSettings,
   /** Params used to support comparing nodes which are not on the same level */
   queryKeysPrefix = '',
@@ -275,6 +276,18 @@ const compareNodes = (
   const measureCompare = measureStart('compare')
   logStepStart('compare')
   const isExact = mode === 'exact'
+
+  if (!fileNode || !queryNode) {
+    return {
+      levelMatch: false,
+      queryKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForValidatingMatch: [],
+      fileKeysToTraverseForOtherMatches: fileNode
+        ? getKeysWithNodes(fileNode, Object.keys(fileNode))
+        : [],
+    }
+  }
+
   const [fileKeys, queryKeys] = getSetsOfKeysToCompare(
     fileNode,
     queryNode,
@@ -292,36 +305,28 @@ const compareNodes = (
   log('compare: fileKeys', fileKeys)
 
   const keysToTraverseForValidatingMatch: string[] = []
-  const fileKeysToTraverseForOtherMatches: string[] = []
+  const fileKeysToTraverseForOtherMatches: string[] = getKeysWithNodes(
+    fileNode,
+    fileKeys,
+  )
 
-  if (fileNode.type === 'JSXText') {
+  if (fileNode?.type === 'JSXText') {
     log('pre JSX Text', fileNode.value)
     sanitizeJSXText(fileNode)
     log('sanitized JSX Text', fileNode.value)
   }
 
-  if (queryNode.type === 'JSXText') {
+  if (queryNode?.type === 'JSXText') {
     sanitizeJSXText(queryNode)
   }
 
-  if (fileNode.type === 'TemplateElement') {
+  if (fileNode?.type === 'TemplateElement') {
     sanitizeTemplateElement(fileNode)
   }
 
-  if (queryNode.type === 'TemplateElement') {
+  if (queryNode?.type === 'TemplateElement') {
     sanitizeTemplateElement(queryNode)
   }
-
-  fileKeys.forEach((key) => {
-    const fileValue = fileNode[key]
-
-    if (
-      isNode(fileValue as PoorNodeType) ||
-      isNodeArray(fileValue as PoorNodeType[])
-    ) {
-      fileKeysToTraverseForOtherMatches.push(key)
-    }
-  })
 
   if (
     (fileNode.type as string).includes('TS') &&

@@ -47,6 +47,9 @@ export function SearchSettings({
   const [searchIgnoredFiles, setSearchIgnoredFiles] = useState(
     initialSettings?.searchIgnoredFiles,
   )
+  const [searchBigFiles, setSearchBigFiles] = useState(
+    initialSettings?.searchBigFiles,
+  )
   const [include, setInclude] = useState(
     getOptionsFromArray(initialSettings?.include ?? []),
   )
@@ -86,6 +89,10 @@ export function SearchSettings({
 
     if (initialSettings.searchNodeModules !== undefined) {
       setSearchNodeModules(initialSettings.searchNodeModules)
+    }
+
+    if (initialSettings.searchBigFiles !== undefined) {
+      setSearchBigFiles(initialSettings.searchBigFiles)
     }
   }, [initialSettings])
 
@@ -130,6 +137,18 @@ export function SearchSettings({
 
       setSettings({
         searchIgnoredFiles: checked,
+      })
+    },
+    [setSettings],
+  )
+
+  const handleSearchBigFiles = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      const checked = ev.target.checked
+      setSearchBigFiles(checked)
+
+      setSettings({
+        searchBigFiles: checked,
       })
     },
     [setSettings],
@@ -285,6 +304,13 @@ export function SearchSettings({
           onChange={handleSearchNodeModulesChange}
         >
           Search <code>node_modules</code>
+        </Checkbox>
+        <Checkbox
+          mt="2"
+          isChecked={searchBigFiles}
+          onChange={handleSearchBigFiles}
+        >
+          Search files above 100kb
         </Checkbox>
         <Text fontWeight="medium" mb="1" mt="2">
           Include files or directories

@@ -1,72 +1,127 @@
 import { cpus } from 'os'
-import { Worker } from 'worker_threads'
+import { Worker, parentPort } from 'worker_threads'
 import {
   FileSystemSearchArgs,
   SearchResults,
   WorkerOutboundMessage,
   SearchWorkerData,
   HardStopFlag,
+  Matches,
 } from './types'
+import { measureStart, logMetrics } from './utils'
+import { searchInFileSystem } from './searchInFs'
 
 const coresCount = Math.round(cpus().length / 2)
+const singleThreadFilesCountLimitStructuralDefault = 350
+const singleThreadFilesCountLimitTextDefault = 1500
 
 export const searchMultiThread = async ({
   filePaths,
   onPartialResult,
   hardStopFlag,
   maxResultsLimit,
+  singleThreadFilesCountLimitStructural = singleThreadFilesCountLimitStructuralDefault,
+  singleThreadFilesCountLimitText = singleThreadFilesCountLimitTextDefault,
   ...params
-}: FileSystemSearchArgs & { hardStopFlag?: HardStopFlag }) => {
+}: FileSystemSearchArgs & {
+  hardStopFlag?: HardStopFlag
+  singleThreadFilesCountLimitStructural?: number
+  singleThreadFilesCountLimitText?: number
+}) => {
+  const filePathsCount = filePaths.length
+  const isTextSearch = params.mode === 'text'
+  const singleThreadFilesCountLimit = isTextSearch
+    ? singleThreadFilesCountLimitText
+    : singleThreadFilesCountLimitStructural
+  /**
+   * Turned out that spawning a worker adds +300/400 ms overhead, so it's not always worth spawning it
+   */
+  const notWorthSpawningWorkers = filePathsCount < singleThreadFilesCountLimit
   const tasks = []
-  const chunksCount = params.mode === 'text' ? 1 : coresCount
-  const chunkSize = Math.round(filePaths.length / chunksCount)
+  const chunksCount = notWorthSpawningWorkers
+    ? 1
+    : /** It's not worth to split eg. 400 files into 4 chunks, so we calculate that based on singleThreadFilesCountLimit */
+      Math.min(
+        coresCount,
+        Math.round(filePathsCount / singleThreadFilesCountLimit),
+      )
+  const chunkSize = Math.round(filePathsCount / chunksCount)
+  /**
+   * It's better to keep first chunk bigger if possible till the singleThreadFilesCountLimit
+   */
+  const firstChunkSize =
+    chunkSize < singleThreadFilesCountLimit
+      ? singleThreadFilesCountLimit
+      : chunkSize
+
   const maxResultsPerChunk = maxResultsLimit
     ? Math.round(maxResultsLimit / chunksCount)
     : undefined
 
   for (let i = 0; i < chunksCount; i++) {
-    const startIndex = i * chunkSize
-    const endIndex = i < chunksCount - 1 ? startIndex + chunkSize : undefined
+    const actualCurrentChunkSize = i === 0 ? firstChunkSize : chunkSize
+    const actualPrevChunkSize = i <= 1 ? firstChunkSize : chunkSize
+
+    const startIndex = i * actualPrevChunkSize
+    const endIndex =
+      i < chunksCount - 1 ? startIndex + actualCurrentChunkSize : undefined
+
     const filePathsSlice = filePaths.slice(startIndex, endIndex)
+    const searchParams = {
+      ...params,
+      filePaths: filePathsSlice,
+      reportEachMatch: onPartialResult !== undefined,
+      maxResultsLimit: maxResultsPerChunk,
+    } as SearchWorkerData
     const task = new Promise<SearchResults>((resolve, reject) => {
-      const worker = new Worker(__dirname + '/searchWorker.js', {
-        workerData: {
-          ...params,
-          filePaths: filePathsSlice,
-          reportEachMatch: onPartialResult !== undefined,
-          maxResultsLimit: maxResultsPerChunk,
-        } as SearchWorkerData,
-      })
+      if (i === 0) {
+        const results = searchInFileSystem({
+          ...searchParams,
+          onPartialResult,
+          hardStopFlag,
+        })
+        resolve(results)
+      } else {
+        const measureWorkerReturnResult = measureStart('WorkerReturnResult')
+        const worker = new Worker(__dirname + '/searchWorker.js', {
+          workerData: searchParams,
+        })
 
-      if (hardStopFlag) {
-        hardStopFlag.addStopListener(async () => {
-          await worker.terminate()
+        if (hardStopFlag) {
+          hardStopFlag.addStopListener(async () => {
+            await worker.terminate()
 
-          resolve({ errors: [], matches: [], hints: [] })
+            resolve({ errors: [], matches: [], hints: [] })
+          })
+        }
+
+        worker.on('message', (message: WorkerOutboundMessage) => {
+          if (message.type === 'PARTIAL_RESULT') {
+            onPartialResult?.(message.data)
+          } else {
+            measureWorkerReturnResult()
+            resolve(message.data)
+          }
+        })
+
+        worker.on('error', reject)
+
+        worker.on('exit', (code) => {
+          if (code !== 0 && !hardStopFlag?.stopSearch) {
+            reject(new Error(`Worker stopped with exit code ${code}`))
+          }
         })
       }
-
-      worker.on('message', (message: WorkerOutboundMessage) => {
-        if (message.type === 'PARTIAL_RESULT') {
-          onPartialResult?.(message.data)
-        } else {
-          resolve(message.data)
-        }
-      })
-
-      worker.on('error', reject)
-
-      worker.on('exit', (code) => {
-        if (code !== 0 && !hardStopFlag?.stopSearch) {
-          reject(new Error(`Worker stopped with exit code ${code}`))
-        }
-      })
     })
 
     tasks.push(task)
   }
 
+  const measureWorkerProcessingTime = measureStart('WorkerProcessingTime')
+
   const result = await Promise.all(tasks)
+
+  measureWorkerProcessingTime()
 
   const mergedResults = result.reduce(
     (allResults, partialResult) => {
@@ -82,6 +137,8 @@ export const searchMultiThread = async ({
       hints: [],
     },
   )
+
+  logMetrics()
 
   return mergedResults
 }

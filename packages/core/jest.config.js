@@ -6,15 +6,15 @@ const tsConfig = JSON.parse(
     .readFileSync(__dirname + '/tsconfig.json')
     .toString()
     .replace(/^(\s)*\/\//gm, '')
-    .replace(/\/\*.+?\*\//gm, '')
+    .replace(/\/\*.+?\*\//gm, ''),
 )
 
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
-    prefix: '<rootDir>'
+    prefix: '<rootDir>',
   }),
   testPathIgnorePatterns: ['__fixtures__', 'ts-dist'],
-  setupFilesAfterEnv: ['./jest.setup.js']
+  setupFiles: ['./jest.setup.js'],
 }

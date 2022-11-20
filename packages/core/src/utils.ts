@@ -31,7 +31,9 @@ export const measureStart = (name: string) => {
 }
 
 export const logMetrics = () => {
-  Object.entries(metrics).forEach((kv) => print(...kv))
+  if (process.env.NODE_ENV !== 'test') {
+    Object.entries(metrics).forEach((kv) => print(...kv))
+  }
 }
 
 export const patternToRegex = (str: string, caseInsensitive = false) => {

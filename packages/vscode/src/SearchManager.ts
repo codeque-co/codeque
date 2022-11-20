@@ -253,31 +253,37 @@ export class SearchManager {
             }
           }
 
-          const results = await searchMultiThread({
-            filePaths: files,
-            queryCodes: [settings.query],
-            mode: settings.mode,
-            caseInsensitive: settings.caseType === 'insensitive',
-            onPartialResult: reportPartialResults,
-            hardStopFlag: this.currentSearchHardStopFlag,
-            maxResultsLimit: this.maxResultsLimit,
-          })
-          const searchEnd = Date.now()
+          // We start search in next tick so not block events delivery and UI update
+          setTimeout(
+            (async () => {
+              const results = await searchMultiThread({
+                filePaths: files,
+                queryCodes: [settings.query],
+                mode: settings.mode,
+                caseInsensitive: settings.caseType === 'insensitive',
+                onPartialResult: reportPartialResults,
+                hardStopFlag: this.currentSearchHardStopFlag,
+                maxResultsLimit: this.maxResultsLimit,
+              })
+              const searchEnd = Date.now()
 
-          eventBusInstance.dispatch('have-results', {
-            results: this.processSearchResults(
-              { ...results, matches: allPartialMatches },
-              root,
-            ),
-            time: (searchEnd - searchStart) / 1000,
-            files,
-          })
+              eventBusInstance.dispatch('have-results', {
+                results: this.processSearchResults(
+                  { ...results, matches: allPartialMatches },
+                  root,
+                ),
+                time: (searchEnd - searchStart) / 1000,
+                files,
+              })
 
-          this.searchRunning = false
-          this.currentFilesGetHardStopFlag.destroy()
-          this.currentSearchHardStopFlag.destroy()
-          this.currentFilesGetHardStopFlag = undefined
-          this.currentSearchHardStopFlag = undefined
+              this.searchRunning = false
+              this.currentFilesGetHardStopFlag?.destroy()
+              this.currentSearchHardStopFlag?.destroy()
+              this.currentFilesGetHardStopFlag = undefined
+              this.currentSearchHardStopFlag = undefined
+            }).bind(this),
+            0,
+          )
 
           // console.log(
           //   'files:',

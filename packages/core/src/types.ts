@@ -46,6 +46,7 @@ export type FileSystemSearchArgs = {
   debug?: boolean
   onPartialResult?: (matches: Matches) => void
   maxResultsLimit?: number
+  hardStopFlag?: HardStopFlag
 }
 
 export type ParseError = {

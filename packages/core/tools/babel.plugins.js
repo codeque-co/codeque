@@ -5,26 +5,38 @@ module.exports = function plugin() {
     return {}
   }
 
+  const keepMetrics = process.env.BABEL_ENV === 'production_performance'
+
   return {
     visitor: {
       CallExpression(path, state) {
+        const calleeName = path.node.callee?.name
+
         if (
-          ['log', 'logStepStart', 'logStepEnd'].includes(
-            path.node.callee?.name,
-          ) ||
-          /^measure/.test(path.node.callee?.name)
+          ['log', 'logStepStart', 'logStepEnd'].includes(calleeName) ||
+          (!keepMetrics && /^measure/.test(calleeName))
         ) {
+          console.log('removed', `${calleeName}()`)
           path.remove()
         }
       },
       ImportDeclaration(path, state) {
-        if (path.node.source.value === 'perf_hooks') {
-          console.log('removed', path.node.source.value)
+        const sourceName = path.node.source.value
+
+        if (!keepMetrics && sourceName === 'perf_hooks') {
+          console.log('removed', `import $$ from "${sourceName}"`)
           path.remove()
         }
       },
       VariableDeclaration(path, state) {
-        if (/^measure/.test(path.node.declarations[0]?.id?.name)) {
+        const identifier = path.node.declarations[0]?.id?.name
+
+        if (
+          !keepMetrics &&
+          /^measure/.test(path.node.declarations[0]?.id?.name)
+        ) {
+          console.log('removed', `const/let/var ${identifier}`)
+
           path.remove()
         }
       },

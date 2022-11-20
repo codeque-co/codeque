@@ -19,6 +19,7 @@ export const searchInFileSystem = ({
   debug = false,
   onPartialResult,
   maxResultsLimit,
+  hardStopFlag,
 }: FileSystemSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
@@ -68,7 +69,10 @@ export const searchInFileSystem = ({
   )
 
   for (const filePath of filePaths) {
-    if (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) {
+    if (
+      (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) ||
+      hardStopFlag?.stopSearch
+    ) {
       break
     }
 
@@ -112,6 +116,8 @@ export const searchInFileSystem = ({
       }
     }
   }
+
+  logMetrics()
 
   return {
     matches: allMatches,

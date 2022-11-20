@@ -1,5 +1,10 @@
 import { getExtendedCodeFrame, nonIdentifierOrKeyword } from './utils'
-import { FileSystemSearchArgs, SearchResults, Matches } from './types'
+import {
+  FileSystemSearchArgs,
+  SearchResults,
+  Matches,
+  HardStopFlag,
+} from './types'
 
 const getMatchPosition = (match: string, fileContents: string) => {
   const start = fileContents.indexOf(match)
@@ -177,6 +182,7 @@ type TextSearchArgs = FileSystemSearchArgs & {
   getFileContent: (filePath: string) => string
   onPartialResult?: (matches: Matches) => void
   maxResultsLimit?: number
+  hardStopFlag?: HardStopFlag
 }
 
 export function textSearch({
@@ -186,6 +192,7 @@ export function textSearch({
   getFileContent,
   onPartialResult,
   maxResultsLimit,
+  hardStopFlag,
 }: TextSearchArgs): SearchResults {
   const queries = queryCodes
     .map((queryCode) => prepareQuery(queryCode, caseInsensitive))
@@ -203,7 +210,10 @@ export function textSearch({
   const allMatches = []
 
   for (const filePath of filePaths) {
-    if (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) {
+    if (
+      (maxResultsLimit !== undefined && allMatches.length > maxResultsLimit) ||
+      hardStopFlag?.stopSearch
+    ) {
       break
     }
 

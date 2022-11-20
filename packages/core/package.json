@@ -63,6 +63,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\" ",
+    "build:performance": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production_performance yarn build:code\" ",
     "build:watch": "rm -rf dist && concurrently \"yarn build:declarations --watch\" \"yarn build:code --watch\" ",
     "build:declarations": "tsc --project tsconfig.build.json",
     "build:code": "babel ./src --extensions \".ts,.tsx\" -d dist",

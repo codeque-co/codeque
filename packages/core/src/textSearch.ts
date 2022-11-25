@@ -120,7 +120,14 @@ const prepareQuery = (queryCode: string, caseInsensitive?: boolean) => {
         return subStr
       })
       .flat(1)
-      .filter((str) => str.trim() !== '')
+      .filter((str) => {
+        if (!isStringContent) {
+          return str.trim() !== ''
+        }
+
+        //we want to keep spaces inside strings
+        return true
+      })
       .map((subStr) => {
         if (nonIdentifierOrKeyword.test(subStr) || subStr === '$') {
           const escaped = '\\' + subStr.split('').join('\\')
@@ -227,7 +234,16 @@ export function textSearch({
             fileContent.includes(subShallowQuery),
           )
         ) {
-          const matches = fileContent.match(query.regexpQuery) ?? []
+          const matches = (fileContent.match(query.regexpQuery) ?? []).map(
+            /**
+             * Some matches contains white at start or end
+             * We have get rid of them as they break further position calculation logic
+             * They are not necessary, we cannot effectively highlight new line char
+             * These chars are result of query preparation in some edge cases
+             * It do not make sense to search for spaces, so we can remove it
+             */
+            (match) => match.trim(),
+          )
 
           let contentToMatchPosition = fileContent
 

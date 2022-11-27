@@ -23,7 +23,7 @@ export type MatchWithFileInfo = Omit<Match, 'node'> & {
   query: string
   code: string
   filePath: string
-  extendedCodeFrame?: ExtendedCodeFrame
+  extendedCodeFrame: ExtendedCodeFrame
 }
 
 export type Matches = Array<MatchWithFileInfo>

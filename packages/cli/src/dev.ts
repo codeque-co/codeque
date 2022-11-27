@@ -10,7 +10,7 @@ import path from 'path'
 const query = fs.readFileSync(path.resolve('./devQuery')).toString()
 
 const mockFilePath = path.resolve('./devFile')
-const mockFilesCount = 350
+const mockFilesCount = 1
 const filePaths = Array(mockFilesCount).fill(mockFilePath)
 
 ;(async () => {
@@ -25,6 +25,6 @@ const filePaths = Array(mockFilesCount).fill(mockFilePath)
 
   console.log('time', Date.now() - start)
 
-  console.log('matches', matches.length)
+  console.log('matches', matches)
   console.log('errors', errors)
 })()

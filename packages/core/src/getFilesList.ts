@@ -14,7 +14,7 @@ import { HardStopFlag } from './types'
 export const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
 export const pathToPosix = (fsPath: string) => fsPath.replace(/\\/g, '/')
 
-const bigFileSizeInBytes = 1024 * 100 // 100 kb
+const bigFileSizeInBytes = 1024 * 10 // 10 kb
 
 const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   // dpdm does not support custom search directory :/

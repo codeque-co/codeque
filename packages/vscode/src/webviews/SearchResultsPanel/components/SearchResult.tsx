@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react'
 import { Match, MatchWithFileInfo } from '@codeque/core'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { IoMdClose } from 'react-icons/io'
 import { MdContentCopy } from 'react-icons/md'
@@ -21,6 +21,7 @@ import {
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
 import { useCopyToClipboard } from '../../components/useCopyToClipboard'
+import { getScrollParent } from '../../../utils'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
@@ -28,13 +29,20 @@ type SearchResultProps = {
   removeMatch: (filePath: string, start: number, end: number) => void
 }
 
-const highlightColorOnLight = 'rgb(249,245,182)'
-const highlightColorOnDark = '#366186'
+const highlightColorOnLight = '#ddebf2'
 
-const matchHighlightStyle = {
-  backgroundColor: highlightColorOnDark,
-  boxShadow: `0px 5px 0px ${highlightColorOnDark}, 0px -5px 0px ${highlightColorOnDark}`,
+const highlightColorOnDark = '#35485b'
+
+const getMatchHighlightStyle = (isDark: boolean) => {
+  const highlightColor = isDark ? highlightColorOnDark : highlightColorOnLight
+
+  return {
+    backgroundColor: highlightColor,
+    boxShadow: `0px 5px 0px ${highlightColor}, 0px -5px 0px ${highlightColor}`,
+  }
 }
+
+const removeWhiteSpaces = (str: string) => str.replace(/\s+/g, '')
 
 const getBorderColor = (
   isDarkTheme: boolean,
@@ -57,6 +65,9 @@ export function SearchResult({
   getRelativePath,
   removeMatch,
 }: SearchResultProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+
   const [isExpanded, setIsExpanded] = useState(true)
   const [isChecked, setIsChecked] = useState(false)
   const [isResultFocused, setIsResultFocused] = useState(false)
@@ -72,11 +83,11 @@ export function SearchResult({
   const fullFilePath = `${relativeFilePath}:${matchStartLine}:${matchStartCol}`
   const [hasCopiedFilePath, copyFilePath] = useCopyToClipboard(fullFilePath)
   const themeType = useThemeType()
-  const highlightTheme = themeType === 'dark' ? darkTheme : lightTheme
-  const matchHighlight = [{ ...match.loc, style: matchHighlightStyle }]
+  const isDarkTheme = themeType === 'dark'
+  const highlightTheme = isDarkTheme ? darkTheme : lightTheme
 
   const borderColor = getBorderColor(
-    themeType === 'dark',
+    isDarkTheme,
     isResultFocused,
     highlightTheme,
   )
@@ -104,9 +115,42 @@ export function SearchResult({
   }, [])
 
   const extendedCodeFrame = match.extendedCodeFrame
-  const firstCharIsWhitespace = /\s/.test(
-    match.extendedCodeFrame?.code[0] ?? '',
-  )
+  const extendedCodeFrameCode = extendedCodeFrame.code
+
+  const initialWhitespaceSequenceMatch = extendedCodeFrameCode.match(/^\s*/g)
+
+  const initialWhitespaceSequence =
+    initialWhitespaceSequenceMatch !== null
+      ? initialWhitespaceSequenceMatch[0]
+      : ''
+
+  const containsInitialWhitespace = initialWhitespaceSequence.length > 0
+
+  const shouldDedentResult =
+    containsInitialWhitespace &&
+    (extendedCodeFrame.startLine as number) >= match.loc.start.line
+
+  const shouldHighlight =
+    removeWhiteSpaces(extendedCodeFrameCode).length !==
+    removeWhiteSpaces(match.code).length
+
+  const highlightColumnChangeDueToDedent = shouldDedentResult
+    ? initialWhitespaceSequence.length
+    : 0
+
+  const matchHighlight = [
+    {
+      start: {
+        line: match.loc.start.line,
+        column: match.loc.start.column - highlightColumnChangeDueToDedent,
+      },
+      end: {
+        line: match.loc.end.line,
+        column: match.loc.end.column - highlightColumnChangeDueToDedent,
+      },
+      style: getMatchHighlightStyle(isDarkTheme),
+    },
+  ]
 
   const filePathStartsWithDot = relativeFilePath?.startsWith('.')
 
@@ -114,8 +158,23 @@ export function SearchResult({
     relativeFilePath = relativeFilePath?.substring(1)
   }
 
+  const preventScrollJump = useCallback(() => {
+    if (wrapperRef.current && headingRef.current) {
+      const wrapperTop = wrapperRef.current.getBoundingClientRect().top
+      const headingTop = headingRef.current.getBoundingClientRect().top
+
+      const isHeadingSticky = wrapperTop < headingTop
+
+      if (isHeadingSticky) {
+        wrapperRef.current.scrollIntoView({
+          block: 'start',
+        })
+      }
+    }
+  }, [])
+
   return (
-    <Flex flexDir="column" mb="4">
+    <Flex flexDir="column" mb="4" ref={wrapperRef}>
       <Flex
         p="2"
         // onClick={() => setIsExpanded(!isExpanded)}
@@ -126,9 +185,16 @@ export function SearchResult({
         transition="border 0.3s ease-in-out"
         backgroundColor="var(--vscode-editor-background)"
         maxWidth="100%"
+        ref={headingRef}
       >
         <IconButton
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            if (isExpanded) {
+              preventScrollJump()
+            }
+
+            setIsExpanded(!isExpanded)
+          }}
           aria-label="expand/collapse button"
           icon={
             isExpanded ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />
@@ -190,7 +256,12 @@ export function SearchResult({
           ml="3"
           isChecked={isChecked}
           onChange={(ev) => {
-            const checked = ev.target.checked
+            const checked = ev.target.checked // changed to checked
+
+            if (checked) {
+              preventScrollJump()
+            }
+
             setIsChecked(checked)
             setIsExpanded(!checked)
           }}
@@ -221,15 +292,12 @@ export function SearchResult({
           borderColor="gray.300"
         >
           <CodeBlock
-            startLineNumber={extendedCodeFrame?.startLine}
+            startLineNumber={extendedCodeFrame.startLine}
             theme={highlightTheme}
-            dedent={
-              firstCharIsWhitespace &&
-              (extendedCodeFrame?.startLine as number) >= match.loc.start.line
-            }
-            // customHighlight={matchHighlight}
+            dedent={shouldDedentResult}
+            customHighlight={matchHighlight}
           >
-            {extendedCodeFrame?.code as string}
+            {extendedCodeFrameCode}
           </CodeBlock>
         </Flex>
       ) : null}

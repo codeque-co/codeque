@@ -1,5 +1,6 @@
 import PrismHighlight from 'prism-react-renderer'
 import { defaultProps, PrismTheme } from 'prism-react-renderer'
+import React from 'react'
 import { darkTheme } from './codeHighlightThemes'
 
 type Token = { types: string[]; content: string }
@@ -26,6 +27,12 @@ export type HighlightProps = {
   isMultiLine?: boolean
   startLineNumber?: number
 }
+
+type CustomHighlightResults = Array<{
+  token: Token
+  style: any
+  reason?: string
+}>
 
 export function Highlight({
   children,
@@ -94,92 +101,217 @@ export function Highlight({
                   </span>
                 ) : null}
                 {line.map((token, key) => {
-                  const maybeSplit = maybeSplitJSXToken(token)
+                  const maybeSplitTokens = maybeSplitJSXToken(token, children)
 
-                  const customTokenStyle = customHighlight?.find(
-                    (highlight) => {
-                      const wholeLineHighlight = highlight.line !== undefined
+                  const tokensToRender = maybeSplitTokens
+                    .map((token) => {
+                      let customHighlightResult: CustomHighlightResults = []
 
-                      if (!wholeLineHighlight) {
-                        const startLine = highlight?.start?.line
-                        const startCol = highlight?.start?.column
-                        const endLine = highlight?.end?.line
-                        const endCol = highlight?.end?.column
+                      for (const highlight of customHighlight ?? []) {
+                        const wholeLineHighlight = highlight.line !== undefined
 
-                        if (
-                          startLine === undefined ||
-                          startCol === undefined ||
-                          endLine === undefined ||
-                          endCol === undefined
-                        ) {
-                          return false
+                        if (!wholeLineHighlight) {
+                          const startLine = highlight?.start?.line
+                          const startCol = highlight?.start?.column
+                          const endLine = highlight?.end?.line
+                          const endCol = highlight?.end?.column
+
+                          if (
+                            startLine === undefined ||
+                            startCol === undefined ||
+                            endLine === undefined ||
+                            endCol === undefined
+                          ) {
+                            customHighlightResult = [
+                              {
+                                style: undefined,
+                                token,
+                              },
+                            ]
+
+                            break
+                          }
+
+                          // center line, highlight whole line
+                          if (
+                            lineNumToCompareHighlight > startLine &&
+                            lineNumToCompareHighlight < endLine
+                          ) {
+                            customHighlightResult = [
+                              {
+                                style: highlight.style,
+                                token,
+                                reason: 'center line, whole line',
+                              },
+                            ]
+
+                            break
+                          }
+
+                          // match is in one line, check if tokens are in bounds
+                          if (
+                            startLine === endLine &&
+                            lineNumToCompareHighlight === startLine
+                          ) {
+                            const isTokenInBoundsOfHighlight =
+                              startCol <
+                                lineCurrentChar + token.content.length &&
+                              endCol > lineCurrentChar
+
+                            const shouldSplitOnLeft = startCol > lineCurrentChar
+                            const shouldSplitOnRight =
+                              endCol < lineCurrentChar + token.content.length
+
+                            const shouldBeSplit =
+                              shouldSplitOnLeft || shouldSplitOnRight
+
+                            if (isTokenInBoundsOfHighlight) {
+                              const localCustomHighlightResult: CustomHighlightResults =
+                                [
+                                  {
+                                    token,
+                                    style: highlight.style,
+                                  },
+                                ]
+
+                              if (shouldBeSplit) {
+                                if (shouldSplitOnLeft) {
+                                  const [customHighlight] =
+                                    localCustomHighlightResult.splice(
+                                      localCustomHighlightResult.length - 1,
+                                      1,
+                                    )
+                                  const leftSplitIndex =
+                                    startCol - lineCurrentChar
+
+                                  const leftContent =
+                                    customHighlight.token.content.substring(
+                                      0,
+                                      leftSplitIndex,
+                                    )
+                                  const restContent =
+                                    customHighlight.token.content.substring(
+                                      leftSplitIndex,
+                                    )
+
+                                  localCustomHighlightResult.push({
+                                    token: {
+                                      types: customHighlight.token.types,
+                                      content: leftContent,
+                                    },
+                                    reason: 'split left',
+                                    style: null,
+                                  })
+
+                                  localCustomHighlightResult.push({
+                                    token: {
+                                      types: token.types,
+                                      content: restContent,
+                                    },
+                                    style: highlight.style,
+                                    reason: 'split left',
+                                  })
+                                }
+
+                                if (shouldSplitOnRight) {
+                                  const [customHighlight] =
+                                    localCustomHighlightResult.splice(
+                                      localCustomHighlightResult.length - 1,
+                                      1,
+                                    )
+                                  const rightSplitIndex =
+                                    endCol -
+                                    (shouldSplitOnLeft
+                                      ? startCol
+                                      : lineCurrentChar)
+
+                                  const leftContent =
+                                    customHighlight.token.content.substring(
+                                      0,
+                                      rightSplitIndex,
+                                    )
+                                  const restContent =
+                                    customHighlight.token.content.substring(
+                                      rightSplitIndex,
+                                    )
+
+                                  localCustomHighlightResult.push({
+                                    token: {
+                                      types: token.types,
+                                      content: leftContent,
+                                    },
+                                    reason: 'split right',
+                                    style: highlight.style,
+                                  })
+
+                                  localCustomHighlightResult.push({
+                                    token: {
+                                      types: token.types,
+                                      content: restContent,
+                                    },
+                                    reason: 'split right',
+                                    style: undefined,
+                                  })
+                                }
+                              }
+
+                              customHighlightResult = localCustomHighlightResult
+
+                              break
+                            }
+                          } else {
+                            // start/end line of multiline match
+                            const matchIsInStartOrEndLine =
+                              (lineNumToCompareHighlight === startLine &&
+                                lineCurrentChar >= startCol) ||
+                              (lineNumToCompareHighlight === endLine &&
+                                lineCurrentChar + token.content.length <=
+                                  endCol)
+
+                            if (matchIsInStartOrEndLine) {
+                              // todo: perhaps we have to split here as well
+                              customHighlightResult = [
+                                {
+                                  style: highlight.style,
+                                  token,
+                                  reason: 'matchIsInStartOrEndLine',
+                                },
+                              ]
+                            }
+                          }
                         }
-
-                        // center line, highlight whole line
-                        if (
-                          lineNumToCompareHighlight > startLine &&
-                          lineNumToCompareHighlight < endLine
-                        ) {
-                          return true
-                        }
-
-                        // match is in one line, check if tokens are in bounds
-                        if (
-                          startLine === endLine &&
-                          lineNumToCompareHighlight === startLine
-                        ) {
-                          return (
-                            startCol < lineCurrentChar + token.content.length &&
-                            endCol > lineCurrentChar
-                          )
-                        }
-
-                        // start/end line of multiline match
-                        return (
-                          (lineNumToCompareHighlight === startLine &&
-                            lineCurrentChar >= startCol) ||
-                          (lineNumToCompareHighlight === endLine &&
-                            lineCurrentChar + token.content.length <= endCol)
-                        )
                       }
-                    },
-                  )?.style
 
-                  lineCurrentChar += token.content.length
+                      lineCurrentChar += token.content.length
 
-                  if (Array.isArray(maybeSplit)) {
-                    return (
-                      <>
-                        {maybeSplit.map((splitToken, i) => {
-                          const props = customGetTokenProps(
-                            {
-                              token: splitToken,
-                              key: `${key}.${i}`,
-                            },
-                            getTokenProps,
-                          )
-
-                          return (
-                            <span
-                              {...props}
-                              style={{ ...props.style, ...customTokenStyle }}
-                            />
-                          )
-                        })}
-                      </>
-                    )
-                  }
-
-                  const props = customGetTokenProps(
-                    { token: token, key: key },
-                    getTokenProps,
-                  )
+                      return customHighlightResult.length > 0
+                        ? customHighlightResult
+                        : [{ token, style: undefined }]
+                    })
+                    .flat(1)
 
                   return (
-                    <span
-                      {...props}
-                      style={{ ...props.style, ...customTokenStyle }}
-                    />
+                    <React.Fragment key={key}>
+                      {tokensToRender.map(({ token, style }, i) => {
+                        const props = customGetTokenProps(
+                          {
+                            token,
+                            key: `${key}.${i}`,
+                          },
+                          getTokenProps,
+                        )
+
+                        return (
+                          <span
+                            {...props}
+                            style={{
+                              ...props.style,
+                              ...style,
+                            }}
+                          />
+                        )
+                      })}
+                    </React.Fragment>
                   )
                 })}
               </div>
@@ -191,7 +323,7 @@ export function Highlight({
   )
 }
 
-const maybeSplitJSXToken = (token: Token) => {
+const maybeSplitJSXToken = (token: Token, match: any) => {
   const isJSX = /^\s*?<\/?\s*?(\w|\$)+\s*?\/?>\s*?$/gm
 
   if (token.types[0] === 'plain-text' && token.content.match(isJSX) !== null) {
@@ -222,9 +354,12 @@ const maybeSplitJSXToken = (token: Token) => {
 
     const identifierMatcher = /\s*?(\w|\$)+\s*?/gm
 
+    const identifier = trimmed.match(identifierMatcher)?.[0] ?? ''
+    const isIdentifierUppercase = identifier.charCodeAt(0) < 97
+
     tokens.push({
-      types: ['tag', 'class-name'],
-      content: trimmed.match(identifierMatcher)?.[0] as string,
+      types: ['tag', ...(isIdentifierUppercase ? ['class-name'] : [])],
+      content: identifier,
     })
 
     if (trimmed.includes('/>')) {
@@ -242,7 +377,7 @@ const maybeSplitJSXToken = (token: Token) => {
     return tokens
   }
 
-  return token
+  return [token]
 }
 
 const customGetTokenProps = (

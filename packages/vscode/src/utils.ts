@@ -23,3 +23,20 @@ const getBackNewLine = (text: string) =>
 
 export const dedentPatched = (text: string) =>
   getBackNewLine(dedent(replaceNewLine(text)))
+
+export function getScrollParent(node: any): any {
+  if (node == null || node === document) {
+    return window
+  }
+
+  const overflowYStyle = window.getComputedStyle(node)['overflow-y' as any]
+
+  if (
+    node.scrollHeight > node.clientHeight &&
+    (overflowYStyle === 'auto' || overflowYStyle === 'scroll')
+  ) {
+    return node
+  } else {
+    return getScrollParent(node.parentNode)
+  }
+}

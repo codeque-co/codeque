@@ -35,8 +35,6 @@ it('should search using multiple threads and give the same matches count as sing
     queryCodes: [query],
   })
 
-  console.log('filesList.length', filesList.length)
-
   const { matches: resultsMulti1, errors: errorsMulti1 } =
     await searchMultiThread({
       mode: 'exact',

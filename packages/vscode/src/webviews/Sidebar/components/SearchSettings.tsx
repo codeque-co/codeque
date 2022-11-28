@@ -310,7 +310,7 @@ export function SearchSettings({
           isChecked={searchBigFiles}
           onChange={handleSearchBigFiles}
         >
-          Search files above 10kb
+          Search files above 100kb
         </Checkbox>
         <Text fontWeight="medium" mb="1" mt="2">
           Include files or directories

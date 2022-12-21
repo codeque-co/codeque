@@ -36,8 +36,6 @@ More languages will be added once it will get traction.
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/video-thumbnail.png?raw=true" />
   </a>
 
-<br/>
-
 ## Benefits of using CodeQue VSCode extension
 
 CodeQue is more than just a search tool - it's a refactoring tool as well. 
@@ -50,7 +48,6 @@ It helps developers with code refactoring, speeds up project discovery, and make
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 
-___
 ## Overview 
 One of the main strengths of CodeQue is its easy-to-use query language, but it also offers several additional features that make it a great support tool for your daily work.
 

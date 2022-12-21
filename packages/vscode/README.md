@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
-    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="400px" />
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
   </a>
   <br/>
   </p>
@@ -28,15 +28,15 @@ CodeQue supports JavaScript and TypeScript for now.
 
 More languages will be added once it will get traction.
 
-
-
 <br/>
 
-Watch extension in action 👉 [demo link](https://codeque.co/vscode-demo-sound.mp4)
+<p align="center"><b>Watch extension in action (external link) 👇</b></p>
 
 <a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/video-thumbnail.png?raw=true" />
   </a>
+
+<br/>
 
 ## Benefits of using CodeQue VSCode extension
 

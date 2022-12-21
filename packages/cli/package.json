@@ -29,7 +29,7 @@
     "release-it": "^15.0.0"
   },
   "dependencies": {
-    "@codeque/core": "^0.1.2",
+    "@codeque/core": "^0.2.0",
     "colorette": "^2.0.16",
     "commander": "^8.3.0",
     "ora": "^5.0",

@@ -1,34 +1,73 @@
-# CodeQue
+<p align="center">
+  <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="400px" />
+  </a>
+  <br/>
+  </p>
+<p align="center">
+  <a href="https://codeque.co">Home Page</a> | 
+  <a href="https://codeque.co/docs">Docs </a> | 
+  <a href="https://codeque.co/roadmap">Roadmap</a> | 
+  <a href="https://codeque.co/mission">Mission</a> | 
+  <a href="https://codeque.co/playground"><b>Playground</b></a>
+</p>
 
-CodeQue is multiline search and replace tool for TypeScript and JavaScript!
+# CodeQue - Multiline Structural Search for Visual Studio Code
 
-It's pre-release, Readme will be updated later :)
+CodeQue is code search engine that understands the code syntax. 
 
-For more information visit [codeque.co](http://codeque.co) website
+It matches structure rather than plain text, which makes it very effective for complex queries.
 
-Apart from all search features provided by CodeQue core, VScode extension offers a handy UI for managing search results.
-Search results can be removed, collapsed or marked as done making it easy to iterate over long list of matches.
+VSCode extension aims to improve code search experience. 
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/CodeQue-vscode.png?raw=true"/>
+Advanced search options and todo-like list of accurate search results makes it your new super power.
 
-## Development
+It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and ESLint plugin coming soon.
 
-Run `yarn watch:extension` and `yarn watch:webviews`
+CodeQue supports JavaScript and TypeScript for now. 
 
-Open Vscode and run `Run extension` configuration in debugger
+More languages will be added once it will get traction.
 
-While in VSCode with extension host run `> Reload Extension` to refresh webview bundles
 
-To refresh extension backed re-run debugger configuration.
 
-## Publish
+<br/>
 
-Bump version manually in package.json
+Watch extension in action 👉 [demo link](https://codeque.co/vscode-demo-sound.mp4)
 
-And just run 
+<a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/video-thumbnail.png?raw=true" />
+  </a>
 
-`vsce publish`
+## Benefits of using CodeQue VSCode extension
 
-`vsce` will automatically run pre-publish hooks from script `vscode:prepublish` to run checks and build package
+CodeQue is more than just a search tool - it's a refactoring tool as well. 
 
-You might be asked to [get new PAT](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)
+It addresses the problems of standard search by providing multiline support and an easy way to add gaps or use wildcards. 
+
+You don't need to have any knowledge of Regular Expressions to query complex code patterns. 
+
+It helps developers with code refactoring, speeds up project discovery, and makes it easy to find duplicated or similar code. patterns. 
+
+With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
+
+___
+## Overview 
+One of the main strengths of CodeQue is its easy-to-use query language, but it also offers several additional features that make it a great support tool for your daily work.
+
+< WIP >
+
+## Support, Feedback and more
+
+
+Bugs, feature requests, help 👉 [Github Issues](https://github.com/codeque-co/codeque/issues)
+
+Documentation 👉  [codeque.co/docs](https://codeque.co/docs)
+
+Roadmap 👉  [codeque.co/roadmap](https://codeque.co/roadmap)
+
+Mission 👉  [codeque.co/mission](https://codeque.co/mission)
+
+Playground 👉  [codeque.co/playground](https://codeque.co/playground)
+
+Wanna contribute 👉  [Internal readme](./InternalReadme.md)
+

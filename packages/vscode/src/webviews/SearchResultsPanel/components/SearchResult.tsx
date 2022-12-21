@@ -21,7 +21,6 @@ import {
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
 import { useCopyToClipboard } from '../../components/useCopyToClipboard'
-import { getScrollParent } from '../../../utils'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
@@ -275,6 +274,7 @@ export function SearchResult({
           {...iconButtonStyleResetProps}
           onClick={(e) => {
             e.stopPropagation()
+            preventScrollJump()
             removeMatch(match.filePath, match.start, match.end)
           }}
           ml="3"

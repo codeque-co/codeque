@@ -7,7 +7,10 @@
 		"type": "git",
 		"url": "https://github.com/codeque-co/codeque"
 	},
-	"version": "0.16.1",
+	"bugs": {
+		"url": "https://github.com/codeque-co/codeque/issues"
+	},
+	"version": "0.17.0",
 	"engines": {
 		"vscode": "^1.68.0",
 		"node": ">=14"
@@ -22,7 +25,8 @@
 		"multiline search",
 		"structural search",
 		"search and replace",
-		"regexp search"
+		"regexp search",
+		"json search"
 	],
 	"activationEvents": [
 		"onStartupFinished"
@@ -30,6 +34,10 @@
 	"license": "SEE LICENSE IN LICENSE.md",
 	"main": "./dist/extension.js",
 	"icon": "media/logoShort.png",
+	"galleryBanner": {
+		"color": "#f3e2f9",
+		"theme": "dark"
+	},
 	"contributes": {
 		"viewsContainers": {
 			"activitybar": [

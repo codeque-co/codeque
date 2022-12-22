@@ -70,9 +70,9 @@ One of the main strengths of CodeQue is its easy-to-use query language, but it a
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
-### Features
+## Features
 
-#### Query language
+### Query language
 
 The beauty of CodeQue query language is that the query has to be valid source code.
 You don't have to learn anything new! 
@@ -90,7 +90,7 @@ There a few quirks there. It's good to have general understanding of how code is
 
 More technically `$$$` wildcard is matching any node with all it's children.
 
-##### Wildcards in strings
+#### Wildcards in strings
 
 Strings have their's own wildcards
 
@@ -98,17 +98,17 @@ Strings have their's own wildcards
 
 `$$$` - matches 1 or more characters
 
-##### Number wildcard
+#### Number wildcard
 
 `0x0`-  matches any number
 
 Here is an example of query which finds all types of logs which includes word `test` in parameter 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/media/example-query.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/example-query.png?raw=true" />
 
 > Read more about wildcards and query language in [docs](https://codeque.co/docs#writing-a-query)
 
-#### Search modes
+### Search modes
 
 CodeQue offers the following search modes
 - include
@@ -116,22 +116,29 @@ CodeQue offers the following search modes
 - exact
 - include with order
 
-The most useful mode is `include`. As the name suggest the matched code has to include the code from query, but it can also contain other statements. It performs structural comparison. [Learn more about `include` search mode](https://codeque.co/docs#include-search-mode)
+The most useful mode is `include`. As the name suggest the matched code has to include the code from query, but it can also contain other statements. It performs structural comparison. 
 
-`text` search mode is good replacement of build-in vscode search. It acts like a normal text search, but it's big advantage is that it allows for matching multiline statements. It also offers it's own types of wildcards. [Learn more about `text` search mode](https://codeque.co/docs#include-search-mode)
+[Learn more about `include` search mode](https://codeque.co/docs#include-search-mode)
+
+`text` search mode is good replacement of build-in vscode search. It acts like a normal text search, but it's big advantage is that it allows for matching multiline statements. It also offers it's own types of wildcards. 
+
+[Learn more about `text` search mode](https://codeque.co/docs#include-search-mode)
 
 Sometimes you might want to find the code that matches exactly your query. Here is where `exact` search mode is useful. It performs structural comparison, so code formatting is not a problem.
+
 [Learn more about `exact` search mode](https://codeque.co/docs#exact-search-mode)
 
-Last but not least, `include-with-order` search mode can be useful in some rare cases. Same like `include` mode it matches code structurally and allows for missing parts, but in addition, it require the order to match. [Learn more about `include-with-order` search mode](https://codeque.co/docs#include-w-ith-order-search-mode)
+Last but not least, `include-with-order` search mode can be useful in some rare cases. Same like `include` mode it matches code structurally and allows for missing parts, but in addition, it require the order to match. 
+
+[Learn more about `include-with-order` search mode](https://codeque.co/docs#include-w-ith-order-search-mode)
 
 Here is the example of `include` mode matching function body containing  statements from query 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/media/include-search-mode-example.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/include-search-mode-example.png?raw=true" />
 
 > Read more about search modes in [docs](https://codeque.co/docs#search-modes)
 
-#### Searching by file imports
+### Searching by file imports
 
 Cool feature of CodeQue is ability to search within files that are directly and indirectly imported by given entry point. CodeQue generates file's dependency tree and search through all nodes. Simply file dependency based search.
 
@@ -141,15 +148,15 @@ To get started you can enter the file path manually in search settings.
 
 However easier way of searching by file imports is to use option `CQ: Search by Entry Point` in file explorer context menu 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/media/search-by-entry-point.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/search-by-entry-point.png?raw=true" />
 
-#### Todo-like results list
+### Todo-like results list
 
 Ability to manage search results list is very handy for refactoring. You can collapse or remove not relevant results and mark others as done after you make changes. I've very similar UX to Github Pull Request review view.
 
-<img src="https://github.com/codeque-co/codeque/blob/media/results-list.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/results-list.gif?raw=true" />
 
-#### Select to search
+### Select to search
 
 Another handy addition is the possibility to search by code selected in editor, so you don't have to copy-paste the query. It's just faster.
 
@@ -157,9 +164,9 @@ After making a selection simply click `🔍 Open Search` button in Status bar on
 
 CodeQue will automatically detect whether select text is valid code and perform search using recently used structural [search mode](#search-modes). Otherwise it would fallback to `text` search mode.
 
-<img src="https://github.com/codeque-co/codeque/blob/media/select-to-search.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/select-to-search.gif?raw=true" />
 
-#### Files list filters
+### Files list filters
 
 Search wouldn't be useful without ability to filter files list.
 
@@ -178,11 +185,11 @@ Example files list settings 👇
   <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/files-list-settings.png?raw=true" width="400px" />
 </p>
 
-#### Case sensitivity
+### Case sensitivity
 
 You can choose whether to compare identifier persisting their original case or do case insensitive match.  
 
-#### search errors
+### Search errors
 
 Sometimes you might encounter some search errors. They will be mostly due to some syntax errors in you source files.
 
@@ -248,7 +255,6 @@ Assuming we use `include` mode, the object can have 0 or more properties with an
 <$$
  $$={{}}
 />
-
 ```
 
 This query finds places where a given array is mapped directly in JSX. It could be memoized to make the array reference stable and reduce re-renders.

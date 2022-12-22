@@ -7,6 +7,7 @@ import {
   RadioGroup,
   Stack,
   Text,
+  Link,
 } from '@chakra-ui/react'
 import Creatable from 'react-select/creatable'
 
@@ -366,6 +367,15 @@ export function SearchSettings({
           placeholder="Entry point relative path"
           size="sm"
         />
+      </Flex>
+      <Flex flexDir="column" marginTop="auto" alignItems="center">
+        <Link href="https://codeque.co/docs">Documentation</Link>
+        <Link href="https://github.com/codeque-co/codeque/issues">
+          Report a bug
+        </Link>
+        <Link href="https://github.com/codeque-co/codeque/issues">
+          Ask for help
+        </Link>
       </Flex>
     </Flex>
   )

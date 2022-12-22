@@ -116,27 +116,35 @@ CodeQue offers the following search modes
 - exact
 - include with order
 
+<br/>
+ 
 The most useful mode is `include`. As the name suggest the matched code has to include the code from query, but it can also contain other statements. It performs structural comparison. 
 
 [Learn more about `include` search mode](https://codeque.co/docs#include-search-mode)
+
+<br/>
 
 `text` search mode is good replacement of build-in vscode search. It acts like a normal text search, but it's big advantage is that it allows for matching multiline statements. It also offers it's own types of wildcards. 
 
 [Learn more about `text` search mode](https://codeque.co/docs#include-search-mode)
 
+<br/>
+
 Sometimes you might want to find the code that matches exactly your query. Here is where `exact` search mode is useful. It performs structural comparison, so code formatting is not a problem.
 
 [Learn more about `exact` search mode](https://codeque.co/docs#exact-search-mode)
+
+<br/>
 
 Last but not least, `include-with-order` search mode can be useful in some rare cases. Same like `include` mode it matches code structurally and allows for missing parts, but in addition, it require the order to match. 
 
 [Learn more about `include-with-order` search mode](https://codeque.co/docs#include-w-ith-order-search-mode)
 
+<br/>
+
 Here is the example of `include` mode matching function body containing  statements from query 👇
 
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/include-search-mode-example.png?raw=true" />
-
-> Read more about search modes in [docs](https://codeque.co/docs#search-modes)
 
 ### Searching by file imports
 

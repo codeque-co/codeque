@@ -33,7 +33,7 @@ More languages will be added once it will get traction.
 <p align="center"><b>Watch extension in action (external link) 👇</b></p>
 
 <a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
-    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/video-thumbnail.png?raw=true" />
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/video-thumbnail.png?raw=true" />
   </a>
 
 ## Benefits of using CodeQue VSCode extension
@@ -104,7 +104,7 @@ Strings have their's own wildcards
 
 Here is an example of query which finds all types of logs which includes word `test` in parameter 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/example-query.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/example-query.png?raw=true" />
 
 > Read more about wildcards and query language in [docs](https://codeque.co/docs#writing-a-query)
 
@@ -144,7 +144,7 @@ Last but not least, `include-with-order` search mode can be useful in some rare 
 
 Here is the example of `include` mode matching function body containing  statements from query 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/include-search-mode-example.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/include-search-mode-example.png?raw=true" />
 
 ### Searching by file imports
 
@@ -156,13 +156,13 @@ To get started you can enter the file path manually in search settings.
 
 However easier way of searching by file imports is to use option `CQ: Search by Entry Point` in file explorer context menu 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/search-by-entry-point.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/search-by-entry-point.png?raw=true" />
 
 ### Todo-like results list
 
 Ability to manage search results list is very handy for refactoring. You can collapse or remove not relevant results and mark others as done after you make changes. I've very similar UX to Github Pull Request review view.
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/results-list.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/results-list.gif?raw=true" />
 
 ### Select to search
 
@@ -172,7 +172,7 @@ After making a selection simply click `🔍 Open Search` button in Status bar on
 
 CodeQue will automatically detect whether select text is valid code and perform search using recently used structural [search mode](#search-modes). Otherwise it would fallback to `text` search mode.
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/select-to-search.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/select-to-search.gif?raw=true" />
 
 ### Files list filters
 
@@ -190,7 +190,7 @@ Enable the following flags with caution, as they might significantly downgrade s
 Example files list settings 👇
 
 <p align="center">
-  <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/files-list-settings.png?raw=true" width="400px" />
+  <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/files-list-settings.png?raw=true" width="400px" />
 </p>
 
 ### Case sensitivity
@@ -203,7 +203,7 @@ Sometimes you might encounter some search errors. They will be mostly due to som
 
 You can check search error details in tooltip available after click the error count message 👇
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/search-error.png?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/search-error.png?raw=true" />
 
 ## Query examples
 

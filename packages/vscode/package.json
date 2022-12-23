@@ -33,7 +33,7 @@
 	],
 	"license": "SEE LICENSE IN LICENSE.md",
 	"main": "./dist/extension.js",
-	"icon": "media/logoShort.png",
+	"icon": "media/logoShort_search.png",
 	"galleryBanner": {
 		"color": "#f3e2f9",
 		"theme": "light"

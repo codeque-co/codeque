@@ -22,6 +22,8 @@ You can also use it as a linter.
 
 Find out more about the project on [codeque.co](https://codeque.co)
 
+[Try CodeQue Visual Studio Code Extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque)
+
 ## Installation 👇
 
 ```sh

@@ -2,6 +2,7 @@ import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
+import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Types', () => {
   let filesList = [] as string[]
@@ -585,5 +586,63 @@ describe('Types', () => {
 
     expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+  })
+
+  it('Should match type in variable type annotation', () => {
+    const fileContent = `
+      const a: SomeType = '';
+      let b: SomeType = '';
+      let c: OtherType & { key: SomeType } = '';
+    `
+
+    const queries = [
+      `
+      SomeType
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
+  })
+
+  it('Should match type in function parameter type annotation', () => {
+    const fileContent = `
+      function A(a: SomeType) {};
+      const B = (b: SomeType) => {};
+      function async (a: OtherType & SomeType) {};
+    `
+
+    const queries = [
+      `
+      SomeType
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
   })
 })

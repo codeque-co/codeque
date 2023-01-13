@@ -84,11 +84,11 @@ export const getSetsOfKeysToCompare = (
   queryNode: PoorNodeType,
   isExact: boolean,
 ) => {
-  const exactFileKeys = getKeysToCompare(fileNode)
-  const exactQueryKeys = getKeysToCompare(queryNode)
+  const allFileKeys = getKeysToCompare(fileNode)
+  const allQueryKeys = getKeysToCompare(queryNode)
 
   if (isExact || fileNode.type !== queryNode.type) {
-    return [exactFileKeys, exactQueryKeys]
+    return [allFileKeys, allQueryKeys, allFileKeys, allQueryKeys]
   }
 
   /**
@@ -99,25 +99,24 @@ export const getSetsOfKeysToCompare = (
    *    - or are `tail` property from TemplateElement
    */
 
-  const fileKeysToRemove = exactFileKeys.filter(
+  const fileKeysToRemove = allFileKeys.filter(
     (fileKey) =>
-      (!exactQueryKeys.includes(fileKey) ||
-        isNullOrUndef(queryNode[fileKey])) &&
+      (!allQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey])) &&
       isNodeFieldOptional(fileNode.type as string, fileKey),
   )
 
-  const includeFileKeys = exactFileKeys.filter(
+  const includeFileKeys = allFileKeys.filter(
     (fileKey) => !fileKeysToRemove.includes(fileKey),
   )
 
   // exclude all properties that has falsy value (otherwise properties set does not mach, if we remove these properties from file node)
-  const includeQueryKeys = exactQueryKeys.filter(
+  const includeQueryKeys = allQueryKeys.filter(
     (queryKey) =>
       !fileKeysToRemove.includes(queryKey) &&
       !isNullOrUndef(queryNode[queryKey]),
   )
 
-  return [includeFileKeys, includeQueryKeys]
+  return [includeFileKeys, includeQueryKeys, allFileKeys, allQueryKeys]
 }
 
 export const SPACE_CHAR = ' '

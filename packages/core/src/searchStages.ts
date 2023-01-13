@@ -288,7 +288,7 @@ const compareNodes = (
     }
   }
 
-  const [fileKeys, queryKeys] = getSetsOfKeysToCompare(
+  const [fileKeys, queryKeys, allFileKeys] = getSetsOfKeysToCompare(
     fileNode,
     queryNode,
     isExact,
@@ -307,7 +307,11 @@ const compareNodes = (
   const keysToTraverseForValidatingMatch: string[] = []
   const fileKeysToTraverseForOtherMatches: string[] = getKeysWithNodes(
     fileNode,
-    fileKeys,
+    /**
+     * We always want to explore all other file for potential matches.
+     * Even if note types are the same. Eg. Identifier might have another nested identifier node in type declaration
+     */
+    allFileKeys,
   )
 
   if (fileNode?.type === 'JSXText') {
@@ -699,6 +703,30 @@ const compareNodes = (
       queryKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
       fileKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
       fileKeysToTraverseForOtherMatches,
+    }
+  }
+
+  if (queryNode.type === 'Identifier' && fileNode.type === 'Identifier') {
+    if (
+      queryNode.name !== fileNode.name &&
+      fileNode.typeAnnotation !== undefined
+    ) {
+      log(
+        'compare: Identifiers with different names, file type prop',
+        fileNode.typeAnnotation,
+      )
+
+      log(
+        'compare: Identifiers with different names, fileKeysToTraverse',
+        fileKeysToTraverseForOtherMatches,
+      )
+
+      return {
+        levelMatch: false,
+        fileKeysToTraverseForValidatingMatch: ['typeAnnotation'],
+        queryKeysToTraverseForValidatingMatch: [],
+        fileKeysToTraverseForOtherMatches,
+      }
     }
   }
 

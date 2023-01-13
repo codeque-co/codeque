@@ -48,5 +48,34 @@
     "lint:fix": "yarn lint --fix",
     "checks": "yarn lint && yarn typecheck",
     "release": "release-it"
-  }
+  },
+  "keywords": [
+    "typescript",
+    "javascript",
+    "json",
+    "search",
+    "find",
+    "match",
+    "pattern",
+    "matching",
+    "ast",
+    "regexp",
+    "semantic",
+    "static",
+    "analysis",
+    "structural",
+    "syntax",
+    "multiline",
+    "refactor",
+    "refactoring",
+    "replace",
+    "rewrite",
+    "rewriting",
+    "navigation",
+    "multiline search",
+    "structural search",
+    "search and replace",
+    "regexp search",
+    "json search"
+  ]
 }

@@ -138,4 +138,5 @@ codeque [options]
 - `-v, --version` - Print CLI version (_optional_)
 - `-pfl, --printFilesList` - Print list of searched files (_optional_)
 - `-ogi, --omitGitIgnore` - Search files regardless .gitignore settings (_optional_)
+- `-ae, --allExtensions` - Search in all file extensions. Useful for text search mode. (_optional_)
 <!-- cli-docs-end -->

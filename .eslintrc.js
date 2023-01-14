@@ -6,7 +6,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:node/recommended',
     'plugin:prettier/recommended',
-    'prettier'
+    'prettier',
   ],
   rules: {
     'prettier/prettier': 'error',
@@ -25,38 +25,38 @@ module.exports = {
       {
         blankLine: 'always',
         prev: 'block-like',
-        next: '*'
+        next: '*',
       }, // padding after code block
       {
         blankLine: 'always',
         prev: '*',
-        next: 'return'
+        next: 'return',
       }, // padding before return
       {
         blankLine: 'always',
         prev: '*',
-        next: 'if'
+        next: 'if',
       }, // padding before if statement
       {
         blankLine: 'always',
         prev: '*',
-        next: 'for'
+        next: 'for',
       }, // padding before for loop
       {
         blankLine: 'always',
         prev: '*',
-        next: 'function'
+        next: 'function',
       }, // padding before function
       {
         blankLine: 'always',
         prev: '*',
-        next: 'multiline-expression'
+        next: 'multiline-expression',
       }, // padding before multiline-expression
       {
         blankLine: 'always',
         prev: 'multiline-expression',
-        next: '*'
-      } // padding after multiline-expression
-    ]
-  }
+        next: '*',
+      }, // padding after multiline-expression
+    ],
+  },
 }

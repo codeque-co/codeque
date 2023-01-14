@@ -8,6 +8,8 @@ import {
   createHardStopFlag,
   filterIncludeExclude,
   SearchInFileError,
+  typeScriptFamilyExtensionTester,
+  filterExtensions,
 } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
@@ -71,6 +73,7 @@ export class SearchManager {
             searchRoot: this.root,
             ignoreNodeModules: true,
             omitGitIgnore: false,
+            extensionTester: /\.(\w)+$/,
           })
 
           this.filesListState.state = 'ready'
@@ -253,11 +256,16 @@ export class SearchManager {
             }
           }
 
+          const finalFilesList =
+            settings.mode === 'text'
+              ? files
+              : filterExtensions(files, typeScriptFamilyExtensionTester)
+
           // We start search in next tick so not block events delivery and UI update
           setTimeout(
             (async () => {
               const results = await searchMultiThread({
-                filePaths: files,
+                filePaths: finalFilesList,
                 queryCodes: [settings.query],
                 mode: settings.mode,
                 caseInsensitive: settings.caseType === 'insensitive',
@@ -273,7 +281,7 @@ export class SearchManager {
                   root,
                 ),
                 time: (searchEnd - searchStart) / 1000,
-                files,
+                files: finalFilesList,
               })
 
               this.searchRunning = false

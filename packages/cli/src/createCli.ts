@@ -44,5 +44,10 @@ export function createCliProgram(program: commander.Command) {
       'Search files regardless .gitignore settings',
       false,
     )
+    .option(
+      '-ae, --allExtensions',
+      'Search in all file extensions. Useful for text search mode.',
+      false,
+    )
     .action(search)
 }

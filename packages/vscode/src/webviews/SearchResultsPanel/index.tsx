@@ -14,7 +14,7 @@ import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
 import { simpleDebounce } from '../../utils'
-import { Matches } from '@codeque/core'
+import { Matches, Mode } from '@codeque/core'
 
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
@@ -36,7 +36,7 @@ const Panel = () => {
   const [nextSearchIsFromSelection, setNextSearchIsFromSelection] =
     useState<boolean>(false)
 
-  const [mode, setMode] = useState<string | null>(null)
+  const [mode, setMode] = useState<Mode | null>(null)
   const [hasQueryError, setHasQueryError] = useState<boolean>(false)
   const [initialSettingsReceived, setInitialSettingsReceived] =
     useState<boolean>(false)
@@ -327,6 +327,7 @@ const Panel = () => {
           extendDisplayLimit={extendDisplayLimit}
           showAllResults={showAllResults}
           removeMatch={removeMatch}
+          searchMode={mode}
         />
       </Flex>
     </Providers>

@@ -264,4 +264,33 @@ describe('Text search mode', () => {
 
     expect(errors).toHaveLength(0)
   })
+
+  it('Should compute proper position of match with html like query', () => {
+    const { matches, errors } = searchInFileSystem({
+      queryCodes: [
+        dedent`
+          <html><head><meta $$="$$"/>$$$m
+          </head>
+        `,
+      ],
+      filePaths: [
+        path.resolve(__dirname, '__fixturesOther__', 'textSearch.ts'),
+      ],
+      mode: 'text',
+      caseInsensitive: true,
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(2)
+
+    expect(matches[0].loc).toMatchObject({
+      start: { line: 44, column: 12 },
+      end: { line: 51, column: 21 },
+    })
+
+    expect(matches[1].loc).toMatchObject({
+      start: { line: 104, column: 12 },
+      end: { line: 111, column: 21 },
+    })
+  })
 })

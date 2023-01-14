@@ -355,7 +355,7 @@ export function SearchSettings({
           />
         </Box>
         <Text fontWeight="medium" my="1">
-          Search by entry point
+          Search by entry point (<i>JS/TS only</i>)
         </Text>
         <Input
           border="none"
@@ -369,11 +369,22 @@ export function SearchSettings({
         />
       </Flex>
       <Flex flexDir="column" marginTop="auto" alignItems="center">
-        <Link href="https://codeque.co/docs">Documentation</Link>
-        <Link href="https://github.com/codeque-co/codeque/issues">
+        <Link
+          href="https://codeque.co/docs"
+          color="var(--vscode-textLink-foreground);"
+        >
+          Documentation
+        </Link>
+        <Link
+          href="https://github.com/codeque-co/codeque/issues"
+          color="var(--vscode-textLink-foreground);"
+        >
           Report a bug
         </Link>
-        <Link href="https://github.com/codeque-co/codeque/issues">
+        <Link
+          href="https://github.com/codeque-co/codeque/issues"
+          color="var(--vscode-textLink-foreground);"
+        >
           Ask for help
         </Link>
       </Flex>

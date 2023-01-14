@@ -33,6 +33,7 @@ type CliParams = {
   version: boolean
   printFilesList: boolean
   omitGitIgnore: boolean
+  allExtensions: boolean
 }
 
 export async function search(params: CliParams) {
@@ -47,6 +48,7 @@ export async function search(params: CliParams) {
     version,
     printFilesList,
     omitGitIgnore,
+    allExtensions,
   } = params
 
   let { mode, query: queries = [] } = params
@@ -169,6 +171,7 @@ export async function search(params: CliParams) {
       entryPoint: entry,
       byGitChanges: git,
       omitGitIgnore,
+      extensionTester: allExtensions ? /\.(\w)+$/ : undefined,
     })
   } catch (e: any) {
     print('\n')

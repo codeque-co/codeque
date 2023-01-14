@@ -15,9 +15,14 @@ const getMatchPosition = (match: string, fileContents: string) => {
   const firstMatchLine = matchLines[0]
   const lastMatchLine = matchLines[matchLines.length - 1]
 
-  const startLineIndex = fileLines.findIndex((line) =>
-    line.includes(firstMatchLine),
-  )
+  let charsToFirstLineCounter = 0
+
+  const startLineIndex = fileLines.findIndex((line) => {
+    const newLineCharLen = 1
+    charsToFirstLineCounter += line.length + newLineCharLen
+
+    return charsToFirstLineCounter > start
+  })
 
   const endLineIndex = startLineIndex + matchLines.length - 1
   const startLineColumn = fileLines[startLineIndex].indexOf(firstMatchLine)

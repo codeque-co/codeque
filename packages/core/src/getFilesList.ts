@@ -11,7 +11,13 @@ import { spawnSync } from 'child_process'
 import escapeGlob from 'glob-escape'
 import { HardStopFlag } from './types'
 
-export const extensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
+export const typeScriptFamilyExtensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
+
+/**
+ * @deprecated use `typeScriptFamilyExtensionTester` instead
+ */
+export const extensionTester = typeScriptFamilyExtensionTester
+
 export const pathToPosix = (fsPath: string) => fsPath.replace(/\\/g, '/')
 
 const bigFileSizeInBytes = 1024 * 100 // 100 kb
@@ -28,7 +34,9 @@ const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
   process.cwd = oldProcessCwd
 
   const projectFiles = Object.keys(tree).filter(
-    (file) => !file.includes('node_modules') && extensionTester.test(file),
+    (file) =>
+      !file.includes('node_modules') &&
+      typeScriptFamilyExtensionTester.test(file),
   )
 
   return projectFiles.map((filePath) => path.resolve(root, filePath))
@@ -36,7 +44,10 @@ const getFilesListByEntryPoint = async (root: string, entryPoint: string) => {
 
 const directoriesBlackList = ['.git']
 
-const getFilesListByGitChanges = async (root: string) => {
+const getFilesListByGitChanges = async (
+  root: string,
+  extensionTester: RegExp,
+) => {
   const { error, output } = spawnSync('git', ['diff', '--name-only', 'HEAD'], {
     cwd: root,
   })
@@ -137,6 +148,13 @@ export const filterIncludeExclude = ({
     .map((p) => path.join(searchRoot, p))
 }
 
+export const filterExtensions = (
+  filesList: string[],
+  extensionTester: RegExp,
+) => {
+  return filesList.filter((filePath) => extensionTester.test(filePath))
+}
+
 type GetFilesListArgs = {
   searchRoot: string
   entryPoint?: string
@@ -147,6 +165,7 @@ type GetFilesListArgs = {
   exclude?: string[]
   include?: string[]
   hardStopFlag?: HardStopFlag
+  extensionTester?: RegExp
 }
 
 export const getFilesList = async ({
@@ -159,13 +178,14 @@ export const getFilesList = async ({
   exclude = [],
   include = undefined,
   hardStopFlag,
+  extensionTester = typeScriptFamilyExtensionTester,
 }: GetFilesListArgs) => {
   const searchRoot = path.normalize(_searchRoot)
   const measureStop = measureStart('getFiles')
   let filesList: string[] = []
 
   if (byGitChanges) {
-    filesList = await getFilesListByGitChanges(searchRoot)
+    filesList = await getFilesListByGitChanges(searchRoot, extensionTester)
   } else if (entryPoint) {
     filesList = await getFilesListByEntryPoint(searchRoot, entryPoint)
   } else {

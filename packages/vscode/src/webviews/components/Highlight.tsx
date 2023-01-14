@@ -2,6 +2,7 @@ import PrismHighlight from 'prism-react-renderer'
 import { defaultProps, PrismTheme } from 'prism-react-renderer'
 import React from 'react'
 import { darkTheme } from './codeHighlightThemes'
+import { getLanguageBasedOnFileExtension } from './getLanguageBasedOnFileExtension'
 
 type Token = { types: string[]; content: string }
 
@@ -26,6 +27,7 @@ export type HighlightProps = {
   highlight?: boolean
   isMultiLine?: boolean
   startLineNumber?: number
+  fileExtension?: string
 }
 
 type CustomHighlightResults = Array<{
@@ -40,6 +42,7 @@ export function Highlight({
   customHighlight,
   highlight,
   startLineNumber,
+  fileExtension,
 }: HighlightProps) {
   const safeStartLineNumber = startLineNumber ?? 0
 
@@ -47,12 +50,16 @@ export function Highlight({
     return <span>{children}</span>
   }
 
+  const highlightLanguage = getLanguageBasedOnFileExtension(fileExtension)
+
+  console.log('highlightlang', highlightLanguage)
+
   return (
     // @ts-ignore
     <PrismHighlight
       {...defaultProps}
       code={children}
-      language="tsx"
+      language={highlightLanguage}
       theme={theme}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
@@ -148,18 +155,45 @@ export function Highlight({
                             break
                           }
 
-                          // match is in one line, check if tokens are in bounds
+                          // first or last or first and last line of match, check if tokens are in bounds
                           if (
-                            startLine === endLine &&
-                            lineNumToCompareHighlight === startLine
+                            lineNumToCompareHighlight === startLine ||
+                            lineNumToCompareHighlight === endLine
                           ) {
-                            const isTokenInBoundsOfHighlight =
-                              startCol <
-                                lineCurrentChar + token.content.length &&
-                              endCol > lineCurrentChar
+                            console.log('split candidate', token.content)
 
-                            const shouldSplitOnLeft = startCol > lineCurrentChar
+                            const isStartLine =
+                              lineNumToCompareHighlight === startLine
+
+                            const isEndLine =
+                              lineNumToCompareHighlight === endLine
+
+                            const isStartLineAndTokenInBoundsOfHighlight =
+                              isStartLine &&
+                              startCol < lineCurrentChar + token.content.length
+
+                            const isEndLineAndTokenInBoundsOfHighlight =
+                              isEndLine && endCol > lineCurrentChar
+
+                            const isCenterLineAndTokenInBoundsOfHighlight =
+                              lineNumToCompareHighlight > startLine &&
+                              lineNumToCompareHighlight < endLine
+
+                            const isTokenInBoundsOfHighlight =
+                              isStartLineAndTokenInBoundsOfHighlight ||
+                              isEndLineAndTokenInBoundsOfHighlight ||
+                              isCenterLineAndTokenInBoundsOfHighlight
+
+                            console.log(
+                              'isTokenInBoundsOfHighlight',
+                              isTokenInBoundsOfHighlight,
+                            )
+
+                            const shouldSplitOnLeft =
+                              isStartLine && startCol > lineCurrentChar
+
                             const shouldSplitOnRight =
+                              isEndLine &&
                               endCol < lineCurrentChar + token.content.length
 
                             const shouldBeSplit =
@@ -258,25 +292,6 @@ export function Highlight({
                               customHighlightResult = localCustomHighlightResult
 
                               break
-                            }
-                          } else {
-                            // start/end line of multiline match
-                            const matchIsInStartOrEndLine =
-                              (lineNumToCompareHighlight === startLine &&
-                                lineCurrentChar >= startCol) ||
-                              (lineNumToCompareHighlight === endLine &&
-                                lineCurrentChar + token.content.length <=
-                                  endCol)
-
-                            if (matchIsInStartOrEndLine) {
-                              // todo: perhaps we have to split here as well
-                              customHighlightResult = [
-                                {
-                                  style: highlight.style,
-                                  token,
-                                  reason: 'matchIsInStartOrEndLine',
-                                },
-                              ]
                             }
                           }
                         }

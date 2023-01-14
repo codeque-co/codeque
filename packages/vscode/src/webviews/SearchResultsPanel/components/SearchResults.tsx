@@ -1,8 +1,10 @@
 import { Button, Flex, Text, Spinner } from '@chakra-ui/react'
-import { SearchResults } from '@codeque/core'
+import { Mode, SearchResults } from '@codeque/core'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { useThemeType } from '../../components/useThemeType'
 import { SearchResult } from './SearchResult'
+import { TextModeNoResults } from './TextModeNoResults'
+import { StructuralModeNoResults } from './StructuralModeNoResults'
 
 type SearchResultsListProps = {
   matches: SearchResults['matches']
@@ -12,6 +14,7 @@ type SearchResultsListProps = {
   showAllResults: () => void
   removeMatch: (filePath: string, start: number, end: number) => void
   isLoading: boolean
+  searchMode: Mode | null
 }
 
 export function SearchResultsList({
@@ -22,19 +25,21 @@ export function SearchResultsList({
   extendDisplayLimit,
   removeMatch,
   isLoading,
+  searchMode,
 }: SearchResultsListProps) {
   const themeType = useThemeType()
   const highlightTheme = themeType === 'dark' ? darkTheme : lightTheme
 
   if (matches.length === 0) {
     return (
-      <Flex
-        width="100%"
-        height="100%"
-        justifyContent="center"
-        alignItems="center"
-      >
-        {isLoading ? <Spinner margin="auto" /> : <Text>No results found</Text>}
+      <Flex width="100%" height="100%" justifyContent="center" overflowY="auto">
+        {isLoading ? (
+          <Spinner margin="auto" />
+        ) : searchMode === 'text' ? (
+          <TextModeNoResults />
+        ) : (
+          <StructuralModeNoResults />
+        )}
       </Flex>
     )
   }

@@ -59,6 +59,9 @@ const getBorderColor = (
   return 'blue.200'
 }
 
+const getFileExtension = (filePath: string) =>
+  filePath.match(/(?<=(\.))(\w)+$/g)?.[0]
+
 export function SearchResult({
   match,
   getRelativePath,
@@ -171,6 +174,8 @@ export function SearchResult({
       }
     }
   }, [])
+
+  const fileExtension = getFileExtension(match.filePath)
 
   return (
     <Flex flexDir="column" mb="4" ref={wrapperRef}>
@@ -296,6 +301,7 @@ export function SearchResult({
             theme={highlightTheme}
             dedent={shouldDedentResult}
             customHighlight={matchHighlight}
+            fileExtension={fileExtension}
           >
             {extendedCodeFrameCode}
           </CodeBlock>

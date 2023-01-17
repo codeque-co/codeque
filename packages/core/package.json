@@ -1,6 +1,6 @@
 {
   "name": "@codeque/core",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Supercharged multiline code search and replace tool",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",

@@ -52,8 +52,6 @@ export function Highlight({
 
   const highlightLanguage = getLanguageBasedOnFileExtension(fileExtension)
 
-  console.log('highlightlang', highlightLanguage)
-
   return (
     // @ts-ignore
     <PrismHighlight
@@ -160,8 +158,6 @@ export function Highlight({
                             lineNumToCompareHighlight === startLine ||
                             lineNumToCompareHighlight === endLine
                           ) {
-                            console.log('split candidate', token.content)
-
                             const isStartLine =
                               lineNumToCompareHighlight === startLine
 
@@ -183,11 +179,6 @@ export function Highlight({
                               isStartLineAndTokenInBoundsOfHighlight ||
                               isEndLineAndTokenInBoundsOfHighlight ||
                               isCenterLineAndTokenInBoundsOfHighlight
-
-                            console.log(
-                              'isTokenInBoundsOfHighlight',
-                              isTokenInBoundsOfHighlight,
-                            )
 
                             const shouldSplitOnLeft =
                               isStartLine && startCol > lineCurrentChar

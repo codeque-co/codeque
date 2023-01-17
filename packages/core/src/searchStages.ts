@@ -90,7 +90,7 @@ const validateMatch = (
     queryKeysToTraverseForValidatingMatch.length
   ) {
     throw new Error(
-      'Count of keys to validate in query and file does not match',
+      `Count of keys to validate in query and file does not match for nodes ${currentNode.type}:${currentNode?.name} ${currentQueryNode.type}:${currentQueryNode?.name}, [${fileKeysToTraverseForValidatingMatch}] [${queryKeysToTraverseForValidatingMatch}]`,
     )
   }
 
@@ -723,7 +723,7 @@ const compareNodes = (
 
       return {
         levelMatch: false,
-        fileKeysToTraverseForValidatingMatch: ['typeAnnotation'],
+        fileKeysToTraverseForValidatingMatch: [],
         queryKeysToTraverseForValidatingMatch: [],
         fileKeysToTraverseForOtherMatches,
       }

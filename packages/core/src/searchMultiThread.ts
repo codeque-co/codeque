@@ -60,13 +60,18 @@ export const searchMultiThread = async ({
 
   for (let i = 0; i < chunksCount; i++) {
     const actualCurrentChunkSize = i === 0 ? firstChunkSize : chunkSize
-    const actualPrevChunkSize = i <= 1 ? firstChunkSize : chunkSize
+    const actualFirstPrevChunkSize = i >= 1 ? firstChunkSize : 0
+    const actualSubsequentPrevChunkSize = i >= 2 ? chunkSize : 0
+    const subsequentPrevChunksCount = Math.max(i - 1, 0)
 
-    const startIndex = i * actualPrevChunkSize
+    const startIndex =
+      actualFirstPrevChunkSize +
+      subsequentPrevChunksCount * actualSubsequentPrevChunkSize
     const endIndex =
       i < chunksCount - 1 ? startIndex + actualCurrentChunkSize : undefined
 
     const filePathsSlice = filePaths.slice(startIndex, endIndex)
+
     const searchParams = {
       ...params,
       filePaths: filePathsSlice,
@@ -75,12 +80,17 @@ export const searchMultiThread = async ({
     } as SearchWorkerData
     const task = new Promise<SearchResults>((resolve, reject) => {
       if (i === 0) {
-        const results = searchInFileSystem({
-          ...searchParams,
-          onPartialResult,
-          hardStopFlag,
-        })
-        resolve(results)
+        /**
+         * Timeout to not block starting other searches
+         */
+        setTimeout(() => {
+          const results = searchInFileSystem({
+            ...searchParams,
+            onPartialResult,
+            hardStopFlag,
+          })
+          resolve(results)
+        }, 0)
       } else {
         const measureWorkerReturnResult = measureStart('WorkerReturnResult')
         const worker = new Worker(__dirname + '/searchWorker.js', {

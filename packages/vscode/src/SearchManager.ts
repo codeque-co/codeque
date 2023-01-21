@@ -17,8 +17,17 @@ import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape } from './StateManager'
 import { simpleDebounce } from './utils'
+
+type FilesLists = {
+  files: string[]
+  root: string
+}[]
+
+type Root = { path: string; name?: string }
+
 export class SearchManager {
-  private root: string | undefined
+  private isWorkspace: boolean | undefined
+  private roots: Root[] | undefined
   private searchRunning = false
   private currentSearchHardStopFlag: HardStopFlag | undefined
   private currentFilesGetHardStopFlag: HardStopFlag | undefined
@@ -26,8 +35,12 @@ export class SearchManager {
   private filesListState = {
     isWatching: false,
     state: 'idle' as 'idle' | 'processing' | 'error' | 'ready',
-    list: [] as string[],
-    watcher: null as vscode.FileSystemWatcher | null,
+    filesLists: [] as FilesLists,
+    watchers: [] as {
+      rootPath: string
+      watcher: vscode.FileSystemWatcher
+    }[],
+    workspaceFoldersChangeListener: undefined as vscode.Disposable | undefined,
   }
   private lastSearchSettings: StateShape | undefined
 
@@ -35,33 +48,38 @@ export class SearchManager {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
 
-    this.root = this.determineRoot()
+    this.initializeSearchRoots()
     this.maybeStartWatchingFilesList()
+    this.watchWorkspaceChanges()
   }
 
-  /**
-   *
-   * todo: refactor to public getRoot =>  this.root || this.determineRoot() (private)
-   * extract logic for fixing the path for windows
-   */
-  private determineRoot() {
-    const searchRoot =
-      vscode.workspace.workspaceFolders?.[0] !== undefined
-        ? vscode.workspace.workspaceFolders[0].uri.fsPath
-        : undefined
+  private determineRoots() {
+    const searchRoots = vscode.workspace.workspaceFolders?.map(
+      (workspaceFolder) => ({
+        path: sanitizeFsPath(workspaceFolder.uri.fsPath),
+        name: workspaceFolder.name,
+      }),
+    )
 
-    if (searchRoot !== undefined) {
-      return sanitizeFsPath(searchRoot)
-    }
+    return searchRoots
+  }
 
-    return undefined
+  private determineIsWorkspace() {
+    return Boolean(vscode.workspace.workspaceFile)
+  }
+
+  private initializeSearchRoots() {
+    this.isWorkspace = this.determineIsWorkspace()
+    this.roots = this.determineRoots()
   }
 
   private async getFilesListForBasicSearch() {
     this.filesListState.state = 'processing'
     const lastSearchSettings = this.lastSearchSettings
 
-    if (this.root && lastSearchSettings !== undefined) {
+    const roots = this.roots
+
+    if (roots && lastSearchSettings !== undefined) {
       if (
         !lastSearchSettings.searchIgnoredFiles &&
         !lastSearchSettings.searchNodeModules &&
@@ -69,50 +87,97 @@ export class SearchManager {
         !lastSearchSettings.searchBigFiles
       ) {
         try {
-          this.filesListState.list = await getFilesList({
-            searchRoot: this.root,
-            ignoreNodeModules: true,
-            omitGitIgnore: false,
-            extensionTester: /\.(\w)+$/,
-          })
+          const listsForRoots = await Promise.all(
+            roots.map((root) =>
+              getFilesList({
+                searchRoot: root.path,
+                ignoreNodeModules: true,
+                omitGitIgnore: false,
+                extensionTester: /\.(\w)+$/,
+              }),
+            ),
+          )
+
+          this.filesListState.filesLists = listsForRoots.map(
+            (filesList, idx) => ({
+              root: roots[idx].path,
+              files: filesList,
+            }),
+          )
 
           this.filesListState.state = 'ready'
 
-          return
+          return this.filesListState.filesLists
         } catch (e) {
           this.filesListState.state = 'error'
 
           vscode.window.showErrorMessage(
-            'Search error: Failed to get files list: ' + (e as Error)?.message,
+            'Search error: Failed to get files lists: ' + (e as Error)?.message,
           )
 
-          return
+          return []
         }
       }
     }
 
     this.filesListState.state = 'idle'
+
+    return []
+  }
+
+  /**
+   * This could be improved to handling changes for one workspace instead of resetting everything for all of them.
+   * Skipping for now as it's not required.
+   * Also getting files list could be optimized to refetch per folder when files change
+   */
+  private watchWorkspaceChanges() {
+    const handleWorkspaceFoldersChangeDebounced = simpleDebounce(() => {
+      this.resetFilesListsWatchers()
+      this.initializeSearchRoots()
+      this.maybeStartWatchingFilesList()
+      this.getFilesListForBasicSearch()
+    }, 500)
+
+    this.filesListState.workspaceFoldersChangeListener =
+      vscode.workspace.onDidChangeWorkspaceFolders((event) => {
+        handleWorkspaceFoldersChangeDebounced()
+      })
+  }
+
+  private resetFilesListsWatchers() {
+    this.filesListState.watchers.forEach(({ watcher, rootPath: root }) => {
+      watcher.dispose()
+    })
+
+    this.filesListState.watchers = []
+    this.filesListState.isWatching = false
   }
 
   private maybeStartWatchingFilesList() {
-    if (this.root && !this.filesListState.isWatching) {
+    if (this.roots && !this.filesListState.isWatching) {
       this.filesListState.isWatching = true
 
-      this.filesListState.watcher = vscode.workspace.createFileSystemWatcher(
-        // It's fine to watch everything, as it do not include node_modules by default
-        new vscode.RelativePattern(this.root, '**'),
-        false,
-        true,
-        false,
-      )
+      this.roots.forEach((root) => {
+        const watcher = vscode.workspace.createFileSystemWatcher(
+          // It's fine to watch everything, as it do not include node_modules by default
+          new vscode.RelativePattern(root.path, '**'),
+          false,
+          true,
+          false,
+        )
 
-      const handleFileChangeDebounced = simpleDebounce(
-        () => this.getFilesListForBasicSearch(),
-        100,
-      )
+        const handleFileChangeDebounced = simpleDebounce(() => {
+          this.getFilesListForBasicSearch()
+        }, 200)
 
-      this.filesListState.watcher.onDidCreate(handleFileChangeDebounced)
-      this.filesListState.watcher.onDidDelete(handleFileChangeDebounced)
+        watcher.onDidCreate(handleFileChangeDebounced)
+        watcher.onDidDelete(handleFileChangeDebounced)
+
+        this.filesListState.watchers.push({
+          rootPath: root.path,
+          watcher,
+        })
+      })
     }
   }
 
@@ -132,7 +197,8 @@ export class SearchManager {
 
   private processSearchResults = (
     searchResults: SearchResults,
-    searchRoot: string,
+    searchRoots: Root[],
+    isWorkspace: boolean,
   ) => {
     const groupedMatches = groupMatchesByFile(searchResults.matches)
     const filePathsFromErrors = searchResults.errors
@@ -140,37 +206,91 @@ export class SearchManager {
       .filter(Boolean)
 
     const filePaths = Object.keys(groupedMatches).concat(filePathsFromErrors)
+
     const relativePathsMap = filePaths.reduce((map, filePath) => {
+      const searchRoot = this.matchRoot(searchRoots, filePath)?.path ?? ''
       map[filePath] = path.relative(searchRoot, filePath)
 
       return map
     }, {} as Record<string, string>)
 
+    const workspacesMap = isWorkspace
+      ? filePaths.reduce((map, filePath) => {
+          const searchRoot = this.matchRoot(searchRoots, filePath)?.name ?? ''
+          map[filePath] = path.relative(searchRoot, filePath)
+
+          return map
+        }, {} as Record<string, string>)
+      : {}
+
     return {
       ...searchResults,
       groupedMatches,
       relativePathsMap,
+      workspacesMap,
     }
   }
 
-  public getRoot = () => {
-    return this.root ?? this.determineRoot()
+  public getRoots = () => {
+    return this.roots ?? this.determineRoots()
+  }
+
+  public getIsWorkspace = () => {
+    return this.isWorkspace ?? this.determineIsWorkspace()
+  }
+
+  public matchRoot = (searchRoots: Root[], filePath: string) => {
+    return searchRoots.find((searchRoot) => filePath.includes(searchRoot.path))
+  }
+
+  /**
+   *
+   * Use for adjusting the root for workspaces while filtering files
+   * It's not needed for getting normal files list, as we do not filter nor search by entry point there
+   */
+  public getRootForFileListFilters = (root: string) => {
+    const isWorkspace = this.getIsWorkspace()
+
+    return isWorkspace ? path.resolve(root, '../') : root
+  }
+
+  private getEntryPointPathForRoot = (
+    root: string,
+    entryPoint?: string | null,
+  ) => {
+    if (!entryPoint) {
+      return undefined
+    }
+
+    const entryPointNoDot = entryPoint.replace(/^\.(\\|\/)/g, '')
+
+    const isWorkspace = this.getIsWorkspace()
+    const rootSegments = path.parse(root)
+
+    if (!isWorkspace || !entryPointNoDot.startsWith(rootSegments.base)) {
+      return entryPointNoDot
+    }
+
+    const adjustedEntryPoint = path.relative(rootSegments.base, entryPointNoDot)
+
+    return adjustedEntryPoint
   }
 
   public performSearch = async (settings: StateShape) => {
     this.lastSearchSettings = settings
 
-    if (this.root === undefined) {
-      this.root = this.determineRoot()
+    if (this.roots === undefined) {
+      this.initializeSearchRoots()
       this.maybeStartWatchingFilesList()
     }
 
     const searchStart = Date.now()
-    let files: string[] = []
+    const roots = this.roots
+    const isWorkspace = this.isWorkspace
 
     try {
       if (!this.searchRunning) {
-        if (this.root !== undefined) {
+        if (roots !== undefined && typeof isWorkspace === 'boolean') {
           this.currentFilesGetHardStopFlag = createHardStopFlag()
 
           this.currentSearchHardStopFlag = createHardStopFlag()
@@ -178,36 +298,52 @@ export class SearchManager {
           this.searchRunning = true
           eventBusInstance.dispatch('search-started', settings.query)
 
-          if (
-            !settings.searchIgnoredFiles &&
-            !settings.searchNodeModules &&
-            !settings.entryPoint &&
-            !settings.searchBigFiles
-          ) {
-            if (this.filesListState.state === 'idle') {
-              await this.getFilesListForBasicSearch()
-            }
+          let filesLists: FilesLists = this.filesListState.filesLists
 
-            files = filterIncludeExclude({
-              searchRoot: this.root,
-              filesList: this.filesListState.list,
-              exclude: settings.exclude,
-              include:
-                settings.include?.length > 0 ? settings.include : undefined,
-            })
-          } else {
-            files = await getFilesList({
-              searchRoot: this.root,
-              ignoreNodeModules: !settings.searchNodeModules,
-              omitGitIgnore: settings.searchIgnoredFiles,
-              include:
-                settings.include?.length > 0 ? settings.include : undefined,
-              exclude: settings.exclude,
-              entryPoint: settings.entryPoint ?? undefined,
-              hardStopFlag: this.currentFilesGetHardStopFlag,
-              searchBigFiles: settings.searchBigFiles,
-            })
+          if (
+            settings.searchIgnoredFiles ||
+            settings.searchNodeModules ||
+            settings.entryPoint ||
+            settings.searchBigFiles
+          ) {
+            const filesListsForRoots = await Promise.all(
+              roots.map((root) =>
+                getFilesList({
+                  searchRoot: root.path,
+                  ignoreNodeModules: !settings.searchNodeModules,
+                  omitGitIgnore: settings.searchIgnoredFiles,
+                  entryPoint: this.getEntryPointPathForRoot(
+                    root.path,
+                    settings.entryPoint,
+                  ),
+                  hardStopFlag: this.currentFilesGetHardStopFlag,
+                  searchBigFiles: settings.searchBigFiles,
+                  // Cannot use exclude/include on this level
+                  // Using it requires changing root if in workspaces mode
+                  // Changing root breaks entry points search.
+                }),
+              ),
+            )
+
+            filesLists = filesListsForRoots.map((filesList, idx) => ({
+              root: roots[idx].path,
+              files: filesList,
+            }))
+          } else if (this.filesListState.state === 'idle') {
+            filesLists = await this.getFilesListForBasicSearch()
           }
+
+          const filteredFilesLists = filesLists.map(({ root, files }) =>
+            filterIncludeExclude({
+              searchRoot: this.getRootForFileListFilters(root),
+              filesList: files,
+              exclude: settings.exclude,
+              include:
+                settings.include?.length > 0 ? settings.include : undefined,
+            }),
+          )
+
+          const files = filteredFilesLists.flat(1)
 
           const getFilesEnd = Date.now()
 
@@ -219,6 +355,7 @@ export class SearchManager {
                 hints: [],
                 relativePathsMap: {},
                 groupedMatches: {},
+                workspacesMap: {},
               },
               time: 0,
               files: [],
@@ -233,8 +370,6 @@ export class SearchManager {
             return
           }
 
-          const root = this.root
-
           let reportedResults = 0
           const partialReportedLimit = 50
           const allPartialMatches: Matches = []
@@ -248,7 +383,8 @@ export class SearchManager {
               eventBusInstance.dispatch('have-partial-results', {
                 results: this.processSearchResults(
                   { matches, errors: [], hints: [] },
-                  root,
+                  roots,
+                  isWorkspace,
                 ),
                 time: (timestamp - searchStart) / 1000,
                 files: [],
@@ -278,7 +414,8 @@ export class SearchManager {
               eventBusInstance.dispatch('have-results', {
                 results: this.processSearchResults(
                   { ...results, matches: allPartialMatches },
-                  root,
+                  roots,
+                  isWorkspace,
                 ),
                 time: (searchEnd - searchStart) / 1000,
                 files: finalFilesList,
@@ -319,16 +456,22 @@ export class SearchManager {
           hints: [],
           relativePathsMap: {},
           groupedMatches: {},
+          workspacesMap: {},
         },
         time: (Date.now() - searchStart) / 1000,
-        files: files,
+        files: [],
       })
 
       this.searchRunning = false
     }
   }
   public dispose() {
-    this.filesListState.watcher?.dispose()
+    this.filesListState.watchers.forEach(({ watcher }) => {
+      watcher.dispose()
+    })
+
+    this.filesListState.workspaceFoldersChangeListener?.dispose()
+
     eventBusInstance.removeListener('start-search', this.startSearch)
     eventBusInstance.removeListener('stop-search', this.stopCurrentSearch)
   }

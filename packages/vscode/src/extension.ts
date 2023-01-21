@@ -114,9 +114,9 @@ export function activate(context: vscode.ExtensionContext) {
       'codeque.searchByEntryPoint',
       async (data) => {
         const searchPath = sanitizeFsPath(data.fsPath)
-        const searchRoot = searchManager.getRoot()
+        const searchRoots = searchManager.getRoots()
 
-        if (!searchRoot) {
+        if (!searchRoots) {
           vscode.window.showErrorMessage(
             'Search error: Could not determine search root.',
           )
@@ -124,7 +124,14 @@ export function activate(context: vscode.ExtensionContext) {
           return
         }
 
-        const relativePath = path.relative(searchRoot, searchPath)
+        const searchRoot =
+          searchManager.matchRoot(searchRoots, searchPath)?.path ?? ''
+
+        const rootToFindRelative =
+          searchManager.getRootForFileListFilters(searchRoot)
+
+        const relativePath = path.relative(rootToFindRelative, searchPath)
+
         const { ext } = path.parse(relativePath)
 
         if (!extensionTester.test(ext)) {
@@ -142,9 +149,9 @@ export function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand('codeque.searchInFolder', async (data) => {
       const searchPath = sanitizeFsPath(data.fsPath)
-      const searchRoot = searchManager.getRoot()
+      const searchRoots = searchManager.getRoots()
 
-      if (!searchRoot) {
+      if (!searchRoots) {
         vscode.window.showErrorMessage(
           'Search error: Could not determine search root.',
         )
@@ -152,7 +159,13 @@ export function activate(context: vscode.ExtensionContext) {
         return
       }
 
-      const relativePath = path.relative(searchRoot, searchPath)
+      const searchRoot =
+        searchManager.matchRoot(searchRoots, searchPath)?.path ?? ''
+
+      const rootToFindRelative =
+        searchManager.getRootForFileListFilters(searchRoot)
+
+      const relativePath = path.relative(rootToFindRelative, searchPath)
 
       await openSearchWithOptionalQueryFromEditorSelection({
         include: [`${pathToPosix(relativePath)}/**`],

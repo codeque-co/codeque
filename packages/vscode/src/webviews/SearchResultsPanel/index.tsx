@@ -85,6 +85,10 @@ const Panel = () => {
       groupedMatches: {},
       hints: [],
       errors: [],
+      workspacesMap: {
+        ...partialResults?.workspacesMap,
+        ...data.results.workspacesMap,
+      },
     }))
 
     setFilesList((partialFilesList) => [

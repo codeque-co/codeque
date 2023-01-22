@@ -90,11 +90,14 @@ export function WorkspaceGroup({
           tooltipPlacement="bottom-end"
         />
       </Flex>
-      {isExpanded && (
-        <Flex width="100%" flexDir="column" gap="4">
-          {children}
-        </Flex>
-      )}
+      <Flex
+        width="100%"
+        flexDir="column"
+        gap="4"
+        display={isExpanded ? 'flex' : 'none'}
+      >
+        {children}
+      </Flex>
     </Flex>
   )
 }

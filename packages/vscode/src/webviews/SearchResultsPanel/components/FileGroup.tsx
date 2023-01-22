@@ -133,25 +133,28 @@ export function FileGroup({
           tooltipPlacement="bottom-end"
         />
       </Flex>
-      {isExpanded && (
-        <Flex width="100%" flexDir="column" gap="4">
-          {matches.map((match) => {
-            const key = `${match.filePath}-${match.start}-${match.end}`
+      <Flex
+        width="100%"
+        flexDir="column"
+        gap="4"
+        display={isExpanded ? 'flex' : 'none'}
+      >
+        {matches.map((match) => {
+          const key = `${match.filePath}-${match.start}-${match.end}`
 
-            return (
-              <SearchResult
-                key={key}
-                match={match}
-                getRelativePath={getRelativePath}
-                removeMatch={removeMatch}
-                hasGroup={true}
-                hasWorkspace={hasWorkspace}
-                scrollElRef={scrollElRef}
-              />
-            )
-          })}
-        </Flex>
-      )}
+          return (
+            <SearchResult
+              key={key}
+              match={match}
+              getRelativePath={getRelativePath}
+              removeMatch={removeMatch}
+              hasGroup={true}
+              hasWorkspace={hasWorkspace}
+              scrollElRef={scrollElRef}
+            />
+          )
+        })}
+      </Flex>
     </Flex>
   )
 }

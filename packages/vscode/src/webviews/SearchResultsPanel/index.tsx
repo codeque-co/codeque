@@ -25,6 +25,7 @@ type ResultsObj = {
   results: ExtendedSearchResults
   time: number
   files: string[]
+  isWorkspace: boolean
 }
 const defaultDisplayLimit = 50
 
@@ -47,6 +48,8 @@ const Panel = () => {
   const [filesList, setFilesList] = useState<string[] | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [displayLimit, setDisplayLimit] = useState(50)
+  const [isWorkspace, setIsWorkspace] = useState(false)
+
   const selectedText = useRef<string | null>(null)
 
   const handleSettingsChanged = useCallback((data: Partial<StateShape>) => {
@@ -73,6 +76,7 @@ const Panel = () => {
     setIsLoading(false)
     setDisplayLimit(defaultDisplayLimit)
     setNextSearchIsFromSelection(false)
+    setIsWorkspace(data.isWorkspace)
   }, [])
 
   const handlePartialResults = useCallback((data: ResultsObj) => {
@@ -95,6 +99,8 @@ const Panel = () => {
       ...(partialFilesList ?? []),
       ...data.files,
     ])
+
+    setIsWorkspace(data.isWorkspace)
 
     setTime(data.time)
     setDisplayLimit(defaultDisplayLimit)
@@ -220,8 +226,15 @@ const Panel = () => {
     ? Object.keys(results?.groupedMatches ?? {}).length
     : undefined
 
-  const getRelativePath = (filePath: string) =>
-    results?.relativePathsMap[filePath]
+  const getRelativePath = useCallback(
+    (filePath: string) => results?.relativePathsMap[filePath],
+    [results, results?.relativePathsMap],
+  )
+
+  const getWorkspace = useCallback(
+    (filePath: string) => results?.workspacesMap[filePath],
+    [results, results?.workspacesMap],
+  )
 
   const extendDisplayLimit = useCallback(() => {
     setDisplayLimit((currentLimit) => currentLimit + defaultDisplayLimit)
@@ -296,6 +309,36 @@ const Panel = () => {
     [results],
   )
 
+  const removeFile = useCallback(
+    (filePath: string) => {
+      const currentMatches = results?.matches ?? ([] as Matches)
+      const newMatches = currentMatches.filter(
+        (match) => match.filePath !== filePath,
+      )
+
+      setResults({
+        ...results,
+        matches: newMatches,
+      } as ExtendedSearchResults)
+    },
+    [results],
+  )
+
+  const removeWorkspace = useCallback(
+    (workspace: string) => {
+      const currentMatches = results?.matches ?? ([] as Matches)
+      const newMatches = currentMatches.filter(
+        (match) => getWorkspace(match.filePath) !== workspace,
+      )
+
+      setResults({
+        ...results,
+        matches: newMatches,
+      } as ExtendedSearchResults)
+    },
+    [results, getWorkspace],
+  )
+
   const stopSearch = useCallback(() => {
     eventBusInstance.dispatch('stop-search')
   }, [])
@@ -327,11 +370,15 @@ const Panel = () => {
           isLoading={isLoading}
           matches={results?.matches ?? []}
           getRelativePath={getRelativePath}
+          getWorkspace={getWorkspace}
           displayLimit={displayLimit}
           extendDisplayLimit={extendDisplayLimit}
           showAllResults={showAllResults}
           removeMatch={removeMatch}
+          removeFile={removeFile}
+          removeWorkspace={removeWorkspace}
           searchMode={mode}
+          isWorkspace={isWorkspace}
         />
       </Flex>
     </Providers>

@@ -66,6 +66,10 @@ export function QueryEditor({
 }: Props) {
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
+  const [isEditorFocused, setIsEditorFocused] = useState(false)
+
+  const handleEditorFocus = () => setIsEditorFocused(true)
+  const handleEditorBlur = () => setIsEditorFocused(false)
 
   useEffect(() => {
     setHasQueryError(Boolean(queryError))
@@ -124,17 +128,20 @@ export function QueryEditor({
   const themeType = useThemeType()
 
   return (
-    <Flex mt="5" width="100%" flexDirection="column">
+    <Flex mt="4" width="100%" flexDirection="column">
       <Editor
         code={query}
         setCode={setQuery}
         theme={themeType}
         flex="1"
-        minHeight="50px"
+        minHeight={isEditorFocused ? '13vh' : '44px'}
         customHighlight={queryCustomHighlight}
-        maxH={'35vh'}
+        maxH={isEditorFocused ? '35vh' : '44px'}
+        transition="0.2s max-height ease-in-out, 0.2s min-height ease-in-out"
         border="1px solid"
         borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
+        onEditorFocus={handleEditorFocus}
+        onEditorBlur={handleEditorBlur}
       />
       <Flex height="20px" alignItems="center" mt="2">
         {queryHint && (

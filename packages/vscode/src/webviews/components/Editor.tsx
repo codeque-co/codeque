@@ -8,6 +8,8 @@ type Props = FlexProps & {
   setCode: (code: string) => void
   customHighlight?: HighlightProps['customHighlight']
   theme: 'light' | 'dark'
+  onEditorFocus?: () => void
+  onEditorBlur?: () => void
 }
 
 const customTextAreaCn = 'editor-text-area'
@@ -17,6 +19,8 @@ export function Editor({
   code,
   setCode,
   theme: themeType,
+  onEditorFocus,
+  onEditorBlur,
   ...rest
 }: Props) {
   const theme = themeType === 'dark' ? darkTheme : lightTheme
@@ -73,6 +77,8 @@ export function Editor({
             float: 'left',
           }}
           textareaClassName={customTextAreaCn}
+          onFocus={onEditorFocus}
+          onBlur={onEditorBlur}
         />
       </Box>
     </Flex>

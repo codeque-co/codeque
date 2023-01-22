@@ -6,6 +6,7 @@ type ResultsEventData = {
   results: ExtendedSearchResults
   time: number
   files: string[]
+  isWorkspace: boolean
 }
 
 type EventTypes = {
@@ -17,7 +18,7 @@ type EventTypes = {
   'initial-settings': StateShape
   'open-file': {
     filePath: string
-    location: Match['loc']
+    location?: Match['loc']
   }
   'open-search-from-selection': null
   'start-search': null

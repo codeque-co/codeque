@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react'
 import { Match, MatchWithFileInfo } from '@codeque/core'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { IoMdClose } from 'react-icons/io'
 import { MdContentCopy } from 'react-icons/md'
@@ -21,11 +21,18 @@ import {
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
 import { useCopyToClipboard } from '../../components/useCopyToClipboard'
+import { FileLink } from './FileLink'
+import { getBorderColor, getIconButtonProps, groupHeaderHeight } from './utils'
+import { CopyPath } from './CopyPath'
+import { usePreventScrollJump } from './usePreventScrollJump'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
   getRelativePath: (filePath: string) => string | undefined
   removeMatch: (filePath: string, start: number, end: number) => void
+  hasGroup: boolean
+  hasWorkspace: boolean
+  scrollElRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
 const highlightColorOnLight = '#ddebf2'
@@ -43,29 +50,16 @@ const getMatchHighlightStyle = (isDark: boolean) => {
 
 const removeWhiteSpaces = (str: string) => str.replace(/\s+/g, '')
 
-const getBorderColor = (
-  isDarkTheme: boolean,
-  isFocused: boolean,
-  theme: MyPrismTheme,
-) => {
-  if (isDarkTheme && !isFocused) {
-    return theme.plain.backgroundColor
-  }
-
-  if (!isDarkTheme && !isFocused) {
-    return 'gray.300'
-  }
-
-  return 'blue.200'
-}
-
 const getFileExtension = (filePath: string) =>
   filePath.match(/(?<=(\.))(\w)+$/g)?.[0]
 
-export function SearchResult({
+export const SearchResult = memo(function SearchResult({
   match,
   getRelativePath,
   removeMatch,
+  hasGroup,
+  hasWorkspace,
+  scrollElRef,
 }: SearchResultProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
@@ -74,16 +68,11 @@ export function SearchResult({
   const [isChecked, setIsChecked] = useState(false)
   const [isResultFocused, setIsResultFocused] = useState(false)
 
-  const openFile = (data: { filePath: string; location: Match['loc'] }) => {
-    eventBusInstance.dispatch('open-file', data)
-  }
-
-  let relativeFilePath = getRelativePath(match.filePath)
+  const relativeFilePath = getRelativePath(match.filePath)
   const matchStartLine = match.loc.start.line
   // Vscode columns are indexed from 1, while result is indexed from 0
   const matchStartCol = match.loc.start.column + 1
   const fullFilePath = `${relativeFilePath}:${matchStartLine}:${matchStartCol}`
-  const [hasCopiedFilePath, copyFilePath] = useCopyToClipboard(fullFilePath)
   const themeType = useThemeType()
   const isDarkTheme = themeType === 'dark'
   const highlightTheme = isDarkTheme ? darkTheme : lightTheme
@@ -94,15 +83,9 @@ export function SearchResult({
     highlightTheme,
   )
 
-  const iconButtonStyleResetProps = {
-    variant: 'ghost',
-    height: 'auto',
-    minWidth: '18px',
-    width: '18px',
-    _hover: { background: highlightTheme.plain.backgroundColor },
-    _active: { background: highlightTheme.plain.backgroundColor },
-    size: 'sm',
-  }
+  const iconButtonStyleResetProps = getIconButtonProps(
+    highlightTheme.plain.backgroundColor,
+  )
 
   useEffect(() => {
     const handleWindowFocus = () => {
@@ -154,42 +137,30 @@ export function SearchResult({
     },
   ]
 
-  const filePathStartsWithDot = relativeFilePath?.startsWith('.')
-
-  if (filePathStartsWithDot) {
-    relativeFilePath = relativeFilePath?.substring(1)
-  }
-
-  const preventScrollJump = useCallback(() => {
-    if (wrapperRef.current && headingRef.current) {
-      const wrapperTop = wrapperRef.current.getBoundingClientRect().top
-      const headingTop = headingRef.current.getBoundingClientRect().top
-
-      const isHeadingSticky = wrapperTop < headingTop
-
-      if (isHeadingSticky) {
-        wrapperRef.current.scrollIntoView({
-          block: 'start',
-        })
-      }
-    }
-  }, [])
+  const preventScrollJump = usePreventScrollJump(
+    wrapperRef,
+    headingRef,
+    scrollElRef,
+  )
 
   const fileExtension = getFileExtension(match.filePath)
 
   return (
-    <Flex flexDir="column" mb="4" ref={wrapperRef}>
+    <Flex flexDir="column" width="100%" pl={'4'} ref={wrapperRef}>
       <Flex
-        p="2"
-        // onClick={() => setIsExpanded(!isExpanded)}
+        alignItems="center"
+        px="1"
         position="sticky"
-        top="0px"
+        top={`calc(${hasGroup ? groupHeaderHeight : '0px'} + ${
+          hasWorkspace ? groupHeaderHeight : '0px'
+        })`}
         border="1px solid"
         borderColor={borderColor}
         transition="border 0.3s ease-in-out"
         backgroundColor="var(--vscode-editor-background)"
         maxWidth="100%"
         ref={headingRef}
+        height={groupHeaderHeight}
       >
         <IconButton
           onClick={() => {
@@ -206,55 +177,18 @@ export function SearchResult({
           {...iconButtonStyleResetProps}
           mr="2"
         />
-        <Link
-          onClick={(ev) => {
-            ev.stopPropagation()
+        <FileLink
+          match={match}
+          relativeFilePath={relativeFilePath}
+          onClick={() => {
             setIsResultFocused(true)
-
-            openFile({
-              filePath: match.filePath,
-              location: match.loc,
-            })
           }}
-          fontWeight="500"
+          matchStartCol={matchStartCol}
+          matchStartLine={matchStartLine}
           maxWidth="calc(100% - 150px)"
-          display="inline-flex"
-        >
-          {/** workaround for a problem with initial dot being moved to the end of string when using rtl */}
-          {filePathStartsWithDot && <Text as="span">.</Text>}
-          <Text
-            as="div"
-            style={{
-              textAlign: 'left',
-              direction: 'rtl',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-            }}
-          >
-            <Text as="span">{relativeFilePath}</Text>
-            <Text as="span">:</Text>
-            <Text as="span" color="#c792ea">
-              {matchStartLine}
-            </Text>
-            <Text as="span">:</Text>
-            <Text as="span" color="#ffcb8b">
-              {matchStartCol}
-            </Text>
-          </Text>
-        </Link>
+        />
         <Flex ml="2" mr="auto">
-          <IconButton
-            aria-label="copy file path"
-            icon={<MdContentCopy />}
-            {...iconButtonStyleResetProps}
-            onClick={copyFilePath}
-          />
-          {hasCopiedFilePath && (
-            <Tooltip label="Copied to clipboard!" defaultIsOpen={true}>
-              <span />
-            </Tooltip>
-          )}
+          <CopyPath fullFilePath={fullFilePath} />
         </Flex>
         <Checkbox
           ml="3"
@@ -309,4 +243,4 @@ export function SearchResult({
       ) : null}
     </Flex>
   )
-}
+})

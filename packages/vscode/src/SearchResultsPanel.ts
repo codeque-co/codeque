@@ -155,21 +155,25 @@ export class SearchResultsPanel {
     location,
   }: {
     filePath: string
-    location: Match['loc']
+    location?: Match['loc']
   }) => {
     const setting: vscode.Uri = vscode.Uri.file(filePath)
 
     vscode.workspace.openTextDocument(setting).then(
       (textDoc: vscode.TextDocument) => {
-        const startPos = new vscode.Position(
-          location.start.line - 1, // API has 0-based indexes
-          location.start.column,
-        )
-        const endPos = new vscode.Position(
-          location.end.line - 1, // API has 0-based indexes
-          location.end.column,
-        )
-        const selection = new vscode.Range(startPos, endPos)
+        let selection = undefined
+
+        if (location) {
+          const startPos = new vscode.Position(
+            location.start.line - 1, // API has 0-based indexes
+            location.start.column,
+          )
+          const endPos = new vscode.Position(
+            location.end.line - 1, // API has 0-based indexes
+            location.end.column,
+          )
+          selection = new vscode.Range(startPos, endPos)
+        }
 
         return vscode.window.showTextDocument(textDoc, { selection })
       },

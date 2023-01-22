@@ -59,7 +59,7 @@ export function ResultsMeta({
     ]
 
   return (
-    <Flex mb="4" alignItems="center">
+    <Flex mb="2" alignItems="center">
       {matchesCount !== undefined && (
         <Text>
           Total count: <b>{matchesCount}</b>

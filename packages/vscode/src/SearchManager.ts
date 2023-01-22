@@ -216,8 +216,8 @@ export class SearchManager {
 
     const workspacesMap = isWorkspace
       ? filePaths.reduce((map, filePath) => {
-          const searchRoot = this.matchRoot(searchRoots, filePath)?.name ?? ''
-          map[filePath] = path.relative(searchRoot, filePath)
+          const searchRoot = this.matchRoot(searchRoots, filePath)
+          map[filePath] = searchRoot?.name ?? ''
 
           return map
         }, {} as Record<string, string>)
@@ -359,6 +359,7 @@ export class SearchManager {
               },
               time: 0,
               files: [],
+              isWorkspace,
             })
 
             this.searchRunning = false
@@ -388,6 +389,7 @@ export class SearchManager {
                 ),
                 time: (timestamp - searchStart) / 1000,
                 files: [],
+                isWorkspace,
               })
             }
           }
@@ -419,6 +421,7 @@ export class SearchManager {
                 ),
                 time: (searchEnd - searchStart) / 1000,
                 files: finalFilesList,
+                isWorkspace,
               })
 
               this.searchRunning = false
@@ -460,6 +463,7 @@ export class SearchManager {
         },
         time: (Date.now() - searchStart) / 1000,
         files: [],
+        isWorkspace: isWorkspace ?? false,
       })
 
       this.searchRunning = false

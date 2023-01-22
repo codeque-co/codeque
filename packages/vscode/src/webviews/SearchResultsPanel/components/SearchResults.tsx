@@ -120,7 +120,7 @@ export const SearchResultsList = memo(function SearchResultsList({
           ))
         : Object.entries(groupedByFile).map(renderFileGroup(false))}
       {matches.length > displayLimit ? (
-        <Flex justifyContent="center" ml="5" mr="5" mb="5">
+        <Flex justifyContent="center" m="5">
           <Button onClick={extendDisplayLimit} colorScheme="blue">
             Show more
           </Button>

@@ -95,10 +95,13 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
         // `ignore` does not allow absolute paths, so we have to hack by removing initial '/' or 'C:\'
         const fsPosixPathWithoutRoot = pathToPosix(dirPath.replace(fsRoot, ''))
 
-        //We normalize cos path can end with `/` so there would be '//'
-        return path.normalize(
-          `${fsPosixPathWithoutRoot}${gitignorePathSeparator}${line}`,
-        )
+        const composedPath = `${fsPosixPathWithoutRoot}${gitignorePathSeparator}${line}`
+        
+        // We normalize cos path can end with `/` so there would be '//'
+        // Also we change path to Posix, because path.normalise change it to format depending on platform
+        return pathToPosix(path.normalize(
+          composedPath,
+        ))
       }
 
       // pattern should not be relative to .gitignore location directory, eg. '*.json', '**/someFile', 'dist/'

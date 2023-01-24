@@ -111,9 +111,16 @@ export class SearchManager {
         } catch (e) {
           this.filesListState.state = 'error'
 
+          const error = e as Error
+
           vscode.window.showErrorMessage(
-            'Search error: Failed to get files lists: ' + (e as Error)?.message,
+            'Search error: Failed to get files lists: ' +
+              error?.message +
+              '\n\nStack:\n' +
+              error?.stack,
           )
+
+          console.error(error)
 
           return []
         }
@@ -442,15 +449,19 @@ export class SearchManager {
           //   (searchEnd - searchStart) / 1000,
           // )
         } else {
-          vscode.window.showErrorMessage(
-            'Search error: Could not determine search root.',
+          vscode.window.showWarningMessage(
+            'Search error: Could not determine search root.\nPlease open a directory of workspace to start searching.',
           )
         }
       }
     } catch (e: any) {
-      vscode.window.showErrorMessage('Search error: ' + (e as Error).message)
+      const error = e as Error
 
-      console.error(e)
+      vscode.window.showErrorMessage(
+        'Search error: ' + error?.message + '\n\nStack:\n' + error?.stack,
+      )
+
+      console.error(error)
 
       eventBusInstance.dispatch('have-results', {
         results: {

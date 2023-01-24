@@ -96,12 +96,10 @@ const getGitIgnoreContentForDirectory = async (dirPath: string) => {
         const fsPosixPathWithoutRoot = pathToPosix(dirPath.replace(fsRoot, ''))
 
         const composedPath = `${fsPosixPathWithoutRoot}${gitignorePathSeparator}${line}`
-        
+
         // We normalize cos path can end with `/` so there would be '//'
         // Also we change path to Posix, because path.normalise change it to format depending on platform
-        return pathToPosix(path.normalize(
-          composedPath,
-        ))
+        return pathToPosix(path.normalize(composedPath))
       }
 
       // pattern should not be relative to .gitignore location directory, eg. '*.json', '**/someFile', 'dist/'

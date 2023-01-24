@@ -1,4 +1,4 @@
-import { Flex, Text } from '@chakra-ui/react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { Editor } from '../../components/Editor'
 //@ts-ignore
 import { Mode, searchInStrings } from '@codeque/core/web'
@@ -69,7 +69,10 @@ export function QueryEditor({
   const [isEditorFocused, setIsEditorFocused] = useState(false)
 
   const handleEditorFocus = () => setIsEditorFocused(true)
-  const handleEditorBlur = () => setIsEditorFocused(false)
+  const handleEditorBlur = () => {
+    // defer update so user can interact with UI before animation
+    setTimeout(() => setIsEditorFocused(false), 30)
+  }
 
   useEffect(() => {
     setHasQueryError(Boolean(queryError))
@@ -127,22 +130,38 @@ export function QueryEditor({
 
   const themeType = useThemeType()
 
+  const isDarkTheme = themeType === 'dark'
+
   return (
     <Flex mt="4" width="100%" flexDirection="column">
-      <Editor
-        code={query}
-        setCode={setQuery}
-        theme={themeType}
-        flex="1"
-        minHeight={isEditorFocused ? '13vh' : '44px'}
-        customHighlight={queryCustomHighlight}
-        maxH={isEditorFocused ? '35vh' : '44px'}
-        transition="0.2s max-height ease-in-out, 0.2s min-height ease-in-out"
-        border="1px solid"
-        borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
-        onEditorFocus={handleEditorFocus}
-        onEditorBlur={handleEditorBlur}
-      />
+      <Box position="relative">
+        <Editor
+          code={query}
+          setCode={setQuery}
+          theme={themeType}
+          flex="1"
+          minHeight={isEditorFocused ? '13vh' : '44px'}
+          customHighlight={queryCustomHighlight}
+          maxH={isEditorFocused ? '35vh' : '44px'}
+          transition="0.2s max-height ease-in-out, 0.2s min-height ease-in-out"
+          border="1px solid"
+          borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
+          onEditorFocus={handleEditorFocus}
+          onEditorBlur={handleEditorBlur}
+        />
+        {!isEditorFocused && (
+          <Box
+            background={`linear-gradient(0deg, ${
+              isDarkTheme ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'
+            } 0%, transparent 100%)`}
+            position="absolute"
+            bottom="0px"
+            width="100%"
+            height="16px"
+          />
+        )}
+      </Box>
+
       <Flex height="20px" alignItems="center" mt="2">
         {queryHint && (
           <Text as="span">

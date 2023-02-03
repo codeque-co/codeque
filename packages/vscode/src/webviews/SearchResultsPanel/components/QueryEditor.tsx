@@ -3,9 +3,11 @@ import { Editor } from '../../components/Editor'
 //@ts-ignore
 import { Mode, searchInStrings } from '@codeque/core/web'
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
+import useDebounce from '../../../utils'
+
 type Error = {
   text: string
   location: {
@@ -68,11 +70,10 @@ export function QueryEditor({
   const [queryError, setQueryError] = useState<Error | null>(null)
   const [isEditorFocused, setIsEditorFocused] = useState(false)
 
-  const handleEditorFocus = () => setIsEditorFocused(true)
-  const handleEditorBlur = () => {
-    // defer update so user can interact with UI before animation
-    setTimeout(() => setIsEditorFocused(false), 30)
-  }
+  const handleEditorFocus = useCallback(() => setIsEditorFocused(true), [])
+  const handleEditorBlur = useCallback(() => setIsEditorFocused(false), [])
+
+  const isEditorFocusedDebounced = useDebounce(isEditorFocused, 200)
 
   useEffect(() => {
     setHasQueryError(Boolean(queryError))
@@ -140,16 +141,16 @@ export function QueryEditor({
           setCode={setQuery}
           theme={themeType}
           flex="1"
-          minHeight={isEditorFocused ? '13vh' : '44px'}
           customHighlight={queryCustomHighlight}
-          maxH={isEditorFocused ? '35vh' : '44px'}
-          transition="0.2s max-height ease-in-out, 0.2s min-height ease-in-out"
+          minHeight={isEditorFocusedDebounced ? '13vh' : '44px'}
+          maxHeight={isEditorFocusedDebounced ? '35vh' : '44px'}
+          transition="0.1s max-height ease-in-out, 0.1s min-height ease-in-out"
           border="1px solid"
           borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
           onEditorFocus={handleEditorFocus}
           onEditorBlur={handleEditorBlur}
         />
-        {!isEditorFocused && (
+        {!isEditorFocusedDebounced && (
           <Box
             background={`linear-gradient(0deg, ${
               isDarkTheme ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'

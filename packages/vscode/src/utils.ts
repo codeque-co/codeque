@@ -1,4 +1,5 @@
 import dedent from 'dedent'
+import { useEffect, useState } from 'react'
 
 // eslint-disable-next-line
 export function simpleDebounce<F extends (...args: any) => unknown>(func: F, timeout = 300) {
@@ -13,6 +14,22 @@ export function simpleDebounce<F extends (...args: any) => unknown>(func: F, tim
     }, timeout)
   }
 }
+
+function useDebounce<T>(value: T, delay?: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay || 500)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+
+export default useDebounce
 
 // patch for dedent issue https://github.com/dmnd/dedent/issues/34
 const newLineReplacement = 'x_-0x0-_x'

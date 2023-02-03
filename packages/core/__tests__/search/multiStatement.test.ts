@@ -1,5 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
@@ -28,8 +29,8 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match three expressions without block wrapper in function body with exact mode', () => {
@@ -47,8 +48,8 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match three expressions without block wrapper in function body with different order', () => {
@@ -66,8 +67,8 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match three expressions with block wrapper in function body', () => {
@@ -87,8 +88,8 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match two expressions in program body and include middle line in result', () => {
@@ -105,8 +106,9 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
     expect(matches[0].code.split('\n').filter(Boolean)).toHaveLength(3)
   })
 
@@ -125,8 +127,9 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
     expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 

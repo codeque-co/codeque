@@ -1,5 +1,3 @@
-import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import { searchInStrings } from '../../src/searchInStrings'
@@ -41,8 +39,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match assignment pattern in function arguments with wildcard', () => {
@@ -72,8 +70,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match assignment pattern in function arguments type annotation', () => {
@@ -103,8 +101,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match assignment pattern in function arguments with wildcard but without types', () => {
@@ -162,8 +160,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match assignment pattern in array destructuring with wildcard', () => {
@@ -189,8 +187,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match assignment pattern in object destructuring', () => {
@@ -216,8 +214,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match assignment pattern in object destructuring with wildcard', () => {
@@ -243,7 +241,7 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 })

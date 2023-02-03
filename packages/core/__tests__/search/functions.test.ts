@@ -1,5 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
@@ -57,8 +58,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(4)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(4)
   })
 
   it('should match exact function with body', () => {
@@ -84,8 +85,9 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
     expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 
@@ -113,8 +115,8 @@ describe('functions', () => {
       filePaths: filesList,
       queryCodes: queries,
     })
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with body statements in order but without all statements', () => {
@@ -140,8 +142,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match function with body statements in different order', () => {
@@ -223,8 +225,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with body statements in different order without all statements', () => {
@@ -250,8 +252,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function with 2 arguments', () => {
@@ -267,8 +269,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match function with 2 arguments using double wildcard', () => {
@@ -284,8 +286,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(3)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
   })
 
   it('should match function with 3 arguments', () => {
@@ -301,7 +303,7 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 })

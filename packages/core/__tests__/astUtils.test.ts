@@ -1,4 +1,5 @@
-import { compareCode, removeIdentifierRefFromWildcard } from '/astUtils'
+import { removeIdentifierRefFromWildcard } from '../src/parserRelatedUtils'
+import { compareCode } from './utils'
 
 describe('AST utils', () => {
   it('should compare code as equal', () => {

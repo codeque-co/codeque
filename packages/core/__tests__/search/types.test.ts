@@ -68,8 +68,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match type concatenation with one wildcard with not matching order', () => {
@@ -85,8 +85,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match string enumeration type with exact mode', () => {
@@ -102,8 +102,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match string enumeration type with include mode', () => {
@@ -119,8 +119,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(3)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
   })
 
   it('should match generic type parametrization', () => {
@@ -138,8 +138,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(5)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(5)
   })
 
   it('should match indexed object type with wildcard', () => {
@@ -157,8 +157,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match some indexed object type with partially wildcard identifier', () => {
@@ -176,8 +176,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match some indexed object type', () => {
@@ -195,8 +195,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match types union inside indexed object type', () => {
@@ -214,8 +214,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match some random generic type', () => {
@@ -231,8 +231,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match wildcard as generic param', () => {
@@ -248,8 +248,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match wildcard as conditional extends part', () => {
@@ -265,8 +265,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match wildcard in conditional type', () => {
@@ -282,8 +282,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match wildcard as conditional type', () => {
@@ -299,8 +299,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match type parameter wildcard', () => {
@@ -316,8 +316,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match function declaration with returnType by query without returnType', () => {
@@ -451,8 +451,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match interface with wildcard in extends', () => {
@@ -469,8 +469,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match interface with wildcard in extends with type param', () => {
@@ -487,8 +487,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match interface with extends with double wildcard', () => {
@@ -506,8 +506,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match optional interface filed in include mode 1', () => {
@@ -525,8 +525,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match optional interface filed in include mode 2', () => {
@@ -544,8 +544,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match optional interface filed in exact mode', () => {
@@ -564,8 +564,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match optional interface filed in exact mode if not marked as optional', () => {

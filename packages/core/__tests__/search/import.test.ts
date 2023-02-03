@@ -1,5 +1,5 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
@@ -26,8 +26,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('Should not find any imports including some keys when order changed', () => {
@@ -100,8 +100,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all imports with both default and named', () => {
@@ -114,8 +114,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all aliased reexports ', () => {
@@ -129,7 +129,7 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(6)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(6)
   })
 })

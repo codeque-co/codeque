@@ -69,7 +69,7 @@ const getFilesListByGitChanges = async (
 }
 
 export const pathSeparatorChar = path.sep
-const getFsRoot = (fsPath: string) => path.parse(fsPath).root
+export const getFsRoot = (fsPath: string) => path.parse(fsPath).root
 
 const getGitIgnoreContentForDirectory = async (dirPath: string) => {
   const fsRoot = getFsRoot(dirPath)

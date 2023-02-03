@@ -1,62 +1,28 @@
-import { parse } from '@babel/parser'
 import generate from '@babel/generator'
-import { measureStart, patternToRegex, regExpTest } from './utils'
+import { measureStart, regExpTest } from './utils'
 import {
-  getBody,
-  getSetsOfKeysToCompare,
-  sanitizeJSXText,
-  isNode,
-  isNodeArray,
   IdentifierTypes,
   numericWildcard,
   identifierWildcard,
   nodesTreeWildcard,
   removeIdentifierRefFromWildcard,
   sortByLeastIdentifierStrength,
-  prepareCodeResult,
-  shouldCompareNode,
   anyStringWildcardRegExp,
-  createBlockStatementNode,
-  sanitizeTemplateElement,
-  parseCode,
-  getKeysWithNodes,
-} from './astUtils'
-import { getExtendedCodeFrame, getKeyFromObject } from './utils'
-import { Logger } from './logger'
+  patternToRegex,
+  babelParserSettings,
+} from './parserRelatedUtils'
 import {
-  Match,
-  Matches,
-  Mode,
-  PoorNodeType,
-  ParsedQuery,
-  NotNullParsedQuery,
-} from './types'
-
-export const dedupMatches = (
-  matches: Matches,
-  log: (...args: any[]) => void,
-  debug = false,
-): Matches => {
-  const deduped: Matches = []
-
-  matches.forEach((match) => {
-    const alreadyIn = deduped.some((_match) => {
-      return (
-        match.filePath === _match.filePath &&
-        match.start === _match.start &&
-        match.end === _match.end
-      )
-    })
-
-    if (!alreadyIn) {
-      deduped.push(match)
-    } else if (debug) {
-      log('already in', match.code, match.query)
-    }
-  })
-
-  return deduped
-}
+  getExtendedCodeFrame,
+  getKeyFromObject,
+  prepareCodeResult,
+} from './utils'
+import { Logger } from './logger'
+import { Match, Matches, Mode, PoorNodeType, NotNullParsedQuery } from './types'
+import {
+  isNodeArray,
+  getKeysWithNodes,
+  getSetsOfKeysToCompare,
+} from './astUtils'
 
 export type SearchSettings = {
   logger: Logger
@@ -145,10 +111,10 @@ const validateMatch = (
         if (Array.isArray(fileValue as PoorNodeType[])) {
           log('validate: is array')
           const nodesArr = (fileValue as PoorNodeType[]).filter(
-            shouldCompareNode,
+            babelParserSettings.shouldCompareNode,
           )
           const queryNodesArr = (queryValue as PoorNodeType[]).filter(
-            shouldCompareNode,
+            babelParserSettings.shouldCompareNode,
           )
 
           if (isExact) {
@@ -283,7 +249,11 @@ const compareNodes = (
       queryKeysToTraverseForValidatingMatch: [],
       fileKeysToTraverseForValidatingMatch: [],
       fileKeysToTraverseForOtherMatches: fileNode
-        ? getKeysWithNodes(fileNode, Object.keys(fileNode))
+        ? getKeysWithNodes(
+            fileNode,
+            Object.keys(fileNode),
+            babelParserSettings.isNode,
+          )
         : [],
     }
   }
@@ -292,6 +262,8 @@ const compareNodes = (
     fileNode,
     queryNode,
     isExact,
+    babelParserSettings.astPropsToSkip,
+    babelParserSettings.isNodeFieldOptional,
   )
 
   log(
@@ -312,25 +284,11 @@ const compareNodes = (
      * Even if note types are the same. Eg. Identifier might have another nested identifier node in type declaration
      */
     allFileKeys,
+    babelParserSettings.isNode,
   )
 
-  if (fileNode?.type === 'JSXText') {
-    log('pre JSX Text', fileNode.value)
-    sanitizeJSXText(fileNode)
-    log('sanitized JSX Text', fileNode.value)
-  }
-
-  if (queryNode?.type === 'JSXText') {
-    sanitizeJSXText(queryNode)
-  }
-
-  if (fileNode?.type === 'TemplateElement') {
-    sanitizeTemplateElement(fileNode)
-  }
-
-  if (queryNode?.type === 'TemplateElement') {
-    sanitizeTemplateElement(queryNode)
-  }
+  babelParserSettings.sanitizeNode(fileNode)
+  babelParserSettings.sanitizeNode(queryNode)
 
   if (
     (fileNode.type as string).includes('TS') &&
@@ -340,6 +298,8 @@ const compareNodes = (
     (queryNode.typeParameters as any) === undefined
   ) {
     // support using '$$' wildcard for TS keywords like 'never', 'boolean' etc.
+    // Since actual wildcard char is child of TSTypeReference (typeName), we have to hop one level deeper
+    // otherwise level comparison will not work
     return {
       levelMatch: true,
       queryKeysToTraverseForValidatingMatch: [],
@@ -374,6 +334,7 @@ const compareNodes = (
 
   // Support for wildcards in all nodes
   if (
+    // refactor to use getWildcardFromNode, however this part does not have to be generic
     IdentifierTypes.includes(queryNode.type as string) &&
     (queryNode.name as string).includes(identifierWildcard)
   ) {
@@ -404,8 +365,8 @@ const compareNodes = (
       const queryValue = queryNode[key]
 
       return (
-        isNode(queryValue as PoorNodeType) ||
-        isNodeArray(queryValue as PoorNodeType[])
+        babelParserSettings.isNode(queryValue as PoorNodeType) ||
+        isNodeArray(queryValue as PoorNodeType[], babelParserSettings.isNode)
       )
     })
 
@@ -752,9 +713,9 @@ const compareNodes = (
     const fileValue = fileNode[key]
 
     if (
-      isNode(queryValue as PoorNodeType) ||
-      isNodeArray(queryValue as PoorNodeType[]) ||
-      isNodeArray(fileValue as PoorNodeType[])
+      babelParserSettings.isNode(queryValue as PoorNodeType) ||
+      isNodeArray(queryValue as PoorNodeType[], babelParserSettings.isNode) ||
+      isNodeArray(fileValue as PoorNodeType[], babelParserSettings.isNode)
     ) {
       keysToTraverseForValidatingMatch.push(key)
     } else {
@@ -879,7 +840,7 @@ const traverseAndMatch = (
   const nestedMatches = fileKeysToTraverseForOtherMatches
     .map((key) => {
       if (currentNode[key] !== undefined) {
-        if (isNode(currentNode[key] as PoorNodeType)) {
+        if (babelParserSettings.isNode(currentNode[key] as PoorNodeType)) {
           return traverseAndMatch(
             currentNode[key] as PoorNodeType,
             queryNode,
@@ -941,11 +902,7 @@ export const searchFileContent = ({
   if (includesUniqueTokens) {
     const measureParseFile = measureStart('parseFile')
 
-    const maybeWrappedJSON = /\.json$/.test(filePath)
-      ? `(${fileContent})`
-      : fileContent
-
-    const fileNode = parseCode(maybeWrappedJSON) as unknown as PoorNodeType
+    const fileNode = babelParserSettings.parseCode(fileContent, filePath)
 
     measureParseFile()
     const programNode = fileNode.program as PoorNodeType

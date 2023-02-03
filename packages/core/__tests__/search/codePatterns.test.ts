@@ -1,5 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 
@@ -66,8 +67,8 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should find all empty event listeners', () => {
@@ -165,8 +166,8 @@ describe('code patterns', () => {
       filePaths: filesList,
       queryCodes: queries,
     })
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match cast to any', () => {
@@ -182,8 +183,8 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should find all console logs', () => {
@@ -196,8 +197,9 @@ describe('code patterns', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(3)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
+
     expect(matches[2].code).toBe("console.log('Pressed')")
   })
 
@@ -214,8 +216,8 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(6)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(6)
   })
 
   it('Should find all string concatenations using + operator', () => {

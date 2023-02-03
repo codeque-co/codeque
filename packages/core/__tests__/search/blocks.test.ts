@@ -1,5 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import { searchInStrings } from '../../src/searchInStrings'
@@ -31,8 +32,9 @@ describe('blocks', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
     expect(compareCode(matches[0].code, queries[0])).toBeTruthy()
   })
 
@@ -52,8 +54,8 @@ describe('blocks', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match block using query without all statements, but with order', () => {
@@ -72,8 +74,8 @@ describe('blocks', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match contents inside catch block', () => {
@@ -115,7 +117,7 @@ describe('blocks', () => {
       ],
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 })

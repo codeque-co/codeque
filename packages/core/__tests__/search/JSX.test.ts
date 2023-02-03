@@ -1,5 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
+
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
@@ -116,8 +117,8 @@ describe('JSX', () => {
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find JSX by text content regardless formatting', () => {
@@ -132,8 +133,8 @@ describe('JSX', () => {
       filePaths: mockedFilesList,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find JSX by text content with wildcard case insensitive', () => {
@@ -144,8 +145,8 @@ describe('JSX', () => {
       queryCodes: [query],
       caseInsensitive: true,
     })
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find JSX by text content case insensitive', () => {
@@ -156,8 +157,8 @@ describe('JSX', () => {
       caseInsensitive: true,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('Should find exact multiline JSX', () => {
@@ -233,8 +234,8 @@ describe('JSX', () => {
       queryCodes: [query1, query2],
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('Should find all anonymous functions passed as a prop', () => {
@@ -371,8 +372,8 @@ describe('JSX', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(3)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
 
     expect(
       compareCode(
@@ -402,8 +403,8 @@ describe('JSX', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
 
     expect(
       compareCode(

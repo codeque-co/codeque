@@ -1,8 +1,8 @@
 import fs from 'fs'
-import { measureStart, logMetrics } from './utils'
+import { measureStart, logMetrics, dedupMatches } from './utils'
 import { createLogger } from './logger'
 import { parseQueries } from './parseQuery'
-import { searchFileContent, SearchSettings, dedupMatches } from './searchStages'
+import { searchFileContent, SearchSettings } from './searchStages'
 import {
   FileSystemSearchArgs,
   Matches,

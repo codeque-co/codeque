@@ -1,5 +1,5 @@
 import mockFs from 'mock-fs'
-import { getFilesList, fsRoot, filterIncludeExclude } from '/getFilesList'
+import { getFilesList, getFsRoot, filterIncludeExclude } from '/getFilesList'
 import dedent from 'dedent'
 
 afterEach(() => {
@@ -7,6 +7,7 @@ afterEach(() => {
 })
 
 const cwd = process.cwd()
+const fsRoot = getFsRoot(cwd)
 const removeCwd = (filePaths: string[]) =>
   filePaths.map((filePath) => filePath.replace(cwd, ''))
 

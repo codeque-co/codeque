@@ -1,7 +1,7 @@
 import { searchMultiThread as searchMultiThread } from '/searchMultiThread'
 import { searchInFileSystem } from '/searchInFs'
 
-import { compareCode } from '/astUtils'
+import { compareCode } from './utils'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 

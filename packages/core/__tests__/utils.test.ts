@@ -1,4 +1,5 @@
-import { patternToRegex, getExtendedCodeFrame } from '/utils'
+import { getExtendedCodeFrame } from '/utils'
+import { patternToRegex } from '../src/parserRelatedUtils'
 import dedent from 'dedent'
 import { regExpTest } from '../src/utils'
 

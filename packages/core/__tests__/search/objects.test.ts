@@ -1,5 +1,5 @@
 import { searchInFileSystem } from '/searchInFs'
-import { compareCode } from '/astUtils'
+import { compareCode } from '../utils'
 import path from 'path'
 import fs from 'fs'
 import { getFilesList } from '/getFilesList'
@@ -81,8 +81,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match exact object case insensitive', () => {
@@ -110,8 +110,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match nested object property with wildcard', () => {
@@ -136,8 +136,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match nested object with wildcard', () => {
@@ -160,8 +160,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should find repeating pattern in nested object several times', () => {
@@ -202,8 +202,8 @@ describe('Types', () => {
       });
     `
 
-    expect(matches.length).toBe(4)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(4)
 
     expect(compareCode(`(${matches[0].code})`, firstMatch)).toBeTruthy()
   })
@@ -251,8 +251,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match possibly repeated object properties', async () => {
@@ -279,8 +279,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match equivalent object keys', () => {
@@ -308,8 +308,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(5)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(5)
   })
 
   it('should match destructured object property before rename', () => {
@@ -333,8 +333,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match OptionalMemberExpression and non-optional MemberExpression interchangeably in include mode object property before rename', () => {

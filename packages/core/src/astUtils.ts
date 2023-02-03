@@ -1,52 +1,10 @@
-import { parse, ParserOptions, ParserPlugin } from '@babel/parser'
-import { NODE_FIELDS } from '@babel/types'
-import { Match, PoorNodeType } from './types'
+import { PoorNodeType, ParserSettings } from './types'
+import { isNullOrUndef } from './utils'
 
-export const getBody = (fileNode: PoorNodeType) => {
-  return (fileNode.program as PoorNodeType).body as PoorNodeType[]
-}
-
-export const unwrapExpressionStatement = (node: PoorNodeType) => {
-  if (typeof node !== 'object') {
-    return node
-  }
-
-  if (node.type === 'ExpressionStatement') {
-    return node.expression as PoorNodeType
-  }
-
-  return node as PoorNodeType
-}
-
-export const createBlockStatementNode = (body: PoorNodeType[]) => ({
-  type: 'BlockStatement',
-  body,
-  directives: [], // whatever it is
-})
-
-export const astPropsToSkip = [
-  'loc',
-  'start',
-  'end',
-  'extra',
-  'trailingComments',
-  'leadingComments',
-  'tail', // Support for partial matching of template literals
-]
-
-export const IdentifierTypes = [
-  'Identifier',
-  'JSXIdentifier',
-  'TSTypeParameter',
-]
-
-export const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
-
-export const isNode = (maybeNode: PoorNodeType) => {
-  return maybeNode?.constructor === NodeConstructor
-}
-
-export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
+export const isNodeArray = (
+  maybeNodeArr: PoorNodeType[],
+  isNode: ParserSettings['isNode'],
+) => {
   return (
     Array.isArray(maybeNodeArr) &&
     maybeNodeArr.length > 0 &&
@@ -54,38 +12,39 @@ export const isNodeArray = (maybeNodeArr: PoorNodeType[]) => {
   )
 }
 
-export const getKeysWithNodes = (node: PoorNodeType, nodeKeys: string[]) => {
+export const getKeysWithNodes = (
+  node: PoorNodeType,
+  nodeKeys: string[],
+  isNode: ParserSettings['isNode'],
+) => {
   return nodeKeys.filter((key) => {
     const fileValue = node[key]
 
     return (
       isNode(fileValue as PoorNodeType) ||
-      isNodeArray(fileValue as PoorNodeType[])
+      isNodeArray(fileValue as PoorNodeType[], isNode)
     )
   })
 }
 
-const isNullOrUndef = (val: any) => val === null || val === undefined
-
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return Boolean(
-    (NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[
-      nodeFieldKey
-    ]?.optional ?? true,
-  )
-}
-
-export const getKeysToCompare = (node: PoorNodeType) => {
+// parser specific, can be generic if astPropsToSkip is injected
+export const getKeysToCompare = (
+  node: PoorNodeType,
+  astPropsToSkip: ParserSettings['astPropsToSkip'],
+) => {
   return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
 }
 
+// parser specific, can be generic if if we inject getKeysToCompare
 export const getSetsOfKeysToCompare = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
   isExact: boolean,
+  astPropsToSkip: ParserSettings['astPropsToSkip'],
+  isNodeFieldOptional: ParserSettings['isNodeFieldOptional'],
 ) => {
-  const allFileKeys = getKeysToCompare(fileNode)
-  const allQueryKeys = getKeysToCompare(queryNode)
+  const allFileKeys = getKeysToCompare(fileNode, astPropsToSkip)
+  const allQueryKeys = getKeysToCompare(queryNode, astPropsToSkip)
 
   if (isExact || fileNode.type !== queryNode.type) {
     return [allFileKeys, allQueryKeys, allFileKeys, allQueryKeys]
@@ -119,55 +78,6 @@ export const getSetsOfKeysToCompare = (
   return [includeFileKeys, includeQueryKeys, allFileKeys, allQueryKeys]
 }
 
-export const SPACE_CHAR = ' '
-
-export const normalizeText = (text: string) =>
-  text.trim().replace(/\s+/g, SPACE_CHAR)
-
-export const sanitizeJSXText = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value = normalizeText(node.value)
-  //@ts-ignore
-  node.extra.raw = normalizeText(node.extra.raw)
-  //@ts-ignore
-  node.extra.rawValue = normalizeText(node.extra.rawValue)
-}
-
-export const sanitizeTemplateElement = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value.raw = normalizeText(node.value.raw)
-  //@ts-ignore
-  node.value.cooked = normalizeText(node.value.cooked)
-}
-
-export const parseCode = (code: string) => {
-  const pluginsWithoutJSX = [
-    'typescript',
-    'decorators-legacy',
-    'importAssertions',
-    'doExpressions',
-  ] as ParserPlugin[]
-  const pluginsWithJSX = [...pluginsWithoutJSX, 'jsx'] as ParserPlugin[]
-
-  const parseOptionsWithJSX = {
-    sourceType: 'module',
-    plugins: pluginsWithJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
-
-  const parseOptionsWithoutJSX = {
-    sourceType: 'module',
-    plugins: pluginsWithoutJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
-
-  try {
-    return parse(code, parseOptionsWithJSX)
-  } catch (e) {
-    return parse(code, parseOptionsWithoutJSX)
-  }
-}
-
 const omit = (obj: Record<string, unknown>, keys: string[]) => {
   const newObj = {} as Record<string, unknown>
 
@@ -180,163 +90,57 @@ const omit = (obj: Record<string, unknown>, keys: string[]) => {
   return newObj
 }
 
-export const shouldCompareNode = (node: PoorNodeType) => {
-  if (node.type === 'JSXText') {
-    sanitizeJSXText(node)
+// parser specific, test util, can be generic if isNode, shouldCompare and sanitizeJSXText, astPropsToSkip are injected
+export const cleanupAst = (
+  ast: PoorNodeType,
+  parserSettings: {
+    isNode: ParserSettings['isNode']
+    shouldCompareNode: ParserSettings['shouldCompareNode']
+    astPropsToSkip: ParserSettings['astPropsToSkip']
+    sanitizeNode: ParserSettings['sanitizeNode']
+  },
+) => {
+  parserSettings.sanitizeNode(ast)
 
-    return (node.value as string).length > 0
-  }
-
-  return true
-}
-
-export const cleanupAst = (ast: PoorNodeType) => {
-  if (ast.type === 'JSXText') {
-    sanitizeJSXText(ast)
-  }
-
-  const cleanedAst = omit(ast, astPropsToSkip) as PoorNodeType
+  const cleanedAst = omit(ast, parserSettings.astPropsToSkip) as PoorNodeType
 
   Object.keys(cleanedAst).forEach((key) => {
-    if (isNode(cleanedAst[key] as PoorNodeType)) {
-      cleanedAst[key] = cleanupAst(cleanedAst[key] as PoorNodeType)
+    if (parserSettings.isNode(cleanedAst[key] as PoorNodeType)) {
+      cleanedAst[key] = cleanupAst(
+        cleanedAst[key] as PoorNodeType,
+        parserSettings,
+      )
     }
 
-    if (isNodeArray(cleanedAst[key] as PoorNodeType[])) {
+    if (isNodeArray(cleanedAst[key] as PoorNodeType[], parserSettings.isNode)) {
       cleanedAst[key] = (cleanedAst[key] as PoorNodeType[])
-        .filter(shouldCompareNode)
-        .map((subAst) => cleanupAst(subAst))
+        .filter(parserSettings.shouldCompareNode)
+        .map((subAst) => cleanupAst(subAst, parserSettings))
     }
   })
 
   return cleanedAst
 }
 
-export const compareCode = (codeA: string, codeB: string) => {
-  const astA = parseCode(codeA).program as unknown as PoorNodeType
-  const astB = parseCode(codeB).program as unknown as PoorNodeType
+// parser specific, test util, can be parametrized
+export const compareCode = (
+  codeA: string,
+  codeB: string,
+  parserSettings: {
+    isNode: ParserSettings['isNode']
+    shouldCompareNode: ParserSettings['shouldCompareNode']
+    astPropsToSkip: ParserSettings['astPropsToSkip']
+    parseCode: ParserSettings['parseCode']
+    sanitizeNode: ParserSettings['sanitizeNode']
+  },
+) => {
+  const astA = parserSettings.parseCode(codeA)
+    .program as unknown as PoorNodeType
+  const astB = parserSettings.parseCode(codeB)
+    .program as unknown as PoorNodeType
 
-  const cleanedA = cleanupAst(astA)
-  const cleanedB = cleanupAst(astB)
+  const cleanedA = cleanupAst(astA, parserSettings)
+  const cleanedB = cleanupAst(astB, parserSettings)
 
   return JSON.stringify(cleanedA) === JSON.stringify(cleanedB)
-}
-
-export const numericWildcard = '0x0'
-export const wildcardChar = '$'
-
-export const optionalStringWildcardRegExp = new RegExp(
-  `\\${wildcardChar}\\${wildcardChar}`,
-  'g',
-)
-export const requiredStringWildcardRegExp = new RegExp(
-  `\\${wildcardChar}\\${wildcardChar}\\${wildcardChar}`,
-  'g',
-)
-export const anyStringWildcardRegExp = new RegExp(
-  `(\\${wildcardChar}){2,3}`,
-  'g',
-)
-
-export const identifierWildcard = wildcardChar + wildcardChar
-export const nodesTreeWildcard = identifierWildcard + wildcardChar
-
-export const disallowedWildcardRegExp = new RegExp(
-  `(\\${wildcardChar}){4,}(?!\\{)`,
-)
-
-export const removeIdentifierRefFromWildcard = (name: string) => {
-  const containsWildcardRegExp = new RegExp(`^\\${wildcardChar}`)
-  const removeIdRefRegExp = new RegExp(`(?<=(\\${wildcardChar}){2,3})_(\\w)+$`)
-
-  if (containsWildcardRegExp.test(name)) {
-    return name.replace(removeIdRefRegExp, '')
-  }
-
-  return name
-}
-
-// This is what happens if you write code at 01:30 at Friday after intensive week
-export const sortByLeastIdentifierStrength = (
-  nodeA: PoorNodeType,
-  nodeB: PoorNodeType,
-) => {
-  const aIsIdentifierWithWildcard =
-    ['TSTypeReference', ...IdentifierTypes].includes(nodeA.type as string) &&
-    (removeIdentifierRefFromWildcard(nodeA.name as string)?.includes(
-      identifierWildcard,
-    ) ||
-      removeIdentifierRefFromWildcard(
-        (nodeA as any)?.typeName?.name as string,
-      )?.includes(identifierWildcard))
-  const bIsIdentifierWithWildcard =
-    ['TSTypeReference', ...IdentifierTypes].includes(nodeB.type as string) &&
-    (removeIdentifierRefFromWildcard(nodeB.name as string)?.includes(
-      identifierWildcard,
-    ) ||
-      removeIdentifierRefFromWildcard(
-        (nodeB as any)?.typeName?.name as string,
-      )?.includes(identifierWildcard))
-
-  if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
-    const idA =
-      removeIdentifierRefFromWildcard(nodeA.name as string) ||
-      removeIdentifierRefFromWildcard((nodeA as any)?.typeName?.name as string)
-    const idB =
-      removeIdentifierRefFromWildcard(nodeB.name as string) ||
-      removeIdentifierRefFromWildcard((nodeB as any)?.typeName?.name as string)
-
-    if (idA === nodesTreeWildcard) {
-      return 1
-    }
-
-    if (idB === nodesTreeWildcard) {
-      return -1
-    }
-
-    const aNonWildcardCharsLen = idA
-      .split(identifierWildcard)
-      .map((str) => str.length)
-      .reduce((sum, len) => sum + len, 0)
-    const bNonWildcardCharsLen = idB
-      .split(identifierWildcard)
-      .map((str) => str.length)
-      .reduce((sum, len) => sum + len, 0)
-
-    return bNonWildcardCharsLen - aNonWildcardCharsLen
-  }
-
-  if (aIsIdentifierWithWildcard) {
-    return 1
-  }
-
-  if (bIsIdentifierWithWildcard) {
-    return -1
-  }
-
-  return 0
-}
-
-export const prepareCodeResult = ({
-  fileContent,
-  start,
-  end,
-  loc,
-}: { fileContent: string } & Omit<Match, 'node'>) => {
-  const frame = fileContent.substring(start - loc.start.column, end)
-  const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
-
-  const firstLine = frame.split('\n')[0]
-  const lines = frame.substr(loc.start.column).split('\n')
-  const firstLineWhiteCharsCount = (
-    firstLine?.match(firstLineWhiteCharsCountRegExp) as [string]
-  )[0]?.length
-
-  const replaceRegex = new RegExp(`^\\s{0,${firstLineWhiteCharsCount}}`)
-
-  if (firstLineWhiteCharsCount > 0) {
-    return lines.map((line) => line.replace(replaceRegex, '')).join('\n')
-  }
-
-  return lines.join('\n')
 }

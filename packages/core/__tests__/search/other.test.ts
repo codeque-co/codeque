@@ -29,8 +29,8 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should not include the same result twice 2', () => {
@@ -106,7 +106,7 @@ describe('Other', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 })

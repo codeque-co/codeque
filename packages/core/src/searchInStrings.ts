@@ -1,10 +1,14 @@
-import { measureStart } from './utils'
+import { measureStart, dedupMatches } from './utils'
 import { parseQueries } from './parseQuery'
-import { dedupMatches, SearchSettings, searchFileContent } from './searchStages'
+import { SearchSettings, searchFileContent } from './searchStages'
 import { textSearch } from './textSearch'
 import { createLogger } from './logger'
-import { FileSystemSearchArgs, Matches } from './types'
-import { SearchResults, NotNullParsedQuery } from './types'
+import {
+  FileSystemSearchArgs,
+  Matches,
+  SearchResults,
+  NotNullParsedQuery,
+} from './types'
 
 type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {
   files: {

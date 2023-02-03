@@ -1,27 +1,17 @@
-import { parse, ParseError as BabelParseError } from '@babel/parser'
+import { ParseError as BabelParseError } from '@babel/parser'
 import {
-  getBody,
-  getKeysToCompare,
   IdentifierTypes,
-  isNode,
-  isNodeArray,
   numericWildcard,
   identifierWildcard,
-  unwrapExpressionStatement,
   removeIdentifierRefFromWildcard,
-  normalizeText,
   anyStringWildcardRegExp,
-  SPACE_CHAR,
-} from './astUtils'
-import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
-import { measureStart } from './utils'
-import {
   wildcardChar,
   disallowedWildcardRegExp,
-  createBlockStatementNode,
-  parseCode,
-} from './astUtils'
-
+  babelParserSettings,
+} from './parserRelatedUtils'
+import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
+import { measureStart, SPACE_CHAR, normalizeText } from './utils'
+import { isNodeArray, getKeysToCompare } from './astUtils'
 const MIN_TOKEN_LEN = 2
 
 const decomposeString = (str: string) =>
@@ -80,16 +70,19 @@ const getUniqueTokens = (
     }
   }
 
-  const nodeKeys = getKeysToCompare(queryNode).filter(
+  const nodeKeys = getKeysToCompare(
+    queryNode,
+    babelParserSettings.astPropsToSkip,
+  ).filter(
     (key) =>
-      isNode(queryNode[key] as PoorNodeType) ||
-      isNodeArray(queryNode[key] as PoorNodeType[]),
+      babelParserSettings.isNode(queryNode[key] as PoorNodeType) ||
+      isNodeArray(queryNode[key] as PoorNodeType[], babelParserSettings.isNode),
   )
 
   nodeKeys.forEach((key) => {
     const nodeVal = queryNode[key]
 
-    if (isNodeArray(nodeVal as PoorNodeType[])) {
+    if (isNodeArray(nodeVal as PoorNodeType[], babelParserSettings.isNode)) {
       const _nodeVal = nodeVal as PoorNodeType[]
 
       _nodeVal.forEach((node) => getUniqueTokens(node, caseInsensitive, tokens))
@@ -102,17 +95,17 @@ const getUniqueTokens = (
 }
 
 const extractQueryNode = (fileNode: PoorNodeType) => {
-  const queryBody = getBody(fileNode)
+  const queryBody = babelParserSettings.getProgramBodyFromRootNode(fileNode)
 
   if (queryBody.length === 1) {
     return {
-      queryNode: unwrapExpressionStatement(queryBody[0]),
+      queryNode: babelParserSettings.unwrapExpressionStatement(queryBody[0]),
       isMultistatement: false,
     }
   }
 
   return {
-    queryNode: createBlockStatementNode(queryBody),
+    queryNode: babelParserSettings.createBlockStatementNode(queryBody),
     isMultistatement: true,
   }
 }
@@ -202,7 +195,7 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsIs = parseCode(queryText) as unknown as PoorNodeType
+        const parsedAsIs = babelParserSettings.parseCode(queryText)
 
         const { queryNode, isMultistatement } = extractQueryNode(parsedAsIs)
 
@@ -223,7 +216,7 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsExp = parseCode(
+        const parsedAsExp = babelParserSettings.parseCode(
           `(${queryText})`,
         ) as unknown as PoorNodeType
 

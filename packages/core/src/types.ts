@@ -98,3 +98,15 @@ export type WorkerOutboundMessage =
 export type SearchWorkerData = FileSystemSearchArgs & {
   reportEachMatch: boolean
 }
+
+export type ParserSettings = {
+  parseCode: (code: string, filePath?: string) => PoorNodeType
+  isNode: (maybeNode: PoorNodeType) => boolean
+  astPropsToSkip: string[]
+  isNodeFieldOptional: (nodeType: string, nodeFieldKey: string) => boolean
+  getProgramBodyFromRootNode: (fileNode: PoorNodeType) => PoorNodeType[]
+  unwrapExpressionStatement: (node: PoorNodeType) => PoorNodeType
+  createBlockStatementNode: (body: PoorNodeType[]) => PoorNodeType
+  sanitizeNode: (node: PoorNodeType) => void
+  shouldCompareNode: (node: PoorNodeType) => void
+}

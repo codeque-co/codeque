@@ -1,12 +1,8 @@
 import { performance } from 'perf_hooks'
 import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
-import {
-  optionalStringWildcardRegExp,
-  requiredStringWildcardRegExp,
-  disallowedWildcardRegExp,
-} from './astUtils'
-import { Matches, Mode, Position } from './types'
+
+import { Matches, Mode, Position, Match } from './types'
 
 export const getMode = (mode: Mode = 'include') => {
   const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']
@@ -34,35 +30,6 @@ export const logMetrics = () => {
   if (process.env.NODE_ENV !== 'test') {
     Object.entries(metrics).forEach((kv) => print(...kv))
   }
-}
-
-export const patternToRegex = (str: string, caseInsensitive = false) => {
-  if (disallowedWildcardRegExp.test(str)) {
-    throw new Error(`More than 3 wildcards chars are not allowed "${str}"`)
-  }
-
-  const charsToEscape = str.match(nonIdentifierOrKeywordGlobal)
-  let escapedString = str
-
-  if (charsToEscape !== null) {
-    const uniqueCharsToEscape = [...new Set(charsToEscape)]
-
-    uniqueCharsToEscape.forEach((char) => {
-      escapedString = escapedString.replace(
-        new RegExp(`\\${char}`, 'g'),
-        `\\${char}`,
-      )
-    })
-  }
-
-  const strWithReplacedWildcards = escapedString
-    .replace(requiredStringWildcardRegExp, '.+?')
-    .replace(optionalStringWildcardRegExp, '.*?')
-
-  return new RegExp(
-    `^${strWithReplacedWildcards}$`,
-    caseInsensitive ? 'i' : undefined,
-  )
 }
 
 export const getCodeFrame = (
@@ -219,6 +186,66 @@ export function getKeyFromObject<O extends Record<string, unknown>>(
   return val
 }
 
-// We process '$' separately
+// We process '$' (wildcards) separately
 export const nonIdentifierOrKeyword = /([^\w\s$])/
-const nonIdentifierOrKeywordGlobal = new RegExp(nonIdentifierOrKeyword, 'g')
+export const nonIdentifierOrKeywordGlobal = new RegExp(
+  nonIdentifierOrKeyword,
+  'g',
+)
+
+export const dedupMatches = (
+  matches: Matches,
+  log: (...args: any[]) => void,
+  debug = false,
+): Matches => {
+  const deduped: Matches = []
+
+  matches.forEach((match) => {
+    const alreadyIn = deduped.some((_match) => {
+      return (
+        match.filePath === _match.filePath &&
+        match.start === _match.start &&
+        match.end === _match.end
+      )
+    })
+
+    if (!alreadyIn) {
+      deduped.push(match)
+    } else if (debug) {
+      log('already in', match.code, match.query)
+    }
+  })
+
+  return deduped
+}
+
+export const prepareCodeResult = ({
+  fileContent,
+  start,
+  end,
+  loc,
+}: { fileContent: string } & Omit<Match, 'node'>) => {
+  const frame = fileContent.substring(start - loc.start.column, end)
+  const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
+
+  const firstLine = frame.split('\n')[0]
+  const lines = frame.substr(loc.start.column).split('\n')
+  const firstLineWhiteCharsCount = (
+    firstLine?.match(firstLineWhiteCharsCountRegExp) as [string]
+  )[0]?.length
+
+  const replaceRegex = new RegExp(`^\\s{0,${firstLineWhiteCharsCount}}`)
+
+  if (firstLineWhiteCharsCount > 0) {
+    return lines.map((line) => line.replace(replaceRegex, '')).join('\n')
+  }
+
+  return lines.join('\n')
+}
+
+export const isNullOrUndef = (val: any) => val === null || val === undefined
+
+export const SPACE_CHAR = ' '
+
+export const normalizeText = (text: string) =>
+  text.trim().replace(/\s+/g, SPACE_CHAR)

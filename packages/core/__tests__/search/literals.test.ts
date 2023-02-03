@@ -48,8 +48,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string with optional wildcard', () => {
@@ -65,8 +65,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string case insensitive', () => {
@@ -83,8 +83,8 @@ describe('Types', () => {
       caseInsensitive: true,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string with quite inside regardless used quotes', () => {
@@ -120,8 +120,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(2)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(2)
   })
 
   it('should match string using pattern 2', () => {
@@ -133,8 +133,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(5)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(5)
   })
 
   it('should match string with wildcard inside string', () => {
@@ -146,8 +146,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match numeric literal', () => {
@@ -159,8 +159,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(3)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(3)
   })
 
   it('should match array literal elements with mixed order', () => {
@@ -172,8 +172,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with empty quasis', () => {
@@ -185,8 +185,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should not match template literals with empty quasis using required string wildcard', () => {
@@ -211,8 +211,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with quasis with wildcard', () => {
@@ -224,8 +224,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match template literals with quasis with wildcard in id', () => {
@@ -237,8 +237,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 
   it('should match multiple template literals with include mode', () => {
@@ -329,7 +329,7 @@ describe('Types', () => {
       ],
     })
 
-    expect(matches.length).toBe(1)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
   })
 })

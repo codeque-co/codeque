@@ -69,9 +69,10 @@ const getFilesListByGitChanges = async (
 }
 
 export const pathSeparatorChar = path.sep
-export const fsRoot = path.parse(process.cwd()).root
+const getFsRoot = (fsPath: string) => path.parse(fsPath).root
 
 const getGitIgnoreContentForDirectory = async (dirPath: string) => {
+  const fsRoot = getFsRoot(dirPath)
   const gitignorePathSeparator = '/'
   let gitignore: string[] = []
   try {
@@ -182,6 +183,8 @@ export const getFilesList = async ({
   extensionTester = typeScriptFamilyExtensionTester,
 }: GetFilesListArgs) => {
   const searchRoot = path.normalize(_searchRoot)
+  const fsRoot = getFsRoot(searchRoot)
+
   const measureStop = measureStart('getFiles')
   let filesList: string[] = []
 

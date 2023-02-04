@@ -99,6 +99,29 @@ export type SearchWorkerData = FileSystemSearchArgs & {
   reportEachMatch: boolean
 }
 
+export type WildcardMeta = {
+  wildcardType: 'identifier' | 'nodeTree'
+  wildcardWithRef: string
+  wildcardWithoutRef: string
+  wildcardRef: string | null
+}
+
+export type WildcardUtils = {
+  optionalStringWildcardRegExp: RegExp
+  requiredStringWildcardRegExp: RegExp
+  anyStringWildcardRegExp: RegExp
+  identifierWildcard: string
+  nodesTreeWildcard: string
+  numericWildcard: string
+  disallowedWildcardSequence: string
+  disallowedWildcardRegExp: RegExp
+  removeIdentifierRefFromWildcard: (identifier: string) => string
+  getWildcardRefFromIdentifierName: (name: string) => string | null
+  getWildcardFromString: (name: string) => WildcardMeta | null
+  getWildcardFromNode: (node: PoorNodeType) => WildcardMeta | null
+  patternToRegExp: (string: string, caseInsensitive: boolean) => RegExp
+}
+
 export type ParserSettings = {
   parseCode: (code: string, filePath?: string) => PoorNodeType
   isNode: (maybeNode: PoorNodeType) => boolean
@@ -109,4 +132,5 @@ export type ParserSettings = {
   createBlockStatementNode: (body: PoorNodeType[]) => PoorNodeType
   sanitizeNode: (node: PoorNodeType) => void
   shouldCompareNode: (node: PoorNodeType) => void
+  wildcardUtils: WildcardUtils
 }

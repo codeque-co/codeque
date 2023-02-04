@@ -1,14 +1,5 @@
 import { ParseError as BabelParseError } from '@babel/parser'
-import {
-  IdentifierTypes,
-  numericWildcard,
-  identifierWildcard,
-  removeIdentifierRefFromWildcard,
-  anyStringWildcardRegExp,
-  wildcardChar,
-  disallowedWildcardRegExp,
-  babelParserSettings,
-} from './parserRelatedUtils'
+import { IdentifierTypes, babelParserSettings } from './parserRelatedUtils'
 import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
 import { measureStart, SPACE_CHAR, normalizeText } from './utils'
 import { isNodeArray, getKeysToCompare } from './astUtils'
@@ -16,7 +7,7 @@ const MIN_TOKEN_LEN = 2
 
 const decomposeString = (str: string) =>
   str
-    .split(anyStringWildcardRegExp)
+    .split(babelParserSettings.wildcardUtils.anyStringWildcardRegExp)
     .map((part) => normalizeText(part).split(SPACE_CHAR))
     .flat(1)
 
@@ -26,9 +17,9 @@ const getUniqueTokens = (
   tokens: Set<string> = new Set(),
 ) => {
   if (IdentifierTypes.includes(queryNode.type as string)) {
-    const trimmedWildcards = removeIdentifierRefFromWildcard(
-      queryNode.name as string,
-    ).split(identifierWildcard)
+    const trimmedWildcards = babelParserSettings.wildcardUtils
+      .removeIdentifierRefFromWildcard(queryNode.name as string)
+      .split(babelParserSettings.wildcardUtils.identifierWildcard)
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
@@ -65,7 +56,7 @@ const getUniqueTokens = (
   if ((queryNode.type as string) === 'NumericLiteral') {
     const raw = (queryNode.extra as any).raw as string
 
-    if (raw !== numericWildcard) {
+    if (raw !== babelParserSettings.wildcardUtils.numericWildcard) {
       tokens.add(raw)
     }
   }
@@ -155,13 +146,19 @@ export const parseQueries = (
     .map((queryText) => {
       let originalError = null
 
-      if (disallowedWildcardRegExp.test(queryText)) {
+      if (
+        babelParserSettings.wildcardUtils.disallowedWildcardRegExp.test(
+          queryText,
+        )
+      ) {
         const lines = queryText.split('\n')
         let lineIdx: number | null = null
         let colNum: number | null = null
 
         lines.forEach((line, idx) => {
-          const col = line.indexOf(wildcardChar.repeat(4))
+          const col = line.indexOf(
+            babelParserSettings.wildcardUtils.disallowedWildcardSequence,
+          )
 
           if (colNum === null && col > -1) {
             lineIdx = idx

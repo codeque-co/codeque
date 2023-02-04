@@ -1,5 +1,5 @@
-import { removeIdentifierRefFromWildcard } from '../src/parserRelatedUtils'
 import { compareCode } from './utils'
+import { createWildcardUtils } from '/wildcardUtilsFactory'
 
 describe('AST utils', () => {
   it('should compare code as equal', () => {
@@ -159,16 +159,40 @@ describe('AST utils', () => {
   })
 
   it('should remove identifier ref from wildcard', () => {
-    expect(removeIdentifierRefFromWildcard('$$$_ref1')).toBe('$$$')
-    expect(removeIdentifierRefFromWildcard('$$_ref1')).toBe('$$')
-    expect(removeIdentifierRefFromWildcard('$$something')).toBe('$$something')
-    expect(removeIdentifierRefFromWildcard('$$_something')).toBe('$$')
-    expect(removeIdentifierRefFromWildcard('asd$$_ref')).toBe('asd$$_ref')
+    const identifierTypes: string[] = [] // not needed for this test
+    const numericWildcard = '0x0'
+    const wildcardChar = '$'
+    const wildcardUtils = createWildcardUtils(
+      identifierTypes,
+      numericWildcard,
+      wildcardChar,
+    )
+
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$$_ref1')).toBe(
+      '$$$',
+    )
+
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$_ref1')).toBe('$$')
+
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$something')).toBe(
+      '$$something',
+    )
+
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$_something')).toBe(
+      '$$',
+    )
+
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('asd$$_ref')).toBe(
+      'asd$$_ref',
+    )
+
     // should not remove if ref is another wildcard
-    expect(removeIdentifierRefFromWildcard('$$$_$$')).toBe('$$$_$$')
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$$_$$')).toBe(
+      '$$$_$$',
+    )
 
     // should not remove if ref is in the middle of string
-    expect(removeIdentifierRefFromWildcard('$$$_notRef_$$')).toBe(
+    expect(wildcardUtils.removeIdentifierRefFromWildcard('$$$_notRef_$$')).toBe(
       '$$$_notRef_$$',
     )
   })

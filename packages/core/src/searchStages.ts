@@ -1,16 +1,6 @@
 import generate from '@babel/generator'
 import { measureStart, regExpTest } from './utils'
-import {
-  IdentifierTypes,
-  numericWildcard,
-  identifierWildcard,
-  nodesTreeWildcard,
-  removeIdentifierRefFromWildcard,
-  sortByLeastIdentifierStrength,
-  anyStringWildcardRegExp,
-  patternToRegex,
-  babelParserSettings,
-} from './parserRelatedUtils'
+import { IdentifierTypes, babelParserSettings } from './parserRelatedUtils'
 import {
   getExtendedCodeFrame,
   getKeyFromObject,
@@ -21,6 +11,7 @@ import { Match, Matches, Mode, PoorNodeType, NotNullParsedQuery } from './types'
 import {
   isNodeArray,
   getKeysWithNodes,
+  sortByLeastIdentifierStrength,
   getSetsOfKeysToCompare,
 } from './astUtils'
 
@@ -141,8 +132,12 @@ const validateMatch = (
 
             const matchedIndexes: number[] = []
 
-            const queryNodesArrSorted = [...queryNodesArr].sort(
-              sortByLeastIdentifierStrength,
+            const queryNodesArrSorted = [...queryNodesArr].sort((a, b) =>
+              sortByLeastIdentifierStrength(
+                a,
+                b,
+                babelParserSettings.wildcardUtils,
+              ),
             )
 
             for (let i = 0; i < queryNodesArrSorted.length; i++) {
@@ -294,7 +289,8 @@ const compareNodes = (
     (fileNode.type as string).includes('TS') &&
     (fileNode.type as string).includes('Keyword') &&
     (queryNode.type as string) === 'TSTypeReference' &&
-    ((queryNode.typeName as any).name as string) === identifierWildcard &&
+    ((queryNode.typeName as any).name as string) ===
+      babelParserSettings.wildcardUtils.identifierWildcard &&
     (queryNode.typeParameters as any) === undefined
   ) {
     // support using '$$' wildcard for TS keywords like 'never', 'boolean' etc.
@@ -336,19 +332,27 @@ const compareNodes = (
   if (
     // refactor to use getWildcardFromNode, however this part does not have to be generic
     IdentifierTypes.includes(queryNode.type as string) &&
-    (queryNode.name as string).includes(identifierWildcard)
+    (queryNode.name as string).includes(
+      babelParserSettings.wildcardUtils.identifierWildcard,
+    )
   ) {
     log('comparing wildcard')
     let levelMatch
 
-    const nameWithoutRef = removeIdentifierRefFromWildcard(
-      queryNode.name as string,
-    )
+    const nameWithoutRef =
+      babelParserSettings.wildcardUtils.removeIdentifierRefFromWildcard(
+        queryNode.name as string,
+      )
 
-    if (nameWithoutRef === nodesTreeWildcard) {
+    if (
+      nameWithoutRef === babelParserSettings.wildcardUtils.nodesTreeWildcard
+    ) {
       levelMatch = true
     } else {
-      const regex = patternToRegex(nameWithoutRef, caseInsensitive)
+      const regex = babelParserSettings.wildcardUtils.patternToRegExp(
+        nameWithoutRef,
+        caseInsensitive,
+      )
 
       levelMatch =
         IdentifierTypes.includes(fileNode.type as string) &&
@@ -371,7 +375,9 @@ const compareNodes = (
     })
 
     const queryKeysToTraverseForValidatingMatch =
-      nameWithoutRef !== nodesTreeWildcard ? queryKeysWithNodes : []
+      nameWithoutRef !== babelParserSettings.wildcardUtils.nodesTreeWildcard
+        ? queryKeysWithNodes
+        : []
 
     measureCompare()
 
@@ -387,7 +393,8 @@ const compareNodes = (
 
   if (
     (queryNode.type as string) === 'ImportDefaultSpecifier' &&
-    (queryNode.local as PoorNodeType).name === nodesTreeWildcard
+    (queryNode.local as PoorNodeType).name ===
+      babelParserSettings.wildcardUtils.nodesTreeWildcard
   ) {
     // treat "import $$$ from '...'" as wildcard for any import
     measureCompare()
@@ -402,9 +409,9 @@ const compareNodes = (
 
   if (
     (queryNode.type as string) === 'TSTypeReference' &&
-    removeIdentifierRefFromWildcard(
+    babelParserSettings.wildcardUtils.removeIdentifierRefFromWildcard(
       (queryNode.typeName as PoorNodeType).name as string,
-    ) === nodesTreeWildcard
+    ) === babelParserSettings.wildcardUtils.nodesTreeWildcard
   ) {
     // in "const a: $$$; const a: () => $$$" treat $$$ as wildcard for any type annotation
     // also type T = $$$
@@ -421,13 +428,19 @@ const compareNodes = (
   const isStringWithWildcard =
     (queryNode.type as string) === 'StringLiteral' &&
     (fileNode.type as string) === 'StringLiteral' &&
-    regExpTest(anyStringWildcardRegExp, queryNode.value as string)
+    regExpTest(
+      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
+      queryNode.value as string,
+    )
 
   log('isStringWithWildcard', isStringWithWildcard)
 
   // Support for wildcards in strings
   if (isStringWithWildcard) {
-    const regex = patternToRegex(queryNode.value as string, caseInsensitive)
+    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
+      queryNode.value as string,
+      caseInsensitive,
+    )
     const levelMatch = regExpTest(regex, fileNode.value as string)
     measureCompare()
 
@@ -443,9 +456,15 @@ const compareNodes = (
   if (
     (queryNode.type as string) === 'JSXText' &&
     (fileNode.type as string) === 'JSXText' &&
-    regExpTest(anyStringWildcardRegExp, queryNode.value as string)
+    regExpTest(
+      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
+      queryNode.value as string,
+    )
   ) {
-    const regex = patternToRegex(queryNode.value as string, caseInsensitive)
+    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
+      queryNode.value as string,
+      caseInsensitive,
+    )
     const levelMatch = regExpTest(regex, fileNode.value as string)
     measureCompare()
 
@@ -461,9 +480,12 @@ const compareNodes = (
   if (
     (queryNode.type as string) === 'TemplateElement' &&
     (fileNode.type as string) === 'TemplateElement' &&
-    regExpTest(anyStringWildcardRegExp, (queryNode.value as any).raw as string)
+    regExpTest(
+      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
+      (queryNode.value as any).raw as string,
+    )
   ) {
-    const regex = patternToRegex(
+    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
       (queryNode.value as any).raw as string,
       caseInsensitive,
     )
@@ -482,7 +504,8 @@ const compareNodes = (
   if (
     (queryNode.type as string) === 'NumericLiteral' &&
     (fileNode.type as string) === 'NumericLiteral' &&
-    ((queryNode.extra as any).raw as string) === numericWildcard
+    ((queryNode.extra as any).raw as string) ===
+      babelParserSettings.wildcardUtils.numericWildcard
   ) {
     measureCompare()
 

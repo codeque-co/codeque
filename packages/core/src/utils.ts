@@ -2,7 +2,7 @@ import { performance } from 'perf_hooks'
 import { codeFrameColumns } from '@babel/code-frame'
 import { format } from 'prettier'
 
-import { Matches, Mode, Position, Match } from './types'
+import { Matches, Mode, Position, Match, WildcardUtils } from './types'
 
 export const getMode = (mode: Mode = 'include') => {
   const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']

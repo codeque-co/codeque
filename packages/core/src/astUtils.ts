@@ -1,4 +1,4 @@
-import { PoorNodeType, ParserSettings } from './types'
+import { PoorNodeType, ParserSettings, WildcardUtils } from './types'
 import { isNullOrUndef } from './utils'
 
 export const isNodeArray = (
@@ -143,4 +143,50 @@ export const compareCode = (
   const cleanedB = cleanupAst(astB, parserSettings)
 
   return JSON.stringify(cleanedA) === JSON.stringify(cleanedB)
+}
+
+export const sortByLeastIdentifierStrength = (
+  nodeA: PoorNodeType,
+  nodeB: PoorNodeType,
+  wildcardUtils: WildcardUtils,
+) => {
+  const aWildcard = wildcardUtils.getWildcardFromNode(nodeA)
+  const bWildcard = wildcardUtils.getWildcardFromNode(nodeB)
+
+  const aIsIdentifierWithWildcard = aWildcard !== null
+  const bIsIdentifierWithWildcard = bWildcard !== null
+
+  if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
+    const idA = aWildcard.wildcardWithoutRef
+    const idB = bWildcard.wildcardWithoutRef
+
+    if (idA === wildcardUtils.nodesTreeWildcard) {
+      return 1
+    }
+
+    if (idB === wildcardUtils.nodesTreeWildcard) {
+      return -1
+    }
+
+    const aNonWildcardCharsLen = idA
+      .split(wildcardUtils.identifierWildcard)
+      .map((str) => str.length)
+      .reduce((sum, len) => sum + len, 0)
+    const bNonWildcardCharsLen = idB
+      .split(wildcardUtils.identifierWildcard)
+      .map((str) => str.length)
+      .reduce((sum, len) => sum + len, 0)
+
+    return bNonWildcardCharsLen - aNonWildcardCharsLen
+  }
+
+  if (aIsIdentifierWithWildcard) {
+    return 1
+  }
+
+  if (bIsIdentifierWithWildcard) {
+    return -1
+  }
+
+  return 0
 }

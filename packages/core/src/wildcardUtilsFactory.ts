@@ -2,7 +2,7 @@ import { PoorNodeType, WildcardMeta, WildcardUtils } from './types'
 import { nonIdentifierOrKeywordGlobal } from './utils'
 
 export const createWildcardUtils = (
-  identifierTypes: string[],
+  identifierNodeTypes: string[],
   numericWildcard: string,
   identifierWildcardBase: string,
   stringWildcardBase = identifierWildcardBase,
@@ -63,7 +63,7 @@ export const createWildcardUtils = (
     }
 
     const isIdentifierNode =
-      typeof node.type === 'string' && identifierTypes.includes(node.type)
+      typeof node.type === 'string' && identifierNodeTypes.includes(node.type)
 
     if (isIdentifierNode && typeof node.name === 'string') {
       return getWildcardFromString(node.name)

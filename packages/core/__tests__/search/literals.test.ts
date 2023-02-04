@@ -4,7 +4,11 @@ import fs from 'fs'
 import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Types', () => {
-  const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
+  const tempFilePath = path.join(
+    __dirname,
+    '__fixtures__',
+    `${Date.now()}.temp`,
+  )
   const filesList = [tempFilePath]
 
   beforeAll(() => {

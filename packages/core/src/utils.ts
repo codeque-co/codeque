@@ -1,6 +1,12 @@
 import { performance } from 'perf_hooks'
 
-import { Match, Matches, Mode } from './types'
+import {
+  Match,
+  Matches,
+  Mode,
+  NodesComparator,
+  NodesComparatorParameters,
+} from './types'
 
 export const getMode = (mode: Mode = 'include') => {
   const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']
@@ -201,3 +207,16 @@ export const SPACE_CHAR = ' '
 
 export const normalizeText = (text: string) =>
   text.trim().replace(/\s+/g, SPACE_CHAR)
+
+export const runNodesComparators = (
+  nodesComparators: NodesComparator[],
+  nodesComparatorParams: NodesComparatorParameters,
+) => {
+  for (const nodesComparator of nodesComparators) {
+    const compareResult = nodesComparator(...nodesComparatorParams)
+
+    if (compareResult) {
+      return compareResult
+    }
+  }
+}

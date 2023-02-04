@@ -1,5 +1,5 @@
 import { sortByLeastIdentifierStrength } from '../astUtils'
-import { babelParserSettings } from '../parserRelatedUtils'
+import { babelParserSettings } from '../parserSettings'
 import { Mode, PoorNodeType, SearchSettings } from '../types'
 import { getKeyFromObject } from '../utils'
 import { compareNodes } from './compareNodes'
@@ -22,7 +22,11 @@ export const validateMatch = (
     levelMatch,
     queryKeysToTraverseForValidatingMatch,
     fileKeysToTraverseForValidatingMatch,
-  } = compareNodes(currentNode, currentQueryNode, settings)
+  } = compareNodes({
+    fileNode: currentNode,
+    queryNode: currentQueryNode,
+    searchSettings: settings,
+  })
 
   if (
     fileKeysToTraverseForValidatingMatch.length !==

@@ -1,9 +1,19 @@
 import { parse, ParserOptions, ParserPlugin } from '@babel/parser'
 import { NODE_FIELDS } from '@babel/types'
-import { ParserSettings, PoorNodeType } from './types'
-import { normalizeText } from './utils'
-import { createWildcardUtils } from './wildcardUtilsFactory'
+import {
+  ParserSettings,
+  PoorNodeType,
+  NodesComparatorParameters,
+  StringLiteralUtils,
+  NumericLiteralUtils,
+  ProgramNodeAndBlockNodeUtils,
+} from '../../types'
+import { normalizeText, runNodesComparators } from '../../utils'
+import { createWildcardUtils } from '../../wildcardUtilsFactory'
 import generate from '@babel/generator'
+import { beforeWildcardsComparators } from './beforeWildcardsComparators'
+import { afterWildcardsComparators } from './afterWildcardsComparators'
+import { identifierNodeTypes, wildcardUtils } from './common'
 
 const getProgramNodeFromRootNode = (fileNode: PoorNodeType) =>
   fileNode.program as PoorNodeType
@@ -29,14 +39,6 @@ const createBlockStatementNode = (body: PoorNodeType[]) => ({
   body,
   directives: [], // whatever it is
 })
-
-// parser specific, rename to something that describes nodes are one-level wildcards
-
-export const IdentifierTypes = [
-  'Identifier',
-  'JSXIdentifier',
-  'TSTypeParameter',
-]
 
 const NodeConstructor = parse('').constructor //TODO: import proper constructor from somewhere
 
@@ -140,26 +142,65 @@ const shouldCompareNode = (node: PoorNodeType) => {
   return true
 }
 
-const numericWildcard = '0x0'
-const wildcardChar = '$'
+const supportedExtensions = ['js', 'ts', 'jsx', 'tsx', 'cjs', 'mjs', 'json']
 
-const wildcardUtils = createWildcardUtils(
-  IdentifierTypes,
-  numericWildcard,
-  wildcardChar,
-)
+const compareNodesBeforeWildcardsComparison = (
+  ...nodeComparatorParams: NodesComparatorParameters
+) => {
+  return runNodesComparators(beforeWildcardsComparators, nodeComparatorParams)
+}
+
+const compareNodesAfterWildcardsComparison = (
+  ...nodeComparatorParams: NodesComparatorParameters
+) => {
+  return runNodesComparators(afterWildcardsComparators, nodeComparatorParams)
+}
+
+const getIdentifierNodeName = (node: PoorNodeType) => node.name as string
+const getNodeType = (node: PoorNodeType) => node.type as string
+
+const isIdentifierNode = (node: PoorNodeType) =>
+  identifierNodeTypes.includes(getNodeType(node))
+
+const stringLiteralUtils: StringLiteralUtils = {
+  isStringLiteralNode: (node: PoorNodeType) => node.type === 'StringLiteral',
+  getStringLiteralValue: (node: PoorNodeType) => node.value as string,
+}
+
+const numericLiteralUtils: NumericLiteralUtils = {
+  isNumericLiteralNode: (node: PoorNodeType) => node.type === 'NumericLiteral',
+  getNumericLiteralValue: (node: PoorNodeType) =>
+    (node.extra as any).raw as string,
+}
+
+const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
+  isProgramNode: (node: PoorNodeType) => node.type === 'Program',
+  isBlockNode: (node: PoorNodeType) => node.type === 'BlockStatement',
+  programNodeBodyKey: 'body',
+  blockNodeBodyKey: 'body',
+}
 
 export const babelParserSettings: ParserSettings = {
+  supportedExtensions,
   parseCode,
   generateCode,
   isNode,
+  isIdentifierNode,
   astPropsToSkip,
   isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
+  getIdentifierNodeName,
+  getNodeType,
   unwrapExpressionStatement,
   createBlockStatementNode,
   sanitizeNode,
   shouldCompareNode,
   wildcardUtils,
+  compareNodesBeforeWildcardsComparison,
+  compareNodesAfterWildcardsComparison,
+  identifierTypeAnnotationFieldName: 'typeAnnotation',
+  stringLiteralUtils,
+  numericLiteralUtils,
+  programNodeAndBlockNodeUtils,
 }

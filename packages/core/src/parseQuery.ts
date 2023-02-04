@@ -1,7 +1,8 @@
-import { IdentifierTypes, babelParserSettings } from './parserRelatedUtils'
+import { babelParserSettings } from './parserSettings'
 import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
 import { measureStart, SPACE_CHAR, normalizeText } from './utils'
 import { isNodeArray, getKeysToCompare } from './astUtils'
+
 const MIN_TOKEN_LEN = 2
 
 const decomposeString = (str: string) =>
@@ -15,7 +16,7 @@ const getUniqueTokens = (
   caseInsensitive: boolean,
   tokens: Set<string> = new Set(),
 ) => {
-  if (IdentifierTypes.includes(queryNode.type as string)) {
+  if (babelParserSettings.isIdentifierNode(queryNode)) {
     const trimmedWildcards = babelParserSettings.wildcardUtils
       .removeIdentifierRefFromWildcard(queryNode.name as string)
       .split(babelParserSettings.wildcardUtils.identifierWildcard)

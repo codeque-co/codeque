@@ -1,4 +1,4 @@
-import { babelParserSettings } from '../parserRelatedUtils'
+import { babelParserSettings } from '../parserSettings'
 import { Matches, NotNullParsedQuery, SearchSettings } from '../types'
 import { getExtendedCodeFrame, measureStart, prepareCodeResult } from '../utils'
 import { searchAst } from './searchAst'

@@ -1,5 +1,5 @@
 import generate from '@babel/generator'
-import { babelParserSettings } from '../parserRelatedUtils'
+import { babelParserSettings } from '../parserSettings'
 import { Match, PoorNodeType, SearchSettings } from '../types'
 import { measureStart } from '../utils'
 import { compareNodes } from './compareNodes'
@@ -20,11 +20,11 @@ export const traverseAndMatch = (
   /**
    * LOOK FOR MATCH START
    */
-  const { levelMatch, fileKeysToTraverseForOtherMatches } = compareNodes(
-    currentNode,
+  const { levelMatch, fileKeysToTraverseForOtherMatches } = compareNodes({
+    fileNode: currentNode,
     queryNode,
-    settings,
-  )
+    searchSettings: settings,
+  })
 
   const foundMatchStart = levelMatch
 

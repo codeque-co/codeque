@@ -3,28 +3,29 @@ import {
   getSetsOfKeysToCompare,
   isNodeArray,
 } from '../astUtils'
-import { babelParserSettings, IdentifierTypes } from '../parserRelatedUtils'
-import { PoorNodeType, SearchSettings } from '../types'
+import { babelParserSettings } from '../parserSettings'
+import {
+  PoorNodeType,
+  CompareNodesParams,
+  CompareNodesReturnType,
+} from '../types'
 import { measureStart, regExpTest } from '../utils'
-
-type CompareNodesReturnType = {
-  levelMatch: boolean
-  queryKeysToTraverseForValidatingMatch: string[]
-  fileKeysToTraverseForValidatingMatch: string[]
-  fileKeysToTraverseForOtherMatches: string[]
-}
 
 const keyWithPrefix = (prefix: string) => (key: string) =>
   prefix ? `${prefix}.${key}` : key
 
 export const compareNodes = (
-  fileNode: PoorNodeType | null,
-  queryNode: PoorNodeType | null,
-  searchSettings: SearchSettings,
-  /** Params used to support comparing nodes which are not on the same level */
-  queryKeysPrefix = '',
-  fileKeysPrefix = '',
+  compareParams: CompareNodesParams,
 ): CompareNodesReturnType => {
+  const {
+    fileNode,
+    queryNode,
+    searchSettings,
+    /** Params used to support comparing nodes which are not on the same level */
+    queryKeysPrefix = '',
+    fileKeysPrefix = '',
+  } = compareParams
+
   const {
     mode,
     caseInsensitive,
@@ -82,517 +83,196 @@ export const compareNodes = (
     babelParserSettings.isNode,
   )
 
+  const compareUtils = {
+    queryKeysMapper,
+    fileKeysMapper,
+    fileKeysToTraverseForOtherMatches,
+    measureCompare,
+  }
+
   babelParserSettings.sanitizeNode(fileNode)
   babelParserSettings.sanitizeNode(queryNode)
 
-  // TS family specific,can be parametrized and reused
-  /*
-   * support using '$$' wildcard for TS keywords like 'never', 'boolean' etc.
-   * Since actual wildcard char is child of TSTypeReference (typeName), we have to hop one level deeper
-   * otherwise level comparison will not work
-   */
-  if (
-    (fileNode.type as string).includes('TS') &&
-    (fileNode.type as string).includes('Keyword') &&
-    (queryNode.type as string) === 'TSTypeReference' &&
-    ((queryNode.typeName as any).name as string) ===
-      babelParserSettings.wildcardUtils.identifierWildcard &&
-    (queryNode.typeParameters as any) === undefined
-  ) {
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
+  const maybeCompareResult =
+    babelParserSettings.compareNodesBeforeWildcardsComparison(
+      compareParams,
+      compareNodes,
+      compareUtils,
+    )
+
+  if (maybeCompareResult) {
+    return maybeCompareResult
+  }
+
+  const {
+    isNode,
+    isIdentifierNode,
+    identifierTypeAnnotationFieldName,
+    stringLiteralUtils,
+    numericLiteralUtils,
+    programNodeAndBlockNodeUtils,
+    getIdentifierNodeName,
+    wildcardUtils: {
+      getWildcardFromNode,
+      anyStringWildcardRegExp,
+      patternToRegExp,
+      numericWildcard,
+    },
+  } = babelParserSettings
+
+  {
+    /**
+     * START: GENERIC MATCHERS FOR BASE WILDCARDS
+     */
+
+    /**
+     *  Support for wildcards in all nodes
+     */
+    if (isIdentifierNode(queryNode)) {
+      const wildcardMeta = getWildcardFromNode(queryNode)
+
+      if (wildcardMeta !== null) {
+        log('comparing wildcard')
+        const { wildcardType, wildcardWithoutRef } = wildcardMeta
+        let levelMatch
+
+        if (wildcardType === 'nodeTree') {
+          levelMatch = true
+        } else {
+          const regex = patternToRegExp(wildcardWithoutRef, caseInsensitive)
+
+          levelMatch =
+            isIdentifierNode(fileNode) &&
+            regExpTest(regex, getIdentifierNodeName(fileNode))
+
+          if (isExact && identifierTypeAnnotationFieldName) {
+            levelMatch =
+              levelMatch &&
+              typeof queryNode[identifierTypeAnnotationFieldName] ===
+                typeof fileNode[identifierTypeAnnotationFieldName]
+          }
+        }
+
+        const queryKeysWithNodes = queryKeys.filter((key) => {
+          const queryValue = queryNode[key]
+
+          return (
+            isNode(queryValue as PoorNodeType) ||
+            isNodeArray(queryValue as PoorNodeType[], isNode)
+          )
+        })
+
+        const queryKeysToTraverseForValidatingMatch =
+          wildcardType !== 'nodeTree' ? queryKeysWithNodes : []
+
+        measureCompare()
+
+        return {
+          levelMatch,
+          queryKeysToTraverseForValidatingMatch:
+            queryKeysToTraverseForValidatingMatch.map(queryKeysMapper),
+          fileKeysToTraverseForValidatingMatch:
+            queryKeysToTraverseForValidatingMatch.map(fileKeysMapper),
+          fileKeysToTraverseForOtherMatches,
+        }
+      }
     }
-  }
 
-  // JS family specific, perhaps can be parametrized and reused
-  /**
-   * Support for matching function params with default value or object/array destructuring with default value
-   *
-   *   Since we comparing query node with nested node from file, we have to do so before wildcards
-   *  comparison
-   * TODO: code example
-   *
-   */
-  if (
-    !isExact &&
-    (queryNode.type as string) === 'Identifier' &&
-    (fileNode.type as string) === 'AssignmentPattern' &&
-    (fileNode.left as PoorNodeType)?.type === 'Identifier'
-  ) {
-    log('comparing assignment pattern with identifier')
-
-    // By comparing nodes this way, we support wildcards in compared identifiers
-    return compareNodes(
-      fileNode.left as PoorNodeType,
-      queryNode,
-      searchSettings,
-      queryKeysMapper(''),
-      fileKeysMapper('left'),
-    )
-  }
-
-  // Should be generic for all languages, we have to parametrize typeAnnotation field name
-  /**
-   *  Support for wildcards in all nodes
-   * */
-  if (
-    // refactor to use getWildcardFromNode, however this part does not have to be generic
-    IdentifierTypes.includes(queryNode.type as string) &&
-    (queryNode.name as string).includes(
-      babelParserSettings.wildcardUtils.identifierWildcard,
-    )
-  ) {
-    log('comparing wildcard')
-    let levelMatch
-
-    const nameWithoutRef =
-      babelParserSettings.wildcardUtils.removeIdentifierRefFromWildcard(
-        queryNode.name as string,
+    // this should be extracted to parser settings
+    const isStringWithWildcard =
+      stringLiteralUtils.isStringLiteralNode(queryNode) &&
+      stringLiteralUtils.isStringLiteralNode(fileNode) &&
+      regExpTest(
+        anyStringWildcardRegExp,
+        stringLiteralUtils.getStringLiteralValue(queryNode),
       )
 
-    if (
-      nameWithoutRef === babelParserSettings.wildcardUtils.nodesTreeWildcard
-    ) {
-      levelMatch = true
-    } else {
-      const regex = babelParserSettings.wildcardUtils.patternToRegExp(
-        nameWithoutRef,
+    log('isStringWithWildcard', isStringWithWildcard)
+
+    /**
+     * Support for wildcards in strings
+     *
+     * Q: "some$$string"; C: "someBLABLAstring"; C: "somestring" // optional wildcard
+     * Q: "some$$$string"; C: "someBLABLAstring"; // required wildcard
+     * */
+    if (isStringWithWildcard) {
+      const regex = patternToRegExp(
+        stringLiteralUtils.getStringLiteralValue(queryNode),
         caseInsensitive,
       )
-
-      levelMatch =
-        IdentifierTypes.includes(fileNode.type as string) &&
-        regExpTest(regex, fileNode.name as string)
-
-      if (isExact) {
-        levelMatch =
-          levelMatch &&
-          typeof queryNode.typeAnnotation === typeof fileNode.typeAnnotation
-      }
-    }
-
-    const queryKeysWithNodes = queryKeys.filter((key) => {
-      const queryValue = queryNode[key]
-
-      return (
-        babelParserSettings.isNode(queryValue as PoorNodeType) ||
-        isNodeArray(queryValue as PoorNodeType[], babelParserSettings.isNode)
+      const levelMatch = regExpTest(
+        regex,
+        stringLiteralUtils.getStringLiteralValue(fileNode),
       )
-    })
-
-    const queryKeysToTraverseForValidatingMatch =
-      nameWithoutRef !== babelParserSettings.wildcardUtils.nodesTreeWildcard
-        ? queryKeysWithNodes
-        : []
-
-    measureCompare()
-
-    return {
-      levelMatch,
-      queryKeysToTraverseForValidatingMatch:
-        queryKeysToTraverseForValidatingMatch.map(queryKeysMapper),
-      fileKeysToTraverseForValidatingMatch:
-        queryKeysToTraverseForValidatingMatch.map(fileKeysMapper),
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JS family specific, should be parametrized and reused
-  /**
-   * treat "import $$$ from '...'" as wildcard for any import
-   * */
-  if (
-    (queryNode.type as string) === 'ImportDefaultSpecifier' &&
-    (queryNode.local as PoorNodeType).name ===
-      babelParserSettings.wildcardUtils.nodesTreeWildcard
-  ) {
-    measureCompare()
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // TS family specific, should be parametrized and reused
-  /**
-   * Support for $$$ wildcards for any type annotation
-   * in "const a: $$$; const a: () => $$$" treat $$$ as wildcard for any type annotation
-   * also type T = $$$
-   */
-  if (
-    (queryNode.type as string) === 'TSTypeReference' &&
-    babelParserSettings.wildcardUtils.removeIdentifierRefFromWildcard(
-      (queryNode.typeName as PoorNodeType).name as string,
-    ) === babelParserSettings.wildcardUtils.nodesTreeWildcard
-  ) {
-    measureCompare()
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // this should be extracted to parser settings
-  const isStringWithWildcard =
-    (queryNode.type as string) === 'StringLiteral' &&
-    (fileNode.type as string) === 'StringLiteral' &&
-    regExpTest(
-      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
-      queryNode.value as string,
-    )
-
-  log('isStringWithWildcard', isStringWithWildcard)
-
-  // Should be generic
-  /**
-   * Support for wildcards in strings
-   * TODO: code example
-   *
-   * */
-  if (isStringWithWildcard) {
-    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
-      queryNode.value as string,
-      caseInsensitive,
-    )
-    const levelMatch = regExpTest(regex, fileNode.value as string)
-    measureCompare()
-
-    return {
-      levelMatch: levelMatch,
-      fileKeysToTraverseForValidatingMatch: [],
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JSX-family specific, should be parametrized and reused
-  /*
-   * Support for string wildcards in JSXText
-   * TODO: code example
-   */
-  if (
-    (queryNode.type as string) === 'JSXText' &&
-    (fileNode.type as string) === 'JSXText' &&
-    regExpTest(
-      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
-      queryNode.value as string,
-    )
-  ) {
-    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
-      queryNode.value as string,
-      caseInsensitive,
-    )
-    const levelMatch = regExpTest(regex, fileNode.value as string)
-    measureCompare()
-
-    return {
-      levelMatch: levelMatch,
-      fileKeysToTraverseForValidatingMatch: [],
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JS-family specific, Should be parametrized and reused
-  /**
-   *  Support for string wildcards in TemplateElements
-   * TODO: code example
-   *
-   * */
-  if (
-    (queryNode.type as string) === 'TemplateElement' &&
-    (fileNode.type as string) === 'TemplateElement' &&
-    regExpTest(
-      babelParserSettings.wildcardUtils.anyStringWildcardRegExp,
-      (queryNode.value as any).raw as string,
-    )
-  ) {
-    const regex = babelParserSettings.wildcardUtils.patternToRegExp(
-      (queryNode.value as any).raw as string,
-      caseInsensitive,
-    )
-    const levelMatch = regExpTest(regex, (fileNode.value as any).raw as string)
-    measureCompare()
-
-    return {
-      levelMatch: levelMatch,
-      fileKeysToTraverseForValidatingMatch: [],
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // Should be generic, function to check if node is Numeric wildcard should be added to parser settings
-  /*
-   * Support for numeric wildcard
-   * TODO: code example
-   */
-  if (
-    (queryNode.type as string) === 'NumericLiteral' &&
-    (fileNode.type as string) === 'NumericLiteral' &&
-    ((queryNode.extra as any).raw as string) ===
-      babelParserSettings.wildcardUtils.numericWildcard
-  ) {
-    measureCompare()
-
-    return {
-      levelMatch: true,
-      fileKeysToTraverseForValidatingMatch: [],
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  /*
-   * Support for matching object properties in destructuring before re-assignment
-   * TODO: code example
-   */
-  if (
-    !isExact &&
-    // Both are ObjectProperty
-    (queryNode.type as string) === 'ObjectProperty' &&
-    (fileNode.type as string) === 'ObjectProperty' &&
-    // Both has same key identifier
-    (queryNode.key as PoorNodeType).type === 'Identifier' &&
-    (fileNode.key as PoorNodeType).type === 'Identifier' &&
-    (queryNode.key as PoorNodeType).name ===
-      (fileNode.key as PoorNodeType).name &&
-    // Both has different value identifier
-    (queryNode.value as PoorNodeType).type === 'Identifier' &&
-    (fileNode.value as PoorNodeType).type === 'Identifier' &&
-    (queryNode.value as PoorNodeType).name !==
-      (fileNode.value as PoorNodeType).name
-  ) {
-    // We skip comparing value if query does not have re-assignment
-    const keysToTraverse = ['key']
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch:
-        keysToTraverse.map(queryKeysMapper),
-      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JS-family specific, should be parametrized and re-used
-  /**
-   * Support for object property strings, identifiers and numbers comparison
-   * TODO: code example
-   *
-   */
-  if (
-    !isExact &&
-    (queryNode.type as string) === 'ObjectProperty' &&
-    (fileNode.type as string) === 'ObjectProperty' &&
-    !(queryNode.method as boolean) &&
-    !(fileNode.method as boolean)
-  ) {
-    // Key can be Identifier with `name` or String/Number with `value`
-    const queryKeyValue =
-      (queryNode.key as PoorNodeType).name ||
-      (queryNode.key as PoorNodeType).value
-
-    const fileKeyValue =
-      (fileNode.key as PoorNodeType).name ||
-      (fileNode.key as PoorNodeType).value
-
-    // compare with == to automatically cast types
-    if (queryKeyValue == fileKeyValue) {
       measureCompare()
 
-      const keysToTraverse = ['value']
-
       return {
-        levelMatch: true,
-        queryKeysToTraverseForValidatingMatch:
-          keysToTraverse.map(queryKeysMapper),
-        fileKeysToTraverseForValidatingMatch:
-          keysToTraverse.map(fileKeysMapper),
-        fileKeysToTraverseForOtherMatches,
-      }
-    }
-  }
-
-  // JSX-family specific, should be parametrized and reused
-  /**
-   *
-   * 1/2 Support for matching JSXElements without children regardless closing/opening tag
-   * TODO: code example
-   *
-   */
-  if (
-    !isExact &&
-    (queryNode.type as string) === 'JSXElement' &&
-    (fileNode.type as string) === 'JSXElement' &&
-    (queryNode.children as []).length === 0
-  ) {
-    measureCompare()
-    const keysToTraverse = ['openingElement']
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch:
-        keysToTraverse.map(queryKeysMapper),
-      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  /**
-   * 2/2 Support for matching JSXElements without children regardless closing/opening tag
-   * TODO: code example
-   *
-   */
-  if (
-    !isExact &&
-    (queryNode.type as string) === 'JSXOpeningElement' &&
-    (fileNode.type as string) === 'JSXOpeningElement'
-  ) {
-    measureCompare()
-    const keysToTraverse = ['name', 'attributes']
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch:
-        keysToTraverse.map(queryKeysMapper),
-      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // should be generic, need to parametrise node names and body prop
-  /*
-   * Support for multi-statement search in program body
-   * TODO: code example
-   */
-
-  if (
-    (queryNode.type as string) === 'BlockStatement' &&
-    (fileNode.type as string) === 'Program'
-  ) {
-    const keysToTraverse = ['body']
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch:
-        keysToTraverse.map(queryKeysMapper),
-      fileKeysToTraverseForValidatingMatch: keysToTraverse.map(fileKeysMapper),
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JSX-family specific, should be parametrized and reused
-  /**
-   * Support for matching JSXIdentifier using Identifier in query
-   * TODO: code example
-   */
-
-  if (
-    (queryNode.type as string) === 'Identifier' &&
-    (fileNode.type as string) === 'JSXIdentifier' &&
-    queryNode.name === fileNode.name
-  ) {
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JS-family specific, should be parametrized and reused
-  /*
-   * Support for partial matching of template literals
-   * TODO: code example
-   */
-  if (
-    !isExact &&
-    (queryNode.type as string) === 'TemplateElement' &&
-    (fileNode.type as string) === 'TemplateElement' &&
-    (queryNode.value as { raw?: string })?.raw?.length === 0
-  ) {
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForValidatingMatch: [],
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  // JS-family specific, should be parametrized and reused
-  /*
-   * Support for matching optional flag in MemberExpressions
-   * TODO: code example
-   */
-
-  const memberExpressionsNodeTypes = [
-    'MemberExpression',
-    'OptionalMemberExpression',
-  ]
-
-  if (
-    !isExact &&
-    memberExpressionsNodeTypes.includes(queryNode.type as string) &&
-    memberExpressionsNodeTypes.includes(fileNode.type as string) &&
-    queryNode.computed === fileNode.computed // this could be also supported in more flexible way
-  ) {
-    /**
-     We skip comparing 'optional' property on the nodes, to match them interchangeably
-    */
-    const keysToTraverseForValidatingMatch = ['object', 'property']
-
-    return {
-      levelMatch: true,
-      queryKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
-      fileKeysToTraverseForValidatingMatch: keysToTraverseForValidatingMatch,
-      fileKeysToTraverseForOtherMatches,
-    }
-  }
-
-  //Ts-family specific, should be parametrized and re-used
-  /**
-   * Support for further processing of function argument or variable declaration with type annotation
-   * to support matching the type annotation with wildcard
-   *
-   * Q: $$SomeType
-   * C: const a:MySomeType = {}
-   * C: function(a:MySomeType) {}
-   */
-  if (queryNode.type === 'Identifier' && fileNode.type === 'Identifier') {
-    if (
-      queryNode.name !== fileNode.name &&
-      fileNode.typeAnnotation !== undefined
-    ) {
-      log(
-        'compare: Identifiers with different names, file type prop',
-        fileNode.typeAnnotation,
-      )
-
-      log(
-        'compare: Identifiers with different names, fileKeysToTraverse',
-        fileKeysToTraverseForOtherMatches,
-      )
-
-      return {
-        levelMatch: false,
+        levelMatch: levelMatch,
         fileKeysToTraverseForValidatingMatch: [],
         queryKeysToTraverseForValidatingMatch: [],
         fileKeysToTraverseForOtherMatches,
       }
     }
+
+    /*
+     * Support for numeric wildcard
+     * Q: 0x0; C: 123; C: 0.123
+     */
+    if (
+      numericLiteralUtils.isNumericLiteralNode(queryNode) &&
+      numericLiteralUtils.isNumericLiteralNode(fileNode) &&
+      numericLiteralUtils.getNumericLiteralValue(queryNode) === numericWildcard
+    ) {
+      measureCompare()
+
+      return {
+        levelMatch: true,
+        fileKeysToTraverseForValidatingMatch: [],
+        queryKeysToTraverseForValidatingMatch: [],
+        fileKeysToTraverseForOtherMatches,
+      }
+    }
+
+    /*
+     * Support for multi-statement search in program body
+     *
+     * Multi-statement query is a block with statements, we want to match such block not only with other block statements, but also with top-level program node
+     */
+
+    if (
+      programNodeAndBlockNodeUtils.isBlockNode(queryNode) &&
+      programNodeAndBlockNodeUtils.isProgramNode(fileNode)
+    ) {
+      const queryKeysToTraverseForValidatingMatch = [
+        fileKeysMapper(programNodeAndBlockNodeUtils.blockNodeBodyKey),
+      ]
+
+      const fileKeysToTraverseForValidatingMatch = [
+        fileKeysMapper(programNodeAndBlockNodeUtils.programNodeBodyKey),
+      ]
+
+      return {
+        levelMatch: true,
+        queryKeysToTraverseForValidatingMatch,
+        fileKeysToTraverseForValidatingMatch,
+        fileKeysToTraverseForOtherMatches,
+      }
+    }
+    /**
+     * END: GENERIC MATCHERS FOR BASE WILDCARDS
+     */
   }
 
-  // The rest is generic
+  const maybeCompareResultAfterGeneric =
+    babelParserSettings.compareNodesAfterWildcardsComparison(
+      compareParams,
+      compareNodes,
+      compareUtils,
+    )
+
+  if (maybeCompareResultAfterGeneric) {
+    return maybeCompareResultAfterGeneric
+  }
 
   if (
     queryKeys.length !== fileKeys.length ||

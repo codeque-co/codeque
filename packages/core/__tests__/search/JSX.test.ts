@@ -16,7 +16,11 @@ describe('JSX', () => {
     })
   })
 
-  const tempFilePath = path.join(__dirname, `${Date.now()}.temp`)
+  const tempFilePath = path.join(
+    __dirname,
+    '__fixtures__',
+    `${Date.now()}.temp`,
+  )
   const mockedFilesList = [tempFilePath]
 
   beforeAll(() => {

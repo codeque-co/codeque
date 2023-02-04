@@ -4,7 +4,7 @@ import {
   SearchSettings,
   Match,
 } from '../types'
-import { babelParserSettings } from '../parserRelatedUtils'
+import { babelParserSettings } from '../parserSettings'
 import { traverseAndMatch } from './traverseAndMatch'
 
 export type SearchAstSettings = SearchSettings & {

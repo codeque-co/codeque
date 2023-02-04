@@ -1,4 +1,4 @@
-import { babelParserSettings } from '../src/parserRelatedUtils'
+import { babelParserSettings } from '../src/parserSettings'
 
 import { compareCode as compareCodeBase } from '/astUtils'
 

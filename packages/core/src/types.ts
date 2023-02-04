@@ -113,6 +113,35 @@ export type WildcardMeta = {
   wildcardRef: string | null
 }
 
+export type CompareNodesParams = {
+  fileNode: PoorNodeType | null
+  queryNode: PoorNodeType | null
+  searchSettings: SearchSettings
+  /** Params used to support comparing nodes which are not on the same level */
+  queryKeysPrefix?: string
+  fileKeysPrefix?: string
+}
+
+export type CompareNodesReturnType = {
+  levelMatch: boolean
+  queryKeysToTraverseForValidatingMatch: string[]
+  fileKeysToTraverseForValidatingMatch: string[]
+  fileKeysToTraverseForOtherMatches: string[]
+}
+
+export type NodesComparator = (
+  params: CompareNodesParams,
+  topLevelCompareNodes: (params: CompareNodesParams) => CompareNodesReturnType,
+  compareUtils: {
+    queryKeysMapper: (key: string) => string
+    fileKeysMapper: (key: string) => string
+    fileKeysToTraverseForOtherMatches: string[]
+    measureCompare: () => void
+  },
+) => CompareNodesReturnType | undefined
+
+export type NodesComparatorParameters = Parameters<NodesComparator>
+
 export type WildcardUtils = {
   optionalStringWildcardRegExp: RegExp
   requiredStringWildcardRegExp: RegExp
@@ -129,17 +158,43 @@ export type WildcardUtils = {
   patternToRegExp: (string: string, caseInsensitive: boolean) => RegExp
 }
 
+export type StringLiteralUtils = {
+  isStringLiteralNode: (node: PoorNodeType) => boolean
+  getStringLiteralValue: (node: PoorNodeType) => string
+}
+export type NumericLiteralUtils = {
+  isNumericLiteralNode: (node: PoorNodeType) => boolean
+  getNumericLiteralValue: (node: PoorNodeType) => string
+}
+
+export type ProgramNodeAndBlockNodeUtils = {
+  isProgramNode: (node: PoorNodeType) => boolean
+  isBlockNode: (node: PoorNodeType) => boolean
+  programNodeBodyKey: string
+  blockNodeBodyKey: string
+}
+
 export type ParserSettings = {
+  supportedExtensions: string[]
   parseCode: (code: string, filePath?: string) => PoorNodeType
   generateCode: (node: PoorNodeType, options?: unknown) => string
   isNode: (maybeNode: PoorNodeType) => boolean
+  isIdentifierNode: (node: PoorNodeType) => boolean
   astPropsToSkip: string[]
   isNodeFieldOptional: (nodeType: string, nodeFieldKey: string) => boolean
-  getProgramBodyFromRootNode: (fileNode: PoorNodeType) => PoorNodeType[]
-  getProgramNodeFromRootNode: (fileNode: PoorNodeType) => PoorNodeType
+  getProgramBodyFromRootNode: (node: PoorNodeType) => PoorNodeType[]
+  getProgramNodeFromRootNode: (node: PoorNodeType) => PoorNodeType
+  getNodeType: (node: PoorNodeType) => string
+  getIdentifierNodeName: (node: PoorNodeType) => string
   unwrapExpressionStatement: (node: PoorNodeType) => PoorNodeType
   createBlockStatementNode: (body: PoorNodeType[]) => PoorNodeType
   sanitizeNode: (node: PoorNodeType) => void
   shouldCompareNode: (node: PoorNodeType) => void
   wildcardUtils: WildcardUtils
+  compareNodesBeforeWildcardsComparison: NodesComparator
+  compareNodesAfterWildcardsComparison: NodesComparator
+  identifierTypeAnnotationFieldName?: string
+  stringLiteralUtils: StringLiteralUtils
+  numericLiteralUtils: NumericLiteralUtils
+  programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils
 }

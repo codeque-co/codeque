@@ -1,0 +1,4 @@
+import { createFurtherProcessingOfTypeWildcardsInIdentifiersNodesComparator } from '../../nodeComparatorFactories/TypeScriptSpecific/furtherProcessingOfTypeWildcardsInIdentifiers'
+
+export const furtherProcessingOfTypeWildcardsInIdentifiersNodesComparator =
+  createFurtherProcessingOfTypeWildcardsInIdentifiersNodesComparator()

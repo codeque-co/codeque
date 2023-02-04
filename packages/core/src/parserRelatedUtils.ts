@@ -3,9 +3,13 @@ import { NODE_FIELDS } from '@babel/types'
 import { ParserSettings, PoorNodeType } from './types'
 import { normalizeText } from './utils'
 import { createWildcardUtils } from './wildcardUtilsFactory'
+import generate from '@babel/generator'
+
+const getProgramNodeFromRootNode = (fileNode: PoorNodeType) =>
+  fileNode.program as PoorNodeType
 
 const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
-  return (fileNode.program as PoorNodeType).body as PoorNodeType[]
+  return getProgramNodeFromRootNode(fileNode).body as PoorNodeType[]
 }
 
 const unwrapExpressionStatement = (node: PoorNodeType) => {
@@ -94,6 +98,14 @@ const parseCode = (code: string, filePath = '') => {
   }
 }
 
+const generateCode = (node: PoorNodeType, options?: unknown) => {
+  try {
+    return generate(node as any, options as any).code
+  } catch (e) {
+    return 'invalid code'
+  }
+}
+
 const sanitizeJSXText = (node: PoorNodeType) => {
   //@ts-ignore
   node.value = normalizeText(node.value)
@@ -139,10 +151,12 @@ const wildcardUtils = createWildcardUtils(
 
 export const babelParserSettings: ParserSettings = {
   parseCode,
+  generateCode,
   isNode,
   astPropsToSkip,
   isNodeFieldOptional,
   getProgramBodyFromRootNode,
+  getProgramNodeFromRootNode,
   unwrapExpressionStatement,
   createBlockStatementNode,
   sanitizeNode,

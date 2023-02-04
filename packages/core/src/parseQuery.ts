@@ -1,4 +1,3 @@
-import { ParseError as BabelParseError } from '@babel/parser'
 import { IdentifierTypes, babelParserSettings } from './parserRelatedUtils'
 import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
 import { measureStart, SPACE_CHAR, normalizeText } from './utils'
@@ -202,7 +201,12 @@ export const parseQueries = (
           error: null,
         }
       } catch (e) {
-        const error = e as BabelParseError & { loc: Position; message: string }
+        const error = e as {
+          code?: string
+          reasonCode?: string
+          loc?: Position
+          message: string
+        }
 
         originalError = {
           text: error.message,

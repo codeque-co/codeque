@@ -1,12 +1,11 @@
 import { cpus } from 'os'
-import { Worker, parentPort } from 'worker_threads'
+import { Worker } from 'worker_threads'
 import {
   FileSystemSearchArgs,
   SearchResults,
   WorkerOutboundMessage,
   SearchWorkerData,
   HardStopFlag,
-  Matches,
 } from './types'
 import { measureStart, logMetrics } from './utils'
 import { searchInFileSystem } from './searchInFs'

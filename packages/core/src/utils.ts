@@ -1,8 +1,6 @@
 import { performance } from 'perf_hooks'
-import { codeFrameColumns } from '@babel/code-frame'
-import { format } from 'prettier'
 
-import { Matches, Mode, Position, Match, WildcardUtils } from './types'
+import { Match, Matches, Mode } from './types'
 
 export const getMode = (mode: Mode = 'include') => {
   const modes: Mode[] = ['include', 'exact', 'include-with-order', 'text']
@@ -30,52 +28,6 @@ export const logMetrics = () => {
   if (process.env.NODE_ENV !== 'test') {
     Object.entries(metrics).forEach((kv) => print(...kv))
   }
-}
-
-export const getCodeFrame = (
-  code: string,
-  startLine: number,
-  formatting = false,
-  errorPos?: Position,
-) => {
-  const formatted = formatting ? format(code, { parser: 'babel-ts' }) : code
-
-  const linesCount =
-    (formatted.match(/\n/g)?.length || 0) + (!formatting ? 1 : 0)
-
-  const maxLineLength = (startLine + linesCount).toString().length
-
-  const indicateError = errorPos !== undefined
-  const linesBelow = indicateError ? linesCount - errorPos.line : linesCount
-  const linesAbove = indicateError ? errorPos.line : undefined
-
-  const errorLocation = indicateError
-    ? {
-        start: errorPos,
-        end: errorPos,
-      }
-    : { start: { line: 0 } }
-
-  let codeFrame = codeFrameColumns(formatted, errorLocation, {
-    highlightCode: true,
-    linesBelow,
-    linesAbove,
-  })
-
-  for (let i = linesCount; i > 0; i--) {
-    const frameLineNum = i
-    const originalPaddingLen = frameLineNum.toString().length
-
-    codeFrame = codeFrame.replace(
-      ` ${frameLineNum} |`,
-      ` ${startLine + i - 1} |`.padStart(
-        maxLineLength + 2 + originalPaddingLen,
-        ' ',
-      ),
-    )
-  }
-
-  return codeFrame
 }
 
 export const print = console.log // to distinguish intended logs

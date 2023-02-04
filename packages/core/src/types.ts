@@ -1,3 +1,4 @@
+import { Logger } from './logger'
 export type Mode = 'exact' | 'include' | 'include-with-order' | 'text'
 
 export type Position = {
@@ -99,6 +100,12 @@ export type SearchWorkerData = FileSystemSearchArgs & {
   reportEachMatch: boolean
 }
 
+export type SearchSettings = {
+  logger: Logger
+  caseInsensitive: boolean
+  mode: Mode
+}
+
 export type WildcardMeta = {
   wildcardType: 'identifier' | 'nodeTree'
   wildcardWithRef: string
@@ -124,10 +131,12 @@ export type WildcardUtils = {
 
 export type ParserSettings = {
   parseCode: (code: string, filePath?: string) => PoorNodeType
+  generateCode: (node: PoorNodeType, options?: unknown) => string
   isNode: (maybeNode: PoorNodeType) => boolean
   astPropsToSkip: string[]
   isNodeFieldOptional: (nodeType: string, nodeFieldKey: string) => boolean
   getProgramBodyFromRootNode: (fileNode: PoorNodeType) => PoorNodeType[]
+  getProgramNodeFromRootNode: (fileNode: PoorNodeType) => PoorNodeType
   unwrapExpressionStatement: (node: PoorNodeType) => PoorNodeType
   createBlockStatementNode: (body: PoorNodeType[]) => PoorNodeType
   sanitizeNode: (node: PoorNodeType) => void

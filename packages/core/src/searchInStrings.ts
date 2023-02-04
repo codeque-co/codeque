@@ -1,6 +1,6 @@
 import { measureStart, dedupMatches } from './utils'
 import { parseQueries } from './parseQuery'
-import { SearchSettings, searchFileContent } from './searchStages'
+import { searchFileContent } from './searchStages/searchFileContent'
 import { textSearch } from './textSearch'
 import { createLogger } from './logger'
 import {
@@ -8,6 +8,7 @@ import {
   Matches,
   SearchResults,
   NotNullParsedQuery,
+  SearchSettings,
 } from './types'
 
 type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {

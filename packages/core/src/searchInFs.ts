@@ -2,12 +2,13 @@ import fs from 'fs'
 import { measureStart, logMetrics, dedupMatches } from './utils'
 import { createLogger } from './logger'
 import { parseQueries } from './parseQuery'
-import { searchFileContent, SearchSettings } from './searchStages'
+import { searchFileContent } from './searchStages/searchFileContent'
 import {
   FileSystemSearchArgs,
   Matches,
   SearchResults,
   NotNullParsedQuery,
+  SearchSettings,
 } from './types'
 import { textSearch } from './textSearch'
 

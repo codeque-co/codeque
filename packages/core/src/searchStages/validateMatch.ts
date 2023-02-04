@@ -1,5 +1,4 @@
 import { sortByLeastIdentifierStrength } from '../astUtils'
-import { babelParserSettings } from '../parserSettings'
 import { Mode, PoorNodeType, SearchSettings } from '../types'
 import { getKeyFromObject } from '../utils'
 import { compareNodes } from './compareNodes'
@@ -12,6 +11,7 @@ export const validateMatch = (
   const {
     mode,
     logger: { log, logStepStart },
+    parserSettings,
   } = settings
 
   const isExact = mode === 'exact'
@@ -57,9 +57,9 @@ export const validateMatch = (
     try {
       log(
         'nodes incompat:\n\n',
-        babelParserSettings.generateCode(currentNode),
+        parserSettings.generateCode(currentNode),
         '\n\n',
-        babelParserSettings.generateCode(currentQueryNode),
+        parserSettings.generateCode(currentQueryNode),
         '\n'.padEnd(10, '_'),
       )
     } catch (e) {
@@ -88,10 +88,10 @@ export const validateMatch = (
         if (Array.isArray(fileValue as PoorNodeType[])) {
           log('validate: is array')
           const nodesArr = (fileValue as PoorNodeType[]).filter(
-            babelParserSettings.shouldCompareNode,
+            parserSettings.shouldCompareNode,
           )
           const queryNodesArr = (queryValue as PoorNodeType[]).filter(
-            babelParserSettings.shouldCompareNode,
+            parserSettings.shouldCompareNode,
           )
 
           if (isExact) {
@@ -119,11 +119,7 @@ export const validateMatch = (
             const matchedIndexes: number[] = []
 
             const queryNodesArrSorted = [...queryNodesArr].sort((a, b) =>
-              sortByLeastIdentifierStrength(
-                a,
-                b,
-                babelParserSettings.wildcardUtils,
-              ),
+              sortByLeastIdentifierStrength(a, b, parserSettings.wildcardUtils),
             )
 
             for (let i = 0; i < queryNodesArrSorted.length; i++) {

@@ -3,7 +3,6 @@ import {
   getSetsOfKeysToCompare,
   isNodeArray,
 } from '../astUtils'
-import { babelParserSettings } from '../parserSettings'
 import {
   PoorNodeType,
   CompareNodesParams,
@@ -30,6 +29,7 @@ export const compareNodes = (
     mode,
     caseInsensitive,
     logger: { log, logStepEnd, logStepStart },
+    parserSettings,
   } = searchSettings
 
   const queryKeysMapper = keyWithPrefix(queryKeysPrefix)
@@ -48,7 +48,7 @@ export const compareNodes = (
         ? getKeysWithNodes(
             fileNode,
             Object.keys(fileNode),
-            babelParserSettings.isNode,
+            parserSettings.isNode,
           )
         : [],
     }
@@ -58,8 +58,8 @@ export const compareNodes = (
     fileNode,
     queryNode,
     isExact,
-    babelParserSettings.astPropsToSkip,
-    babelParserSettings.isNodeFieldOptional,
+    parserSettings.astPropsToSkip,
+    parserSettings.isNodeFieldOptional,
   )
 
   log(
@@ -80,7 +80,7 @@ export const compareNodes = (
      * Even if note types are the same. Eg. Identifier might have another nested identifier node in type declaration
      */
     allFileKeys,
-    babelParserSettings.isNode,
+    parserSettings.isNode,
   )
 
   const compareUtils = {
@@ -90,11 +90,11 @@ export const compareNodes = (
     measureCompare,
   }
 
-  babelParserSettings.sanitizeNode(fileNode)
-  babelParserSettings.sanitizeNode(queryNode)
+  parserSettings.sanitizeNode(fileNode)
+  parserSettings.sanitizeNode(queryNode)
 
   const maybeCompareResult =
-    babelParserSettings.compareNodesBeforeWildcardsComparison(
+    parserSettings.compareNodesBeforeWildcardsComparison(
       compareParams,
       compareNodes,
       compareUtils,
@@ -118,7 +118,7 @@ export const compareNodes = (
       patternToRegExp,
       numericWildcard,
     },
-  } = babelParserSettings
+  } = parserSettings
 
   {
     /**
@@ -264,7 +264,7 @@ export const compareNodes = (
   }
 
   const maybeCompareResultAfterGeneric =
-    babelParserSettings.compareNodesAfterWildcardsComparison(
+    parserSettings.compareNodesAfterWildcardsComparison(
       compareParams,
       compareNodes,
       compareUtils,
@@ -296,9 +296,9 @@ export const compareNodes = (
     const fileValue = fileNode[key]
 
     if (
-      babelParserSettings.isNode(queryValue as PoorNodeType) ||
-      isNodeArray(queryValue as PoorNodeType[], babelParserSettings.isNode) ||
-      isNodeArray(fileValue as PoorNodeType[], babelParserSettings.isNode)
+      parserSettings.isNode(queryValue as PoorNodeType) ||
+      isNodeArray(queryValue as PoorNodeType[], parserSettings.isNode) ||
+      isNodeArray(fileValue as PoorNodeType[], parserSettings.isNode)
     ) {
       keysToTraverseForValidatingMatch.push(key)
     } else {

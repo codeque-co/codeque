@@ -4,7 +4,6 @@ import {
   SearchSettings,
   Match,
 } from '../types'
-import { babelParserSettings } from '../parserSettings'
 import { traverseAndMatch } from './traverseAndMatch'
 
 export type SearchAstSettings = SearchSettings & {
@@ -16,7 +15,8 @@ export const searchAst = (
   { queries, ...settings }: SearchAstSettings,
 ) => {
   const allMatches: { query: NotNullParsedQuery; matches: Match[] }[] = []
-  const programNode = babelParserSettings.getProgramNodeFromRootNode(fileNode)
+  const programNode =
+    settings.parserSettings.getProgramNodeFromRootNode(fileNode)
 
   for (const query of queries) {
     const { queryNode, isMultistatement } = query

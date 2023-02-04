@@ -1,25 +1,34 @@
-import { babelParserSettings } from './parserSettings'
-import { Hint, ParsedQuery, ParseError, PoorNodeType, Position } from './types'
+import {
+  Hint,
+  ParsedQuery,
+  ParseError,
+  ParserSettings,
+  PoorNodeType,
+  Position,
+} from './types'
 import { measureStart, SPACE_CHAR, normalizeText } from './utils'
 import { isNodeArray, getKeysToCompare } from './astUtils'
 
 const MIN_TOKEN_LEN = 2
 
-const decomposeString = (str: string) =>
+const decomposeString = (str: string, anyStringWildcardRegExp: RegExp) =>
   str
-    .split(babelParserSettings.wildcardUtils.anyStringWildcardRegExp)
+    .split(anyStringWildcardRegExp)
     .map((part) => normalizeText(part).split(SPACE_CHAR))
     .flat(1)
 
 const getUniqueTokens = (
   queryNode: PoorNodeType,
   caseInsensitive: boolean,
+  parserSettings: ParserSettings,
   tokens: Set<string> = new Set(),
 ) => {
-  if (babelParserSettings.isIdentifierNode(queryNode)) {
-    const trimmedWildcards = babelParserSettings.wildcardUtils
+  const { anyStringWildcardRegExp } = parserSettings.wildcardUtils
+
+  if (parserSettings.isIdentifierNode(queryNode)) {
+    const trimmedWildcards = parserSettings.wildcardUtils
       .removeIdentifierRefFromWildcard(queryNode.name as string)
-      .split(babelParserSettings.wildcardUtils.identifierWildcard)
+      .split(parserSettings.wildcardUtils.identifierWildcard)
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
@@ -32,7 +41,10 @@ const getUniqueTokens = (
     (queryNode.type as string) === 'StringLiteral' ||
     (queryNode.type as string) === 'JSXText'
   ) {
-    const trimmedWildcards = decomposeString(queryNode.value as string)
+    const trimmedWildcards = decomposeString(
+      queryNode.value as string,
+      anyStringWildcardRegExp,
+    )
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
@@ -44,6 +56,7 @@ const getUniqueTokens = (
   if ((queryNode.type as string) === 'TemplateElement') {
     const trimmedWildcards = decomposeString(
       (queryNode.value as { raw: string }).raw,
+      anyStringWildcardRegExp,
     )
 
     trimmedWildcards.forEach((part) => {
@@ -56,47 +69,57 @@ const getUniqueTokens = (
   if ((queryNode.type as string) === 'NumericLiteral') {
     const raw = (queryNode.extra as any).raw as string
 
-    if (raw !== babelParserSettings.wildcardUtils.numericWildcard) {
+    if (raw !== parserSettings.wildcardUtils.numericWildcard) {
       tokens.add(raw)
     }
   }
 
   const nodeKeys = getKeysToCompare(
     queryNode,
-    babelParserSettings.astPropsToSkip,
+    parserSettings.astPropsToSkip,
   ).filter(
     (key) =>
-      babelParserSettings.isNode(queryNode[key] as PoorNodeType) ||
-      isNodeArray(queryNode[key] as PoorNodeType[], babelParserSettings.isNode),
+      parserSettings.isNode(queryNode[key] as PoorNodeType) ||
+      isNodeArray(queryNode[key] as PoorNodeType[], parserSettings.isNode),
   )
 
   nodeKeys.forEach((key) => {
     const nodeVal = queryNode[key]
 
-    if (isNodeArray(nodeVal as PoorNodeType[], babelParserSettings.isNode)) {
+    if (isNodeArray(nodeVal as PoorNodeType[], parserSettings.isNode)) {
       const _nodeVal = nodeVal as PoorNodeType[]
 
-      _nodeVal.forEach((node) => getUniqueTokens(node, caseInsensitive, tokens))
+      _nodeVal.forEach((node) =>
+        getUniqueTokens(node, caseInsensitive, parserSettings, tokens),
+      )
     } else {
-      getUniqueTokens(nodeVal as PoorNodeType, caseInsensitive, tokens)
+      getUniqueTokens(
+        nodeVal as PoorNodeType,
+        caseInsensitive,
+        parserSettings,
+        tokens,
+      )
     }
   })
 
   return tokens
 }
 
-const extractQueryNode = (fileNode: PoorNodeType) => {
-  const queryBody = babelParserSettings.getProgramBodyFromRootNode(fileNode)
+const extractQueryNode = (
+  fileNode: PoorNodeType,
+  parserSettings: ParserSettings,
+) => {
+  const queryBody = parserSettings.getProgramBodyFromRootNode(fileNode)
 
   if (queryBody.length === 1) {
     return {
-      queryNode: babelParserSettings.unwrapExpressionStatement(queryBody[0]),
+      queryNode: parserSettings.unwrapExpressionStatement(queryBody[0]),
       isMultistatement: false,
     }
   }
 
   return {
-    queryNode: babelParserSettings.createBlockStatementNode(queryBody),
+    queryNode: parserSettings.createBlockStatementNode(queryBody),
     isMultistatement: true,
   }
 }
@@ -141,15 +164,14 @@ const getHints = (queryCode: string, error?: ParseError | null) => {
 export const parseQueries = (
   queryCodes: string[],
   caseInsensitive: boolean,
+  parserSettings: ParserSettings,
 ): [Array<ParsedQuery>, boolean] => {
   const inputQueryNodes = queryCodes
     .map((queryText) => {
       let originalError = null
 
       if (
-        babelParserSettings.wildcardUtils.disallowedWildcardRegExp.test(
-          queryText,
-        )
+        parserSettings.wildcardUtils.disallowedWildcardRegExp.test(queryText)
       ) {
         const lines = queryText.split('\n')
         let lineIdx: number | null = null
@@ -157,7 +179,7 @@ export const parseQueries = (
 
         lines.forEach((line, idx) => {
           const col = line.indexOf(
-            babelParserSettings.wildcardUtils.disallowedWildcardSequence,
+            parserSettings.wildcardUtils.disallowedWildcardSequence,
           )
 
           if (colNum === null && col > -1) {
@@ -192,9 +214,12 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsIs = babelParserSettings.parseCode(queryText)
+        const parsedAsIs = parserSettings.parseCode(queryText)
 
-        const { queryNode, isMultistatement } = extractQueryNode(parsedAsIs)
+        const { queryNode, isMultistatement } = extractQueryNode(
+          parsedAsIs,
+          parserSettings,
+        )
 
         return {
           queryNode,
@@ -218,11 +243,11 @@ export const parseQueries = (
       }
 
       try {
-        const parsedAsExp = babelParserSettings.parseCode(
+        const parsedAsExp = parserSettings.parseCode(
           `(${queryText})`,
         ) as unknown as PoorNodeType
 
-        const { queryNode } = extractQueryNode(parsedAsExp)
+        const { queryNode } = extractQueryNode(parsedAsExp, parserSettings)
 
         return {
           queryNode,
@@ -248,9 +273,9 @@ export const parseQueries = (
       const measureGetUniqueTokens = measureStart('getUniqueTokens')
 
       const uniqueTokens = queryNode
-        ? [...getUniqueTokens(queryNode, caseInsensitive)].filter(
-            (token) => typeof token !== 'string' || token.length > 0,
-          )
+        ? [
+            ...getUniqueTokens(queryNode, caseInsensitive, parserSettings),
+          ].filter((token) => typeof token !== 'string' || token.length > 0)
         : []
 
       measureGetUniqueTokens()

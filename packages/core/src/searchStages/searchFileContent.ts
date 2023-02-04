@@ -1,4 +1,3 @@
-import { babelParserSettings } from '../parserSettings'
 import { Matches, NotNullParsedQuery, SearchSettings } from '../types'
 import { getExtendedCodeFrame, measureStart, prepareCodeResult } from '../utils'
 import { searchAst } from './searchAst'
@@ -27,7 +26,7 @@ export const searchFileContent = ({
   if (shallowSearchPassed) {
     const measureParseFile = measureStart('parseFile')
 
-    const fileNode = babelParserSettings.parseCode(fileContent, filePath)
+    const fileNode = settings.parserSettings.parseCode(fileContent, filePath)
 
     measureParseFile()
     const measureSearch = measureStart('search')

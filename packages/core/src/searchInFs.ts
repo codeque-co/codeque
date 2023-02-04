@@ -9,8 +9,12 @@ import {
   SearchResults,
   NotNullParsedQuery,
   SearchSettings,
+  ParserType,
 } from './types'
 import { textSearch } from './textSearch'
+import { parserSettingsMap } from './parserSettings/index'
+
+const testParserTypeOverride = process?.env?.TEST_PARSER_TYPE as ParserType
 
 export const searchInFileSystem = ({
   mode,
@@ -21,6 +25,7 @@ export const searchInFileSystem = ({
   onPartialResult,
   maxResultsLimit,
   hardStopFlag,
+  parser = 'babel',
 }: FileSystemSearchArgs): SearchResults => {
   if (mode === 'text') {
     const getFileContent = (filePath: string) => {
@@ -39,10 +44,12 @@ export const searchInFileSystem = ({
     })
   }
 
+  const parserSettings = parserSettingsMap[testParserTypeOverride ?? parser]
   const settings: SearchSettings = {
     mode,
     caseInsensitive,
     logger: createLogger(debug),
+    parserSettings,
   }
 
   const { log } = settings.logger
@@ -51,7 +58,11 @@ export const searchInFileSystem = ({
   log('Parse query')
   const measureParseQuery = measureStart('parseQuery')
 
-  const [queries, parseOk] = parseQueries(queryCodes, caseInsensitive)
+  const [queries, parseOk] = parseQueries(
+    queryCodes,
+    caseInsensitive,
+    parserSettings,
+  )
 
   if (!parseOk) {
     return {

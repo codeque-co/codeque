@@ -1,5 +1,3 @@
-import generate from '@babel/generator'
-import { babelParserSettings } from '../parserSettings'
 import { Match, PoorNodeType, SearchSettings } from '../types'
 import { measureStart } from '../utils'
 import { compareNodes } from './compareNodes'
@@ -12,6 +10,7 @@ export const traverseAndMatch = (
 ) => {
   const {
     logger: { log, logStepEnd, logStepStart },
+    parserSettings,
   } = settings
 
   logStepStart('traverse')
@@ -38,7 +37,7 @@ export const traverseAndMatch = (
       'foundMatchStart:\n',
       (() => {
         try {
-          return babelParserSettings.generateCode(currentNode as any, {
+          return parserSettings.generateCode(currentNode as any, {
             jsescOption: { compact: false },
             retainFunctionParens: true,
           })
@@ -48,7 +47,7 @@ export const traverseAndMatch = (
         }
       })(),
       '\n',
-      babelParserSettings.generateCode(queryNode as any),
+      parserSettings.generateCode(queryNode as any),
       '\n'.padEnd(10, '_'),
     )
 
@@ -73,7 +72,7 @@ export const traverseAndMatch = (
   const nestedMatches = fileKeysToTraverseForOtherMatches
     .map((key) => {
       if (currentNode[key] !== undefined) {
-        if (babelParserSettings.isNode(currentNode[key] as PoorNodeType)) {
+        if (parserSettings.isNode(currentNode[key] as PoorNodeType)) {
           return traverseAndMatch(
             currentNode[key] as PoorNodeType,
             queryNode,

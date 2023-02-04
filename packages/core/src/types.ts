@@ -39,6 +39,8 @@ export type HardStopFlag = {
   destroy: () => void
 }
 
+export type ParserType = 'babel' | 'typescript-eslint'
+
 export type FileSystemSearchArgs = {
   filePaths: string[]
   queryCodes: string[]
@@ -48,6 +50,7 @@ export type FileSystemSearchArgs = {
   onPartialResult?: (matches: Matches) => void
   maxResultsLimit?: number
   hardStopFlag?: HardStopFlag
+  parser?: ParserType
 }
 
 export type ParseError = {
@@ -104,6 +107,7 @@ export type SearchSettings = {
   logger: Logger
   caseInsensitive: boolean
   mode: Mode
+  parserSettings: ParserSettings
 }
 
 export type WildcardMeta = {

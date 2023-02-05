@@ -2,11 +2,15 @@ import { NodesComparator, PoorNodeType } from '../../../types'
 
 /**
  * Support for object property strings, identifiers and numbers comparison
- * TODO: code example
+ * Q: ({ 5: $$$ }); C: { 5: "val1" }; C: { ["5"]: "val2" }; C: {"5": "val3"}
  *
  */
 export const createMatchObjectPropertiesOfDifferentTypesNodesComparator =
-  (): NodesComparator =>
+  ({
+    objectPropertyNodeName,
+  }: {
+    objectPropertyNodeName: string
+  }): NodesComparator =>
   (
     { queryNode, fileNode, searchSettings: { mode } },
     _,
@@ -22,8 +26,8 @@ export const createMatchObjectPropertiesOfDifferentTypesNodesComparator =
     if (queryNode && fileNode) {
       if (
         !isExact &&
-        (queryNode.type as string) === 'ObjectProperty' &&
-        (fileNode.type as string) === 'ObjectProperty' &&
+        (queryNode.type as string) === objectPropertyNodeName &&
+        (fileNode.type as string) === objectPropertyNodeName &&
         !(queryNode.method as boolean) &&
         !(fileNode.method as boolean)
       ) {

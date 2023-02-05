@@ -27,15 +27,26 @@ export const getKeysWithNodes = (
   })
 }
 
-// parser specific, can be generic if astPropsToSkip is injected
+const isNodeKey = (
+  node: PoorNodeType,
+  key: string,
+  keysToCheck: ParserSettings['astPropsToSkip'],
+) =>
+  keysToCheck.some((keyToCheck) =>
+    typeof keyToCheck === 'string'
+      ? key === keyToCheck
+      : node.type === keyToCheck.type && keyToCheck.key === key,
+  )
+
 export const getKeysToCompare = (
   node: PoorNodeType,
   astPropsToSkip: ParserSettings['astPropsToSkip'],
 ) => {
-  return Object.keys(node).filter((key) => !astPropsToSkip.includes(key))
+  return Object.keys(node).filter(
+    (key) => !isNodeKey(node, key, astPropsToSkip),
+  )
 }
 
-// parser specific, can be generic if if we inject getKeysToCompare
 export const getSetsOfKeysToCompare = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
@@ -78,11 +89,14 @@ export const getSetsOfKeysToCompare = (
   return [includeFileKeys, includeQueryKeys, allFileKeys, allQueryKeys]
 }
 
-const omit = (obj: Record<string, unknown>, keys: string[]) => {
-  const newObj = {} as Record<string, unknown>
+const removeKeysFromNode = (
+  obj: PoorNodeType,
+  keys: ParserSettings['astPropsToSkip'],
+) => {
+  const newObj = {} as PoorNodeType
 
   Object.entries(obj).forEach(([key, val]) => {
-    if (!keys.includes(key)) {
+    if (!isNodeKey(obj, key, keys)) {
       newObj[key] = val
     }
   })
@@ -102,7 +116,7 @@ export const cleanupAst = (
 ) => {
   parserSettings.sanitizeNode(ast)
 
-  const cleanedAst = omit(ast, parserSettings.astPropsToSkip) as PoorNodeType
+  const cleanedAst = removeKeysFromNode(ast, parserSettings.astPropsToSkip)
 
   Object.keys(cleanedAst).forEach((key) => {
     if (parserSettings.isNode(cleanedAst[key] as PoorNodeType)) {
@@ -122,7 +136,6 @@ export const cleanupAst = (
   return cleanedAst
 }
 
-// parser specific, test util, can be parametrized
 export const compareCode = (
   codeA: string,
   codeB: string,
@@ -132,12 +145,16 @@ export const compareCode = (
     astPropsToSkip: ParserSettings['astPropsToSkip']
     parseCode: ParserSettings['parseCode']
     sanitizeNode: ParserSettings['sanitizeNode']
+    getProgramNodeFromRootNode: ParserSettings['getProgramNodeFromRootNode']
   },
 ) => {
-  const astA = parserSettings.parseCode(codeA)
-    .program as unknown as PoorNodeType
-  const astB = parserSettings.parseCode(codeB)
-    .program as unknown as PoorNodeType
+  const astA = parserSettings.getProgramNodeFromRootNode(
+    parserSettings.parseCode(codeA),
+  )
+
+  const astB = parserSettings.getProgramNodeFromRootNode(
+    parserSettings.parseCode(codeB),
+  )
 
   const cleanedA = cleanupAst(astA, parserSettings)
   const cleanedB = cleanupAst(astB, parserSettings)

@@ -1,4 +1,12 @@
-import { NodesComparator } from '../../../types'
+import { NodesComparator, PoorNodeType } from '../../../types'
+
+/**
+ *
+ * This is probably ipml only for babel, other estree parsers will have common impl
+ * - Move this to babel dir
+ * - change this impl to be compliant with estree (check other estree ASTs)
+ * - do it at the end, as nested nodes matching is tricky and risky
+ */
 
 /*
  * Support for matching optional flag in MemberExpressions
@@ -8,20 +16,19 @@ import { NodesComparator } from '../../../types'
 export const createMatchOptionalFlagInMemberExpressionNodesComparator =
   (): NodesComparator =>
   (
-    { queryNode, fileNode, searchSettings: { mode } },
-    _,
-    { fileKeysToTraverseForOtherMatches, measureCompare },
+    { queryNode, fileNode, searchSettings },
+    compareNodes,
+    { fileKeysToTraverseForOtherMatches, queryKeysMapper, fileKeysMapper },
   ) => {
-    const isExact = mode === 'exact'
+    const isExact = searchSettings.mode === 'exact'
 
-    if (queryNode && fileNode) {
+    if (queryNode && fileNode && !isExact) {
       const memberExpressionsNodeTypes = [
         'MemberExpression',
-        'OptionalMemberExpression',
+        'OptionalMemberExpression', // babel only, keep here for now
       ]
 
       if (
-        !isExact &&
         memberExpressionsNodeTypes.includes(queryNode.type as string) &&
         memberExpressionsNodeTypes.includes(fileNode.type as string) &&
         queryNode.computed === fileNode.computed // this could be also supported in more flexible way
@@ -34,11 +41,33 @@ export const createMatchOptionalFlagInMemberExpressionNodesComparator =
         return {
           levelMatch: true,
           queryKeysToTraverseForValidatingMatch:
-            keysToTraverseForValidatingMatch,
+            keysToTraverseForValidatingMatch.map(queryKeysMapper),
           fileKeysToTraverseForValidatingMatch:
-            keysToTraverseForValidatingMatch,
+            keysToTraverseForValidatingMatch.map(fileKeysMapper),
           fileKeysToTraverseForOtherMatches,
         }
+      } else if (
+        memberExpressionsNodeTypes.includes(queryNode.type as string) &&
+        fileNode.type === 'ChainExpression'
+      ) {
+        return compareNodes({
+          fileNode: fileNode.expression as PoorNodeType,
+          queryNode,
+          searchSettings,
+          queryKeysPrefix: queryKeysMapper(''),
+          fileKeysPrefix: fileKeysMapper('expression'),
+        })
+      } else if (
+        queryNode.type === 'ChainExpression' &&
+        memberExpressionsNodeTypes.includes(fileNode.type as string)
+      ) {
+        return compareNodes({
+          fileNode,
+          queryNode: queryNode.expression as PoorNodeType,
+          searchSettings,
+          queryKeysPrefix: queryKeysMapper('expression'),
+          fileKeysPrefix: fileKeysMapper(''),
+        })
       }
     }
   }

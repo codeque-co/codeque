@@ -11,18 +11,19 @@ import { isNodeArray, getKeysToCompare } from './astUtils'
 
 const MIN_TOKEN_LEN = 2
 
-const decomposeString = (str: string, anyStringWildcardRegExp: RegExp) =>
+export const decomposeString = (str: string, anyStringWildcardRegExp: RegExp) =>
   str
     .split(anyStringWildcardRegExp)
     .map((part) => normalizeText(part).split(SPACE_CHAR))
     .flat(1)
 
-const getUniqueTokens = (
+export const getUniqueTokens = (
   queryNode: PoorNodeType,
   caseInsensitive: boolean,
   parserSettings: ParserSettings,
   tokens: Set<string> = new Set(),
 ) => {
+  const { numericLiteralUtils, stringLikeLiteralUtils } = parserSettings
   const { anyStringWildcardRegExp } = parserSettings.wildcardUtils
 
   if (parserSettings.isIdentifierNode(queryNode)) {
@@ -37,12 +38,12 @@ const getUniqueTokens = (
     })
   }
 
-  if (
-    (queryNode.type as string) === 'StringLiteral' ||
-    (queryNode.type as string) === 'JSXText'
-  ) {
+  if (stringLikeLiteralUtils.isStringLikeLiteralNode(queryNode)) {
+    const stringContent =
+      stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode)
+
     const trimmedWildcards = decomposeString(
-      queryNode.value as string,
+      stringContent,
       anyStringWildcardRegExp,
     )
 
@@ -53,21 +54,8 @@ const getUniqueTokens = (
     })
   }
 
-  if ((queryNode.type as string) === 'TemplateElement') {
-    const trimmedWildcards = decomposeString(
-      (queryNode.value as { raw: string }).raw,
-      anyStringWildcardRegExp,
-    )
-
-    trimmedWildcards.forEach((part) => {
-      if (part.length >= MIN_TOKEN_LEN) {
-        tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
-      }
-    })
-  }
-
-  if ((queryNode.type as string) === 'NumericLiteral') {
-    const raw = (queryNode.extra as any).raw as string
+  if (numericLiteralUtils.isNumericLiteralNode(queryNode)) {
+    const raw = numericLiteralUtils.getNumericLiteralValue(queryNode)
 
     if (raw !== parserSettings.wildcardUtils.numericWildcard) {
       tokens.add(raw)
@@ -105,7 +93,7 @@ const getUniqueTokens = (
   return tokens
 }
 
-const extractQueryNode = (
+export const extractQueryNode = (
   fileNode: PoorNodeType,
   parserSettings: ParserSettings,
 ) => {
@@ -124,7 +112,7 @@ const extractQueryNode = (
   }
 }
 
-const getHints = (queryCode: string, error?: ParseError | null) => {
+export const getHints = (queryCode: string, error?: ParseError | null) => {
   const hints: Hint[] = []
 
   if (queryCode.startsWith('{')) {

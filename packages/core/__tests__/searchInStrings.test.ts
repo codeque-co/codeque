@@ -16,7 +16,6 @@ describe('Search in strings', () => {
     const file1 = `
       function A() {
         const b = 'c'
-
         return {
           "firstName": 'John',
           age: 5
@@ -59,7 +58,7 @@ describe('Search in strings', () => {
       ],
     })
 
-    expect(results.matches.length).toBe(2)
     expect(results.errors).toHaveLength(0)
+    expect(results.matches.length).toBe(2)
   })
 })

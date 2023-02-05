@@ -6,15 +6,18 @@ export type Position = {
   column: number
 }
 
+export type Location = {
+  start: Position
+  end: Position
+}
+
 export type Match = {
   start: number
   end: number
-  loc: {
-    start: Position
-    end: Position
-  }
+  loc: Location
   node: PoorNodeType
 }
+
 export type ExtendedCodeFrame = {
   code: string
   startLine: number
@@ -162,10 +165,11 @@ export type WildcardUtils = {
   patternToRegExp: (string: string, caseInsensitive: boolean) => RegExp
 }
 
-export type StringLiteralUtils = {
-  isStringLiteralNode: (node: PoorNodeType) => boolean
-  getStringLiteralValue: (node: PoorNodeType) => string
+export type StringLikeLiteralUtils = {
+  isStringLikeLiteralNode: (node: PoorNodeType) => boolean
+  getStringLikeLiteralValue: (node: PoorNodeType) => string
 }
+
 export type NumericLiteralUtils = {
   isNumericLiteralNode: (node: PoorNodeType) => boolean
   getNumericLiteralValue: (node: PoorNodeType) => string
@@ -184,7 +188,12 @@ export type ParserSettings = {
   generateCode: (node: PoorNodeType, options?: unknown) => string
   isNode: (maybeNode: PoorNodeType) => boolean
   isIdentifierNode: (node: PoorNodeType) => boolean
-  astPropsToSkip: string[]
+  astPropsToSkip: (string | { type: string; key: string })[]
+  /**
+   * This one is tricky, we use it to remove `null` or `undefined` properties from file node that are not present in query node
+   * Even if we use proper mapping for babel, we can also just `return true` to make it work
+   * Keeping this for now, but perhaps in future it could be removed, because we use it only in include mode, where everything should be optional
+   */
   isNodeFieldOptional: (nodeType: string, nodeFieldKey: string) => boolean
   getProgramBodyFromRootNode: (node: PoorNodeType) => PoorNodeType[]
   getProgramNodeFromRootNode: (node: PoorNodeType) => PoorNodeType
@@ -198,7 +207,8 @@ export type ParserSettings = {
   compareNodesBeforeWildcardsComparison: NodesComparator
   compareNodesAfterWildcardsComparison: NodesComparator
   identifierTypeAnnotationFieldName?: string
-  stringLiteralUtils: StringLiteralUtils
+  stringLikeLiteralUtils: StringLikeLiteralUtils
   numericLiteralUtils: NumericLiteralUtils
   programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils
+  getNodePosition: (node: PoorNodeType) => Omit<Match, 'node'>
 }

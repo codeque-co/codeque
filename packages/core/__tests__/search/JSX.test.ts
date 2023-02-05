@@ -245,16 +245,16 @@ describe('JSX', () => {
   it('Should find all anonymous functions passed as a prop', () => {
     const queries = [
       `
-      <$$$
-        $$={() => $$$}
-      />
-    `,
+        <$$$
+          $$={() => $$$}
+        />
+      `,
       `
-      <$$$
-        $$={() => $$$}
-      >
-      </$$$>
-    `,
+        <$$$
+          $$={() => $$$}
+        >
+        </$$$>
+      `,
     ]
 
     const { matches, errors } = searchInFileSystem({
@@ -272,9 +272,9 @@ describe('JSX', () => {
       />
     `
 
+    expect(errors).toHaveLength(0)
     expect(matches.length).toBe(190)
     expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
-    expect(errors).toHaveLength(0)
   })
 
   it('Should find all anonymous functions passed as event listener handler', () => {
@@ -307,9 +307,9 @@ describe('JSX', () => {
       />
     `
 
+    expect(errors).toHaveLength(0)
     expect(matches.length).toBe(164)
     expect(compareCode(matches[0].code, firstResultCode)).toBeTruthy()
-    expect(errors).toHaveLength(0)
   })
 
   it('Should find all Elements pretending to be a wrapper', () => {
@@ -329,8 +329,8 @@ describe('JSX', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(34)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(34)
   })
 
   it('Should find all title prop values which are strings', () => {
@@ -357,8 +357,8 @@ describe('JSX', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(78)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(78)
   })
 
   it('Should ignore all empty JSXText in search', () => {
@@ -451,8 +451,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(4)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(4)
     })
 
     it('Not self-closing JSX tag in query should match also self-closing tags', () => {
@@ -483,8 +483,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(4)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(4)
     })
 
     it('Not self-closing JSX tag with children in query should not match self-closing tags', () => {
@@ -544,8 +544,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(2)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(2)
     })
   })
 
@@ -573,8 +573,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(2)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(2)
     })
 
     it('Should match JSXIdentifier when looking for Identifier wildcard', () => {
@@ -600,8 +600,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(2)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(2)
     })
   })
 
@@ -628,7 +628,7 @@ describe('JSX', () => {
       ],
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 })

@@ -15,11 +15,17 @@ export const searchFileContent = ({
   filePath,
   ...settings
 }: SearchFileContentArgs) => {
+  const {
+    logger: { log },
+  } = settings
+  log('searchFileContent')
   const shallowSearchPassed = shallowSearch({
     queries,
     fileContent,
     ...settings,
   })
+
+  log('searchFileContent', 'shallowSearchPassed', shallowSearchPassed)
 
   let allMatches: Matches = []
 
@@ -28,15 +34,20 @@ export const searchFileContent = ({
 
     const fileNode = settings.parserSettings.parseCode(fileContent, filePath)
 
+    // console.log('searchFileContent', 'fileNode', fileNode)
+
     measureParseFile()
     const measureSearch = measureStart('search')
 
     const results = searchAst(fileNode, { queries, ...settings })
 
+    // console.log('searchFileContent', 'searchAst results', results)
+
     allMatches = results
       .map(({ query, matches }) => {
         return matches.map((match) => {
           const code = prepareCodeResult({ fileContent, ...match })
+          // console.log('prepared code', code)
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
             match,
             fileContent,
@@ -58,6 +69,8 @@ export const searchFileContent = ({
 
     measureSearch()
   }
+
+  // console.log('all matches', allMatches)
 
   return allMatches
 }

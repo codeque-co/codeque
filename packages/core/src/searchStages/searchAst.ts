@@ -30,7 +30,10 @@ export const searchAst = (
          * For multi-statement queries we search where exactly statements are located within parent node
          */
 
-        const statements = queryNode.body as PoorNodeType[]
+        const { blockNodeBodyKey } =
+          settings.parserSettings.programNodeAndBlockNodeUtils
+
+        const statements = queryNode[blockNodeBodyKey] as PoorNodeType[]
 
         const subMatches = statements
           .map((statement) => traverseAndMatch(match.node, statement, settings))

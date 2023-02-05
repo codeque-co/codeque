@@ -7,11 +7,11 @@ export const createLogger = (debugMode = false) => {
   }
 
   const logStepStart = (stepName: string) => {
-    log('\n' + stepName, '\n'.padStart(10, '^'))
+    log('\n' + `${stepName}: START`, '\n')
   }
 
   const logStepEnd = (stepName: string) => {
-    log('\n' + stepName, '\n'.padStart(10, '&'))
+    log('\n' + `${stepName}: END`, '\n')
   }
 
   return {

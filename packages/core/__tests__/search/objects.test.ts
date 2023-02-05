@@ -1,11 +1,10 @@
 import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '../utils'
 import path from 'path'
-import fs from 'fs'
 import { getFilesList } from '/getFilesList'
 import { searchInStrings } from '../../src/searchInStrings'
 
-describe('Types', () => {
+describe('Objects', () => {
   const testFile = `
     ({
       a : {
@@ -226,8 +225,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(1) // It used to be 0, but now `{}` matches program as a block matches program
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1) // It used to be 0, but now `{}` matches program as a block matches program
   })
 
   it('should match function in object', () => {
@@ -374,10 +373,10 @@ describe('Types', () => {
       queryCodes: [query2],
     })
 
-    expect(matches1.length).toBe(4)
     expect(errors1.length).toBe(0)
+    expect(matches1.length).toBe(4)
 
-    expect(matches2.length).toBe(4)
     expect(errors2.length).toBe(0)
+    expect(matches2.length).toBe(4)
   })
 })

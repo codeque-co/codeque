@@ -2,5 +2,5 @@ import { createMatchDestructPropBeforeRenameNodesComparator } from '../../nodeCo
 
 export const matchDestructPropBeforeRenameNodesComparator =
   createMatchDestructPropBeforeRenameNodesComparator({
-    objectPropertyNodeName: 'ObjectProperty',
+    objectPropertyNodeName: 'Property',
   })

@@ -108,7 +108,7 @@ export const compareNodes = (
     isNode,
     isIdentifierNode,
     identifierTypeAnnotationFieldName,
-    stringLiteralUtils,
+    stringLikeLiteralUtils,
     numericLiteralUtils,
     programNodeAndBlockNodeUtils,
     getIdentifierNodeName,
@@ -178,13 +178,13 @@ export const compareNodes = (
       }
     }
 
-    // this should be extracted to parser settings
     const isStringWithWildcard =
-      stringLiteralUtils.isStringLiteralNode(queryNode) &&
-      stringLiteralUtils.isStringLiteralNode(fileNode) &&
+      stringLikeLiteralUtils.isStringLikeLiteralNode(queryNode) &&
+      stringLikeLiteralUtils.isStringLikeLiteralNode(fileNode) &&
+      queryNode.type === fileNode.type && // todo possibility to match string literals in other places (for include mode)
       regExpTest(
         anyStringWildcardRegExp,
-        stringLiteralUtils.getStringLiteralValue(queryNode),
+        stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode),
       )
 
     log('isStringWithWildcard', isStringWithWildcard)
@@ -197,12 +197,12 @@ export const compareNodes = (
      * */
     if (isStringWithWildcard) {
       const regex = patternToRegExp(
-        stringLiteralUtils.getStringLiteralValue(queryNode),
+        stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode),
         caseInsensitive,
       )
       const levelMatch = regExpTest(
         regex,
-        stringLiteralUtils.getStringLiteralValue(fileNode),
+        stringLikeLiteralUtils.getStringLikeLiteralValue(fileNode),
       )
       measureCompare()
 

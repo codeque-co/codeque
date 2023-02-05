@@ -120,6 +120,7 @@ export const searchInFileSystem = ({
       searchErrors.push({
         filePath,
         error: (e as { message: string })?.message,
+        stack: (e as { stack: string })?.stack,
       })
 
       if (debug) {

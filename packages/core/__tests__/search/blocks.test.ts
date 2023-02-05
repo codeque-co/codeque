@@ -120,4 +120,33 @@ describe('blocks', () => {
     expect(errors.length).toBe(0)
     expect(matches.length).toBe(2)
   })
+
+  it('should match arrow function block using tree wildcard', () => {
+    const fileContent = `
+      const a = () => {
+        console.log()
+      }
+      `
+
+    const queries = [
+      `
+      () => $$$
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'exact',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+  })
 })

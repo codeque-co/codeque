@@ -24,6 +24,12 @@ export const shallowSearch = ({
   const includesUniqueTokens = queries.some(({ uniqueTokens }) =>
     uniqueTokens.every((token) => fileContentForTokensLookup.includes(token)),
   )
+
+  log(
+    'Shallow search uniqueTokens',
+    queries.map(({ uniqueTokens }) => uniqueTokens).flat(1),
+  )
+
   measureShallowSearch()
 
   return includesUniqueTokens

@@ -56,12 +56,14 @@ export const traverseAndMatch = (
     measureValidate()
 
     if (match) {
-      matches.push({
-        start: currentNode.start as number,
-        end: currentNode.end as number,
-        loc: currentNode.loc as Match['loc'],
+      const matchData = {
+        ...parserSettings.getNodePosition(currentNode),
         node: currentNode,
-      } as Match)
+      } as Match
+
+      // console.log('validated match data', matchData)
+
+      matches.push(matchData)
     }
   }
 

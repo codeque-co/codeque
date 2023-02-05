@@ -1,7 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
-import fs from 'fs'
 import { searchInStrings } from '../../src/searchInStrings'
 
 describe('Types', () => {
@@ -14,50 +13,40 @@ describe('Types', () => {
     })
   })
 
-  const tempFilePath = path.join(
-    __dirname,
-    '__fixtures__',
-    `${Date.now()}.temp`,
-  )
-  const mockFilesList = [tempFilePath]
+  const testFileContent = `
+  type ReturnTypeInferer<T> = T extends (a: Record<string, string>) => infer U ? U : never;
 
-  beforeAll(() => {
-    fs.writeFileSync(
-      tempFilePath,
-      `
-      type ReturnTypeInferer<T> = T extends (a: Record<string, string>) => infer U ? U : never;
+  type Generic<T extends B = C> = G
 
-      type Generic<T extends B = C> = G
+  const getInitialValues = (
+    assignment: AssignmentPopulated,
+  ): AssignmentFormValues => {
+    if (!assignment) {
+      return undefined;
+    }
+  };
 
-      const getInitialValues = (
-        assignment: AssignmentPopulated,
-      ): AssignmentFormValues => {
-        if (!assignment) {
-          return undefined;
-        }
-      };
+  useAskToFillInForm<{
+    noteFromTeam: string;
+  }>({ asd })
 
-      useAskToFillInForm<{
-        noteFromTeam: string;
-      }>({ asd })
+  interface A extends B<C | number>{
+    key: string;
+    key_2: number;
+  }
 
-      interface A extends B<C | number>{
-        key: string;
-        key_2: number;
-      }
+  interface B {
+    key: string;
+    key_2?: number;
+  }
 
-      interface B {
-        key: string;
-        key_2?: number;
-      }
-
-    `,
-    )
-  })
-
-  afterAll(() => {
-    fs.unlinkSync(tempFilePath)
-  })
+`
+  const testFilesList = [
+    {
+      path: 'mock',
+      content: testFileContent,
+    },
+  ]
 
   it('should match type that concatenates other type', () => {
     const queries = [
@@ -229,9 +218,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -246,9 +235,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -263,9 +252,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -280,9 +269,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -297,9 +286,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -314,9 +303,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -335,16 +324,15 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude, errors: errorsInclude } =
-      searchInFileSystem({
-        mode: 'include',
-        filePaths: mockFilesList,
-        queryCodes: queries,
-      })
+    const { matches: matchesInclude, errors: errorsInclude } = searchInStrings({
+      mode: 'include',
+      files: testFilesList,
+      queryCodes: queries,
+    })
 
-    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -365,16 +353,15 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude, errors: errorsInclude } =
-      searchInFileSystem({
-        mode: 'include',
-        filePaths: mockFilesList,
-        queryCodes: queries,
-      })
+    const { matches: matchesInclude, errors: errorsInclude } = searchInStrings({
+      mode: 'include',
+      files: testFilesList,
+      queryCodes: queries,
+    })
 
-    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -395,16 +382,15 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude, errors: errorsInclude } =
-      searchInFileSystem({
-        mode: 'include',
-        filePaths: mockFilesList,
-        queryCodes: queries,
-      })
+    const { matches: matchesInclude, errors: errorsInclude } = searchInStrings({
+      mode: 'include',
+      files: testFilesList,
+      queryCodes: queries,
+    })
 
-    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -421,16 +407,15 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches: matchesInclude, errors: errorsInclude } =
-      searchInFileSystem({
-        mode: 'include',
-        filePaths: mockFilesList,
-        queryCodes: queries,
-      })
+    const { matches: matchesInclude, errors: errorsInclude } = searchInStrings({
+      mode: 'include',
+      files: testFilesList,
+      queryCodes: queries,
+    })
 
-    const { matches: matchesExact, errors: errorsExact } = searchInFileSystem({
+    const { matches: matchesExact, errors: errorsExact } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -449,9 +434,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -467,9 +452,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -485,9 +470,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -504,9 +489,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -523,9 +508,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -542,9 +527,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -562,9 +547,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 
@@ -582,9 +567,9 @@ describe('Types', () => {
        `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: mockFilesList,
+      files: testFilesList,
       queryCodes: queries,
     })
 

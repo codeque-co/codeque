@@ -5,7 +5,11 @@ import { NodesComparator, PoorNodeType } from '../../../types'
  * Q: const { node } = useForm(); C: const { node: someNode } = useForm()
  */
 export const createMatchDestructPropBeforeRenameNodesComparator =
-  (): NodesComparator =>
+  ({
+    objectPropertyNodeName,
+  }: {
+    objectPropertyNodeName: string
+  }): NodesComparator =>
   (
     { queryNode, fileNode, searchSettings: { mode } },
     _,
@@ -16,9 +20,9 @@ export const createMatchDestructPropBeforeRenameNodesComparator =
     if (queryNode && fileNode) {
       if (
         !isExact &&
-        // Both are ObjectProperty
-        (queryNode.type as string) === 'ObjectProperty' &&
-        (fileNode.type as string) === 'ObjectProperty' &&
+        // Both are Property
+        (queryNode.type as string) === objectPropertyNodeName &&
+        (fileNode.type as string) === objectPropertyNodeName &&
         // Both has same key identifier
         (queryNode.key as PoorNodeType).type === 'Identifier' &&
         (fileNode.key as PoorNodeType).type === 'Identifier' &&

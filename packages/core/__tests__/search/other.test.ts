@@ -82,8 +82,8 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(17149)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(17149)
   })
 
   it('Should properly match identifiers with multiple wildcard sections', () => {

@@ -18,6 +18,9 @@ export const validateMatch = (
 
   logStepStart('validate')
 
+  log('validate: queryNode', currentQueryNode)
+  log('validate: fileNode', currentNode)
+
   const {
     levelMatch,
     queryKeysToTraverseForValidatingMatch,

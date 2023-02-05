@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import { searchInStrings } from '../../src/searchInStrings'
 
-describe('Types', () => {
+describe('Literals', () => {
   const tempFilePath = path.join(
     __dirname,
     '__fixtures__',
@@ -110,9 +110,9 @@ describe('Types', () => {
       queryCodes: queries2,
     })
 
-    expect(results2.length).toBe(2)
     expect(errors1).toHaveLength(0)
     expect(errors2).toHaveLength(0)
+    expect(results2.length).toBe(2)
   })
 
   it('should match string using pattern', () => {
@@ -202,8 +202,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match template literals with quasis', () => {
@@ -278,8 +278,8 @@ describe('Types', () => {
       ],
     })
 
-    expect(matches1.length).toBe(1)
     expect(errors1.length).toBe(0)
+    expect(matches1.length).toBe(1)
 
     const { matches: matches2, errors: errors2 } = searchInStrings({
       mode: 'include',
@@ -293,8 +293,8 @@ describe('Types', () => {
       ],
     })
 
-    expect(matches2.length).toBe(1)
     expect(errors2.length).toBe(0)
+    expect(matches2.length).toBe(1)
 
     const { matches: matches3, errors: errors3 } = searchInStrings({
       mode: 'include',
@@ -308,8 +308,8 @@ describe('Types', () => {
       ],
     })
 
-    expect(matches3.length).toBe(1)
     expect(errors3.length).toBe(0)
+    expect(matches3.length).toBe(1)
   })
 
   it('should match multiline template literals with include mode', () => {

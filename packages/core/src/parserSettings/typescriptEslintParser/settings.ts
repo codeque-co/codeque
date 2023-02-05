@@ -1,27 +1,23 @@
-import { parse, ParserOptions, ParserPlugin } from '@babel/parser'
-import { NODE_FIELDS } from '@babel/types'
+import { parse, ParserOptions } from '@typescript-eslint/parser'
 import {
+  Location,
+  NodesComparatorParameters,
+  NumericLiteralUtils,
   ParserSettings,
   PoorNodeType,
-  NodesComparatorParameters,
-  StringLikeLiteralUtils,
-  NumericLiteralUtils,
   ProgramNodeAndBlockNodeUtils,
-  Location,
+  StringLikeLiteralUtils,
 } from '../../types'
 import { normalizeText, runNodesComparators } from '../../utils'
-import generate from '@babel/generator'
-import { beforeWildcardsComparators } from './beforeWildcardsComparators'
-import { afterWildcardsComparators } from './afterWildcardsComparators'
 import { supportedExtensions } from '../_common/JSFamilyCommon'
-import {} from '../../wildcardUtilsFactory'
+import { afterWildcardsComparators } from './afterWildcardsComparators'
+import { beforeWildcardsComparators } from './beforeWildcardsComparators'
 import { identifierNodeTypes, wildcardUtils } from './common'
 
-const getProgramNodeFromRootNode = (fileNode: PoorNodeType) =>
-  fileNode.program as PoorNodeType
+const getProgramNodeFromRootNode = (rootNode: PoorNodeType) => rootNode // root node is program node
 
-const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
-  return getProgramNodeFromRootNode(fileNode).body as PoorNodeType[]
+const getProgramBodyFromRootNode = (rootNode: PoorNodeType) => {
+  return getProgramNodeFromRootNode(rootNode).body as PoorNodeType[]
 }
 
 const unwrapExpressionStatement = (node: PoorNodeType) => {
@@ -39,7 +35,6 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
 const createBlockStatementNode = (body: PoorNodeType[]) => ({
   type: 'BlockStatement',
   body,
-  directives: [], // whatever it is
 })
 
 const isNode = (maybeNode: PoorNodeType) => {
@@ -47,76 +42,49 @@ const isNode = (maybeNode: PoorNodeType) => {
 }
 
 const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return Boolean(
-    (NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[
-      nodeFieldKey
-    ]?.optional ?? true,
-  )
+  // Eslint-typescript is about to remove optionality of properties https://github.com/typescript-eslint/typescript-eslint/pull/6274
+  return true
 }
 
 const astPropsToSkip = [
   'loc',
-  'start',
-  'end',
-  'extra',
+  'range',
+  'raw',
   'trailingComments',
   'leadingComments',
-  'innerComments',
   'comments',
   'tail', // Support for partial matching of template literals
+  'parent', // in eslint there is parent prop in node
+  { type: 'ArrowFunctionExpression', key: 'expression' }, // flag on ArrowFunctionExpression
 ]
 
 const parseCode = (code: string, filePath = '') => {
-  const pluginsWithoutJSX = [
-    'typescript',
-    'decorators-legacy',
-    'importAssertions',
-    'doExpressions',
-  ] as ParserPlugin[]
-  const pluginsWithJSX = [...pluginsWithoutJSX, 'jsx'] as ParserPlugin[]
-
-  const parseOptionsWithJSX = {
+  const parseOptions: ParserOptions = {
     sourceType: 'module',
-    plugins: pluginsWithJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
-
-  const parseOptionsWithoutJSX = {
-    sourceType: 'module',
-    plugins: pluginsWithoutJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
+    ecmaFeatures: {
+      globalReturn: true,
+      jsx: true,
+    },
+    ecmaVersion: 6,
+    range: true,
+    loc: true,
+    comment: true, //for asserting they are skipped
+  }
 
   const maybeWrappedJSON = /\.json$/.test(filePath) ? `(${code})` : code
 
-  try {
-    return parse(
-      maybeWrappedJSON,
-      parseOptionsWithJSX,
-    ) as unknown as PoorNodeType
-  } catch (e) {
-    return parse(
-      maybeWrappedJSON,
-      parseOptionsWithoutJSX,
-    ) as unknown as PoorNodeType
-  }
+  return parse(maybeWrappedJSON, parseOptions) as unknown as PoorNodeType
 }
 
 const generateCode = (node: PoorNodeType, options?: unknown) => {
-  try {
-    return generate(node as any, options as any).code
-  } catch (e) {
-    return 'invalid code'
-  }
+  return 'Not supported'
 }
 
 const sanitizeJSXText = (node: PoorNodeType) => {
   //@ts-ignore
   node.value = normalizeText(node.value)
   //@ts-ignore
-  node.extra.raw = normalizeText(node.extra.raw)
-  //@ts-ignore
-  node.extra.rawValue = normalizeText(node.extra.rawValue)
+  node.raw = normalizeText(node.raw)
 }
 
 const sanitizeTemplateElement = (node: PoorNodeType) => {
@@ -162,9 +130,12 @@ const getNodeType = (node: PoorNodeType) => node.type as string
 const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
+const isFirstCharStringStart = (str: string) =>
+  str.charAt(0) === `'` || str.charAt(0) === `"`
+
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
   isStringLikeLiteralNode: (node: PoorNodeType) =>
-    node.type === 'StringLiteral' ||
+    (node.type === 'Literal' && isFirstCharStringStart(node.raw as string)) ||
     node.type === 'TemplateElement' ||
     node.type === 'JSXText',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
@@ -173,9 +144,9 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
 }
 
 const numericLiteralUtils: NumericLiteralUtils = {
-  isNumericLiteralNode: (node: PoorNodeType) => node.type === 'NumericLiteral',
-  getNumericLiteralValue: (node: PoorNodeType) =>
-    (node.extra as any).raw as string,
+  isNumericLiteralNode: (node: PoorNodeType) =>
+    node.type === 'Literal' && !isFirstCharStringStart(node.raw as string),
+  getNumericLiteralValue: (node: PoorNodeType) => node.raw as string,
 }
 
 const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
@@ -188,12 +159,12 @@ const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
 const getNodePosition: ParserSettings['getNodePosition'] = (
   node: PoorNodeType,
 ) => ({
-  start: node.start as number,
-  end: node.end as number,
+  start: (node.range as any)[0] as number,
+  end: (node.range as any)[1] as number,
   loc: node.loc as unknown as Location,
 })
 
-export const babelParserSettings: ParserSettings = {
+export const typescriptEslintParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
   generateCode,

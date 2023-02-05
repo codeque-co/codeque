@@ -2,5 +2,5 @@ import { createMatchObjectPropertiesOfDifferentTypesNodesComparator } from '../.
 
 export const matchObjectPropertiesOfDifferentTypesNodesComparator =
   createMatchObjectPropertiesOfDifferentTypesNodesComparator({
-    objectPropertyNodeName: 'ObjectProperty',
+    objectPropertyNodeName: 'Property',
   })

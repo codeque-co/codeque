@@ -90,6 +90,8 @@ export const searchInStrings = ({
         ...settings,
       })
 
+      // console.log('file matches', fileMatches)
+
       allMatches.push(...fileMatches)
 
       if (fileMatches.length > 0) {

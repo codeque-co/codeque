@@ -51,11 +51,11 @@ it('should search using multiple threads and give the same matches count as sing
       singleThreadFilesCountLimitStructural: Math.round(40),
     })
 
-  expect(resultsMulti1.length).toBe(204)
   expect(errorsMulti1).toHaveLength(0)
+  expect(resultsMulti1.length).toBe(204)
 
-  expect(resultsMulti2.length).toBe(204)
   expect(errorsMulti2).toHaveLength(0)
+  expect(resultsMulti2.length).toBe(204)
 
   expect(errorsSingle).toHaveLength(0)
 

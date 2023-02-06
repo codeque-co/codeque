@@ -43,8 +43,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('Should find all imports of library', () => {
@@ -57,8 +57,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(41)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(41)
   })
 
   it('Should find all default imports of a dependency', () => {
@@ -71,8 +71,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(33)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(33)
   })
 
   it('Should find all default imports with case insensitive query', () => {
@@ -86,8 +86,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(matches.length).toBe(33)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(33)
   })
 
   it('Should find all aliased imports of a dependency', () => {

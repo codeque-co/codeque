@@ -147,7 +147,7 @@ describe('multi statements', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 })

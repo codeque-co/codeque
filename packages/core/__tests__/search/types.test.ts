@@ -336,10 +336,10 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matchesInclude.length).toBe(1)
-    expect(matchesExact.length).toBe(0)
     expect(errorsExact.length).toBe(0)
     expect(errorsInclude.length).toBe(0)
+    expect(matchesInclude.length).toBe(1)
+    expect(matchesExact.length).toBe(0)
   })
 
   it('should match function declaration with param typeAnnotation by query without param typeAnnotation', () => {
@@ -365,10 +365,10 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matchesInclude.length).toBe(1)
-    expect(matchesExact.length).toBe(0)
     expect(errorsExact.length).toBe(0)
     expect(errorsInclude.length).toBe(0)
+    expect(matchesInclude.length).toBe(1)
+    expect(matchesExact.length).toBe(0)
   })
 
   it('should match function declaration with types by query without types', () => {
@@ -394,10 +394,10 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matchesInclude.length).toBe(1)
-    expect(matchesExact.length).toBe(0)
     expect(errorsExact.length).toBe(0)
     expect(errorsInclude.length).toBe(0)
+    expect(matchesInclude.length).toBe(1)
+    expect(matchesExact.length).toBe(0)
   })
 
   it('should match call expression with typesParameters by query without typesParameters', () => {
@@ -419,10 +419,10 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matchesInclude.length).toBe(1)
-    expect(matchesExact.length).toBe(0)
     expect(errorsExact.length).toBe(0)
     expect(errorsInclude.length).toBe(0)
+    expect(matchesInclude.length).toBe(1)
+    expect(matchesExact.length).toBe(0)
   })
 
   it('should match some interface', () => {
@@ -573,8 +573,8 @@ describe('Types', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('Should match type in variable type annotation', () => {

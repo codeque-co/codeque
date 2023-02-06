@@ -132,8 +132,8 @@ describe('AssignmentPattern improvements in include mode', () => {
       ],
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match assignment pattern in array destructuring', () => {

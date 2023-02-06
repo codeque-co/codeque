@@ -37,8 +37,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(1)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(1)
   })
 
   it('Should match code with optional single line wildcard which not exist', () => {
@@ -52,8 +52,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(2)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(2)
   })
 
   it('Should match code with optional multi line wildcard which exist', () => {
@@ -70,8 +70,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(2)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(2)
   })
 
   it('Should match code with optional multi line wildcard which not exist', () => {
@@ -89,8 +89,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(1)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(1)
   })
 
   it('Should match code with required single line wildcard which exist', () => {
@@ -104,8 +104,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(1)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(1)
   })
 
   it('Should not match code with required single line wildcard which not exist', () => {
@@ -119,8 +119,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(0)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(0)
   })
 
   it('Should match code with required multi line wildcard which exist', () => {
@@ -137,8 +137,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(2)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(2)
   })
 
   it('Should not match code with required multi line wildcard which not exist', () => {
@@ -156,8 +156,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(0)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(0)
   })
 
   it('Should match space agnostic code', () => {
@@ -179,8 +179,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(1)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(1)
   })
 
   it('Should match with wildcard on start of query', () => {
@@ -190,8 +190,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(4)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(4)
   })
 
   it('Should match with wildcard on end of query', () => {
@@ -201,8 +201,8 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
-    expect(matches).toHaveLength(4)
     expect(errors).toHaveLength(0)
+    expect(matches).toHaveLength(4)
   })
 
   const mockJson = dedent`
@@ -224,9 +224,9 @@ describe('Text search mode', () => {
       mode: 'text',
     })
 
+    expect(errors).toHaveLength(0)
     expect(matches).toHaveLength(1)
     expect(matches[0].code).toBe('sx": "re')
-    expect(errors).toHaveLength(0)
   })
 
   it('Should match query that starts with string', () => {
@@ -236,6 +236,8 @@ describe('Text search mode', () => {
       files: [{ content: mockJson, path: 'mock' }],
       mode: 'text',
     })
+
+    expect(errors).toHaveLength(0)
 
     const match = matches[0]
 
@@ -261,16 +263,14 @@ describe('Text search mode', () => {
       }
       `,
     )
-
-    expect(errors).toHaveLength(0)
   })
 
   it('Should compute proper position of match with html like query', () => {
     const { matches, errors } = searchInFileSystem({
       queryCodes: [
         dedent`
-          <html><head><meta $$="$$"/>$$$m
-          </head>
+        <html><head><meta $$="$$"/>$$$m
+        </head>
         `,
       ],
       filePaths: [

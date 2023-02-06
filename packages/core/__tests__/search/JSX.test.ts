@@ -63,8 +63,8 @@ describe('JSX', () => {
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(485)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(485)
   })
 
   it('Should find JSX by tag name and prop', () => {
@@ -99,8 +99,8 @@ describe('JSX', () => {
       </Drawer.Section>
     `
 
-    expect(compareCode(matches[0].code, resultCode)).toBeTruthy()
     expect(errors).toHaveLength(0)
+    expect(compareCode(matches[0].code, resultCode)).toBeTruthy()
   })
 
   it('Should find JSX by prop name', () => {
@@ -110,8 +110,8 @@ describe('JSX', () => {
       filePaths: filesList,
       queryCodes: [query],
     })
-    expect(matches.length).toBe(41)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(41)
   })
 
   it('Should find JSX by text content', () => {
@@ -183,8 +183,8 @@ describe('JSX', () => {
       queryCodes: [query],
     })
 
-    expect(compareCode(matches[0].code, query)).toBeTruthy()
     expect(errors).toHaveLength(0)
+    expect(compareCode(matches[0].code, query)).toBeTruthy()
   })
 
   it('Should find components using useTheme() hook', () => {
@@ -211,11 +211,11 @@ describe('JSX', () => {
         queryCodes: [importQuery],
       },
     )
-    expect(resultsImport.length).not.toBe(0)
-
-    expect(resultsImport.length).toBe(resultsUsage.length)
     expect(errorsUsage).toHaveLength(0)
     expect(errorsImport).toHaveLength(0)
+
+    expect(resultsImport.length).not.toBe(0)
+    expect(resultsImport.length).toBe(resultsUsage.length)
   })
 
   it('Should find all usages of component passed as a prop', () => {
@@ -512,8 +512,8 @@ describe('JSX', () => {
         ],
       })
 
-      expect(matches.length).toBe(0)
       expect(errors.length).toBe(0)
+      expect(matches.length).toBe(0)
     })
 
     it('Self-closing JSX tag with prop in query should match also not self-closing tag with prop', () => {

@@ -174,8 +174,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should not match function with body statements in different order without all statements', () => {
@@ -201,8 +201,8 @@ describe('functions', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match function with body statements in different order', () => {

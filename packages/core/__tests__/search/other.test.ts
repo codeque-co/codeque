@@ -65,8 +65,8 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(190)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(190)
   })
 
   it('should match anything', () => {

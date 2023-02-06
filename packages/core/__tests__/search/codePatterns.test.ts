@@ -41,8 +41,8 @@ describe('code patterns', () => {
       };
     `
 
-    expect(matches.length).toBe(10)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(10)
     expect(compareCode(matches[0].code, firstResult)).toBeTruthy()
   })
 
@@ -92,8 +92,8 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(63)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(63)
   })
 
   it('should find all JSX props which always creates new reference', () => {
@@ -150,8 +150,8 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(132)
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(132)
   })
 
   it('should match nested ternary operator', () => {
@@ -233,7 +233,7 @@ describe('code patterns', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 })

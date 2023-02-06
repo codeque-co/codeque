@@ -42,7 +42,7 @@ export type HardStopFlag = {
   destroy: () => void
 }
 
-export type ParserType = 'babel' | 'typescript-eslint'
+export type ParserType = 'babel' | 'typescript-eslint' | 'esprima'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]

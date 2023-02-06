@@ -100,6 +100,7 @@ describe('Literals', () => {
       queryCodes: queries1,
     })
 
+    expect(errors1).toHaveLength(0)
     expect(results1.length).toBe(2)
 
     const queries2 = [`("'other");`]
@@ -110,7 +111,6 @@ describe('Literals', () => {
       queryCodes: queries2,
     })
 
-    expect(errors1).toHaveLength(0)
     expect(errors2).toHaveLength(0)
     expect(results2.length).toBe(2)
   })
@@ -254,8 +254,8 @@ describe('Literals', () => {
       queryCodes: queries,
     })
 
-    expect(matches.length).toBe(0)
     expect(errors.length).toBe(0)
+    expect(matches.length).toBe(0)
   })
 
   it('should match different parts of template literals with include mode', () => {

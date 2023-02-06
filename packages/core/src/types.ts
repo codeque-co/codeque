@@ -185,7 +185,6 @@ export type ProgramNodeAndBlockNodeUtils = {
 export type ParserSettings = {
   supportedExtensions: string[]
   parseCode: (code: string, filePath?: string) => PoorNodeType
-  generateCode: (node: PoorNodeType, options?: unknown) => string
   isNode: (maybeNode: PoorNodeType) => boolean
   isIdentifierNode: (node: PoorNodeType) => boolean
   astPropsToSkip: (string | { type: string; key: string })[]
@@ -200,7 +199,10 @@ export type ParserSettings = {
   getNodeType: (node: PoorNodeType) => string
   getIdentifierNodeName: (node: PoorNodeType) => string
   unwrapExpressionStatement: (node: PoorNodeType) => PoorNodeType
-  createBlockStatementNode: (body: PoorNodeType[]) => PoorNodeType
+  createBlockStatementNode: (
+    body: PoorNodeType[],
+    position: Omit<Match, 'node'>,
+  ) => PoorNodeType
   sanitizeNode: (node: PoorNodeType) => void
   shouldCompareNode: (node: PoorNodeType) => void
   wildcardUtils: WildcardUtils

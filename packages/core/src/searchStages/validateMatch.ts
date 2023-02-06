@@ -4,30 +4,33 @@ import { getKeyFromObject } from '../utils'
 import { compareNodes } from './compareNodes'
 
 export const validateMatch = (
-  currentNode: PoorNodeType,
-  currentQueryNode: PoorNodeType,
-  settings: SearchSettings,
+  fileNode: PoorNodeType,
+  queryNode: PoorNodeType,
+  settings: SearchSettings & {
+    getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
+  },
 ) => {
   const {
     mode,
     logger: { log, logStepStart },
     parserSettings,
+    getCodeForNode = () => '',
   } = settings
 
   const isExact = mode === 'exact'
 
   logStepStart('validate')
 
-  log('validate: queryNode', currentQueryNode)
-  log('validate: fileNode', currentNode)
+  log('validate: queryNode', queryNode)
+  log('validate: fileNode', fileNode)
 
   const {
     levelMatch,
     queryKeysToTraverseForValidatingMatch,
     fileKeysToTraverseForValidatingMatch,
   } = compareNodes({
-    fileNode: currentNode,
-    queryNode: currentQueryNode,
+    fileNode: fileNode,
+    queryNode: queryNode,
     searchSettings: settings,
   })
 
@@ -36,7 +39,7 @@ export const validateMatch = (
     queryKeysToTraverseForValidatingMatch.length
   ) {
     throw new Error(
-      `Count of keys to validate in query and file does not match for nodes ${currentNode.type}:${currentNode?.name} ${currentQueryNode.type}:${currentQueryNode?.name}, [${fileKeysToTraverseForValidatingMatch}] [${queryKeysToTraverseForValidatingMatch}]`,
+      `Count of keys to validate in query and file does not match for nodes ${fileNode.type}:${fileNode?.name} ${queryNode.type}:${queryNode?.name}, [${fileKeysToTraverseForValidatingMatch}] [${queryKeysToTraverseForValidatingMatch}]`,
     )
   }
 
@@ -59,10 +62,10 @@ export const validateMatch = (
   if (!levelMatch) {
     try {
       log(
-        'nodes incompat:\n\n',
-        parserSettings.generateCode(currentNode),
+        'nodes incompatible :\n\n',
+        getCodeForNode(fileNode, 'file'),
         '\n\n',
-        parserSettings.generateCode(currentQueryNode),
+        getCodeForNode(queryNode, 'query'),
         '\n'.padEnd(10, '_'),
       )
     } catch (e) {
@@ -76,11 +79,8 @@ export const validateMatch = (
         const queryKeyToTraverse = queryKeysToTraverseForValidatingMatch[i]
         const fileKeyToTraverse = fileKeysToTraverseForValidatingMatch[i]
 
-        const queryValue = getKeyFromObject(
-          currentQueryNode,
-          queryKeyToTraverse,
-        )
-        const fileValue = getKeyFromObject(currentNode, fileKeyToTraverse)
+        const queryValue = getKeyFromObject(queryNode, queryKeyToTraverse)
+        const fileValue = getKeyFromObject(fileNode, fileKeyToTraverse)
 
         log('validate: queryKeyToTraverse', queryKeyToTraverse)
         log('validate: fileKeyToTraverse', fileKeyToTraverse)
@@ -170,15 +170,15 @@ export const validateMatch = (
         } else {
           log('validate: is Node')
 
-          const newCurrentNode = fileValue as PoorNodeType
-          const newCurrentQueryNode = queryValue as PoorNodeType
-          log('validate: newCurrentNode', newCurrentNode)
-          log('validate: newCurrentQueryNode', newCurrentQueryNode)
+          const newFileNode = fileValue as PoorNodeType
+          const newQueryNode = queryValue as PoorNodeType
+          log('validate: newFileNode', newFileNode)
+          log('validate: newQueryNode', newQueryNode)
 
           if (
-            !newCurrentNode ||
-            !newCurrentQueryNode ||
-            !validateMatch(newCurrentNode, newCurrentQueryNode, settings)
+            !newFileNode ||
+            !newQueryNode ||
+            !validateMatch(newFileNode, newQueryNode, settings)
           ) {
             return false
           }

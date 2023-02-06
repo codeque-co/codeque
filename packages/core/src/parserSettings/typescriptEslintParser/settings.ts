@@ -1,6 +1,7 @@
 import { parse, ParserOptions } from '@typescript-eslint/parser'
 import {
   Location,
+  Match,
   NodesComparatorParameters,
   NumericLiteralUtils,
   ParserSettings,
@@ -32,10 +33,16 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
   return node as PoorNodeType
 }
 
-const createBlockStatementNode = (body: PoorNodeType[]) => ({
-  type: 'BlockStatement',
-  body,
-})
+const createBlockStatementNode = (
+  body: PoorNodeType[],
+  position: Omit<Match, 'node'>,
+) =>
+  ({
+    type: 'BlockStatement',
+    body,
+    loc: position.loc,
+    range: [position.start, position.end],
+  } as unknown as PoorNodeType)
 
 const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
@@ -167,7 +174,6 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
 export const typescriptEslintParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
-  generateCode,
   isNode,
   isIdentifierNode,
   astPropsToSkip,

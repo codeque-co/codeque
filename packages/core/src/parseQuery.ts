@@ -106,8 +106,10 @@ export const extractQueryNode = (
     }
   }
 
+  const position = parserSettings.getNodePosition(fileNode)
+
   return {
-    queryNode: parserSettings.createBlockStatementNode(queryBody),
+    queryNode: parserSettings.createBlockStatementNode(queryBody, position),
     isMultistatement: true,
   }
 }

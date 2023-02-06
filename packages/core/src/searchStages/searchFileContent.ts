@@ -1,4 +1,9 @@
-import { Matches, NotNullParsedQuery, SearchSettings } from '../types'
+import {
+  Matches,
+  NotNullParsedQuery,
+  PoorNodeType,
+  SearchSettings,
+} from '../types'
 import { getExtendedCodeFrame, measureStart, prepareCodeResult } from '../utils'
 import { searchAst } from './searchAst'
 import { shallowSearch } from './shallowSearch'
@@ -32,22 +37,28 @@ export const searchFileContent = ({
   if (shallowSearchPassed) {
     const measureParseFile = measureStart('parseFile')
 
-    const fileNode = settings.parserSettings.parseCode(fileContent, filePath)
+    const getCodeForFileNode = (node: PoorNodeType) => {
+      const pos = settings.parserSettings.getNodePosition(node)
 
-    // console.log('searchFileContent', 'fileNode', fileNode)
+      return fileContent.substring(pos.start, pos.end)
+    }
+
+    const fileNode = settings.parserSettings.parseCode(fileContent, filePath)
 
     measureParseFile()
     const measureSearch = measureStart('search')
 
-    const results = searchAst(fileNode, { queries, ...settings })
-
-    // console.log('searchFileContent', 'searchAst results', results)
+    const results = searchAst(fileNode, {
+      queries,
+      getCodeForFileNode,
+      ...settings,
+    })
 
     allMatches = results
       .map(({ query, matches }) => {
         return matches.map((match) => {
           const code = prepareCodeResult({ fileContent, ...match })
-          // console.log('prepared code', code)
+
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
             match,
             fileContent,

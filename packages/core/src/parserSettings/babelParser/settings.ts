@@ -8,9 +8,9 @@ import {
   NumericLiteralUtils,
   ProgramNodeAndBlockNodeUtils,
   Location,
+  Match,
 } from '../../types'
 import { normalizeText, runNodesComparators } from '../../utils'
-import generate from '@babel/generator'
 import { beforeWildcardsComparators } from './beforeWildcardsComparators'
 import { afterWildcardsComparators } from './afterWildcardsComparators'
 import { supportedExtensions } from '../_common/JSFamilyCommon'
@@ -36,10 +36,14 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
   return node as PoorNodeType
 }
 
-const createBlockStatementNode = (body: PoorNodeType[]) => ({
+const createBlockStatementNode = (
+  body: PoorNodeType[],
+  position: Omit<Match, 'node'>,
+) => ({
   type: 'BlockStatement',
   body,
   directives: [], // whatever it is
+  ...position,
 })
 
 const isNode = (maybeNode: PoorNodeType) => {
@@ -99,14 +103,6 @@ const parseCode = (code: string, filePath = '') => {
       maybeWrappedJSON,
       parseOptionsWithoutJSX,
     ) as unknown as PoorNodeType
-  }
-}
-
-const generateCode = (node: PoorNodeType, options?: unknown) => {
-  try {
-    return generate(node as any, options as any).code
-  } catch (e) {
-    return 'invalid code'
   }
 }
 
@@ -196,7 +192,6 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
 export const babelParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
-  generateCode,
   isNode,
   isIdentifierNode,
   astPropsToSkip,

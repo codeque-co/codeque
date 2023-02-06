@@ -104,7 +104,6 @@ const removeKeysFromNode = (
   return newObj
 }
 
-// parser specific, test util, can be generic if isNode, shouldCompare and sanitizeJSXText, astPropsToSkip are injected
 export const cleanupAst = (
   ast: PoorNodeType,
   parserSettings: {

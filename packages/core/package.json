@@ -26,8 +26,6 @@
     "url": "https://github.com/codeque-co/codeque"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.0.3",
-    "@types/babel__generator": "^7.6.3",
     "@types/dedent": "^0.7.0",
     "@types/esprima": "^4.0.3",
     "@types/glob": "^7.2.0",
@@ -61,7 +59,8 @@
     "minimatch": "^5.1.0"
   },
   "peerDependencies": {
-    "@babel/generator": "^7.19.5"
+    "@typescript-eslint/parser": "^5.50.0",
+    "esprima": "^4.0.1"
   },
   "scripts": {
     "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\" ",

@@ -8,20 +8,46 @@ import { traverseAndMatch } from './traverseAndMatch'
 
 export type SearchAstSettings = SearchSettings & {
   queries: NotNullParsedQuery[]
+  getCodeForFileNode?: (node: PoorNodeType) => string
 }
 
 export const searchAst = (
   fileNode: PoorNodeType,
-  { queries, ...settings }: SearchAstSettings,
+  { queries, getCodeForFileNode, ...settings }: SearchAstSettings,
 ) => {
   const allMatches: { query: NotNullParsedQuery; matches: Match[] }[] = []
   const programNode =
     settings.parserSettings.getProgramNodeFromRootNode(fileNode)
 
   for (const query of queries) {
-    const { queryNode, isMultistatement } = query
-    // todo store matches per query
-    const matches = traverseAndMatch(programNode, queryNode, settings).map(
+    const { queryNode, isMultistatement, queryCode } = query
+
+    const getCodeForNode = (node: PoorNodeType, nodeType: 'query' | 'file') => {
+      if (!node) {
+        return 'undefined Node'
+      }
+
+      if (nodeType === 'file') {
+        return getCodeForFileNode?.(node) ?? ''
+      }
+
+      try {
+        const pos = settings.parserSettings.getNodePosition(node)
+
+        return queryCode.substring(pos.start, pos.end)
+      } catch {
+        console.log('Failed getting position for node', node)
+      }
+
+      return ''
+    }
+
+    const newSettings = {
+      ...settings,
+      getCodeForNode,
+    }
+
+    const matches = traverseAndMatch(programNode, queryNode, newSettings).map(
       (match) => {
         if (!isMultistatement) {
           return match
@@ -36,7 +62,9 @@ export const searchAst = (
         const statements = queryNode[blockNodeBodyKey] as PoorNodeType[]
 
         const subMatches = statements
-          .map((statement) => traverseAndMatch(match.node, statement, settings))
+          .map((statement) =>
+            traverseAndMatch(match.node, statement, newSettings),
+          )
           .flat()
           .sort((matchA, matchB) => matchA.start - matchB.end)
 

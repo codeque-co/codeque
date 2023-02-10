@@ -126,13 +126,13 @@ export const validateMatch = (
             )
 
             for (let i = 0; i < queryNodesArrSorted.length; i++) {
-              const queryNode = queryNodesArrSorted[i]
+              const newQueryNode = queryNodesArrSorted[i]
 
               for (let j = 0; j < nodesArr.length; j++) {
-                const newCurrentNode = nodesArr[j]
+                const newFileNode = nodesArr[j]
 
                 if (!matchedIndexes.includes(j)) {
-                  if (validateMatch(newCurrentNode, queryNode, settings)) {
+                  if (validateMatch(newFileNode, newQueryNode, settings)) {
                     matchedIndexes.push(j)
                     break
                   }

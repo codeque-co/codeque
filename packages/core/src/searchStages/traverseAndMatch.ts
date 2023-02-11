@@ -2,6 +2,50 @@ import { Match, PoorNodeType, SearchSettings } from '../types'
 import { measureStart } from '../utils'
 import { compareNodes } from './compareNodes'
 import { validateMatch } from './validateMatch'
+import { getMatchFromNode } from '../astUtils'
+
+/**
+ *
+ * To make it work we have
+ * - Modify parser settings to be able to add alternative visitors for given node types (JSXIdentifier vs Identifier)
+ * - Figure out problem with multiline queries
+ * - This has a chance to improve performance in cases where we have multiple queries
+ *
+ * This is slower than our custom impl.
+ * We can try ESlint traversal next time (eslint uses https://www.npmjs.com/package/estraverse)
+ *
+ * Other interesting case is that @typescript-eslint/parser expose `visitorKeys` via parseEslint.
+ * VisitorKeys is a set of keys containing other nodes for each node type
+ */
+const traverseAndMatchBabel = (
+  fileNode: PoorNodeType,
+  queryNode: PoorNodeType,
+  settings: SearchSettings & {
+    getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
+  },
+) => {
+  const matches: Match[] = []
+
+  const fileNodeForBabel = {
+    type: 'File',
+    program: fileNode,
+  }
+  const traverse: any = '@babel/traverse'
+
+  traverse(fileNodeForBabel as any, {
+    [queryNode.type as string]: (path: any) => {
+      const node = path.node
+      const match = validateMatch(node, queryNode, settings)
+
+      if (match) {
+        const matchData = getMatchFromNode(node, settings.parserSettings)
+        matches.push(matchData)
+      }
+    },
+  })
+
+  return matches
+}
 
 export const traverseAndMatch = (
   fileNode: PoorNodeType,
@@ -49,12 +93,7 @@ export const traverseAndMatch = (
     measureValidate()
 
     if (match) {
-      const matchData = {
-        ...parserSettings.getNodePosition(fileNode),
-        node: fileNode,
-      } as Match
-
-      matches.push(matchData)
+      matches.push(getMatchFromNode(fileNode, parserSettings))
     }
   }
 

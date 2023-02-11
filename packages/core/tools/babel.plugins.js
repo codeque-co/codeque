@@ -31,11 +31,17 @@ module.exports = function plugin() {
       VariableDeclaration(path, state) {
         const identifier = path.node.declarations[0]?.id?.name
 
-        if (
-          !keepMetrics &&
-          /^measure/.test(path.node.declarations[0]?.id?.name)
-        ) {
+        if (!keepMetrics && /^measure/.test(identifier)) {
           console.log('removed', `const/let/var ${identifier}`)
+
+          path.remove()
+        }
+      },
+      ObjectProperty(path) {
+        const identifier = path.node.key.name
+
+        if (!keepMetrics && /^measure/.test(identifier)) {
+          console.log('removed', `ObjectProperty ${identifier}`)
 
           path.remove()
         }

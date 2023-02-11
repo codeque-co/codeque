@@ -1,21 +1,31 @@
 import { sortByLeastIdentifierStrength } from '../astUtils'
 import { Mode, PoorNodeType, SearchSettings } from '../types'
-import { getKeyFromObject } from '../utils'
+import { getKeyFromObject, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
+import { Logger } from '../logger'
+
+type GetCodeForNode = {
+  getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
+}
 
 export const validateMatch = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: SearchSettings & {
-    getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
-  },
+  settings: Omit<SearchSettings, 'logger'> &
+    GetCodeForNode & {
+      logger?: Logger
+    },
 ) => {
+  const settingsWithLogger: SearchSettings & GetCodeForNode = {
+    ...settings,
+    logger: settings.logger ?? noopLogger,
+  }
   const {
     mode,
-    logger: { log, logStepStart },
     parserSettings,
     getCodeForNode = () => '',
-  } = settings
+    logger: { log, logStepStart },
+  } = settingsWithLogger
 
   const isExact = mode === 'exact'
 
@@ -31,7 +41,7 @@ export const validateMatch = (
   } = compareNodes({
     fileNode: fileNode,
     queryNode: queryNode,
-    searchSettings: settings,
+    searchSettings: settingsWithLogger,
   })
 
   if (

@@ -9,7 +9,7 @@ export const getParserSettings = () => {
     throw new Error('process.env.TEST_PARSER_TYPE not set')
   }
 
-  const parserSettings = parserSettingsMap[parserType]
+  const parserSettings = parserSettingsMap[parserType]()
 
   return parserSettings
 }

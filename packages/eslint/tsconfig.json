@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "/*": [
+        "src/*"
+      ]
+    },
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "declaration": false,
+  },
+  "include": ["src"],
+  "exclude": [
+    "__tests__/**/__fixtures__",
+    "__tests__/**/__fixturesOther__",
+    "dist",
+    "node_modules",
+    "tools/*.js"
+  ]
+}

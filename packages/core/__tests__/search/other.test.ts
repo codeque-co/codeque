@@ -109,4 +109,60 @@ describe('Other', () => {
     expect(errors.length).toBe(0)
     expect(matches.length).toBe(1)
   })
+
+  it('Should match try-catch block with statement and re-throw of error', () => {
+    const fileContent = `
+    try {
+      await bla.bla.bla
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+    `
+
+    const queries = [`try {} catch($$) { Logger.error($$); throw $$ }`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should match class with static method', () => {
+    const fileContent = `
+      class Test {
+        method() { return 0 }
+        static getInstance(){
+          return new Test()
+        }
+      }
+    `
+
+    const queries = [`class $$ {static getInstance(){}}`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+  })
 })

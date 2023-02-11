@@ -1,8 +1,11 @@
 import { performance } from 'perf_hooks'
+import { Logger } from './logger'
 
 import {
+  AstMatch,
   Match,
   Matches,
+  MatchWithFileInfo,
   Mode,
   NodesComparator,
   NodesComparatorParameters,
@@ -151,17 +154,22 @@ export const nonIdentifierOrKeywordGlobal = new RegExp(
   'g',
 )
 
-export const dedupMatches = (
-  matches: Matches,
+export const dedupMatches = <M extends AstMatch>(
+  matches: M[],
   log: (...args: any[]) => void,
   debug = false,
-): Matches => {
-  const deduped: Matches = []
+): M[] => {
+  const deduped: M[] = []
 
   matches.forEach((match) => {
     const alreadyIn = deduped.some((_match) => {
+      const filePathMatch =
+        (match as MatchWithFileInfo).filePath === undefined ||
+        (match as MatchWithFileInfo).filePath ===
+          (_match as MatchWithFileInfo).filePath
+
       return (
-        match.filePath === _match.filePath &&
+        filePathMatch &&
         match.start === _match.start &&
         match.end === _match.end
       )
@@ -169,8 +177,6 @@ export const dedupMatches = (
 
     if (!alreadyIn) {
       deduped.push(match)
-    } else if (debug) {
-      log('already in', match.code, match.query)
     }
   })
 
@@ -206,7 +212,7 @@ export const isNullOrUndef = (val: any) => val === null || val === undefined
 export const SPACE_CHAR = ' '
 
 export const normalizeText = (text: string) =>
-  text.trim().replace(/\s+/g, SPACE_CHAR)
+  text ? text.trim().replace(/\s+/g, SPACE_CHAR) : text
 
 export const runNodesComparators = (
   nodesComparators: NodesComparator[],
@@ -219,4 +225,10 @@ export const runNodesComparators = (
       return compareResult
     }
   }
+}
+
+export const noopLogger: Logger = {
+  log: () => undefined,
+  logStepEnd: () => undefined,
+  logStepStart: () => undefined,
 }

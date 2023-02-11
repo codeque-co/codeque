@@ -1,7 +1,7 @@
 import { NotNullParsedQuery, SearchSettings } from '../types'
 import { measureStart } from '../utils'
 
-type ShallowSearchArgs = SearchSettings & {
+type ShallowSearchArgs = Pick<SearchSettings, 'logger' | 'caseInsensitive'> & {
   queries: NotNullParsedQuery[]
   fileContent: string
 }

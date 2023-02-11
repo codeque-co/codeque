@@ -5,7 +5,12 @@ import { StateManager, StateShape } from './StateManager'
 import dedent from 'dedent'
 import { EventBus, eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
-import { parseQueries, extensionTester, pathToPosix } from '@codeque/core'
+import {
+  parseQueries,
+  extensionTester,
+  pathToPosix,
+  __internal,
+} from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
 import { dedentPatched } from './utils'
@@ -77,7 +82,11 @@ export function activate(context: vscode.ExtensionContext) {
         : selectedCode
 
     if (newQuery) {
-      const [, queryParseOk] = parseQueries([newQuery], false)
+      const [, queryParseOk] = parseQueries(
+        [newQuery],
+        false,
+        __internal.parserSettingsMap['babel'](),
+      )
 
       stateManager.setState({
         query: newQuery,

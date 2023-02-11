@@ -1,11 +1,11 @@
 import { ParserSettings, ParserType } from '../types'
-import { babelParserSettings } from './babelParser/settings'
-import { typescriptEslintParserSettings } from './typescriptEslintParser/settings'
-import { esprimaParserSettings } from './esprimaParser/settings'
 
-typescriptEslintParserSettings
-export const parserSettingsMap: Record<ParserType, ParserSettings> = {
-  babel: babelParserSettings,
-  'typescript-eslint': typescriptEslintParserSettings,
-  esprima: esprimaParserSettings,
+const resolveParserSettings = (parser: string) => () => {
+  return require(`./${parser}/settings`).default
+}
+
+export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
+  babel: resolveParserSettings('babelParser'),
+  'typescript-eslint': resolveParserSettings('typescriptEslintParser'),
+  esprima: resolveParserSettings('esprimaParser'),
 }

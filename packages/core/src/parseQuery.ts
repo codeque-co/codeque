@@ -226,7 +226,7 @@ export const parseQueries = (
 
         originalError = {
           text: error.message,
-          location: error.loc,
+          location: parserSettings.getParseErrorLocation(error as Error),
           code: error.code,
           reasonCode: error.reasonCode,
         }

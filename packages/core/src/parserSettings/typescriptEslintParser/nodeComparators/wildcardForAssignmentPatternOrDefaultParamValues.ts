@@ -1,4 +1,4 @@
-import { createWildcardForAssignmentPatternOrDefaultParamValuesNodesComparator } from '/parserSettings/nodeComparatorFactories/JavaScriptSpecific/wildcardForAssignmentPatternOrDefaultParamValues'
+import { createWildcardForAssignmentPatternOrDefaultParamValuesNodesComparator } from '../../nodeComparatorFactories/JavaScriptSpecific/wildcardForAssignmentPatternOrDefaultParamValues'
 
 export const wildcardForAssignmentPatternOrDefaultParamValuesNodesComparator =
   createWildcardForAssignmentPatternOrDefaultParamValuesNodesComparator()

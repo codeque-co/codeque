@@ -297,6 +297,7 @@ export const compareNodes = (
 
     if (
       parserSettings.isNode(queryValue as PoorNodeType) ||
+      parserSettings.isNode(fileValue as PoorNodeType) ||
       isNodeArray(queryValue as PoorNodeType[], parserSettings.isNode) ||
       isNodeArray(fileValue as PoorNodeType[], parserSettings.isNode)
     ) {

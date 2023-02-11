@@ -1,4 +1,4 @@
-import { PoorNodeType, ParserSettings, WildcardUtils } from './types'
+import { PoorNodeType, ParserSettings, WildcardUtils, Match } from './types'
 import { isNullOrUndef } from './utils'
 
 export const isNodeArray = (
@@ -206,3 +206,12 @@ export const sortByLeastIdentifierStrength = (
 
   return 0
 }
+
+export const getMatchFromNode = (
+  node: PoorNodeType,
+  parserSettings: Pick<ParserSettings, 'getNodePosition'>,
+) =>
+  ({
+    ...parserSettings.getNodePosition(node),
+    node,
+  } as Match)

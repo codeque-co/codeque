@@ -1,6 +1,6 @@
 {
-  "name": "@codeque/core",
-  "version": "0.3.2",
+  "name": "@codeque/eslint-plugin",
+  "version": "0.0.1",
   "description": "Supercharged multiline code search and replace tool",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",
@@ -9,11 +9,6 @@
   },
   "homepage": "https://codeque.co",
   "main": "dist/index.js",
-  "exports": {
-    ".": "./dist/index.js",
-    "./web": "./dist/index.web.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist/**",
     "LICENSE.md"
@@ -26,50 +21,22 @@
     "url": "https://github.com/codeque-co/codeque"
   },
   "devDependencies": {
-    "@types/dedent": "^0.7.0",
-    "@types/esprima": "^4.0.3",
-    "@types/glob": "^7.2.0",
     "@types/jest": "^27.0.3",
-    "@types/mock-fs": "^4.13.1",
-    "@types/node-fetch": "^3.0.3",
-    "@types/object.omit": "^3.0.0",
-    "@types/unzipper": "^0.10.4",
-    "@typescript-eslint/eslint-plugin": "^5.16.0",
-    "@typescript-eslint/parser": "^5.50.0",
-    "babel-jest": "^27.4.4",
-    "babel-plugin-root-import": "^6.6.0",
-    "concurrently": "^7.2.1",
-    "deep-object-diff": "^1.1.7",
-    "esprima": "^4.0.1",
+    "eslint": "^8.34.0",
     "jest": "^27.4.4",
-    "mock-fs": "^5.1.2",
-    "node-fetch-commonjs": "^3.1.1",
     "release-it": "^15.0.0",
-    "ts-jest": "^27.1.1",
-    "unzipper": "^0.10.11"
+    "ts-jest": "^27.1.1"
   },
   "dependencies": {
-    "@babel/parser": "7.19.4",
-    "@babel/plugin-syntax-typescript": "7.18.6",
-    "@babel/traverse": "^7.20.13",
-    "@babel/types": "7.19.4",
-    "dedent": "^0.7.0",
-    "dpdm": "^3.12.0",
-    "glob-escape": "^0.0.2",
-    "ignore": "^5.1.9",
-    "minimatch": "^5.1.0"
+    "@codeque/core": "^0.3.2"
   },
   "peerDependencies": {
-    "@typescript-eslint/parser": "^5.50.0",
-    "esprima": "^4.0.1"
+    "eslint": "^8.34.0"
   },
   "scripts": {
-    "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\" ",
-    "build:performance": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production_performance yarn build:code\" ",
-    "build:watch": "rm -rf dist && concurrently \"yarn build:declarations --watch\" \"yarn build:code --watch\" ",
-    "build:declarations": "tsc --project tsconfig.build.json",
-    "build:code": "babel ./src --extensions \".ts,.tsx\" -d dist",
-    "typecheck": "tsc --project tsconfig.json",
+    "build": "rm -rf dist && tsc",
+    "build:watch": "yarn build --watch",
+    "typecheck": "tsc --noEmit --skipLibCheck",
     "test": "yarn test:babel && yarn test:typescript-eslint",
     "test:babel": "TEST_PARSER_TYPE=babel jest",
     "test:typescript-eslint": "TEST_PARSER_TYPE=typescript-eslint jest",

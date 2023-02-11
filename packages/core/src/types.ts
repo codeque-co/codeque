@@ -30,7 +30,12 @@ export type MatchWithFileInfo = Omit<Match, 'node'> & {
   extendedCodeFrame: ExtendedCodeFrame
 }
 
+export type AstMatch = Omit<Match, 'node'> & {
+  query: string
+}
+
 export type Matches = Array<MatchWithFileInfo>
+export type AstMatches = Array<AstMatch>
 
 export type PoorNodeType = {
   [key: string]: string | number | boolean | PoorNodeType[] | PoorNodeType
@@ -213,4 +218,5 @@ export type ParserSettings = {
   numericLiteralUtils: NumericLiteralUtils
   programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils
   getNodePosition: (node: PoorNodeType) => Omit<Match, 'node'>
+  getParseErrorLocation: (error: Error) => { line: number; column: number }
 }

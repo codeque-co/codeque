@@ -189,6 +189,11 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
   loc: node.loc as unknown as Location,
 })
 
+const getParseErrorLocation = (e: any) => ({
+  line: e.loc?.line ?? 0,
+  column: e.loc?.column ?? 0,
+})
+
 export const babelParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
@@ -212,4 +217,7 @@ export const babelParserSettings: ParserSettings = {
   numericLiteralUtils,
   programNodeAndBlockNodeUtils,
   getNodePosition,
+  getParseErrorLocation,
 }
+
+export default babelParserSettings

@@ -44,7 +44,7 @@ export const searchInFileSystem = ({
     })
   }
 
-  const parserSettings = parserSettingsMap[testParserTypeOverride ?? parser]
+  const parserSettings = parserSettingsMap[testParserTypeOverride ?? parser]()
   const settings: SearchSettings = {
     mode,
     caseInsensitive,

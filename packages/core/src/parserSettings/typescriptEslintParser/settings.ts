@@ -171,6 +171,11 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
   loc: node.loc as unknown as Location,
 })
 
+const getParseErrorLocation = (e: any) => ({
+  line: e.lineNumber ?? 0,
+  column: e.column ?? 0,
+})
+
 export const typescriptEslintParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
@@ -194,4 +199,7 @@ export const typescriptEslintParserSettings: ParserSettings = {
   numericLiteralUtils,
   programNodeAndBlockNodeUtils,
   getNodePosition,
+  getParseErrorLocation,
 }
+
+export default typescriptEslintParserSettings

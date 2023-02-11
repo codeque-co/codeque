@@ -17,3 +17,5 @@ export const esprimaParserSettings: ParserSettings = {
     return ast as unknown as PoorNodeType
   },
 }
+
+export default esprimaParserSettings

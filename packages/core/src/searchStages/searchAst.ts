@@ -9,6 +9,7 @@ import {
   test_traverseAndMatchWithVisitors,
 } from './traverseAndMatch'
 import { useTraverseApproachTestOnly } from '../config'
+import { getLocationOfMultilineMatch } from './getLocationOfMultilineMatch'
 
 export type SearchAstSettings = SearchSettings & {
   queries: NotNullParsedQuery[]
@@ -67,30 +68,12 @@ export const searchAst = (
         /**
          * For multi-statement queries we search where exactly statements are located within parent node
          */
-
-        const { blockNodeBodyKey } =
-          settings.parserSettings.programNodeAndBlockNodeUtils
-
-        const statements = queryNode[blockNodeBodyKey] as PoorNodeType[]
-
-        const subMatches = statements
-          .map((statement) =>
-            traverseAndMatchFn(match.node, statement, newSettings),
-          )
-          .flat()
-          .sort((matchA, matchB) => matchA.start - matchB.end)
-
-        const firstSubMatch = subMatches[0]
-        const lastSubMatch = subMatches[subMatches.length - 1]
-
-        return {
-          start: firstSubMatch.start,
-          end: lastSubMatch.end,
-          loc: {
-            start: firstSubMatch.loc.start,
-            end: lastSubMatch.loc.end,
-          },
-        } as Match
+        return getLocationOfMultilineMatch(
+          match,
+          queryNode,
+          newSettings,
+          traverseAndMatchFn,
+        )
       },
     )
 

@@ -20,6 +20,8 @@ import { parserSettingsMap } from './parserSettings'
 import { shallowSearch } from './searchStages/shallowSearch'
 import { getMatchFromNode, getVisitorKeysForQueryNodeType } from './astUtils'
 import { validateMatch } from './searchStages/validateMatch'
+import { getLocationOfMultilineMatch } from './searchStages/getLocationOfMultilineMatch'
+import { traverseAndMatch } from './searchStages/traverseAndMatch'
 
 export const __internal = {
   parserSettingsMap,
@@ -27,4 +29,6 @@ export const __internal = {
   getMatchFromNode,
   validateMatch,
   getVisitorKeysForQueryNodeType,
+  getLocationOfMultilineMatch,
+  traverseAndMatch,
 }

@@ -1,5 +1,11 @@
-import { Match, PoorNodeType, SearchSettings } from '../types'
-import { measureStart } from '../utils'
+import {
+  GetCodeForNode,
+  Match,
+  PoorNodeType,
+  SearchSettings,
+  SearchSettingsWithOptionalLogger,
+} from '../types'
+import { measureStart, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
 import { validateMatch } from './validateMatch'
 import {
@@ -19,7 +25,7 @@ import {
 
 const test_traverse_ast = (
   fileNode: PoorNodeType,
-  settings: SearchSettings,
+  settings: SearchSettingsWithOptionalLogger,
   visitors: Record<string, (node: PoorNodeType) => void>,
 ) => {
   const visitor = visitors[fileNode.type as string]
@@ -50,7 +56,7 @@ const test_traverse_ast = (
 export const test_traverseAndMatchWithVisitors = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: SearchSettings,
+  settings: SearchSettingsWithOptionalLogger,
 ) => {
   const matches: Match[] = []
 
@@ -82,15 +88,17 @@ export const test_traverseAndMatchWithVisitors = (
 export const traverseAndMatch = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: SearchSettings & {
-    getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
-  },
+  settings: SearchSettingsWithOptionalLogger & GetCodeForNode,
 ) => {
+  const settingsWithLogger: SearchSettings & GetCodeForNode = {
+    ...settings,
+    logger: settings.logger ?? noopLogger,
+  }
   const {
     logger: { log, logStepEnd, logStepStart },
     parserSettings,
     getCodeForNode = () => '',
-  } = settings
+  } = settingsWithLogger
 
   logStepStart('traverse')
   const matches = []
@@ -101,7 +109,7 @@ export const traverseAndMatch = (
   const { levelMatch, fileKeysToTraverseForOtherMatches } = compareNodes({
     fileNode,
     queryNode,
-    searchSettings: settings,
+    searchSettings: settingsWithLogger,
   })
 
   const foundMatchStart = levelMatch

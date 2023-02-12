@@ -18,7 +18,14 @@ export const createMultipleSearchFunctionsExecutor =
     searchFns.forEach((searchFn) => searchFn(node))
   }
 
-export const supportedParsers = ['@typescript-eslint/parser']
+const typescriptEslintParser = '@typescript-eslint/parser' as const
+
+type SupportedParsers = typeof typescriptEslintParser
+export const supportedParsers = [typescriptEslintParser]
+
+export const parserNamesMappingsToCodeQueInternal = {
+  [typescriptEslintParser]: 'typescript-eslint',
+} as const
 
 export const extractParserNameFromResolvedPath = (pathToParser: string) => {
   const [_, pathAfterNodeModules] = pathToParser.split('node_modules')
@@ -39,11 +46,13 @@ export const extractParserNameFromResolvedPath = (pathToParser: string) => {
 export const assertCompatibleParser = (parserPath: string) => {
   const parser = extractParserNameFromResolvedPath(parserPath)
 
-  if (!supportedParsers.includes(parser)) {
+  if (!supportedParsers.includes(parser as any)) {
     throw new Error(
       `\nCodeQue does not support "${parser}" parser.\nSupported parsers are:\n -${supportedParsers.join(
         '\n- ',
       )}\nPlease open an issue to request parser support.\nVisit https://github.com/codeque-co/codeque/issues\n`,
     )
   }
+
+  return parser as SupportedParsers
 }

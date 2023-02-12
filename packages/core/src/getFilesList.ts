@@ -131,6 +131,10 @@ export const filterIncludeExclude = ({
   const include = _include ? _include.map(removeInitialDot) : _include
   const exclude = _exclude.map(removeInitialDot)
 
+  if (!include && exclude.length === 0) {
+    return filesList
+  }
+
   return filesList
     .map((p) => path.relative(searchRoot, p))
     .filter((id) =>

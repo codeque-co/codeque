@@ -8,28 +8,41 @@ import {
   filterIncludeExclude,
   ParsedQuery,
 } from '@codeque/core'
-import {
-  formatQueryParseErrors,
-  createMultipleSearchFunctionsExecutor,
-  supportedParsers,
-} from './utils'
+
 import {
   ParsedQueryWithSettings,
   VisitorsSearchArrayMap,
   VisitorsSearchMap,
 } from './types'
-import { assertCompatibleParser } from './utils'
+import {
+  formatQueryParseErrors,
+  createMultipleSearchFunctionsExecutor,
+  assertCompatibleParser,
+  parserNamesMappingsToCodeQueInternal,
+} from './utils'
 
-/**
- * TODO: To verify if new approach traversal work correct, we can change implementation of traversal in main search and run tests
- */
+const queriesCache = {} as Record<string, ParsedQuery>
 
-const cache = {} as any
 let preparationTime = 0
+let shallowSearchTime = 0
+let preparingVisitorsTime = 0
+let preparingQueriesTime = 0
+let filteringFilePathsTime = 0
+const searchTimeForQueries = {} as Record<string, number>
 
 process.on('beforeExit', () => {
-  console.log('CACHE', cache)
-  console.log('preparationTime', preparationTime)
+  const shouldPrintMetric = process.env.CODEQUE_DEBUG === 'true'
+
+  if (shouldPrintMetric) {
+    console.log('\nCodeQue debug metrics:\n')
+    console.log('preparationTime', preparationTime)
+    console.log('shallowSearchTime', shallowSearchTime)
+    console.log('preparingVisitorsTime', preparingVisitorsTime)
+    console.log('preparingQueriesTime', preparingQueriesTime)
+    console.log('filteringFilePathsTime', filteringFilePathsTime)
+    console.log('searchTimeForQueries', searchTimeForQueries)
+    console.log('')
+  }
 })
 
 export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
@@ -75,8 +88,8 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     ],
   },
   create: function (context: Rule.RuleContext) {
-    const prepStart = Date.now()
-    assertCompatibleParser(context.parserPath)
+    const prepStart = performance.now()
+    const parser = assertCompatibleParser(context.parserPath)
 
     const settings = context.options[0] as
       | Array<{
@@ -104,20 +117,34 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
       throw new Error('Each setting has to have at least query defined.')
     }
 
-    const parserSettings = __internal.parserSettingsMap['typescript-eslint']()
-    let queriesParseResult: [ParsedQuery[], boolean][] = cache.queries
+    const parserSettings =
+      __internal.parserSettingsMap[
+        parserNamesMappingsToCodeQueInternal[parser]
+      ]()
 
-    if (!queriesParseResult) {
-      queriesParseResult = settings.map(({ query, caseInsensitive }) =>
-        parseQueries(
+    const startPreparingQueries = performance.now()
+
+    const queriesParseResult = settings.map(
+      ({ query, caseInsensitive: caseInsensitive_ }) => {
+        const caseInsensitive = caseInsensitive_ ?? defaultCaseInsensitive
+        const cacheKey = `(${query});${caseInsensitive}`
+        const queryFromCache = queriesCache[cacheKey]
+
+        if (queryFromCache) {
+          return [[queryFromCache], true] as [ParsedQuery[], boolean]
+        }
+
+        const parsedQuery = parseQueries(
           [query] as string[],
-          caseInsensitive ?? defaultCaseInsensitive,
+          caseInsensitive,
           parserSettings,
-        ),
-      )
+        )
 
-      cache.queries = queriesParseResult
-    }
+        queriesCache[cacheKey] = parsedQuery[0][0]
+
+        return parsedQuery
+      },
+    )
 
     const queriesNotParsedCorrectly = queriesParseResult.filter(
       ([_, parseOk]) => !parseOk,
@@ -140,6 +167,8 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
       excludeFiles: settings[idx].excludeFiles ?? [],
     })) as ParsedQueryWithSettings[]
 
+    preparingQueriesTime += performance.now() - startPreparingQueries
+    const startFilteringFilePaths = performance.now()
     const queriesWithSettingsMatchedFilePath = parsedQueriesWithSettings.filter(
       ({ includeFiles, excludeFiles }) => {
         const matchedFilePath = filterIncludeExclude({
@@ -153,6 +182,9 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
       },
     )
 
+    filteringFilePathsTime += performance.now() - startFilteringFilePaths
+
+    const shallowStart = performance.now()
     const queriesWithSettingsMatchedShallow =
       queriesWithSettingsMatchedFilePath.filter((parsedQuery) => {
         return __internal.shallowSearch({
@@ -163,10 +195,13 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
         })
       }) as ParsedQueryWithSettings[]
 
+    shallowSearchTime += performance.now() - shallowStart
+
     if (queriesWithSettingsMatchedShallow.length === 0) {
       return {}
     }
 
+    const preparingVisitorsStart = performance.now()
     const queryCodesGroupedByStartingNode =
       queriesWithSettingsMatchedShallow.reduce((map, query) => {
         const nodeType = query.parsedQuery.queryNode.type as string
@@ -185,11 +220,18 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
         for (const queryWithSettings of parsedQueries) {
           const searchOptions = {
             mode: queryWithSettings.mode,
-            // TODO: should this be parametrised ? yes, for other like vue it will have to be
             parserSettings,
             debug: false,
             caseInsensitive: queryWithSettings.caseInsensitive,
           }
+          const startSearch = performance.now()
+          const { isMultistatement, queryCode, queryNode } =
+            queryWithSettings.parsedQuery
+
+          if (searchTimeForQueries[queryCode] === undefined) {
+            searchTimeForQueries[queryCode] = 0
+          }
+
           const match = __internal.validateMatch(
             node,
             queryWithSettings.parsedQuery.queryNode,
@@ -197,7 +239,21 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
           )
 
           if (match) {
-            const matchData = __internal.getMatchFromNode(node, parserSettings)
+            let matchData = __internal.getMatchFromNode(node, parserSettings)
+
+            if (isMultistatement) {
+              /**
+               * For multi-statement queries we search where exactly statements are located within parent node
+               */
+              matchData = __internal.getLocationOfMultilineMatch(
+                matchData,
+                queryNode,
+                searchOptions,
+                __internal.traverseAndMatch,
+              )
+            }
+
+            searchTimeForQueries[queryCode] += performance.now() - startSearch
 
             context.report({
               loc: matchData.loc,
@@ -251,7 +307,8 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
         },
       ),
     )
-    preparationTime += Date.now() - prepStart
+    preparingVisitorsTime += performance.now() - preparingVisitorsStart
+    preparationTime += performance.now() - prepStart
 
     return visitors
   },

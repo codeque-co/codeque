@@ -3,6 +3,7 @@ import { compareCode } from '../utils'
 
 import path from 'path'
 import { getFilesList } from '/getFilesList'
+import searchInStrings from '/searchInStrings'
 
 describe('multi statements', () => {
   let filesList = [] as string[]
@@ -149,5 +150,52 @@ describe('multi statements', () => {
 
     expect(errors.length).toBe(0)
     expect(matches.length).toBe(0)
+  })
+
+  it('should find proper position in file if one of the multiline query statements is matched more than once in file node', () => {
+    const fileContent = `
+        const result = await db.model.findUnique();
+
+        if (!result) {
+          throw new Error();
+        }
+
+        const results = await db.model2.find();
+    `
+
+    const queries = [
+      ` 
+        const $$ = await db.$$.$$();
+
+        if (!$$) {
+          throw new Error();
+        }
+      `,
+    ]
+
+    const files = [
+      {
+        content: fileContent,
+        path: 'test-path',
+      },
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include-with-order',
+      files,
+      queryCodes: queries,
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
+    const expectedMatch = `
+      const result = await db.model.findUnique();
+
+      if (!result) {
+        throw new Error();
+      }
+    `
+    expect(compareCode(matches[0].code, expectedMatch)).toBe(true)
   })
 })

@@ -1,20 +1,19 @@
 import { sortByLeastIdentifierStrength } from '../astUtils'
-import { Mode, PoorNodeType, SearchSettings } from '../types'
+import {
+  GetCodeForNode,
+  Mode,
+  PoorNodeType,
+  SearchSettings,
+  SearchSettingsWithOptionalLogger,
+} from '../types'
 import { getKeyFromObject, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
 import { Logger } from '../logger'
 
-type GetCodeForNode = {
-  getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
-}
-
 export const validateMatch = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: Omit<SearchSettings, 'logger'> &
-    GetCodeForNode & {
-      logger?: Logger
-    },
+  settings: SearchSettingsWithOptionalLogger & GetCodeForNode,
 ) => {
   const settingsWithLogger: SearchSettings & GetCodeForNode = {
     ...settings,

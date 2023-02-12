@@ -118,6 +118,17 @@ export type SearchSettings = {
   parserSettings: ParserSettings
 }
 
+export type SearchSettingsWithOptionalLogger = Omit<
+  SearchSettings,
+  'logger'
+> & {
+  logger?: Logger
+}
+
+export type GetCodeForNode = {
+  getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
+}
+
 export type WildcardMeta = {
   wildcardType: 'identifier' | 'nodeTree'
   wildcardWithRef: string

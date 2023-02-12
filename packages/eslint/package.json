@@ -1,7 +1,7 @@
 {
   "name": "@codeque/eslint-plugin",
-  "version": "0.0.0-beta.0",
-  "description": "Supercharged multiline code search and replace tool",
+  "version": "0.0.0",
+  "description": "Create custom ESLint rules based on code sample(s). Utilizing CodeQue - structural code search engine.",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",
   "engines": {
@@ -28,7 +28,7 @@
     "ts-jest": "^27.1.1"
   },
   "dependencies": {
-    "@codeque/core": "^0.3.2"
+    "@codeque/core": "^0.4.0"
   },
   "peerDependencies": {
     "eslint": "^8.34.0"
@@ -39,9 +39,9 @@
     "typecheck": "tsc --noEmit --skipLibCheck",
     "test": "jest",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
-    "test:setup": "node ./tools/getFixtures.js",
+    "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",
-    "checks": "yarn lint && yarn typecheck && yarn test",
+    "checks": "yarn lint && yarn typecheck && yarn test:circular && yarn test",
     "release": "release-it"
   },
   "keywords": [

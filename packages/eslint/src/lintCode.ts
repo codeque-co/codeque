@@ -49,7 +49,7 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
   meta: {
     type: type,
     docs: {
-      description: 'Lints anything based on code sample(s).',
+      description: 'Lint anything based on code sample(s).',
     },
     fixable: 'code',
     schema: [

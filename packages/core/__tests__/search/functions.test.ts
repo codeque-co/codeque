@@ -1,6 +1,6 @@
 import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '../utils'
-
+import { searchInStrings } from '/searchInStrings'
 import path from 'path'
 import { getFilesList } from '/getFilesList'
 import fs from 'fs'
@@ -15,28 +15,18 @@ describe('functions', () => {
     })
   })
 
-  const tempFilePath = path.join(
-    __dirname,
-    '__fixtures__',
-    `${Date.now()}.temp`,
-  )
-  const mockedFilesList = [tempFilePath]
+  const testFileContent = `
+    (a,b,c) => {};
+    (a,d) => {};
+    (a, { b}) => {};
+  `
 
-  beforeAll(() => {
-    fs.writeFileSync(
-      tempFilePath,
-      `
-      (a,b,c) => {};
-      (a,d) => {};
-      (a, { b}) => {};
-
-    `,
-    )
-  })
-
-  afterAll(() => {
-    fs.unlinkSync(tempFilePath)
-  })
+  const mockedFilesList = [
+    {
+      path: 'mock',
+      content: testFileContent,
+    },
+  ]
 
   it('should match inline types in function params', () => {
     const queries = [
@@ -267,9 +257,9 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: queries,
     })
 
@@ -284,9 +274,9 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: queries,
     })
 
@@ -301,9 +291,9 @@ describe('functions', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: queries,
     })
 

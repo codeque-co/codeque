@@ -4,7 +4,11 @@ import {
   SearchSettings,
   Match,
 } from '../types'
-import { traverseAndMatch } from './traverseAndMatch'
+import {
+  traverseAndMatch,
+  test_traverseAndMatchWithVisitors,
+} from './traverseAndMatch'
+import { useTraverseApproachTestOnly } from '../config'
 
 export type SearchAstSettings = SearchSettings & {
   queries: NotNullParsedQuery[]
@@ -47,11 +51,19 @@ export const searchAst = (
       getCodeForNode,
     }
 
-    const matches = traverseAndMatch(programNode, queryNode, newSettings).map(
+    const traverseAndMatchFn = useTraverseApproachTestOnly
+      ? test_traverseAndMatchWithVisitors
+      : traverseAndMatch
+
+    const matches = traverseAndMatchFn(programNode, queryNode, newSettings).map(
       (match) => {
         if (!isMultistatement) {
           return match
         }
+        /**
+         * TODO: Try to get rid of this somehow
+         */
+
         /**
          * For multi-statement queries we search where exactly statements are located within parent node
          */
@@ -63,7 +75,7 @@ export const searchAst = (
 
         const subMatches = statements
           .map((statement) =>
-            traverseAndMatch(match.node, statement, newSettings),
+            traverseAndMatchFn(match.node, statement, newSettings),
           )
           .flat()
           .sort((matchA, matchB) => matchA.start - matchB.end)

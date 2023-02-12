@@ -5,19 +5,32 @@ import {
   __internal,
   NotNullParsedQuery,
   PoorNodeType,
+  filterIncludeExclude,
+  ParsedQuery,
 } from '@codeque/core'
-import { formatQueryParseErrors } from './utils'
+import {
+  formatQueryParseErrors,
+  createMultipleSearchFunctionsExecutor,
+  supportedParsers,
+} from './utils'
+import {
+  ParsedQueryWithSettings,
+  VisitorsSearchArrayMap,
+  VisitorsSearchMap,
+} from './types'
+import { assertCompatibleParser } from './utils'
 
 /**
  * TODO: To verify if new approach traversal work correct, we can change implementation of traversal in main search and run tests
  */
 
-type ParsedQueryWithSettings = {
-  parsedQuery: NotNullParsedQuery
-  mode: Mode
-  caseInsensitive: boolean
-  message: string
-}
+const cache = {} as any
+let preparationTime = 0
+
+process.on('beforeExit', () => {
+  console.log('CACHE', cache)
+  console.log('preparationTime', preparationTime)
+})
 
 export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
   meta: {
@@ -44,26 +57,45 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
             caseInsensitive: {
               type: 'boolean',
             },
-            // todo: file filters, sensitivity, alternative file path for query etc.
+            includeFiles: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+            excludeFiles: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
           },
         },
       },
     ],
   },
   create: function (context: Rule.RuleContext) {
-    // console.log('Hello World')
+    const prepStart = Date.now()
+    assertCompatibleParser(context.parserPath)
+
     const settings = context.options[0] as
       | Array<{
           mode?: Mode
           query?: string
           message?: string
           caseInsensitive?: boolean
+          includeFiles?: string[]
+          excludeFiles?: string[]
         }>
       | undefined
 
     if (!settings || settings.length === 0) {
-      return
+      return {}
     }
+
+    const code = context.getSourceCode().text
+    const absoluteFilePath = context.getPhysicalFilename()
+    const root = context.getCwd()
 
     const defaultCaseInsensitive = true
     const queryCodes = settings.map(({ query }) => query)
@@ -73,14 +105,19 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     }
 
     const parserSettings = __internal.parserSettingsMap['typescript-eslint']()
+    let queriesParseResult: [ParsedQuery[], boolean][] = cache.queries
 
-    const queriesParseResult = settings.map(({ query, caseInsensitive }) =>
-      parseQueries(
-        [query] as string[],
-        caseInsensitive ?? defaultCaseInsensitive,
-        parserSettings,
-      ),
-    )
+    if (!queriesParseResult) {
+      queriesParseResult = settings.map(({ query, caseInsensitive }) =>
+        parseQueries(
+          [query] as string[],
+          caseInsensitive ?? defaultCaseInsensitive,
+          parserSettings,
+        ),
+      )
+
+      cache.queries = queriesParseResult
+    }
 
     const queriesNotParsedCorrectly = queriesParseResult.filter(
       ([_, parseOk]) => !parseOk,
@@ -99,23 +136,34 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
       mode: settings[idx].mode ?? 'include',
       caseInsensitive: settings[idx].caseInsensitive ?? defaultCaseInsensitive,
       message: settings[idx].message ?? 'Restricted code pattern',
+      includeFiles: settings[idx].includeFiles, // need to be undefined, cannot be empty array
+      excludeFiles: settings[idx].excludeFiles ?? [],
     })) as ParsedQueryWithSettings[]
 
-    const code = context.getSourceCode().text
+    const queriesWithSettingsMatchedFilePath = parsedQueriesWithSettings.filter(
+      ({ includeFiles, excludeFiles }) => {
+        const matchedFilePath = filterIncludeExclude({
+          filesList: [absoluteFilePath],
+          searchRoot: root,
+          exclude: excludeFiles,
+          include: includeFiles,
+        })
 
-    const queriesWithSettingsMatchedShallow = parsedQueriesWithSettings.filter(
-      (parsedQuery) => {
+        return matchedFilePath.length === 1
+      },
+    )
+
+    const queriesWithSettingsMatchedShallow =
+      queriesWithSettingsMatchedFilePath.filter((parsedQuery) => {
         return __internal.shallowSearch({
           queries: [parsedQuery.parsedQuery] as NotNullParsedQuery[],
           fileContent: code,
           logger: {} as any,
           caseInsensitive: parsedQuery.caseInsensitive,
         })
-      },
-    ) as ParsedQueryWithSettings[]
+      }) as ParsedQueryWithSettings[]
 
     if (queriesWithSettingsMatchedShallow.length === 0) {
-      // console.log('shallow not match')
       return {}
     }
 
@@ -134,7 +182,6 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
 
     const createSearchForNode =
       (parsedQueries: ParsedQueryWithSettings[]) => (node: PoorNodeType) => {
-        // console.log('searchOptions', searchOptions)
         for (const queryWithSettings of parsedQueries) {
           const searchOptions = {
             mode: queryWithSettings.mode,
@@ -160,17 +207,51 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
         }
       }
 
-    const visitors = Object.entries(queryCodesGroupedByStartingNode)
-      .map(([node, queries]) => ({
-        [node]: createSearchForNode(queries),
-      }))
-      .reduce(
-        (visitorsMap, visitorObj) => ({
-          ...visitorsMap,
-          ...visitorObj,
-        }),
-        {},
-      )
+    const visitorsSearchArrayMap = Object.entries(
+      queryCodesGroupedByStartingNode,
+    )
+      .map(([nodeType, queries]) => {
+        const visitorKeys = __internal.getVisitorKeysForQueryNodeType(
+          nodeType,
+          parserSettings,
+        )
+
+        const searchForNode = createSearchForNode(queries)
+
+        const objectEntries = visitorKeys.map((visitorKey) => [
+          visitorKey,
+          searchForNode,
+        ])
+
+        return Object.fromEntries(objectEntries) as VisitorsSearchMap
+      })
+      .reduce((visitorsMap, visitorObj) => {
+        const newVisitorsMap: VisitorsSearchArrayMap = { ...visitorsMap }
+
+        for (const visitorKey in visitorObj) {
+          const searchFn = visitorObj[visitorKey]
+
+          if (Array.isArray(newVisitorsMap[visitorKey])) {
+            newVisitorsMap[visitorKey].push(searchFn)
+          } else {
+            newVisitorsMap[visitorKey] = [searchFn]
+          }
+        }
+
+        return newVisitorsMap
+      }, {} as VisitorsSearchArrayMap)
+
+    const visitors = Object.fromEntries(
+      Object.entries(visitorsSearchArrayMap).map(
+        ([visitorKey, searchFnsArray]) => {
+          return [
+            visitorKey,
+            createMultipleSearchFunctionsExecutor(searchFnsArray),
+          ]
+        },
+      ),
+    )
+    preparationTime += Date.now() - prepStart
 
     return visitors
   },

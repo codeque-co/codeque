@@ -9,7 +9,7 @@
     },
     "outDir": "dist",
     "skipLibCheck": true,
-    "declaration": false,
+    "declaration": false
   },
   "include": ["src"],
   "exclude": [

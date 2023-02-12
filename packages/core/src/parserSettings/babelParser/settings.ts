@@ -194,6 +194,13 @@ const getParseErrorLocation = (e: any) => ({
   column: e.loc?.column ?? 0,
 })
 
+const alternativeNodeTypes = {
+  Identifier: identifierNodeTypes,
+  MemberExpression: ['OptionalMemberExpression'],
+  OptionalMemberExpression: ['MemberExpression'],
+  BlockStatement: ['Program'],
+}
+
 export const babelParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
@@ -218,6 +225,7 @@ export const babelParserSettings: ParserSettings = {
   programNodeAndBlockNodeUtils,
   getNodePosition,
   getParseErrorLocation,
+  alternativeNodeTypes,
 }
 
 export default babelParserSettings

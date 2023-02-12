@@ -18,7 +18,7 @@ export * from './types'
 /* FOR INTERNAL USE ONLY */
 import { parserSettingsMap } from './parserSettings'
 import { shallowSearch } from './searchStages/shallowSearch'
-import { getMatchFromNode } from './astUtils'
+import { getMatchFromNode, getVisitorKeysForQueryNodeType } from './astUtils'
 import { validateMatch } from './searchStages/validateMatch'
 
 export const __internal = {
@@ -26,4 +26,5 @@ export const __internal = {
   shallowSearch,
   getMatchFromNode,
   validateMatch,
+  getVisitorKeysForQueryNodeType,
 }

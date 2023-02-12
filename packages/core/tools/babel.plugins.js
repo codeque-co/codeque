@@ -1,11 +1,13 @@
 module.exports = function plugin() {
-  console.log('BABEL', process.env.BABEL_ENV)
+  const babelEnv = process.env.BABEL_ENV
+  console.log('BABEL_ENV', babelEnv)
 
-  if (process.env.BABEL_ENV !== 'production') {
+  if (babelEnv !== 'production' && babelEnv !== 'test') {
     return {}
   }
 
-  const keepMetrics = process.env.BABEL_ENV === 'production_performance'
+  const keepMetrics = babelEnv === 'production_performance'
+  const keepTestFns = babelEnv === 'test'
 
   return {
     visitor: {
@@ -29,12 +31,24 @@ module.exports = function plugin() {
         }
       },
       VariableDeclaration(path, state) {
-        const identifier = path.node.declarations[0]?.id?.name
+        const declaration = path.node.declarations[0]
+        const identifier = declaration?.id?.name
 
         if (!keepMetrics && /^measure/.test(identifier)) {
           console.log('removed', `const/let/var ${identifier}`)
 
           path.remove()
+        }
+
+        if (!keepTestFns && /^test_/.test(identifier)) {
+          /**
+           * We used to do it when we used babel/traverse for tests
+           * Not we have custom ast traversal with visitors, but we keep this removal for now
+           */
+          console.log('reset', identifier, 'variable declaration to undefined')
+          const initPath = path.get('declarations.0.init')
+
+          initPath.replaceWith({ type: 'Identifier', name: 'undefined' })
         }
       },
       ObjectProperty(path) {

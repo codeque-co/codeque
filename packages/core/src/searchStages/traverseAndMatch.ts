@@ -2,47 +2,79 @@ import { Match, PoorNodeType, SearchSettings } from '../types'
 import { measureStart } from '../utils'
 import { compareNodes } from './compareNodes'
 import { validateMatch } from './validateMatch'
-import { getMatchFromNode } from '../astUtils'
+import {
+  getMatchFromNode,
+  getVisitorKeysForQueryNodeType,
+  getKeysWithNodes,
+} from '../astUtils'
 
 /**
  *
- * To make it work we have
- * - Modify parser settings to be able to add alternative visitors for given node types (JSXIdentifier vs Identifier)
- * - Figure out problem with multiline queries
- * - This has a chance to improve performance in cases where we have multiple queries
  *
- * This is slower than our custom impl.
  * We can try ESlint traversal next time (eslint uses https://www.npmjs.com/package/estraverse)
  *
  * Other interesting case is that @typescript-eslint/parser expose `visitorKeys` via parseEslint.
  * VisitorKeys is a set of keys containing other nodes for each node type
  */
-const traverseAndMatchBabel = (
+
+const test_traverse_ast = (
+  fileNode: PoorNodeType,
+  settings: SearchSettings,
+  visitors: Record<string, (node: PoorNodeType) => void>,
+) => {
+  const visitor = visitors[fileNode.type as string]
+
+  visitor?.(fileNode)
+
+  const keysWithNodes: string[] = getKeysWithNodes(
+    fileNode,
+    Object.keys(fileNode),
+    settings.parserSettings.isNode,
+  )
+
+  keysWithNodes.forEach((key) => {
+    if (fileNode[key] !== undefined) {
+      if (settings.parserSettings.isNode(fileNode[key] as PoorNodeType)) {
+        test_traverse_ast(fileNode[key] as PoorNodeType, settings, visitors)
+      } else {
+        const nestedNodesArray = fileNode[key] as PoorNodeType[]
+
+        nestedNodesArray.forEach((node) =>
+          test_traverse_ast(node, settings, visitors),
+        )
+      }
+    }
+  })
+}
+
+export const test_traverseAndMatchWithVisitors = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
-  settings: SearchSettings & {
-    getCodeForNode?: (node: PoorNodeType, nodeType: 'query' | 'file') => string
-  },
+  settings: SearchSettings,
 ) => {
   const matches: Match[] = []
 
-  const fileNodeForBabel = {
-    type: 'File',
-    program: fileNode,
+  const searchInPath = (node: PoorNodeType) => {
+    const match = validateMatch(node, queryNode, settings)
+
+    if (match) {
+      const matchData = getMatchFromNode(node, settings.parserSettings)
+      matches.push(matchData)
+    }
   }
-  const traverse: any = '@babel/traverse'
 
-  traverse(fileNodeForBabel as any, {
-    [queryNode.type as string]: (path: any) => {
-      const node = path.node
-      const match = validateMatch(node, queryNode, settings)
+  const visitorsMap = getVisitorKeysForQueryNodeType(
+    queryNode.type as string,
+    settings.parserSettings,
+  ).reduce(
+    (map, visitorKey) => ({
+      ...map,
+      [visitorKey]: searchInPath,
+    }),
+    {},
+  )
 
-      if (match) {
-        const matchData = getMatchFromNode(node, settings.parserSettings)
-        matches.push(matchData)
-      }
-    },
-  })
+  test_traverse_ast(fileNode, settings, visitorsMap)
 
   return matches
 }

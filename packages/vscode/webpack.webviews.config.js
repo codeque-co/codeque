@@ -23,6 +23,7 @@ module.exports = {
     alias: {
       // Avoid trying to bundle typescript-eslint/parser which is used by core, but not vscode
       '@typescript-eslint': false,
+      esprima: false,
     },
   },
   output: {

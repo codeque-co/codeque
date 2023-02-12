@@ -219,4 +219,9 @@ export type ParserSettings = {
   programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils
   getNodePosition: (node: PoorNodeType) => Omit<Match, 'node'>
   getParseErrorLocation: (error: Error) => { line: number; column: number }
+  /**
+   * Alternative node types used to match while in traversal mode
+   * eg. wildcard Identifier matcher should look in JSXIdentifier visitor
+   */
+  alternativeNodeTypes: Record<string, string[]>
 }

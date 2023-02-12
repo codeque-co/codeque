@@ -1,10 +1,9 @@
-import { searchInFileSystem } from '/searchInFs'
 import { compareCode } from '../utils'
+import { searchInFileSystem } from '/searchInFs'
 
 import path from 'path'
-import { getFilesList } from '/getFilesList'
-import fs from 'fs'
 import { searchInStrings } from '../../src/searchInStrings'
+import { getFilesList } from '/getFilesList'
 
 describe('JSX', () => {
   let filesList = [] as string[]
@@ -16,45 +15,36 @@ describe('JSX', () => {
     })
   })
 
-  const tempFilePath = path.join(
-    __dirname,
-    '__fixtures__',
-    `${Date.now()}.temp`,
-  )
-  const mockedFilesList = [tempFilePath]
+  const testFileContent = `
+    <>
+      <Flex >
+    
+          <Button
+        >
+            Press to 
+            Download
+          </Button>
 
-  beforeAll(() => {
-    fs.writeFileSync(
-      tempFilePath,
-      `
-      <>
-        <Flex >
-      
-            <Button
-          >
-              Press to 
-              Download
-            </Button>
+      </Flex>
 
-        </Flex>
+      <Button>
+        Press to
+        Download
+      </Button>
 
-        <Button>
-          Press to
-          Download
-        </Button>
+      <Button>
+        Click
+        <Icon />
+      </Button>
+    </>
+  `
 
-        <Button>
-          Click
-          <Icon />
-        </Button>
-      </>
-    `,
-    )
-  })
-
-  afterAll(() => {
-    fs.unlinkSync(tempFilePath)
-  })
+  const mockedFilesList = [
+    {
+      path: 'mock',
+      content: testFileContent,
+    },
+  ]
 
   it('Should find all self-closing JSX', () => {
     const query = `<$$ />`
@@ -132,9 +122,9 @@ describe('JSX', () => {
         Download
       </Button>
     `
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: [query],
     })
     expect(errors.length).toBe(0)
@@ -370,9 +360,9 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: queries,
     })
 
@@ -400,10 +390,10 @@ describe('JSX', () => {
     `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
       caseInsensitive: true,
-      filePaths: mockedFilesList,
+      files: mockedFilesList,
       queryCodes: queries,
     })
 

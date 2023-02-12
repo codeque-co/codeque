@@ -1,7 +1,8 @@
-import { searchInFileSystem } from '/searchInFs'
 import path from 'path'
-import { getFilesList } from '/getFilesList'
+import { useTraverseApproachTestOnly } from '../../src/config'
 import { searchInStrings } from '../../src/searchInStrings'
+import { getFilesList } from '/getFilesList'
+import { searchInFileSystem } from '/searchInFs'
 
 describe('Other', () => {
   let filesList = [] as string[]
@@ -82,8 +83,15 @@ describe('Other', () => {
       queryCodes: queries,
     })
 
+    const countForTraversalMode = 6381 // will just match identifier-like nodes
+    const countForNonTraversalMode = 17149 // will match any node
+
+    const expectedCount = useTraverseApproachTestOnly
+      ? countForTraversalMode
+      : countForNonTraversalMode
+
     expect(errors.length).toBe(0)
-    expect(matches.length).toBe(17149)
+    expect(matches.length).toBe(expectedCount)
   })
 
   it('Should properly match identifiers with multiple wildcard sections', () => {

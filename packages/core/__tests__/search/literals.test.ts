@@ -1,43 +1,31 @@
-import { searchInFileSystem } from '/searchInFs'
-import path from 'path'
-import fs from 'fs'
-import { searchInStrings } from '../../src/searchInStrings'
+import { searchInStrings } from '/searchInStrings'
 
 describe('Literals', () => {
-  const tempFilePath = path.join(
-    __dirname,
-    '__fixtures__',
-    `${Date.now()}.temp`,
-  )
-  const filesList = [tempFilePath]
+  const testFileContent = `
+    (999);
+    "somestring";
+    'somestring';
 
-  beforeAll(() => {
-    fs.writeFileSync(
-      tempFilePath,
-      `
-      (999);
-      "somestring";
-      'somestring';
+    "'other";
+    '\\'other';
 
-      "'other";
-      '\\'other';
+    'react-native';
 
-      'react-native';
+    123 + 321 ;
 
-      123 + 321 ;
+    [ab, d, 'asd', {}]
 
-      [ab, d, 'asd', {}]
+    ${'`${id}`'}
+    ${'`${id}${id2}`'}
+    ${'`val ${id} text ${id2}`'}
+  `
 
-      ${'`${id}`'}
-      ${'`${id}${id2}`'}
-      ${'`val ${id} text ${id2}`'}
-    `,
-    )
-  })
-
-  afterAll(() => {
-    fs.unlinkSync(tempFilePath)
-  })
+  const filesList = [
+    {
+      path: 'mock',
+      content: testFileContent,
+    },
+  ]
 
   it('should match string regardless used quotes', () => {
     const queries = [
@@ -46,9 +34,9 @@ describe('Literals', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -63,9 +51,9 @@ describe('Literals', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -80,9 +68,9 @@ describe('Literals', () => {
       `,
     ]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
       caseInsensitive: true,
     })
@@ -94,9 +82,9 @@ describe('Literals', () => {
   it('should match string with quite inside regardless used quotes', () => {
     const queries1 = [`('\\'other');`]
 
-    const { matches: results1, errors: errors1 } = searchInFileSystem({
+    const { matches: results1, errors: errors1 } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries1,
     })
 
@@ -105,9 +93,9 @@ describe('Literals', () => {
 
     const queries2 = [`("'other");`]
 
-    const { matches: results2, errors: errors2 } = searchInFileSystem({
+    const { matches: results2, errors: errors2 } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries2,
     })
 
@@ -118,9 +106,9 @@ describe('Literals', () => {
   it('should match string using pattern', () => {
     const queries = [`('$$other');`]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -131,9 +119,9 @@ describe('Literals', () => {
   it('should match string using pattern 2', () => {
     const queries = [`('$$t$$');`]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -144,9 +132,9 @@ describe('Literals', () => {
   it('should match string with wildcard inside string', () => {
     const queries = [`('react$$native');`]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -157,9 +145,9 @@ describe('Literals', () => {
   it('should match numeric literal', () => {
     const queries = [`(0x0);`]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -170,9 +158,9 @@ describe('Literals', () => {
   it('should match array literal elements with mixed order', () => {
     const queries = [`[$$$, $$, a$$, 'asd']`]
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -183,9 +171,9 @@ describe('Literals', () => {
   it('should match template literals with empty quasis', () => {
     const queries = ['`${id}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -196,9 +184,9 @@ describe('Literals', () => {
   it('should not match template literals with empty quasis using required string wildcard', () => {
     const queries = ['`$$$${id}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'exact',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -209,9 +197,9 @@ describe('Literals', () => {
   it('should match template literals with quasis', () => {
     const queries = ['`val ${id} text ${id2}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -222,9 +210,9 @@ describe('Literals', () => {
   it('should match template literals with quasis with wildcard', () => {
     const queries = ['`val ${id} $$ ${id2}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -235,9 +223,9 @@ describe('Literals', () => {
   it('should match template literals with quasis with wildcard in id', () => {
     const queries = ['`val ${$$} text ${$$}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 
@@ -248,9 +236,9 @@ describe('Literals', () => {
   it('should match multiple template literals with include mode', () => {
     const queries = ['`{$$}`']
 
-    const { matches, errors } = searchInFileSystem({
+    const { matches, errors } = searchInStrings({
       mode: 'include',
-      filePaths: filesList,
+      files: filesList,
       queryCodes: queries,
     })
 

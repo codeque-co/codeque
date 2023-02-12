@@ -176,6 +176,13 @@ const getParseErrorLocation = (e: any) => ({
   column: e.column ?? 0,
 })
 
+const alternativeNodeTypes = {
+  Identifier: identifierNodeTypes,
+  ChainExpression: ['MemberExpression'],
+  MemberExpression: ['ChainExpression'],
+  BlockStatement: ['Program'],
+}
+
 export const typescriptEslintParserSettings: ParserSettings = {
   supportedExtensions,
   parseCode,
@@ -200,6 +207,7 @@ export const typescriptEslintParserSettings: ParserSettings = {
   programNodeAndBlockNodeUtils,
   getNodePosition,
   getParseErrorLocation,
+  alternativeNodeTypes,
 }
 
 export default typescriptEslintParserSettings

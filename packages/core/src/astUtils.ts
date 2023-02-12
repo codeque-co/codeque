@@ -215,3 +215,13 @@ export const getMatchFromNode = (
     ...parserSettings.getNodePosition(node),
     node,
   } as Match)
+
+export const getVisitorKeysForQueryNodeType = (
+  queryNodeType: string,
+  parserSettings: Pick<ParserSettings, 'alternativeNodeTypes'>,
+) => {
+  return [
+    queryNodeType,
+    ...(parserSettings.alternativeNodeTypes[queryNodeType] ?? []),
+  ]
+}

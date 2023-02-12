@@ -2,7 +2,7 @@
 	"name": "codeque",
 	"publisher": "CodeQue",
 	"displayName": "Multiline Structural Search - CodeQue",
-	"description": "Supercharged multiline structural search and replace tool for TypeScript and JavaScript",
+	"description": "Multiline search for any language. Structural search for TypeScript and JavaScript",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/codeque-co/codeque"
@@ -10,7 +10,7 @@
 	"bugs": {
 		"url": "https://github.com/codeque-co/codeque/issues"
 	},
-	"version": "0.20.2",
+	"version": "0.21.0",
 	"engines": {
 		"vscode": "^1.68.0",
 		"node": ">=14"
@@ -139,7 +139,7 @@
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^2.2.4",
-		"@codeque/core": "^0.1.2",
+		"@codeque/core": "^0.4.0",
 		"@emotion/react": "^11.9.3",
 		"@emotion/styled": "^11.9.3",
 		"@types/react": "^18.0.15",

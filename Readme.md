@@ -32,6 +32,44 @@ You can also use it as a linter.
 
 Find out more about the project on [codeque.co](https://codeque.co)
 
+## ESLint plugin 💅
+Use CodeQue ESLint plugin to create custom rules in zero time.
+
+Mark errors or warnings tailored to your codebase.
+
+Installation 👇
+
+```sh
+yarn add --dev @codeque/eslint-plugin
+```
+
+> `@codeque/eslint-plugin` is currently in `beta`
+
+Usage ✨
+
+[See docs on npm](https://www.npmjs.com/package/@codeque/eslint-plugin)
+
+
+```ts
+{
+  plugins: ['@codeque'],
+  rules: [
+    "@codeque/error": ["error", [
+      {
+        "query": "throw new Error()",
+        mode: "include",
+        message: "Use only project defined error classes.",
+      },
+    ]]
+  ]
+}
+```
+
+<p align="center">
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/error-example.png?raw=true" width="500px"/>
+</p>
+
+
 ## Visual Studio Code Extension 🔮
 
 VScode extension aims to make you workflow more efficient.
@@ -71,5 +109,4 @@ Find more info in [`@codeque/cli` package docs](./packages/cli/README.md)
 ## Other Platforms 🌶️
 
 CodeQue will be soon available as:
-- ESLint plugin
-- Maybe some cloud service and integrations, who knows 😀
+- Cloud service and integrations for teams

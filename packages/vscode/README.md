@@ -18,15 +18,15 @@ CodeQue is code search engine that understands the code syntax.
 
 It matches structure rather than plain text, which makes it very effective for complex queries.
 
-VSCode extension aims to improve code search experience. 
+VSCode extension aims to improve code search and navigation experience. 
 
 Advanced search options and todo-like list of accurate search results makes it your new super power.
 
-It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and ESLint plugin coming soon.
+It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and [ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom rules in zero time.
 
-CodeQue supports JavaScript and TypeScript for now. 
+CodeQue supports multiline search for any programming language and structural search for JavaScript and TypeScript.
 
-More languages will be added once it will get traction.
+Structural search support for other programming languages will be added soon.
 
 <br/>
 

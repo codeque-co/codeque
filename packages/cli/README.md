@@ -24,6 +24,8 @@ Find out more about the project on [codeque.co](https://codeque.co)
 
 [Try CodeQue Visual Studio Code Extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque)
 
+[Get CodeQue ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) and create custom linting rules in zero time.
+
 ## Installation 👇
 
 ```sh

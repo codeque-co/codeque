@@ -1,11 +1,11 @@
 import {
   Mode,
-  getCodeFrame,
   getFilesList,
   getMode,
   groupMatchesByFile,
   parseQueries,
   searchMultiThread,
+  __internal,
 } from '@codeque/core'
 import { blue, bold, cyan, green, magenta, red, yellow } from 'colorette'
 import fs from 'fs'
@@ -17,6 +17,7 @@ import {
   print,
   textEllipsis,
   printVersionNumber,
+  getCodeFrame,
 } from './utils'
 import { waitForSearchDecision } from './waitForSearchDecision'
 
@@ -122,7 +123,13 @@ export async function search(params: CliParams) {
 
   const startTime = Date.now()
 
-  const [queryParseResults, parseOk] = parseQueries(queries, caseInsensitive)
+  const parserSettings = __internal.parserSettingsMap['babel']()
+
+  const [queryParseResults, parseOk] = parseQueries(
+    queries,
+    caseInsensitive,
+    parserSettings,
+  )
 
   if (mode === 'text') {
     print(separator + '\n' + rootText + modeAndCaseText)

@@ -25,6 +25,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@types/babel__code-frame": "^7.0.3",
     "dedent": "^0.7.0",
     "release-it": "^15.0.0"
   },

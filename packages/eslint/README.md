@@ -78,10 +78,11 @@ Learn mode about writing queries from [CodeQue docs](https://codeque.co/docs)
   ]
 }
 ```
+<p align="center">
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/error-example.png?raw=true" width="400px"/>
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/warning-example.png?raw=true"  width="400px" />
+</p>
 
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/error-example.png?raw=true" />
-
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/warning-example.png?raw=true" />
 
 > If your config seems too big, feel free to extract your set of rules to a separate file. Change your `.eslintrc` to JS file and import rules from a separate file.
 

@@ -8,6 +8,7 @@ describe('Search in strings', () => {
     }
 
     return {
+      ...jest.requireActual('fs'),
       readFileSync: throwOnUsage,
     }
   })

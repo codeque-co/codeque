@@ -61,9 +61,6 @@ export const searchAst = (
         if (!isMultistatement) {
           return match
         }
-        /**
-         * TODO: Try to get rid of this somehow
-         */
 
         /**
          * For multi-statement queries we search where exactly statements are located within parent node

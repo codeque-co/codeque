@@ -12,13 +12,28 @@ export const getLocationOfMultilineMatch = (
 
   const statements = queryNode[blockNodeBodyKey] as PoorNodeType[]
 
+  const alreadyPickedStatementNodes: PoorNodeType[] = []
+
   const subMatches = statements
-    .map(
-      (statement) =>
-        // we take only first match, as given statement node might be present several times in query
-        // But only first occurrence matched during previous search phase
-        traverseAndMatchFn(match.node, statement, searchSettings)[0],
-    )
+    .map((statement) => {
+      // we take only first match, as given statement node might be present several times in query
+      // But only first occurrence matched during previous search phase
+      // Also there might be the same node in query repeated several times, so we have to flag which statements have been already picked
+      const subMatchedStatements = traverseAndMatchFn(
+        match.node,
+        statement,
+        searchSettings,
+      )
+
+      const notYetPickedStatementMatches = subMatchedStatements.filter(
+        (subMatch) => !alreadyPickedStatementNodes.includes(subMatch.node),
+      )
+      const statementMatchToPick = notYetPickedStatementMatches[0]
+
+      alreadyPickedStatementNodes.push(statementMatchToPick.node)
+
+      return statementMatchToPick
+    })
     .sort((matchA, matchB) => matchA.start - matchB.end)
 
   const firstSubMatch = subMatches[0]

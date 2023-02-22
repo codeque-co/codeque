@@ -198,4 +198,46 @@ describe('multi statements', () => {
     `
     expect(compareCode(matches[0].code, expectedMatch)).toBe(true)
   })
+
+  it('should find proper position in file for several exact same statements in query and file', () => {
+    const fileContent = `
+        export * from 'fileA'
+        export * from 'fileB'
+        export * from 'fileC'
+        export * from 'fileD'
+
+    `
+
+    const queries = [
+      ` 
+        export * from '$$'
+        export * from '$$'
+        export * from '$$'
+      `,
+    ]
+
+    const files = [
+      {
+        content: fileContent,
+        path: 'test-path',
+      },
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      files,
+      queryCodes: queries,
+    })
+
+    expect(errors.length).toBe(0)
+    expect(matches.length).toBe(1)
+
+    const expectedMatch1 = `
+    export * from 'fileA'
+    export * from 'fileB'
+    export * from 'fileC'
+    `
+
+    expect(compareCode(matches[0].code, expectedMatch1)).toBe(true)
+  })
 })

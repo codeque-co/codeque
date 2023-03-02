@@ -10,4 +10,7 @@ export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
   espree: resolveParserSettings('espreeParser'),
   esprima: resolveParserSettings('esprimaParser'),
   'babel-eslint-parser': resolveParserSettings('babelEslintParser'),
+  ['angular-eslint-template-parser']: resolveParserSettings(
+    'angularEslintTemplateParser',
+  ),
 }

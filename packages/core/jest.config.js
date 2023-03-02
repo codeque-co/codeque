@@ -15,6 +15,8 @@ const typeScriptParserTestFiles = [
   '<rootDir>/__tests__/TypeScript/**/*.test.ts',
 ]
 
+const htmlParserTestFiles = ['<rootDir>/__tests__/HTML/**/*.test.ts']
+
 module.exports = {
   testPathIgnorePatterns: [
     '__fixtures__',
@@ -130,6 +132,15 @@ module.exports = {
       setupFiles: [
         '<rootDir>/jest/shared.setup.ts',
         '<rootDir>/jest/espree:traversal.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'angular-eslint-template-parser', color: 'orange' },
+      testMatch: htmlParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/angular-eslint-template-parser.setup.ts',
       ],
     },
   ],

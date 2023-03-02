@@ -73,6 +73,7 @@ export type ParserType =
   | 'espree'
   | 'esprima'
   | 'babel-eslint-parser'
+  | 'angular-eslint-template-parser'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]
@@ -265,4 +266,6 @@ export type ParserSettings = {
    * eg. wildcard Identifier matcher should look in JSXIdentifier visitor
    */
   alternativeNodeTypes: Record<string, string[]>
+  preprocessQueryCode?: (code: string) => string
+  postprocessQueryNode?: (queryNode: PoorNodeType) => PoorNodeType
 }

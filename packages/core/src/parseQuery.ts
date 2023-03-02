@@ -205,8 +205,11 @@ export const parseQueries = (
         }
       }
 
+      const preprocessedQueryCode =
+        parserSettings.preprocessQueryCode?.(queryText) ?? queryText
+
       try {
-        const parsedAsIs = parserSettings.parseCode(queryText)
+        const parsedAsIs = parserSettings.parseCode(preprocessedQueryCode)
 
         const { queryNode, isMultistatement } = extractQueryNode(
           parsedAsIs,
@@ -236,7 +239,7 @@ export const parseQueries = (
 
       try {
         const parsedAsExp = parserSettings.parseCode(
-          `(${queryText})`,
+          `(${preprocessedQueryCode})`,
         ) as unknown as PoorNodeType
 
         const { queryNode } = extractQueryNode(parsedAsExp, parserSettings)
@@ -255,7 +258,9 @@ export const parseQueries = (
       }
     })
     .map(({ error, queryNode, isMultistatement }) => ({
-      queryNode,
+      queryNode:
+        (queryNode && parserSettings.postprocessQueryNode?.(queryNode)) ??
+        queryNode,
       error: !queryNode ? { text: 'Empty query!' } : error,
       isMultistatement,
     }))

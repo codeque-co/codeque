@@ -28,6 +28,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.8",
     "@babel/generator": "^7.21.4",
+    "@angular-eslint/template-parser": "^15.2.1",
     "@types/dedent": "^0.7.0",
     "@types/esprima": "^4.0.3",
     "@types/glob": "^7.2.0",
@@ -84,6 +85,7 @@
     "test:esprima:traversal": "jest --selectProjects=esprima:traversal",
     "test:espree": "jest --selectProjects=espree",
     "test:espree:traversal": "jest --selectProjects=espree:traversal",
+    "test:angular-eslint-template-parser": "jest --selectProjects=angular-eslint-template-parser",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "test:setup": "node ./tools/getFixtures.js",
     "lint": "eslint --ext .js,.ts src",

@@ -89,6 +89,7 @@ export function FileGroup({
         height={groupHeaderHeight}
         alignItems="center"
         ref={headingRef}
+        maxWidth="100%"
       >
         <IconButton
           onClick={() => {
@@ -113,6 +114,7 @@ export function FileGroup({
           onClick={() => {
             setIsResultFocused(true)
           }}
+          maxWidth="calc(100% - 110px)"
         />
         <Flex ml="2" mr="auto">
           <CopyPath fullFilePath={relativeFilePath} />

@@ -55,6 +55,7 @@ export function WorkspaceGroup({
         height={groupHeaderHeight}
         alignItems="center"
         ref={headingRef}
+        maxWidth="100%"
       >
         <IconButton
           onClick={() => {
@@ -71,7 +72,7 @@ export function WorkspaceGroup({
           {...iconButtonStyleResetProps}
           mr="2"
         />
-        <Flex ml="2" mr="auto">
+        <Flex ml="2" mr="auto" maxWidth="calc(100% - 110px)">
           {workspace}
         </Flex>
         <Flex>({allCount})</Flex>

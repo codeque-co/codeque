@@ -33,7 +33,7 @@ Structural search support for other programming languages will be added soon.
 <p align="center"><b>Watch extension in action (external link) 👇</b></p>
 
 <a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
-    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/video-thumbnail.png?raw=true" />
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
   </a>
 
 ## Benefits of using CodeQue VSCode extension

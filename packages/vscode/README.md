@@ -12,7 +12,7 @@
   <a href="https://codeque.co/playground"><b>Playground</b></a>
 </p>
 
-# CodeQue - Multiline Structural Search for Visual Studio Code
+# CodeQue - multiline and structural code search for Visual Studio Code
 
 CodeQue is code search engine that understands the code syntax. 
 
@@ -24,7 +24,7 @@ Advanced search options and todo-like list of accurate search results makes it y
 
 It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and [ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom rules in zero time.
 
-CodeQue supports multiline search for any programming language and structural search for JavaScript and TypeScript.
+CodeQue supports multiline code search for any programming language and structural code search for JavaScript and TypeScript.
 
 Structural search support for other programming languages will be added soon.
 
@@ -306,6 +306,7 @@ useRequest({
 
 ## Support, Feedback and more
 
+Playground 👉  [codeque.co/playground](https://codeque.co/playground)
 
 Bugs, feature requests, help 👉 [Github Issues](https://github.com/codeque-co/codeque/issues)
 
@@ -314,8 +315,6 @@ Documentation 👉  [codeque.co/docs](https://codeque.co/docs)
 Roadmap 👉  [codeque.co/roadmap](https://codeque.co/roadmap)
 
 Mission 👉  [codeque.co/mission](https://codeque.co/mission)
-
-Playground 👉  [codeque.co/playground](https://codeque.co/playground)
 
 Wanna contribute 👉  [Internal readme](./InternalReadme.md)
 

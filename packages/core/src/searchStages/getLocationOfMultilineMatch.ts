@@ -39,12 +39,16 @@ export const getLocationOfMultilineMatch = (
   const firstSubMatch = subMatches[0]
   const lastSubMatch = subMatches[subMatches.length - 1]
 
-  return {
+  const resultMatch: Match = {
     start: firstSubMatch.start,
     end: lastSubMatch.end,
     loc: {
       start: firstSubMatch.loc.start,
       end: lastSubMatch.loc.end,
     },
-  } as Match
+    aliases: match.aliases,
+    node: match.node,
+  }
+
+  return resultMatch
 }

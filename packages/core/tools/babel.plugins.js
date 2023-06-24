@@ -1,6 +1,5 @@
 module.exports = function plugin() {
   const babelEnv = process.env.BABEL_ENV
-  console.log('BABEL_ENV', babelEnv)
 
   if (babelEnv !== 'production' && babelEnv !== 'test') {
     return {}

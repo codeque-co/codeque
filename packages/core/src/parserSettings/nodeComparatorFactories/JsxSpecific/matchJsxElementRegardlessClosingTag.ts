@@ -27,6 +27,8 @@ export const createMatchJsxElementRegardlessClosingTagNodesComparator =
         (queryNode.children as []).length === 0
       ) {
         measureCompare()
+
+        // To skip matching closing element
         const keysToTraverse = ['openingElement']
 
         return {

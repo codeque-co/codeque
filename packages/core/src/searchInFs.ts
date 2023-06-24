@@ -9,12 +9,10 @@ import {
   SearchResults,
   NotNullParsedQuery,
   SearchSettings,
-  ParserType,
 } from './types'
 import { textSearch } from './textSearch'
 import { parserSettingsMap } from './parserSettings/index'
-
-const testParserTypeOverride = process?.env?.TEST_PARSER_TYPE as ParserType
+import { testParserTypeOverride } from './testOnlyConfig'
 
 export const searchInFileSystem = ({
   mode,
@@ -37,7 +35,7 @@ export const searchInFileSystem = ({
       getFileContent,
       filePaths,
       mode,
-      queryCodes,
+      queryCodes: queryCodes ?? [],
       caseInsensitive,
       onPartialResult,
       maxResultsLimit,
@@ -65,6 +63,8 @@ export const searchInFileSystem = ({
   )
 
   if (!parseOk) {
+    log('Parse query failed')
+
     return {
       matches: [],
       hints: queries.map(({ hints }) => hints),
@@ -101,7 +101,7 @@ export const searchInFileSystem = ({
         fileContent,
         ...settings,
       })
-      const dedupedFileMatches = dedupMatches(fileMatches, log, debug)
+      const dedupedFileMatches = dedupMatches(fileMatches)
 
       if (onPartialResult && dedupedFileMatches.length > 0) {
         onPartialResult(dedupedFileMatches)
@@ -130,7 +130,9 @@ export const searchInFileSystem = ({
     }
   }
 
-  logMetrics()
+  if (debug) {
+    logMetrics()
+  }
 
   return {
     matches: allMatches,

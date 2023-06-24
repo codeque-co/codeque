@@ -1,4 +1,5 @@
 import {
+  compareAst,
   getKeysWithNodes,
   getSetsOfKeysToCompare,
   isNodeArray,
@@ -7,11 +8,162 @@ import {
   PoorNodeType,
   CompareNodesParams,
   CompareNodesReturnType,
+  WildcardUtils,
+  ParserSettings,
+  WildcardMeta,
 } from '../types'
 import { measureStart, regExpTest } from '../utils'
+import { MatchContext } from '../matchContext'
 
 const keyWithPrefix = (prefix: string) => (key: string) =>
   prefix ? `${prefix}.${key}` : key
+
+const matchStringOrIdentifierAliases = ({
+  queryValue,
+  fileValue,
+  matchContext,
+  wildcardsMeta,
+  wildcardUtils,
+  caseInsensitive,
+}: {
+  queryValue: string
+  fileValue: string
+  wildcardsMeta: WildcardMeta[]
+  matchContext: MatchContext
+  wildcardUtils: WildcardUtils
+  caseInsensitive: boolean
+}): boolean => {
+  const { patternToRegExp, removeWildcardAliasesFromIdentifierName } =
+    wildcardUtils
+
+  const identifierNameWithWildcardsWithoutAliases =
+    removeWildcardAliasesFromIdentifierName(queryValue)
+  const regex = patternToRegExp(
+    identifierNameWithWildcardsWithoutAliases,
+    caseInsensitive,
+  )
+  /**
+   * Check initial match of wildcards pattern
+   */
+
+  const wildcardMatch = regExpTest(regex, fileValue)
+
+  let levelMatch = wildcardMatch
+
+  if (wildcardMatch && wildcardsMeta.length > 0) {
+    /**
+     * If there are aliased wildcards, look for aliased values and match or assign new values
+     */
+    const queryNodeIdentifierNameWithWildcard = queryValue
+
+    const fileNodeIdentifierName = fileValue
+
+    /**
+     * Creates named capturing group for alias, where alias is group name
+     */
+    const createAliasedIdentifierWildcardRegExp = (alias: string) =>
+      `(?<${alias}>(\\w|-)*)`
+
+    const createAliasedStringWildcardRegExp = (alias: string) =>
+      `(?<${alias}>(.)*)`
+
+    const identifierWildcardRegExp = '(\\w|-)*'
+    const stringWildcardRegExp = '(.)*'
+
+    /**
+     * Compose regex that represents identifier name with aliased and non aliased wildcards
+     */
+    let wildcardValuesExtractionRegexText = queryNodeIdentifierNameWithWildcard
+
+    wildcardsMeta.forEach(
+      ({ wildcardAlias, wildcardWithAlias, wildcardType }) => {
+        let regExpPart = identifierWildcardRegExp
+
+        if (wildcardType === 'identifier' && wildcardAlias) {
+          regExpPart = createAliasedIdentifierWildcardRegExp(wildcardAlias)
+        } else if (wildcardType === 'string' && !wildcardAlias) {
+          regExpPart = stringWildcardRegExp
+        } else if (wildcardType === 'string' && wildcardAlias) {
+          regExpPart = createAliasedStringWildcardRegExp(wildcardAlias)
+        }
+
+        wildcardValuesExtractionRegexText =
+          wildcardValuesExtractionRegexText.replace(
+            wildcardWithAlias,
+            regExpPart,
+          )
+      },
+    )
+
+    const wildcardValuesExtractionRegex = new RegExp(
+      wildcardValuesExtractionRegexText,
+      caseInsensitive ? 'i' : undefined,
+    )
+
+    /**
+     * Match file node content with wildcards regexp, so we can extract aliases values later
+     */
+    const wildcardValuesExtractionMatch = fileNodeIdentifierName.match(
+      wildcardValuesExtractionRegex,
+    )
+
+    if (wildcardValuesExtractionMatch === null) {
+      console.log(
+        'wildcardValuesExtractionRegex',
+        wildcardValuesExtractionRegex,
+      )
+
+      console.log('fileNodeIdentifierName', fileNodeIdentifierName)
+      throw new Error(
+        'Wildcard alias extraction RegExp did not match, thus it was build incorrectly.',
+      )
+    }
+
+    /**
+     * Compare wildcard aliases with values extracted from file node
+     * - If alias value exist in match context, compare with value from file node
+     * - If alias value does not exist, add it's value to match context
+     */
+    wildcardsMeta.forEach((wildcardMeta) => {
+      const { wildcardAlias, wildcardWithAlias, wildcardType } = wildcardMeta
+
+      if (wildcardAlias !== null) {
+        const existingAlias = wildcardAlias
+          ? matchContext.getIdentifierAlias(wildcardAlias) ||
+            matchContext.getStringAlias(wildcardAlias)
+          : null
+
+        const aliasValue =
+          wildcardValuesExtractionMatch?.groups?.[wildcardAlias] ?? ''
+
+        if (existingAlias !== null) {
+          const aliasMatches = caseInsensitive
+            ? existingAlias.aliasValue.toLocaleLowerCase() ===
+              aliasValue.toLocaleLowerCase()
+            : existingAlias.aliasValue === aliasValue
+
+          levelMatch = levelMatch && aliasMatches
+        } else {
+          if (wildcardType === 'identifier') {
+            matchContext.addIdentifierAlias({
+              alias: wildcardAlias,
+              wildcard: wildcardWithAlias,
+              aliasValue: aliasValue,
+            })
+          } else if (wildcardType === 'string') {
+            matchContext.addStringAlias({
+              alias: wildcardAlias,
+              wildcard: wildcardWithAlias,
+              aliasValue: aliasValue,
+            })
+          }
+        }
+      }
+    })
+  }
+
+  return levelMatch
+}
 
 export const compareNodes = (
   compareParams: CompareNodesParams,
@@ -20,6 +172,7 @@ export const compareNodes = (
     fileNode,
     queryNode,
     searchSettings,
+    matchContext,
     /** Params used to support comparing nodes which are not on the same level */
     queryKeysPrefix = '',
     fileKeysPrefix = '',
@@ -30,6 +183,7 @@ export const compareNodes = (
     caseInsensitive,
     logger: { log, logStepEnd, logStepStart },
     parserSettings,
+    getCodeForNode = () => 'getCodeForNode not provided',
   } = searchSettings
 
   const queryKeysMapper = keyWithPrefix(queryKeysPrefix)
@@ -90,9 +244,6 @@ export const compareNodes = (
     measureCompare,
   }
 
-  parserSettings.sanitizeNode(fileNode)
-  parserSettings.sanitizeNode(queryNode)
-
   const maybeCompareResult =
     parserSettings.compareNodesBeforeWildcardsComparison(
       compareParams,
@@ -113,9 +264,9 @@ export const compareNodes = (
     programNodeAndBlockNodeUtils,
     getIdentifierNodeName,
     wildcardUtils: {
-      getWildcardFromNode,
+      getIdentifierWildcardsFromNode,
+      getStringWildcardsFromString,
       anyStringWildcardRegExp,
-      patternToRegExp,
       numericWildcard,
     },
   } = parserSettings
@@ -129,21 +280,70 @@ export const compareNodes = (
      *  Support for wildcards in all nodes
      */
     if (isIdentifierNode(queryNode)) {
-      const wildcardMeta = getWildcardFromNode(queryNode)
+      const wildcardsMeta = getIdentifierWildcardsFromNode(queryNode)
 
-      if (wildcardMeta !== null) {
+      if (wildcardsMeta.length > 0) {
         log('comparing wildcard')
-        const { wildcardType, wildcardWithoutRef } = wildcardMeta
-        let levelMatch
 
-        if (wildcardType === 'nodeTree') {
+        const firstWildcard = wildcardsMeta[0]
+
+        const isNodesTreeWildcard = firstWildcard.wildcardType === 'nodeTree'
+
+        let levelMatch: boolean
+
+        log('First Wildcard type', firstWildcard.wildcardType)
+        log('wildcardWithoutAlias', firstWildcard.wildcardWithoutAlias)
+
+        if (isNodesTreeWildcard) {
           levelMatch = true
+
+          const { wildcardAlias, wildcardWithAlias } = firstWildcard
+
+          /**
+           * Check if alias has been already found
+           */
+          const existingAlias = wildcardAlias
+            ? matchContext.getNodesTreeAlias(wildcardAlias)
+            : null
+
+          const matchedNode = fileNode
+
+          if (existingAlias !== null) {
+            /**
+             * If alias exist, compare file nodes tree with matched alias nodes tree
+             */
+            const aliasMatches = compareAst(
+              matchedNode,
+              existingAlias.aliasNode,
+              parserSettings,
+            )
+
+            levelMatch = levelMatch && aliasMatches
+          } else if (wildcardAlias !== null) {
+            /**
+             * If alias not exist, add alias to match context
+             */
+            matchContext.addNodesTreeAlias({
+              alias: wildcardAlias,
+              wildcard: wildcardWithAlias,
+              aliasNode: matchedNode,
+              aliasValue: getCodeForNode(matchedNode, 'file'),
+            })
+          }
         } else {
-          const regex = patternToRegExp(wildcardWithoutRef, caseInsensitive)
+          const queryValue = getIdentifierNodeName(queryNode)
+          const fileValue = getIdentifierNodeName(fileNode)
 
           levelMatch =
             isIdentifierNode(fileNode) &&
-            regExpTest(regex, getIdentifierNodeName(fileNode))
+            matchStringOrIdentifierAliases({
+              queryValue,
+              fileValue,
+              wildcardsMeta,
+              matchContext,
+              wildcardUtils: parserSettings.wildcardUtils,
+              caseInsensitive,
+            })
 
           if (isExact && identifierTypeAnnotationFieldName) {
             levelMatch =
@@ -162,8 +362,9 @@ export const compareNodes = (
           )
         })
 
-        const queryKeysToTraverseForValidatingMatch =
-          wildcardType !== 'nodeTree' ? queryKeysWithNodes : []
+        const queryKeysToTraverseForValidatingMatch = isNodesTreeWildcard
+          ? []
+          : queryKeysWithNodes
 
         measureCompare()
 
@@ -196,18 +397,27 @@ export const compareNodes = (
      * Q: "some$$$string"; C: "someBLABLAstring"; // required wildcard
      * */
     if (isStringWithWildcard) {
-      const regex = patternToRegExp(
-        stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode),
+      const queryNodeStringContent =
+        stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode)
+
+      const fileNodeStringContent =
+        stringLikeLiteralUtils.getStringLikeLiteralValue(fileNode)
+
+      const wildcardsMeta = getStringWildcardsFromString(queryNodeStringContent)
+
+      const levelMatch = matchStringOrIdentifierAliases({
+        queryValue: queryNodeStringContent,
+        fileValue: fileNodeStringContent,
+        wildcardsMeta,
+        matchContext,
+        wildcardUtils: parserSettings.wildcardUtils,
         caseInsensitive,
-      )
-      const levelMatch = regExpTest(
-        regex,
-        stringLikeLiteralUtils.getStringLikeLiteralValue(fileNode),
-      )
+      })
+
       measureCompare()
 
       return {
-        levelMatch: levelMatch,
+        levelMatch,
         fileKeysToTraverseForValidatingMatch: [],
         queryKeysToTraverseForValidatingMatch: [],
         fileKeysToTraverseForOtherMatches,
@@ -305,17 +515,32 @@ export const compareNodes = (
     } else {
       primitivePropsCount++
 
+      const sanitizedQueryValue = parserSettings.getSanitizedNodeValue(
+        queryNode.type as string,
+        key,
+        queryValue,
+      )
+      const sanitizedFileValue = parserSettings.getSanitizedNodeValue(
+        fileNode.type as string,
+        key,
+        fileValue,
+      )
+
       if (
-        typeof queryValue === 'string' &&
-        typeof fileValue === 'string' &&
+        typeof sanitizedQueryValue === 'string' &&
+        typeof sanitizedFileValue === 'string' &&
         caseInsensitive
       ) {
-        if (queryValue.toLocaleLowerCase() === fileValue.toLocaleLowerCase()) {
+        if (
+          sanitizedQueryValue.toLocaleLowerCase() ===
+          sanitizedFileValue.toLocaleLowerCase()
+        ) {
           matchingPrimitivePropsCount++
         }
       } else if (
-        queryValue === fileValue ||
-        JSON.stringify(queryValue) === JSON.stringify(fileValue)
+        sanitizedQueryValue === sanitizedFileValue ||
+        JSON.stringify(sanitizedQueryValue) ===
+          JSON.stringify(sanitizedFileValue)
       ) {
         matchingPrimitivePropsCount++
       }

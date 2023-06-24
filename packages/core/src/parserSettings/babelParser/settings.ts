@@ -8,14 +8,24 @@ import {
   NumericLiteralUtils,
   ProgramNodeAndBlockNodeUtils,
   Location,
-  Match,
+  MatchPosition,
 } from '../../types'
+
 import { normalizeText, runNodesComparators } from '../../utils'
 import { beforeWildcardsComparators } from './beforeWildcardsComparators'
 import { afterWildcardsComparators } from './afterWildcardsComparators'
-import { supportedExtensions } from '../_common/JSFamilyCommon'
-import {} from '../../wildcardUtilsFactory'
-import { identifierNodeTypes, wildcardUtils } from './common'
+import {
+  supportedExtensions,
+  babelParseOptionsWithJSX,
+  babelParseOptionsWithoutJSX,
+} from '../_common/JSFamilyCommon'
+import {
+  getIdentifierNodeName,
+  getNodeType,
+  identifierNodeTypes,
+  wildcardUtils,
+  setIdentifierNodeName,
+} from './common'
 
 const getProgramNodeFromRootNode = (fileNode: PoorNodeType) =>
   fileNode.program as PoorNodeType
@@ -38,7 +48,7 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
 
 const createBlockStatementNode = (
   body: PoorNodeType[],
-  position: Omit<Match, 'node'>,
+  position: MatchPosition,
 ) => ({
   type: 'BlockStatement',
   body,
@@ -71,70 +81,77 @@ const astPropsToSkip = [
 ]
 
 const parseCode = (code: string, filePath = '') => {
-  const pluginsWithoutJSX = [
-    'typescript',
-    'decorators-legacy',
-    'importAssertions',
-    'doExpressions',
-  ] as ParserPlugin[]
-  const pluginsWithJSX = [...pluginsWithoutJSX, 'jsx'] as ParserPlugin[]
-
-  const parseOptionsWithJSX = {
-    sourceType: 'module',
-    plugins: pluginsWithJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
-
-  const parseOptionsWithoutJSX = {
-    sourceType: 'module',
-    plugins: pluginsWithoutJSX,
-    allowReturnOutsideFunction: true,
-  } as ParserOptions
-
   const maybeWrappedJSON = /\.json$/.test(filePath) ? `(${code})` : code
-
   try {
     return parse(
       maybeWrappedJSON,
-      parseOptionsWithJSX,
+      babelParseOptionsWithJSX,
     ) as unknown as PoorNodeType
   } catch (e) {
     return parse(
       maybeWrappedJSON,
-      parseOptionsWithoutJSX,
+      babelParseOptionsWithoutJSX,
     ) as unknown as PoorNodeType
   }
 }
 
-const sanitizeJSXText = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value = normalizeText(node.value)
-  //@ts-ignore
-  node.extra.raw = normalizeText(node.extra.raw)
-  //@ts-ignore
-  node.extra.rawValue = normalizeText(node.extra.rawValue)
-}
-
-const sanitizeTemplateElement = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value.raw = normalizeText(node.value.raw)
-  //@ts-ignore
-  node.value.cooked = normalizeText(node.value.cooked)
-}
-
-const sanitizeNode = (node: PoorNodeType) => {
-  if (node?.type === 'TemplateElement') {
-    sanitizeTemplateElement(node)
-  } else if (node?.type === 'JSXText') {
-    sanitizeJSXText(node)
+const sanitizeJSXTextExtraValue = ({
+  raw,
+  rawValue,
+}: {
+  raw: string
+  rawValue: string
+}) => {
+  return {
+    raw: normalizeText(raw),
+    rawValue: normalizeText(rawValue),
   }
+}
+
+const sanitizeTemplateElementValue = ({
+  raw,
+  cooked,
+}: {
+  raw: string
+  cooked: string
+}) => {
+  return {
+    raw: normalizeText(raw),
+    cooked: normalizeText(cooked),
+  }
+}
+
+type NodeValueSanitizers = Record<string, Record<string, (a: any) => any>>
+
+const nodeValuesSanitizers: NodeValueSanitizers = {
+  ['JSXText']: {
+    value: normalizeText,
+    extra: sanitizeJSXTextExtraValue,
+  },
+  ['TemplateElement']: {
+    value: sanitizeTemplateElementValue,
+  },
+}
+
+const getSanitizedNodeValue = (
+  nodeType: string,
+  valueKey: string,
+  value: unknown,
+) => {
+  const valueSanitizer = nodeValuesSanitizers?.[nodeType]?.[valueKey]
+
+  if (valueSanitizer) {
+    return valueSanitizer(value)
+  }
+
+  return value
 }
 
 const shouldCompareNode = (node: PoorNodeType) => {
   if (node.type === 'JSXText') {
-    sanitizeJSXText(node)
+    const value: string = getSanitizedNodeValue('JSXText', 'value', node.value)
 
-    return (node.value as string).length > 0
+    return value.length > 0
   }
 
   return true
@@ -152,9 +169,6 @@ const compareNodesAfterWildcardsComparison = (
   return runNodesComparators(afterWildcardsComparators, nodeComparatorParams)
 }
 
-const getIdentifierNodeName = (node: PoorNodeType) => node.name as string
-const getNodeType = (node: PoorNodeType) => node.type as string
-
 const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
@@ -164,7 +178,16 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
     node.type === 'TemplateElement' ||
     node.type === 'JSXText',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
-    return ((node.value as any)?.raw as string) ?? (node?.value as string)
+    if (node.type === 'TemplateElement') {
+      const { raw } = sanitizeTemplateElementValue(
+        node.value as { raw: string; cooked: string },
+      )
+
+      return raw
+    }
+
+    // (node.type === 'StringLiteral' || node.type === 'JSXText'
+    return normalizeText(node.value as string)
   },
 }
 
@@ -183,7 +206,7 @@ const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
 
 const getNodePosition: ParserSettings['getNodePosition'] = (
   node: PoorNodeType,
-) => ({
+): MatchPosition => ({
   start: node.start as number,
   end: node.end as number,
   loc: node.loc as unknown as Location,
@@ -206,15 +229,17 @@ export const babelParserSettings: ParserSettings = {
   parseCode,
   isNode,
   isIdentifierNode,
+  identifierNodeTypes,
   astPropsToSkip,
   isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,
+  setIdentifierNodeName,
   getNodeType,
   unwrapExpressionStatement,
   createBlockStatementNode,
-  sanitizeNode,
+  getSanitizedNodeValue,
   shouldCompareNode,
   wildcardUtils,
   compareNodesBeforeWildcardsComparison,

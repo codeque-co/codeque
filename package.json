@@ -25,6 +25,8 @@
   "scripts": {
     "lint": "yarn workspaces run lint",
     "typecheck": "yarn workspaces run typecheck",
+    "test": "yarn workspaces run test",
+    "checks": "yarn typecheck && yarn lint && yarn test",
     "postinstall": "node fix-framer-motion.js"
   }
 }

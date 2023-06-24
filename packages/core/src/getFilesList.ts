@@ -161,7 +161,7 @@ export const filterExtensions = (
   return filesList.filter((filePath) => extensionTester.test(filePath))
 }
 
-type GetFilesListArgs = {
+export type GetFilesListArgs = {
   searchRoot: string
   entryPoint?: string
   byGitChanges?: boolean

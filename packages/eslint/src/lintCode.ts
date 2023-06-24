@@ -1,6 +1,5 @@
 import { Rule } from 'eslint'
 import {
-  Mode,
   parseQueries,
   __internal,
   NotNullParsedQuery,
@@ -13,7 +12,9 @@ import {
   ParsedQueryWithSettings,
   VisitorsSearchArrayMap,
   VisitorsSearchMap,
+  RuleOption,
 } from './types'
+
 import {
   formatQueryParseErrors,
   createMultipleSearchFunctionsExecutor,
@@ -51,7 +52,7 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     docs: {
       description: 'Lint anything based on code sample(s).',
     },
-    fixable: 'code',
+    fixable: 'code' as const,
     schema: [
       {
         type: 'array',
@@ -91,16 +92,7 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     const prepStart = performance.now()
     const parser = assertCompatibleParser(context.parserPath)
 
-    const settings = context.options[0] as
-      | Array<{
-          mode?: Mode
-          query?: string
-          message?: string
-          caseInsensitive?: boolean
-          includeFiles?: string[]
-          excludeFiles?: string[]
-        }>
-      | undefined
+    const settings = context.options[0] as Array<RuleOption> | undefined
 
     if (!settings || settings.length === 0) {
       return {}
@@ -112,9 +104,14 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
 
     const defaultCaseInsensitive = true
     const queryCodes = settings.map(({ query }) => query)
+    const searchModes = settings.map(({ mode }) => mode).filter(Boolean)
 
     if (queryCodes.includes(undefined) || queryCodes.includes(null as any)) {
       throw new Error('Each setting has to have at least query defined.')
+    }
+
+    if (searchModes.includes('text')) {
+      throw new Error('"Text" search mode is not supported.')
     }
 
     const parserSettings =
@@ -168,6 +165,7 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     })) as ParsedQueryWithSettings[]
 
     preparingQueriesTime += performance.now() - startPreparingQueries
+
     const startFilteringFilePaths = performance.now()
     const queriesWithSettingsMatchedFilePath = parsedQueriesWithSettings.filter(
       ({ includeFiles, excludeFiles }) => {
@@ -232,14 +230,20 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
             searchTimeForQueries[queryCode] = 0
           }
 
+          const matchContext = __internal.createMatchContext()
           const match = __internal.validateMatch(
             node,
             queryWithSettings.parsedQuery.queryNode,
             searchOptions,
+            matchContext,
           )
 
           if (match) {
-            let matchData = __internal.getMatchFromNode(node, parserSettings)
+            let matchData = __internal.getMatchFromNode(
+              node,
+              parserSettings,
+              matchContext.getAllAliases(),
+            )
 
             if (isMultistatement) {
               /**
@@ -310,6 +314,6 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     preparingVisitorsTime += performance.now() - preparingVisitorsStart
     preparationTime += performance.now() - prepStart
 
-    return visitors
+    return visitors as unknown as Record<string, (node: Rule.Node) => void>
   },
 })

@@ -1,6 +1,6 @@
 import { createLintCode } from './lintCode'
 
-const rules = {
+export const rules = {
   error: createLintCode('problem'),
   warning: createLintCode('suggestion'),
 }

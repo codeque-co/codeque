@@ -1,74 +1,148 @@
 import { PoorNodeType, WildcardMeta, WildcardUtils } from './types'
-import { nonIdentifierOrKeywordGlobal } from './utils'
+import { nonIdentifierOrKeywordGlobal, regExpTest } from './utils'
 
 export const createWildcardUtils = (
   identifierNodeTypes: string[],
   numericWildcard: string,
   identifierWildcardBase: string,
+  getIdentifierNodeName: (node: PoorNodeType) => string,
   stringWildcardBase = identifierWildcardBase,
 ): WildcardUtils => {
   const identifierWildcard = identifierWildcardBase.repeat(2)
   const nodesTreeWildcard = identifierWildcardBase.repeat(3)
 
-  const removeIdentifierRefFromWildcard = (name: string) => {
-    const containsWildcardRegExp = new RegExp(`^\\${identifierWildcardBase}`)
-    const removeIdRefRegExp = new RegExp(
-      `(?<=(\\${identifierWildcardBase}){2,3})_(\\w)+$`,
-    )
+  const createRemoveWildcardAliasesFromIdentifierName =
+    (wildcardBase: string) => (name: string) => {
+      const containsWildcardWithInvalidRefRegExp = new RegExp(
+        `(\\${wildcardBase}){2,3}([a-zA-Z0-9])+_(\\${wildcardBase}){2,3}`,
+      )
 
-    if (containsWildcardRegExp.test(name)) {
-      return name.replace(removeIdRefRegExp, '')
+      const containsWildcardWithInvalidRefRegExp2 = new RegExp(
+        `(\\${wildcardBase}){2,3}_([a-zA-Z0-9])+(\\${wildcardBase}){2,3}`,
+      )
+
+      const containsWildcardWithInvalidRefRegExp3 = new RegExp(
+        `(\\${wildcardBase}){2,3}_([a-zA-Z0-9])+_(\\${wildcardBase}){2,3}`,
+      )
+
+      const removeIdRefRegExp = new RegExp(
+        `(?<=(\\${wildcardBase}){2,3})_([a-zA-Z0-9])+(_)?`,
+      )
+
+      let nameWithRemovedWildcardsAliases = name
+
+      while (
+        regExpTest(removeIdRefRegExp, nameWithRemovedWildcardsAliases) &&
+        !regExpTest(
+          containsWildcardWithInvalidRefRegExp,
+          nameWithRemovedWildcardsAliases,
+        ) &&
+        !regExpTest(
+          containsWildcardWithInvalidRefRegExp2,
+          nameWithRemovedWildcardsAliases,
+        ) &&
+        !regExpTest(
+          containsWildcardWithInvalidRefRegExp3,
+          nameWithRemovedWildcardsAliases,
+        )
+      ) {
+        nameWithRemovedWildcardsAliases =
+          nameWithRemovedWildcardsAliases.replace(removeIdRefRegExp, '')
+      }
+
+      return nameWithRemovedWildcardsAliases
     }
 
-    return name
-  }
+  const removeWildcardAliasesFromIdentifierName =
+    createRemoveWildcardAliasesFromIdentifierName(identifierWildcardBase)
 
-  const getWildcardRefFromIdentifierName = (name: string) => {
+  const removeWildcardAliasesFromStringLiteral =
+    createRemoveWildcardAliasesFromIdentifierName(stringWildcardBase)
+
+  const getWildcardAliasFromWildcard = (name: string) => {
     const getRefRegExp = new RegExp(
-      `(?<=(\\${identifierWildcardBase}){2,3}_)(\\w)+$`,
+      `(?<=(\\${identifierWildcardBase}){2,3})_([a-zA-Z0-9])+(?=(_?))`,
       'g',
     )
 
     const matchedRef = name.match(getRefRegExp)
 
-    return matchedRef?.[0] || null
+    return matchedRef?.[0]?.replace(/_/g, '') || null
   }
 
-  const getWildcardFromString = (
-    maybeWildcardString: string,
-  ): null | WildcardMeta => {
+  const getWildcardWithAliasFromIdentifierName = (name: string) => {
+    const getRefRegExp = new RegExp(
+      `((\\${identifierWildcardBase}){2,3}_([a-zA-Z0-9])+(_)?)|((\\${identifierWildcardBase}){2,3})`,
+      'g',
+    )
+
+    const matchedWildcard = name.match(getRefRegExp)
+
+    return matchedWildcard?.[0] as string
+  }
+
+  const hasWildcard = (maybeWildcardString: string) => {
     const hasIdentifierWildcard =
       maybeWildcardString.includes(identifierWildcard)
     const hasNodeTreeWildcard = maybeWildcardString.includes(nodesTreeWildcard)
-    const hasWildcard = hasIdentifierWildcard || hasNodeTreeWildcard
 
-    if (hasWildcard) {
-      const wildcardWithoutRef =
-        removeIdentifierRefFromWildcard(maybeWildcardString)
-
-      return {
-        wildcardType: hasNodeTreeWildcard ? 'nodeTree' : 'identifier',
-        wildcardWithRef: maybeWildcardString,
-        wildcardWithoutRef,
-        wildcardRef: getWildcardRefFromIdentifierName(maybeWildcardString),
-      }
-    }
-
-    return null
+    return hasIdentifierWildcard || hasNodeTreeWildcard
   }
 
-  const getWildcardFromNode = (node: PoorNodeType): null | WildcardMeta => {
+  const getIdentifierWildcardsFromString = (
+    maybeWildcardString: string,
+  ): WildcardMeta[] => {
+    let maybeWildcardStringToDecompose = maybeWildcardString
+    const wildcardsMeta: WildcardMeta[] = []
+
+    while (hasWildcard(maybeWildcardStringToDecompose)) {
+      const hasNodeTreeWildcard =
+        maybeWildcardStringToDecompose.includes(nodesTreeWildcard)
+
+      const wildcardWithAlias = getWildcardWithAliasFromIdentifierName(
+        maybeWildcardStringToDecompose,
+      )
+
+      const wildcardAlias = getWildcardAliasFromWildcard(wildcardWithAlias)
+
+      const wildcardWithoutAlias =
+        removeWildcardAliasesFromIdentifierName(wildcardWithAlias)
+
+      wildcardsMeta.push({
+        wildcardType: hasNodeTreeWildcard ? 'nodeTree' : 'identifier',
+        wildcardWithAlias,
+        wildcardWithoutAlias,
+        wildcardAlias,
+      })
+
+      const wildcardEndIdx =
+        maybeWildcardStringToDecompose.indexOf(wildcardWithAlias) +
+        wildcardWithAlias.length
+
+      maybeWildcardStringToDecompose =
+        maybeWildcardStringToDecompose.substring(wildcardEndIdx)
+    }
+
+    return wildcardsMeta
+  }
+
+  const getIdentifierWildcardsFromNode = (
+    node: PoorNodeType,
+  ): WildcardMeta[] => {
     if (typeof node.type !== 'string') {
-      return null
+      return []
     }
 
     const isIdentifierNode =
       typeof node.type === 'string' && identifierNodeTypes.includes(node.type)
 
-    if (isIdentifierNode && typeof node.name === 'string') {
-      return getWildcardFromString(node.name)
+    if (isIdentifierNode && typeof getIdentifierNodeName(node) === 'string') {
+      return getIdentifierWildcardsFromString(getIdentifierNodeName(node))
     }
 
+    /**
+     * TODO: make it generic
+     */
     const isTypeReferenceNode = node.type === 'TSTypeReference'
 
     if (isTypeReferenceNode) {
@@ -76,11 +150,18 @@ export const createWildcardUtils = (
         ?.name as string | undefined
 
       if (typeof maybeWildcardString === 'string') {
-        return getWildcardFromString(maybeWildcardString)
+        return getIdentifierWildcardsFromString(maybeWildcardString)
       }
     }
 
-    return null
+    return []
+  }
+
+  const getStringWildcardsFromString = (content: string): WildcardMeta[] => {
+    // Might need to have separate implementation for some other programming langs, good for now
+    return getIdentifierWildcardsFromString(content).map(
+      ({ wildcardType, ...rest }) => ({ wildcardType: 'string', ...rest }),
+    )
   }
 
   const optionalStringWildcardRegExp = new RegExp(
@@ -89,6 +170,11 @@ export const createWildcardUtils = (
   )
   const requiredStringWildcardRegExp = new RegExp(
     `\\${stringWildcardBase}\\${stringWildcardBase}\\${stringWildcardBase}`,
+    'g',
+  )
+
+  const anyStringWildcardRegExp = new RegExp(
+    `(\\${stringWildcardBase}){2,3}`,
     'g',
   )
 
@@ -128,16 +214,18 @@ export const createWildcardUtils = (
   return {
     optionalStringWildcardRegExp,
     requiredStringWildcardRegExp,
-    anyStringWildcardRegExp: new RegExp(`(\\${stringWildcardBase}){2,3}`, 'g'),
+    anyStringWildcardRegExp,
     identifierWildcard,
     nodesTreeWildcard,
     numericWildcard,
     disallowedWildcardSequence: identifierWildcardBase.repeat(4),
     disallowedWildcardRegExp,
-    removeIdentifierRefFromWildcard,
-    getWildcardRefFromIdentifierName,
-    getWildcardFromString,
-    getWildcardFromNode,
+    removeWildcardAliasesFromIdentifierName,
+    removeWildcardAliasesFromStringLiteral,
+    getWildcardAliasFromWildcard,
+    getIdentifierWildcardsFromString,
+    getIdentifierWildcardsFromNode,
+    getStringWildcardsFromString,
     patternToRegExp,
   }
 }

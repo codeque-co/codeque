@@ -7,6 +7,6 @@ editor-log.txt
 cliQuery
 devQuery
 devFile
-
+*.snapshot.json
 dist
 *.temp

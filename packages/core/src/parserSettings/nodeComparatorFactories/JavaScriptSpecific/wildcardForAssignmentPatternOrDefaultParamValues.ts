@@ -13,7 +13,7 @@ export const createWildcardForAssignmentPatternOrDefaultParamValuesNodesComparat
 
     (): NodesComparator =>
     (
-      { fileNode, queryNode, searchSettings },
+      { fileNode, queryNode, searchSettings, matchContext },
       compareNodes,
       { queryKeysMapper, fileKeysMapper },
     ) => {
@@ -36,6 +36,7 @@ export const createWildcardForAssignmentPatternOrDefaultParamValuesNodesComparat
             searchSettings,
             queryKeysPrefix: queryKeysMapper(''),
             fileKeysPrefix: fileKeysMapper('left'),
+            matchContext,
           })
         }
       }

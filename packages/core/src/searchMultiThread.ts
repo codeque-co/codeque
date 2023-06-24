@@ -147,7 +147,9 @@ export const searchMultiThread = async ({
     },
   )
 
-  logMetrics()
+  if (params.debug) {
+    logMetrics()
+  }
 
   return mergedResults
 }

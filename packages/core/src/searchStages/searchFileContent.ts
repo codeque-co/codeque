@@ -57,7 +57,10 @@ export const searchFileContent = ({
     allMatches = results
       .map(({ query, matches }) => {
         return matches.map((match) => {
-          const code = prepareCodeResult({ fileContent, ...match })
+          const { code, indentationBase } = prepareCodeResult({
+            fileContent,
+            ...match,
+          })
 
           const [extendedCodeFrame, newStartLine] = getExtendedCodeFrame(
             match,
@@ -73,6 +76,7 @@ export const searchFileContent = ({
               code: extendedCodeFrame,
               startLine: match.loc.start.line + newStartLine,
             },
+            indentationBase,
           }
         })
       })

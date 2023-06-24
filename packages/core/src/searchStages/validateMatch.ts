@@ -9,11 +9,13 @@ import {
 import { getKeyFromObject, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
 import { Logger } from '../logger'
+import { MatchContext } from '../matchContext'
 
 export const validateMatch = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
   settings: SearchSettingsWithOptionalLogger & GetCodeForNode,
+  matchContext: MatchContext,
 ) => {
   const settingsWithLogger: SearchSettings & GetCodeForNode = {
     ...settings,
@@ -22,7 +24,7 @@ export const validateMatch = (
   const {
     mode,
     parserSettings,
-    getCodeForNode = () => '',
+    getCodeForNode = () => 'getCodeForNode not provided',
     logger: { log, logStepStart },
   } = settingsWithLogger
 
@@ -41,6 +43,7 @@ export const validateMatch = (
     fileNode: fileNode,
     queryNode: queryNode,
     searchSettings: settingsWithLogger,
+    matchContext,
   })
 
   if (
@@ -118,7 +121,12 @@ export const validateMatch = (
               if (
                 !newCurrentNode ||
                 !newCurrentQueryNode ||
-                !validateMatch(newCurrentNode, newCurrentQueryNode, settings)
+                !validateMatch(
+                  newCurrentNode,
+                  newCurrentQueryNode,
+                  settings,
+                  matchContext,
+                )
               ) {
                 return false
               }
@@ -131,7 +139,12 @@ export const validateMatch = (
             const matchedIndexes: number[] = []
 
             const queryNodesArrSorted = [...queryNodesArr].sort((a, b) =>
-              sortByLeastIdentifierStrength(a, b, parserSettings.wildcardUtils),
+              sortByLeastIdentifierStrength(
+                a,
+                b,
+                parserSettings.wildcardUtils,
+                parserSettings.getIdentifierNodeName,
+              ),
             )
 
             for (let i = 0; i < queryNodesArrSorted.length; i++) {
@@ -141,7 +154,14 @@ export const validateMatch = (
                 const newFileNode = nodesArr[j]
 
                 if (!matchedIndexes.includes(j)) {
-                  if (validateMatch(newFileNode, newQueryNode, settings)) {
+                  if (
+                    validateMatch(
+                      newFileNode,
+                      newQueryNode,
+                      settings,
+                      matchContext,
+                    )
+                  ) {
                     matchedIndexes.push(j)
                     break
                   }
@@ -187,7 +207,7 @@ export const validateMatch = (
           if (
             !newFileNode ||
             !newQueryNode ||
-            !validateMatch(newFileNode, newQueryNode, settings)
+            !validateMatch(newFileNode, newQueryNode, settings, matchContext)
           ) {
             return false
           }

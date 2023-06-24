@@ -1,7 +1,6 @@
 export { default as searchInStrings } from './searchInStrings'
 export { searchMultiThread } from './searchMultiThread'
 export { searchInFileSystem } from './searchInFs'
-
 export { getMode, groupMatchesByFile } from './utils'
 export { parseQueries } from './parseQuery'
 export {
@@ -22,6 +21,7 @@ import { getMatchFromNode, getVisitorKeysForQueryNodeType } from './astUtils'
 import { validateMatch } from './searchStages/validateMatch'
 import { getLocationOfMultilineMatch } from './searchStages/getLocationOfMultilineMatch'
 import { traverseAndMatch } from './searchStages/traverseAndMatch'
+import { createMatchContext } from './matchContext'
 
 export const __internal = {
   parserSettingsMap,
@@ -31,4 +31,5 @@ export const __internal = {
   getVisitorKeysForQueryNodeType,
   getLocationOfMultilineMatch,
   traverseAndMatch,
+  createMatchContext,
 }

@@ -281,6 +281,12 @@ export function textSearch({
               },
               query: query.toString(),
               filePath,
+              // TODO: improve text search types, they do not provide aliases
+              aliases: {
+                identifierAliasesMap: {},
+                nodesTreeAliasesMap: {},
+                stringAliasesMap: {},
+              },
             }
           })
 

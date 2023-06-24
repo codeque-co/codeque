@@ -154,11 +154,7 @@ export const nonIdentifierOrKeywordGlobal = new RegExp(
   'g',
 )
 
-export const dedupMatches = <M extends AstMatch>(
-  matches: M[],
-  log: (...args: any[]) => void,
-  debug = false,
-): M[] => {
+export const dedupMatches = <M extends AstMatch>(matches: M[]): M[] => {
   const deduped: M[] = []
 
   matches.forEach((match) => {
@@ -201,10 +197,12 @@ export const prepareCodeResult = ({
   const replaceRegex = new RegExp(`^\\s{0,${firstLineWhiteCharsCount}}`)
 
   if (firstLineWhiteCharsCount > 0) {
-    return lines.map((line) => line.replace(replaceRegex, '')).join('\n')
+    const code = lines.map((line) => line.replace(replaceRegex, '')).join('\n')
+
+    return { code, indentationBase: firstLineWhiteCharsCount }
   }
 
-  return lines.join('\n')
+  return { code: lines.join('\n'), indentationBase: 0 }
 }
 
 export const isNullOrUndef = (val: any) => val === null || val === undefined
@@ -231,4 +229,18 @@ export const noopLogger: Logger = {
   log: () => undefined,
   logStepEnd: () => undefined,
   logStepStart: () => undefined,
+}
+
+export const groupBy = <K extends string, T extends Record<K, string>>(
+  arr: T[],
+  key: K,
+) => {
+  return Object.values<T[]>(
+    arr.reduce((grouped, duplicate) => {
+      const maybeExistingGroup = grouped[duplicate[key]] ?? []
+      grouped[duplicate[key]] = [...maybeExistingGroup, duplicate]
+
+      return grouped
+    }, {} as Record<T[K], T[]>),
+  )
 }

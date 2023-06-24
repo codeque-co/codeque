@@ -5,7 +5,7 @@ const pkgPath = path.join(
   __dirname,
   'node_modules',
   'framer-motion',
-  'package.json'
+  'package.json',
 )
 const framerMotionPkg = JSON.parse(fs.readFileSync(pkgPath).toString())
 

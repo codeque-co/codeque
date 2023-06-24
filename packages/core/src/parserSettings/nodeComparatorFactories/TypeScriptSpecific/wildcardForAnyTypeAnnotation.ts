@@ -11,7 +11,7 @@ export const createWildcardForAnyTypeAnnotationNodesComparator =
     if (queryNode) {
       if (
         (queryNode.type as string) === 'TSTypeReference' &&
-        wildcardUtils.removeIdentifierRefFromWildcard(
+        wildcardUtils.removeWildcardAliasesFromIdentifierName(
           (queryNode.typeName as PoorNodeType).name as string,
         ) === wildcardUtils.nodesTreeWildcard
       ) {

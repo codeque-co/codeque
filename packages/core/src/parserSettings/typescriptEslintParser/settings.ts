@@ -1,19 +1,25 @@
 import { parse, ParserOptions } from '@typescript-eslint/parser'
 import {
   Location,
-  Match,
   NodesComparatorParameters,
   NumericLiteralUtils,
   ParserSettings,
   PoorNodeType,
   ProgramNodeAndBlockNodeUtils,
   StringLikeLiteralUtils,
+  MatchPosition,
 } from '../../types'
 import { normalizeText, runNodesComparators } from '../../utils'
 import { supportedExtensions } from '../_common/JSFamilyCommon'
 import { afterWildcardsComparators } from './afterWildcardsComparators'
 import { beforeWildcardsComparators } from './beforeWildcardsComparators'
-import { identifierNodeTypes, wildcardUtils } from './common'
+import {
+  getIdentifierNodeName,
+  getNodeType,
+  identifierNodeTypes,
+  wildcardUtils,
+  setIdentifierNodeName,
+} from './common'
 
 const getProgramNodeFromRootNode = (rootNode: PoorNodeType) => rootNode // root node is program node
 
@@ -35,7 +41,7 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
 
 const createBlockStatementNode = (
   body: PoorNodeType[],
-  position: Omit<Match, 'node'>,
+  position: MatchPosition,
 ) =>
   ({
     type: 'BlockStatement',
@@ -83,37 +89,50 @@ const parseCode = (code: string, filePath = '') => {
   return parse(maybeWrappedJSON, parseOptions) as unknown as PoorNodeType
 }
 
-const generateCode = (node: PoorNodeType, options?: unknown) => {
-  return 'Not supported'
-}
-
-const sanitizeJSXText = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value = normalizeText(node.value)
-  //@ts-ignore
-  node.raw = normalizeText(node.raw)
-}
-
-const sanitizeTemplateElement = (node: PoorNodeType) => {
-  //@ts-ignore
-  node.value.raw = normalizeText(node.value.raw)
-  //@ts-ignore
-  node.value.cooked = normalizeText(node.value.cooked)
-}
-
-const sanitizeNode = (node: PoorNodeType) => {
-  if (node?.type === 'TemplateElement') {
-    sanitizeTemplateElement(node)
-  } else if (node?.type === 'JSXText') {
-    sanitizeJSXText(node)
+const sanitizeTemplateElementValue = ({
+  raw,
+  cooked,
+}: {
+  raw: string
+  cooked: string
+}) => {
+  return {
+    raw: normalizeText(raw),
+    cooked: normalizeText(cooked),
   }
+}
+
+type NodeValueSanitizers = Record<string, Record<string, (a: any) => any>>
+
+const nodeValuesSanitizers: NodeValueSanitizers = {
+  ['JSXText']: {
+    value: normalizeText,
+    raw: normalizeText,
+  },
+  ['TemplateElement']: {
+    value: sanitizeTemplateElementValue,
+  },
+}
+
+const getSanitizedNodeValue = (
+  nodeType: string,
+  valueKey: string,
+  value: unknown,
+) => {
+  const valueSanitizer = nodeValuesSanitizers?.[nodeType]?.[valueKey]
+
+  if (valueSanitizer) {
+    return valueSanitizer(value)
+  }
+
+  return value
 }
 
 const shouldCompareNode = (node: PoorNodeType) => {
   if (node.type === 'JSXText') {
-    sanitizeJSXText(node)
+    const value: string = getSanitizedNodeValue('JSXText', 'value', node.value)
 
-    return (node.value as string).length > 0
+    return value.length > 0
   }
 
   return true
@@ -131,9 +150,6 @@ const compareNodesAfterWildcardsComparison = (
   return runNodesComparators(afterWildcardsComparators, nodeComparatorParams)
 }
 
-const getIdentifierNodeName = (node: PoorNodeType) => node.name as string
-const getNodeType = (node: PoorNodeType) => node.type as string
-
 const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
@@ -146,7 +162,16 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
     node.type === 'TemplateElement' ||
     node.type === 'JSXText',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
-    return ((node.value as any)?.raw as string) ?? (node?.value as string)
+    if (node.type === 'TemplateElement') {
+      const { raw } = sanitizeTemplateElementValue(
+        node.value as { raw: string; cooked: string },
+      )
+
+      return raw
+    }
+
+    // (node.type === 'Literal' || node.type === 'JSXText'
+    return normalizeText(node.value as string)
   },
 }
 
@@ -188,15 +213,17 @@ export const typescriptEslintParserSettings: ParserSettings = {
   parseCode,
   isNode,
   isIdentifierNode,
+  identifierNodeTypes,
   astPropsToSkip,
   isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,
+  setIdentifierNodeName,
   getNodeType,
   unwrapExpressionStatement,
   createBlockStatementNode,
-  sanitizeNode,
+  getSanitizedNodeValue,
   shouldCompareNode,
   wildcardUtils,
   compareNodesBeforeWildcardsComparison,

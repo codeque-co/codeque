@@ -6,11 +6,5 @@
     "declaration": false,
     "jsx": "react-jsx"
   },
-  "exclude": [
-    "dist",
-    "dist-webviews",
-    "node_modules",
-    "media",
-    "webpack.*"
-  ]
+  "exclude": ["dist", "dist-webviews", "node_modules", "media", "webpack.*"]
 }

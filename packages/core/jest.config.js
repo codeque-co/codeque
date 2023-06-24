@@ -1,25 +1,136 @@
-const { pathsToModuleNameMapper } = require('ts-jest')
-const fs = require('fs')
-
-const tsConfig = JSON.parse(
-  fs
-    .readFileSync(__dirname + '/tsconfig.json')
-    .toString()
-    .replace(/^(\s)*\/\//gm, '')
-    .replace(/\/\*.+?\*\//gm, ''),
-)
-
-module.exports = {
+const sharedConfig = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
-    prefix: '<rootDir>',
-  }),
+  setupFiles: ['<rootDir>/jest/shared.setup.ts'],
+}
+
+const javaScriptWithJSXParserTestFiles = [
+  '<rootDir>/__tests__/JavaScript/**/*.test.ts',
+  '<rootDir>/__tests__/JavaScriptWithJSX/**/*.test.ts',
+]
+
+const typeScriptParserTestFiles = [
+  '<rootDir>/__tests__/JavaScript/**/*.test.ts',
+  '<rootDir>/__tests__/JavaScriptWithJSX/**/*.test.ts',
+  '<rootDir>/__tests__/TypeScript/**/*.test.ts',
+]
+
+module.exports = {
   testPathIgnorePatterns: [
     '__fixtures__',
     '__fixturesOther__',
     'ts-dist',
     'utils.ts',
   ],
-  setupFiles: ['./jest.setup.js'],
+  projects: [
+    {
+      displayName: { name: 'common', color: 'white' },
+      ...sharedConfig,
+      testMatch: ['<rootDir>/__tests__/common/**/*.test.ts'],
+    },
+    {
+      displayName: { name: 'text-search', color: 'cyan' },
+      ...sharedConfig,
+      testMatch: ['<rootDir>/__tests__/TextSearch/**/*.test.ts'],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'typescript-eslint-parser', color: 'magenta' },
+      testMatch: typeScriptParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/typescript-eslint-parser.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: {
+        name: 'typescript-eslint-parser:traversal',
+        color: 'magenta',
+      },
+      testMatch: typeScriptParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/typescript-eslint-parser:traversal.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'babel', color: 'yellow' },
+      testMatch: typeScriptParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/babel.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: {
+        name: 'babel:traversal',
+        color: 'yellow',
+      },
+      testMatch: typeScriptParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/babel:traversal.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'babel-eslint-parser', color: 'yellow' },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/babel-eslint-parser.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: {
+        name: 'babel-eslint-parser:traversal',
+        color: 'yellow',
+      },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/babel-eslint-parser:traversal.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'esprima', color: 'gray' },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/esprima.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'esprima:traversal', color: 'gray' },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/esprima:traversal.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'espree', color: 'blue' },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/espree.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'espree:traversal', color: 'blue' },
+      testMatch: javaScriptWithJSXParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/espree:traversal.setup.ts',
+      ],
+    },
+  ],
 }

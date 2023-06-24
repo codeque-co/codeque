@@ -16,7 +16,7 @@ import { NodesComparator, PoorNodeType } from '../../../types'
 export const createMatchOptionalFlagInMemberExpressionNodesComparator =
   (): NodesComparator =>
   (
-    { queryNode, fileNode, searchSettings },
+    { queryNode, fileNode, searchSettings, matchContext },
     compareNodes,
     { fileKeysToTraverseForOtherMatches, queryKeysMapper, fileKeysMapper },
   ) => {
@@ -56,6 +56,7 @@ export const createMatchOptionalFlagInMemberExpressionNodesComparator =
           searchSettings,
           queryKeysPrefix: queryKeysMapper(''),
           fileKeysPrefix: fileKeysMapper('expression'),
+          matchContext,
         })
       } else if (
         queryNode.type === 'ChainExpression' &&
@@ -67,6 +68,7 @@ export const createMatchOptionalFlagInMemberExpressionNodesComparator =
           searchSettings,
           queryKeysPrefix: queryKeysMapper('expression'),
           fileKeysPrefix: fileKeysMapper(''),
+          matchContext,
         })
       }
     }

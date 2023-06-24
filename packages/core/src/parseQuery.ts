@@ -28,7 +28,7 @@ export const getUniqueTokens = (
 
   if (parserSettings.isIdentifierNode(queryNode)) {
     const trimmedWildcards = parserSettings.wildcardUtils
-      .removeIdentifierRefFromWildcard(queryNode.name as string)
+      .removeWildcardAliasesFromIdentifierName(queryNode.name as string)
       .split(parserSettings.wildcardUtils.identifierWildcard)
 
     trimmedWildcards.forEach((part) => {
@@ -40,7 +40,9 @@ export const getUniqueTokens = (
 
   if (stringLikeLiteralUtils.isStringLikeLiteralNode(queryNode)) {
     const stringContent =
-      stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode)
+      parserSettings.wildcardUtils.removeWildcardAliasesFromStringLiteral(
+        stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode),
+      )
 
     const trimmedWildcards = decomposeString(
       stringContent,

@@ -9,11 +9,9 @@ import {
   SearchResults,
   NotNullParsedQuery,
   SearchSettings,
-  ParserType,
 } from './types'
 import { parserSettingsMap } from './parserSettings/index'
-
-const testParserTypeOverride = process?.env?.TEST_PARSER_TYPE as ParserType
+import { testParserTypeOverride } from './testOnlyConfig'
 
 type StringsSearchArgs = Omit<FileSystemSearchArgs, 'filePaths'> & {
   files: {
@@ -66,6 +64,8 @@ export const searchInStrings = ({
   )
 
   if (!parseOk) {
+    log('Parse query failed')
+
     return {
       matches: [],
       errors: queries.filter((queryResult) => queryResult.error),
@@ -112,7 +112,7 @@ export const searchInStrings = ({
   }
 
   return {
-    matches: dedupMatches(allMatches, log, debug),
+    matches: dedupMatches(allMatches),
     errors: searchErrors,
     hints: queries.map(({ hints }) => hints),
   }

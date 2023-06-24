@@ -45,6 +45,7 @@
     "build:code": "tsc --project tsconfig.json",
     "docs-gen": "node tools/addDocsToReadme.js",
     "typecheck": "tsc --noEmit --project tsconfig.json",
+    "test": "echo 0",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "yarn lint --fix",

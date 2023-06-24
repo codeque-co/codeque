@@ -1,4 +1,4 @@
-import { ParsedQuery, PoorNodeType } from '@codeque/core'
+import { ParsedQuery, ParserType, PoorNodeType } from '@codeque/core'
 import { SearchFn } from './types'
 
 export const formatQueryParseErrors = (queries: [ParsedQuery[], boolean][]) => {
@@ -19,12 +19,35 @@ export const createMultipleSearchFunctionsExecutor =
   }
 
 const typescriptEslintParser = '@typescript-eslint/parser' as const
+const babelEslintParser = '@babel/eslint-parser' as const
+const esprimaParser = 'esprima' as const
+const espreeParser = 'espree' as const
+const eslintParser = 'eslint' as const // in fact it's espree
 
-type SupportedParsers = typeof typescriptEslintParser
-export const supportedParsers = [typescriptEslintParser]
+type SupportedParsers =
+  | typeof typescriptEslintParser
+  | typeof babelEslintParser
+  | typeof esprimaParser
+  | typeof espreeParser
+  | typeof eslintParser
 
-export const parserNamesMappingsToCodeQueInternal = {
-  [typescriptEslintParser]: 'typescript-eslint',
+export const supportedParsers = [
+  typescriptEslintParser,
+  babelEslintParser,
+  esprimaParser,
+  espreeParser,
+  eslintParser,
+]
+
+export const parserNamesMappingsToCodeQueInternal: Record<
+  SupportedParsers,
+  ParserType
+> = {
+  [typescriptEslintParser]: 'typescript-eslint-parser',
+  [babelEslintParser]: 'babel-eslint-parser',
+  [esprimaParser]: 'esprima',
+  [espreeParser]: 'espree',
+  [eslintParser]: 'espree',
 } as const
 
 export const extractParserNameFromResolvedPath = (pathToParser: string) => {
@@ -48,7 +71,7 @@ export const assertCompatibleParser = (parserPath: string) => {
 
   if (!supportedParsers.includes(parser as any)) {
     throw new Error(
-      `\nCodeQue does not support "${parser}" parser.\nSupported parsers are:\n -${supportedParsers.join(
+      `\nCodeQue does not support "${parser}" parser.\nSupported parsers are:\n- ${supportedParsers.join(
         '\n- ',
       )}\nPlease open an issue to request parser support.\nVisit https://github.com/codeque-co/codeque/issues\n`,
     )

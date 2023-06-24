@@ -21,8 +21,12 @@
     "url": "https://github.com/codeque-co/codeque"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.21.8",
     "@types/jest": "^27.0.3",
+    "@typescript-eslint/parser": "^5.53.0",
     "eslint": "^8.34.0",
+    "espree": "^9.5.2",
+    "esprima": "^4.0.1",
     "jest": "^27.4.4",
     "release-it": "^15.0.0",
     "ts-jest": "^27.1.1"

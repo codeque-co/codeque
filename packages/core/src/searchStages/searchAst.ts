@@ -8,21 +8,25 @@ import {
   traverseAndMatch,
   test_traverseAndMatchWithVisitors,
 } from './traverseAndMatch'
-import { useTraverseApproachTestOnly } from '../config'
+import { useTraverseApproachTestOnly } from '../testOnlyConfig'
 import { getLocationOfMultilineMatch } from './getLocationOfMultilineMatch'
+import { MatchContextAliases } from '../matchContext'
 
 export type SearchAstSettings = SearchSettings & {
   queries: NotNullParsedQuery[]
-  getCodeForFileNode?: (node: PoorNodeType) => string
+  getCodeForFileNode: (node: PoorNodeType) => string
 }
 
 export const searchAst = (
   fileNode: PoorNodeType,
   { queries, getCodeForFileNode, ...settings }: SearchAstSettings,
+  unwrapFileNode = true,
+  initialContext?: MatchContextAliases,
 ) => {
   const allMatches: { query: NotNullParsedQuery; matches: Match[] }[] = []
-  const programNode =
-    settings.parserSettings.getProgramNodeFromRootNode(fileNode)
+  const nodeToSearch = unwrapFileNode
+    ? settings.parserSettings.getProgramNodeFromRootNode(fileNode)
+    : fileNode
 
   for (const query of queries) {
     const { queryNode, isMultistatement, queryCode } = query
@@ -56,23 +60,26 @@ export const searchAst = (
       ? test_traverseAndMatchWithVisitors
       : traverseAndMatch
 
-    const matches = traverseAndMatchFn(programNode, queryNode, newSettings).map(
-      (match) => {
-        if (!isMultistatement) {
-          return match
-        }
+    const matches = traverseAndMatchFn(
+      nodeToSearch,
+      queryNode,
+      newSettings,
+      initialContext,
+    ).map((match) => {
+      if (!isMultistatement) {
+        return match
+      }
 
-        /**
-         * For multi-statement queries we search where exactly statements are located within parent node
-         */
-        return getLocationOfMultilineMatch(
-          match,
-          queryNode,
-          newSettings,
-          traverseAndMatchFn,
-        )
-      },
-    )
+      /**
+       * For multi-statement queries we search where exactly statements are located within parent node
+       */
+      return getLocationOfMultilineMatch(
+        match,
+        queryNode,
+        newSettings,
+        traverseAndMatchFn,
+      )
+    })
 
     allMatches.push({
       query,

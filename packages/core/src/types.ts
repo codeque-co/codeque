@@ -1,4 +1,5 @@
 import { Logger } from './logger'
+import { MatchContext, MatchContextAliases } from './matchContext'
 export type Mode = 'exact' | 'include' | 'include-with-order' | 'text'
 
 export type Position = {
@@ -11,11 +12,15 @@ export type Location = {
   end: Position
 }
 
-export type Match = {
+export type MatchPosition = {
   start: number
   end: number
   loc: Location
+}
+
+export type Match = MatchPosition & {
   node: PoorNodeType
+  aliases: MatchContextAliases
 }
 
 export type ExtendedCodeFrame = {
@@ -28,6 +33,7 @@ export type MatchWithFileInfo = Omit<Match, 'node'> & {
   code: string
   filePath: string
   extendedCodeFrame: ExtendedCodeFrame
+  indentationBase?: number
 }
 
 export type AstMatch = Omit<Match, 'node'> & {
@@ -37,8 +43,22 @@ export type AstMatch = Omit<Match, 'node'> & {
 export type Matches = Array<MatchWithFileInfo>
 export type AstMatches = Array<AstMatch>
 
+export type PoorNodeTypeParentData = {
+  node: PoorNodeType
+  key: string
+  index?: number
+}
+
 export type PoorNodeType = {
-  [key: string]: string | number | boolean | PoorNodeType[] | PoorNodeType
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | PoorNodeType[]
+    | PoorNodeType
+} & {
+  __parent?: PoorNodeTypeParentData
 }
 
 export type HardStopFlag = {
@@ -47,7 +67,12 @@ export type HardStopFlag = {
   destroy: () => void
 }
 
-export type ParserType = 'babel' | 'typescript-eslint' | 'esprima'
+export type ParserType =
+  | 'babel'
+  | 'typescript-eslint-parser'
+  | 'espree'
+  | 'esprima'
+  | 'babel-eslint-parser'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]
@@ -112,10 +137,10 @@ export type SearchWorkerData = FileSystemSearchArgs & {
 }
 
 export type SearchSettings = {
+  parserSettings: ParserSettings
   logger: Logger
   caseInsensitive: boolean
   mode: Mode
-  parserSettings: ParserSettings
 }
 
 export type SearchSettingsWithOptionalLogger = Omit<
@@ -130,16 +155,17 @@ export type GetCodeForNode = {
 }
 
 export type WildcardMeta = {
-  wildcardType: 'identifier' | 'nodeTree'
-  wildcardWithRef: string
-  wildcardWithoutRef: string
-  wildcardRef: string | null
+  wildcardType: 'identifier' | 'nodeTree' | 'string'
+  wildcardWithAlias: string
+  wildcardWithoutAlias: string
+  wildcardAlias: string | null
 }
 
 export type CompareNodesParams = {
   fileNode: PoorNodeType | null
   queryNode: PoorNodeType | null
-  searchSettings: SearchSettings
+  searchSettings: SearchSettings & GetCodeForNode
+  matchContext: MatchContext
   /** Params used to support comparing nodes which are not on the same level */
   queryKeysPrefix?: string
   fileKeysPrefix?: string
@@ -174,10 +200,12 @@ export type WildcardUtils = {
   numericWildcard: string
   disallowedWildcardSequence: string
   disallowedWildcardRegExp: RegExp
-  removeIdentifierRefFromWildcard: (identifier: string) => string
-  getWildcardRefFromIdentifierName: (name: string) => string | null
-  getWildcardFromString: (name: string) => WildcardMeta | null
-  getWildcardFromNode: (node: PoorNodeType) => WildcardMeta | null
+  removeWildcardAliasesFromIdentifierName: (identifier: string) => string
+  removeWildcardAliasesFromStringLiteral: (str: string) => string
+  getWildcardAliasFromWildcard: (name: string) => string | null
+  getIdentifierWildcardsFromString: (name: string) => WildcardMeta[]
+  getIdentifierWildcardsFromNode: (node: PoorNodeType) => WildcardMeta[]
+  getStringWildcardsFromString: (content: string) => WildcardMeta[]
   patternToRegExp: (string: string, caseInsensitive: boolean) => RegExp
 }
 
@@ -202,6 +230,7 @@ export type ParserSettings = {
   supportedExtensions: string[]
   parseCode: (code: string, filePath?: string) => PoorNodeType
   isNode: (maybeNode: PoorNodeType) => boolean
+  identifierNodeTypes: string[]
   isIdentifierNode: (node: PoorNodeType) => boolean
   astPropsToSkip: (string | { type: string; key: string })[]
   /**
@@ -214,12 +243,13 @@ export type ParserSettings = {
   getProgramNodeFromRootNode: (node: PoorNodeType) => PoorNodeType
   getNodeType: (node: PoorNodeType) => string
   getIdentifierNodeName: (node: PoorNodeType) => string
+  setIdentifierNodeName: (node: PoorNodeType, name: string) => void
   unwrapExpressionStatement: (node: PoorNodeType) => PoorNodeType
   createBlockStatementNode: (
     body: PoorNodeType[],
-    position: Omit<Match, 'node'>,
+    position: MatchPosition,
   ) => PoorNodeType
-  sanitizeNode: (node: PoorNodeType) => void
+  getSanitizedNodeValue: <T>(type: string, key: string, value: T) => T
   shouldCompareNode: (node: PoorNodeType) => void
   wildcardUtils: WildcardUtils
   compareNodesBeforeWildcardsComparison: NodesComparator
@@ -228,7 +258,7 @@ export type ParserSettings = {
   stringLikeLiteralUtils: StringLikeLiteralUtils
   numericLiteralUtils: NumericLiteralUtils
   programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils
-  getNodePosition: (node: PoorNodeType) => Omit<Match, 'node'>
+  getNodePosition: (node: PoorNodeType) => MatchPosition
   getParseErrorLocation: (error: Error) => { line: number; column: number }
   /**
    * Alternative node types used to match while in traversal mode

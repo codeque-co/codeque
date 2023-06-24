@@ -3,20 +3,12 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "/*": [
-        "src/*"
-      ]
+      "/*": ["src/*"]
     },
     "outDir": "dist",
     "skipLibCheck": true,
     "declaration": false
   },
-  "include": ["src"],
-  "exclude": [
-    "__tests__/**/__fixtures__",
-    "__tests__/**/__fixturesOther__",
-    "dist",
-    "node_modules",
-    "tools/*.js"
-  ]
+  "include": ["src", "declarations.d.ts"],
+  "exclude": ["dist", "node_modules", "tools/*.js", "jest/**", "jest.config.js"]
 }

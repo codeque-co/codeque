@@ -6,6 +6,8 @@ const resolveParserSettings = (parser: string) => () => {
 
 export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
   babel: resolveParserSettings('babelParser'),
-  'typescript-eslint': resolveParserSettings('typescriptEslintParser'),
+  'typescript-eslint-parser': resolveParserSettings('typescriptEslintParser'),
+  espree: resolveParserSettings('espreeParser'),
   esprima: resolveParserSettings('esprimaParser'),
+  'babel-eslint-parser': resolveParserSettings('babelEslintParser'),
 }

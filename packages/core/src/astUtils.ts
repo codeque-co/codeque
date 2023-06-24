@@ -1,4 +1,5 @@
-import { PoorNodeType, ParserSettings, WildcardUtils, Match } from './types'
+import { MatchContextAliases } from './matchContext'
+import { Match, ParserSettings, PoorNodeType, WildcardUtils } from './types'
 import { isNullOrUndef } from './utils'
 
 export const isNodeArray = (
@@ -32,6 +33,7 @@ const isNodeKey = (
   key: string,
   keysToCheck: ParserSettings['astPropsToSkip'],
 ) =>
+  key.startsWith('__') ||
   keysToCheck.some((keyToCheck) =>
     typeof keyToCheck === 'string'
       ? key === keyToCheck
@@ -110,11 +112,9 @@ export const cleanupAst = (
     isNode: ParserSettings['isNode']
     shouldCompareNode: ParserSettings['shouldCompareNode']
     astPropsToSkip: ParserSettings['astPropsToSkip']
-    sanitizeNode: ParserSettings['sanitizeNode']
+    getSanitizedNodeValue: ParserSettings['getSanitizedNodeValue']
   },
 ) => {
-  parserSettings.sanitizeNode(ast)
-
   const cleanedAst = removeKeysFromNode(ast, parserSettings.astPropsToSkip)
 
   Object.keys(cleanedAst).forEach((key) => {
@@ -123,40 +123,77 @@ export const cleanupAst = (
         cleanedAst[key] as PoorNodeType,
         parserSettings,
       )
-    }
-
-    if (isNodeArray(cleanedAst[key] as PoorNodeType[], parserSettings.isNode)) {
+    } else if (
+      isNodeArray(cleanedAst[key] as PoorNodeType[], parserSettings.isNode)
+    ) {
       cleanedAst[key] = (cleanedAst[key] as PoorNodeType[])
         .filter(parserSettings.shouldCompareNode)
         .map((subAst) => cleanupAst(subAst, parserSettings))
+    } else {
+      cleanedAst[key] = parserSettings.getSanitizedNodeValue(
+        cleanedAst.type as string,
+        key,
+        cleanedAst[key],
+      )
     }
   })
 
   return cleanedAst
 }
 
+type CompareCodeParserSettingsSubset = {
+  isNode: ParserSettings['isNode']
+  shouldCompareNode: ParserSettings['shouldCompareNode']
+  astPropsToSkip: ParserSettings['astPropsToSkip']
+  parseCode: ParserSettings['parseCode']
+  getSanitizedNodeValue: ParserSettings['getSanitizedNodeValue']
+  getProgramNodeFromRootNode: ParserSettings['getProgramNodeFromRootNode']
+}
+
 export const compareCode = (
   codeA: string,
   codeB: string,
-  parserSettings: {
-    isNode: ParserSettings['isNode']
-    shouldCompareNode: ParserSettings['shouldCompareNode']
-    astPropsToSkip: ParserSettings['astPropsToSkip']
-    parseCode: ParserSettings['parseCode']
-    sanitizeNode: ParserSettings['sanitizeNode']
-    getProgramNodeFromRootNode: ParserSettings['getProgramNodeFromRootNode']
-  },
+  parserSettingsSubset: CompareCodeParserSettingsSubset,
 ) => {
-  const astA = parserSettings.getProgramNodeFromRootNode(
-    parserSettings.parseCode(codeA),
+  const astA = parserSettingsSubset.getProgramNodeFromRootNode(
+    parserSettingsSubset.parseCode(codeA),
   )
 
-  const astB = parserSettings.getProgramNodeFromRootNode(
-    parserSettings.parseCode(codeB),
+  const astB = parserSettingsSubset.getProgramNodeFromRootNode(
+    parserSettingsSubset.parseCode(codeB),
   )
 
-  const cleanedA = cleanupAst(astA, parserSettings)
-  const cleanedB = cleanupAst(astB, parserSettings)
+  return compareAst(astA, astB, parserSettingsSubset)
+}
+
+const cloneAst = (ast: PoorNodeType) => {
+  const uniqueObjectLikeValuesCache: unknown[] = []
+
+  /**
+   * Skip circular references (like '__parent')
+   */
+  const stringified = JSON.stringify(ast, (_: string, value: unknown) => {
+    if (typeof value === 'object' && value !== null) {
+      // Duplicate reference found, discard key
+      if (uniqueObjectLikeValuesCache.includes(value)) return
+
+      // Store value in our collection
+      uniqueObjectLikeValuesCache.push(value)
+    }
+
+    return value
+  })
+
+  return JSON.parse(stringified)
+}
+
+export const compareAst = (
+  astA: PoorNodeType,
+  astB: PoorNodeType,
+  parserSettingsSubset: CompareCodeParserSettingsSubset,
+) => {
+  const cleanedA = cleanupAst(cloneAst(astA), parserSettingsSubset)
+  const cleanedB = cleanupAst(cloneAst(astB), parserSettingsSubset)
 
   return JSON.stringify(cleanedA) === JSON.stringify(cleanedB)
 }
@@ -165,16 +202,25 @@ export const sortByLeastIdentifierStrength = (
   nodeA: PoorNodeType,
   nodeB: PoorNodeType,
   wildcardUtils: WildcardUtils,
+  getIdentifierNodeName: (node: PoorNodeType) => string,
 ) => {
-  const aWildcard = wildcardUtils.getWildcardFromNode(nodeA)
-  const bWildcard = wildcardUtils.getWildcardFromNode(nodeB)
+  const aWildcards = wildcardUtils.getIdentifierWildcardsFromNode(nodeA)
+  const bWildcards = wildcardUtils.getIdentifierWildcardsFromNode(nodeB)
 
-  const aIsIdentifierWithWildcard = aWildcard !== null
-  const bIsIdentifierWithWildcard = bWildcard !== null
+  const aIsIdentifierWithWildcards = aWildcards.length > 0
+  const bIsIdentifierWithWildcards = bWildcards.length > 0
 
-  if (aIsIdentifierWithWildcard && bIsIdentifierWithWildcard) {
-    const idA = aWildcard.wildcardWithoutRef
-    const idB = bWildcard.wildcardWithoutRef
+  if (aIsIdentifierWithWildcards && bIsIdentifierWithWildcards) {
+    const idA = wildcardUtils.removeWildcardAliasesFromIdentifierName(
+      getIdentifierNodeName(nodeA),
+    )
+    const idB = wildcardUtils.removeWildcardAliasesFromIdentifierName(
+      getIdentifierNodeName(nodeB),
+    )
+
+    if (idA === idB) {
+      return 0
+    }
 
     if (idA === wildcardUtils.nodesTreeWildcard) {
       return 1
@@ -196,11 +242,11 @@ export const sortByLeastIdentifierStrength = (
     return bNonWildcardCharsLen - aNonWildcardCharsLen
   }
 
-  if (aIsIdentifierWithWildcard) {
+  if (aIsIdentifierWithWildcards) {
     return 1
   }
 
-  if (bIsIdentifierWithWildcard) {
+  if (bIsIdentifierWithWildcards) {
     return -1
   }
 
@@ -210,10 +256,12 @@ export const sortByLeastIdentifierStrength = (
 export const getMatchFromNode = (
   node: PoorNodeType,
   parserSettings: Pick<ParserSettings, 'getNodePosition'>,
+  aliases: MatchContextAliases,
 ) =>
   ({
     ...parserSettings.getNodePosition(node),
     node,
+    aliases,
   } as Match)
 
 export const getVisitorKeysForQueryNodeType = (

@@ -7,8 +7,9 @@ import {
   PoorNodeType,
   ProgramNodeAndBlockNodeUtils,
   StringLikeLiteralUtils,
+  NodesComparatorParameters,
 } from '../../types'
-import { normalizeText } from '../../utils'
+import { normalizeText, runNodesComparators } from '../../utils'
 import {
   getIdentifierNodeName,
   identifierNodeTypes,
@@ -16,6 +17,7 @@ import {
   wildcardUtils,
 } from './common'
 import { traverseAst } from '../../searchStages/traverseAndMatch'
+import { beforeWildcardsComparators } from './beforeWildcardsComparators'
 
 const supportedExtensions = ['html', 'htm']
 
@@ -108,7 +110,8 @@ const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
-  isStringLikeLiteralNode: (node: PoorNodeType) => node.type === 'Text$3',
+  isStringLikeLiteralNode: (node: PoorNodeType) =>
+    node.type === 'Text$3' || node.type === 'TextAttribute',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
     return node?.value as string
   },
@@ -142,9 +145,6 @@ const getParseErrorLocation = (e: any) => ({
 
 const alternativeNodeTypes = {
   Identifier: identifierNodeTypes,
-  MemberExpression: ['OptionalMemberExpression'],
-  OptionalMemberExpression: ['MemberExpression'],
-  BlockStatement: ['Program'],
 }
 
 /**
@@ -153,21 +153,49 @@ const alternativeNodeTypes = {
  * - decode wildcard, traverse parsed query and: a_a_$$ => $$
  * `$$` is invalid tag name start in all html parsers
  */
-const encodedWildcardSequence = 'a_a_$$'
+const encodedWildcardSequence = 'a_$$_x'
 
-const preprocessQueryCode = (code: string) =>
-  code.replace(/\$\$/g, encodedWildcardSequence)
+const preprocessQueryCode = (code: string) => {
+  const queryCode = code.replace(/(\$\$)/g, () => encodedWildcardSequence)
+
+  return queryCode
+}
+
+const replaceEncodedWildcards = (value: string) =>
+  value.replace(/a_\$\$_x/g, () => '$$')
 
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
   traverseAst(queryNode, isNode, {
     Element$1: (node) => {
-      if (node.name === encodedWildcardSequence) {
-        node.name = '$$'
+      const nodeName = node.name as string
+
+      if (nodeName.includes(encodedWildcardSequence)) {
+        node.name = replaceEncodedWildcards(nodeName)
+      }
+    },
+    TextAttribute: (node) => {
+      const nodeValue = node.value as string
+
+      if (nodeValue.includes(encodedWildcardSequence)) {
+        node.value = replaceEncodedWildcards(nodeValue)
+      }
+    },
+    Text$3: (node) => {
+      const nodeValue = node.value as string
+
+      if (nodeValue.includes(encodedWildcardSequence)) {
+        node.value = replaceEncodedWildcards(nodeValue)
       }
     },
   })
 
   return queryNode
+}
+
+const compareNodesBeforeWildcardsComparison = (
+  ...nodeComparatorParams: NodesComparatorParameters
+) => {
+  return runNodesComparators(beforeWildcardsComparators, nodeComparatorParams)
 }
 
 export const angularEslintTemplateParser: ParserSettings = {
@@ -188,7 +216,7 @@ export const angularEslintTemplateParser: ParserSettings = {
   setIdentifierNodeName,
   shouldCompareNode,
   wildcardUtils,
-  compareNodesBeforeWildcardsComparison: () => undefined,
+  compareNodesBeforeWildcardsComparison,
   compareNodesAfterWildcardsComparison: () => undefined,
   identifierTypeAnnotationFieldName: 'typeAnnotation',
   stringLikeLiteralUtils,

@@ -26,6 +26,7 @@ module.exports = {
       espree: false,
       esprima: false,
       '@babel/eslint-parser': false,
+      '@angular-eslint/template-parser': false,
     },
   },
   output: {

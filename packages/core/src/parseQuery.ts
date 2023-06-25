@@ -23,12 +23,13 @@ export const getUniqueTokens = (
   parserSettings: ParserSettings,
   tokens: Set<string> = new Set(),
 ) => {
-  const { numericLiteralUtils, stringLikeLiteralUtils } = parserSettings
+  const { numericLiteralUtils, stringLikeLiteralUtils, getIdentifierNodeName } =
+    parserSettings
   const { anyStringWildcardRegExp } = parserSettings.wildcardUtils
 
   if (parserSettings.isIdentifierNode(queryNode)) {
     const trimmedWildcards = parserSettings.wildcardUtils
-      .removeWildcardAliasesFromIdentifierName(queryNode.name as string)
+      .removeWildcardAliasesFromIdentifierName(getIdentifierNodeName(queryNode))
       .split(parserSettings.wildcardUtils.identifierWildcard)
 
     trimmedWildcards.forEach((part) => {

@@ -9,13 +9,17 @@ import {
   filterIncludeExclude,
   SearchInFileError,
   typeScriptFamilyExtensionTester,
+  cssExtensionTester,
+  htmlFamilyExtensionTester,
   filterExtensions,
+  ParserType,
+  __internal,
 } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
-import { StateManager, StateShape } from './StateManager'
+import { StateManager, StateShape, SearchFileType } from './StateManager'
 import { simpleDebounce } from './utils'
 
 type FilesLists = {
@@ -24,6 +28,18 @@ type FilesLists = {
 }[]
 
 type Root = { path: string; name?: string }
+
+const extensionTesterMap: Record<SearchFileType, RegExp> = {
+  all: /\.(.)+$/,
+  html: htmlFamilyExtensionTester,
+  'js-ts-json': typeScriptFamilyExtensionTester,
+}
+
+const parserNameMap: Record<SearchFileType, ParserType> = {
+  all: 'babel', // it does not matter, just need value for happy TS
+  html: 'angular-eslint-template-parser',
+  'js-ts-json': 'babel',
+}
 
 export class SearchManager {
   private isWorkspace: boolean | undefined
@@ -401,16 +417,21 @@ export class SearchManager {
             }
           }
 
-          const finalFilesList =
-            settings.mode === 'text'
-              ? files
-              : filterExtensions(files, typeScriptFamilyExtensionTester)
+          const extensionTester = extensionTesterMap[settings.fileType]
+
+          const filesListFilteredByExtension = filterExtensions(
+            files,
+            extensionTester,
+          )
+
+          const parser = parserNameMap[settings.fileType]
 
           // We start search in next tick so not block events delivery and UI update
           setTimeout(
             (async () => {
               const results = await searchMultiThread({
-                filePaths: finalFilesList,
+                parser,
+                filePaths: filesListFilteredByExtension,
                 queryCodes: [settings.query],
                 mode: settings.mode,
                 caseInsensitive: settings.caseType === 'insensitive',
@@ -427,7 +448,7 @@ export class SearchManager {
                   isWorkspace,
                 ),
                 time: (searchEnd - searchStart) / 1000,
-                files: finalFilesList,
+                files: filesListFilteredByExtension,
                 isWorkspace,
               })
 

@@ -8,6 +8,8 @@ export {
   filterIncludeExclude,
   extensionTester,
   typeScriptFamilyExtensionTester,
+  htmlFamilyExtensionTester,
+  cssExtensionTester,
   pathToPosix,
   filterExtensions,
 } from './getFilesList'

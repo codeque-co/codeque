@@ -10,3 +10,4 @@ devFile
 *.snapshot.json
 dist
 *.temp
+.vscode/settings.json

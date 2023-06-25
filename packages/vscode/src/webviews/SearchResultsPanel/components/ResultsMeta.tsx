@@ -14,6 +14,7 @@ import { SearchInFileError, SearchResults } from '@codeque/core'
 import { IoMdInformationCircleOutline } from 'react-icons/io'
 import { useThemeType } from '../../components/useThemeType'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
+import { openFile } from '../utils'
 
 type ResultsMetaProps = {
   time: number | string | undefined
@@ -28,6 +29,29 @@ type ResultsMetaProps = {
 }
 
 const noValue = 'n/a'
+
+const extractLocationFormErrorText = (errorText: string) => {
+  const matcher = /\((\d)+(,|:|;)(\d)+\)/g
+
+  const locationStringMatch = errorText.match(matcher)
+
+  if (locationStringMatch?.[0]) {
+    const locationString = locationStringMatch[0]
+
+    const [line, column] = locationString
+      .replace('(', '')
+      .replace(')', '')
+      .split(/,|:|;/)
+      .map((v) => parseInt(v.trim(), 10))
+
+    return {
+      start: { line, column },
+      end: { line, column },
+    }
+  }
+
+  return { start: { line: 1, column: 1 }, end: { line: 1, column: 1 } }
+}
 
 export function ResultsMeta({
   time = noValue,
@@ -103,37 +127,51 @@ export function ResultsMeta({
             </PopoverHeader>
             <PopoverBody borderColor={popoverBorderColor}>
               <Flex maxHeight="70vh" overflowY="auto" flexDirection="column">
-                {errorsToDisplay.map((error, idx) => (
-                  <Flex
-                    key={idx}
-                    flexDir="column"
-                    mb="3"
-                    border="1px solid"
-                    borderColor={popoverBorderColor}
-                  >
-                    {typeof error === 'string' ? (
-                      <Text p={2} backgroundColor={errorBackground}>
-                        {error}
-                      </Text>
-                    ) : (
-                      <>
-                        <Text
-                          fontWeight={600}
-                          borderBottom="1px solid"
-                          borderColor={popoverBorderColor}
-                          p={2}
-                        >
-                          {getRelativePath(
-                            (error as SearchInFileError)?.filePath,
-                          )}
-                        </Text>
+                {errorsToDisplay.map((error, idx) => {
+                  const relativePath = getRelativePath(
+                    (error as SearchInFileError)?.filePath,
+                  )
+
+                  return (
+                    <Flex
+                      key={idx}
+                      flexDir="column"
+                      mb="3"
+                      border="1px solid"
+                      borderColor={popoverBorderColor}
+                    >
+                      {typeof error === 'string' ? (
                         <Text p={2} backgroundColor={errorBackground}>
-                          {(error as SearchInFileError)?.error}
+                          {error}
                         </Text>
-                      </>
-                    )}
-                  </Flex>
-                ))}
+                      ) : (
+                        <>
+                          <Text
+                            fontWeight={600}
+                            borderBottom="1px solid"
+                            borderColor={popoverBorderColor}
+                            p={2}
+                            onClick={() => {
+                              const location = extractLocationFormErrorText(
+                                error.error,
+                              )
+
+                              openFile({
+                                filePath: error.filePath,
+                                location: location,
+                              })
+                            }}
+                          >
+                            {relativePath}
+                          </Text>
+                          <Text p={2} backgroundColor={errorBackground}>
+                            {(error as SearchInFileError)?.error}
+                          </Text>
+                        </>
+                      )}
+                    </Flex>
+                  )
+                })}
               </Flex>
             </PopoverBody>
           </PopoverContent>

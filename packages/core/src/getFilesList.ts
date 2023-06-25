@@ -12,6 +12,8 @@ import escapeGlob from 'glob-escape'
 import { HardStopFlag } from './types'
 
 export const typeScriptFamilyExtensionTester = /\.(js|jsx|ts|tsx|json|mjs|cjs)$/
+export const htmlFamilyExtensionTester = /\.(html|htm)$/
+export const cssExtensionTester = /\.(css)$/
 
 /**
  * @deprecated use `typeScriptFamilyExtensionTester` instead

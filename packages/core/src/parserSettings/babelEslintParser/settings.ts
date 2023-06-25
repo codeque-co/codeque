@@ -22,7 +22,7 @@ import {
 
 import { normalizeText, runNodesComparators } from '../../utils'
 import { afterWildcardsComparators } from './afterWildcardsComparators'
-import { beforeWildcardsComparators } from './beforeWildcardsComparators'
+import { beforeWildcardsComparators } from '../angularEslintTemplateParser/beforeWildcardsComparators'
 
 const parseCode = (code: string, filePath = '') => {
   const maybeWrappedJSON = /\.json$/.test(filePath) ? `(${code})` : code

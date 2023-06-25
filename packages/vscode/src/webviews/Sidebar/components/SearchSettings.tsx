@@ -41,6 +41,8 @@ export function SearchSettings({
   resultsPanelVisible,
 }: SearchSettingsProps) {
   const [mode, setMode] = useState(initialSettings?.mode)
+  const [fileType, setFileType] = useState(initialSettings?.fileType)
+
   const [caseType, setCase] = useState(initialSettings?.caseType)
   const [searchNodeModules, setSearchNodeModules] = useState(
     initialSettings?.searchNodeModules,
@@ -106,6 +108,25 @@ export function SearchSettings({
       })
     },
     [setSettings],
+  )
+
+  const handleFileTypeChange = useCallback(
+    (fileType: StateShape['fileType']) => {
+      let newMode = mode
+
+      if (fileType === 'all') {
+        newMode = 'text'
+      }
+
+      setFileType(fileType)
+      setMode(newMode)
+
+      setSettings({
+        fileType,
+        mode: newMode,
+      })
+    },
+    [setSettings, mode],
   )
 
   const handleCaseChange = useCallback(
@@ -203,6 +224,20 @@ export function SearchSettings({
     eventBusInstance.dispatch('show-results-panel')
   }
 
+  const allFileTypesSelected = fileType === 'all'
+
+  const disabledSearchModeCursorProps = allFileTypesSelected
+    ? ({
+        cursor: 'not-allowed',
+      } as const)
+    : {}
+  const disabledSearchModeProps = allFileTypesSelected
+    ? ({
+        pointerEvents: 'none',
+        opacity: '0.6',
+      } as const)
+    : {}
+
   return (
     <Flex flexDir="column" height="98vh">
       {!resultsPanelVisible && (
@@ -230,6 +265,39 @@ export function SearchSettings({
           Query settings
         </Text>
         <Text fontWeight="medium" mb="1">
+          File types:
+        </Text>
+        <Flex mb="4" alignItems="center">
+          <RadioGroup value={fileType} onChange={handleFileTypeChange}>
+            <Stack direction="row" flexWrap="wrap">
+              <Radio
+                value="all"
+                marginEnd="1rem !important"
+                marginStart="0 !important"
+                borderColor="blue.200"
+              >
+                All
+              </Radio>
+              <Radio
+                value="js-ts-json"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                JS/TS/JSON
+              </Radio>
+              <Radio
+                value="html"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                HTML
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
+        <Text fontWeight="medium" mb="1">
           Mode:
         </Text>
         <Flex mb="4" alignItems="center">
@@ -243,29 +311,33 @@ export function SearchSettings({
               >
                 text
               </Radio>
-              <Radio
-                value="include"
-                marginStart="0 !important"
-                marginEnd="1rem !important"
-                borderColor="blue.200"
-              >
-                include
-              </Radio>
-              <Radio
-                value="exact"
-                marginStart="0 !important"
-                marginEnd="1rem !important"
-                borderColor="blue.200"
-              >
-                exact
-              </Radio>
-              <Radio
-                value="include-with-order"
-                marginStart="0 !important"
-                borderColor="blue.200"
-              >
-                include with order
-              </Radio>
+              <Flex {...disabledSearchModeCursorProps}>
+                <Flex {...disabledSearchModeProps}>
+                  <Radio
+                    value="include"
+                    marginStart="0 !important"
+                    marginEnd="1rem !important"
+                    borderColor="blue.200"
+                  >
+                    include
+                  </Radio>
+                  <Radio
+                    value="exact"
+                    marginStart="0 !important"
+                    marginEnd="1rem !important"
+                    borderColor="blue.200"
+                  >
+                    exact
+                  </Radio>
+                  <Radio
+                    value="include-with-order"
+                    marginStart="0 !important"
+                    borderColor="blue.200"
+                  >
+                    include with order
+                  </Radio>
+                </Flex>
+              </Flex>
             </Stack>
           </RadioGroup>
         </Flex>

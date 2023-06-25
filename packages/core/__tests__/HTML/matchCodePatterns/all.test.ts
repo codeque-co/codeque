@@ -110,6 +110,102 @@ describe('Basic queries', () => {
     })
 
     expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should match div node with p node using wildcard', () => {
+    const queries = [`<$$><p>Some text</p></$$>`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'exact',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should not match div with children using element wildcard without children in exact mode', () => {
+    const queries = [`<$$></$$>`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'exact',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
     expect(matches.length).toBe(0)
+  })
+
+  it('Should match div with property using string wildcard', () => {
+    const queries = [`<div class="$$" style="$$"></div>`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+      debug: true,
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should not match div with property using string wildcard on non-existing prop', () => {
+    const queries = [`<div prop="$$"></div>`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(0)
+  })
+
+  it('Should match p with string content using string wildcard', () => {
+    const queries = [`<p>$$text</p>`]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(2)
   })
 })

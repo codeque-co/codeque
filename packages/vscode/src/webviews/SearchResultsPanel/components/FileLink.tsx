@@ -1,6 +1,6 @@
 import { Link, LinkProps, Text } from '@chakra-ui/react'
 import { Match, MatchWithFileInfo } from '@codeque/core'
-import { eventBusInstance } from '../../../EventBus'
+import { openFile } from '../utils'
 
 type FileLinkProps = LinkProps & {
   match: {
@@ -21,10 +21,6 @@ export function FileLink({
   onClick,
   ...rest
 }: FileLinkProps) {
-  const openFile = (data: { filePath: string; location?: Match['loc'] }) => {
-    eventBusInstance.dispatch('open-file', data)
-  }
-
   const filePathStartsWithDot = relativeFilePath?.startsWith('.')
 
   const displayRelativePath = filePathStartsWithDot

@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Providers } from '../components/Providers'
 import { QueryEditor } from './components/QueryEditor'
-import { StateShape } from '../../StateManager'
+import { StateShape, SearchFileType } from '../../StateManager'
 import { SearchResultsList } from './components/SearchResults'
 import { Flex, Spinner } from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
@@ -34,6 +34,8 @@ const Panel = () => {
     null,
   )
   const [query, setQuery] = useState<string | null>(null)
+  const [fileType, setFileType] = useState<SearchFileType | null>(null)
+
   const [nextSearchIsFromSelection, setNextSearchIsFromSelection] =
     useState<boolean>(false)
 
@@ -55,6 +57,10 @@ const Panel = () => {
   const handleSettingsChanged = useCallback((data: Partial<StateShape>) => {
     if (data.mode !== undefined) {
       setMode(data.mode)
+    }
+
+    if (data.fileType !== undefined) {
+      setFileType(data.fileType)
     }
   }, [])
 
@@ -346,12 +352,13 @@ const Panel = () => {
   return (
     <Providers>
       <Flex height="98vh" flexDir="column">
-        {query !== null ? (
+        {query !== null && fileType !== null ? (
           <QueryEditor
             query={query}
             setQuery={setQuery}
             mode={mode}
             setHasQueryError={setHasQueryError}
+            fileType={fileType}
           />
         ) : null}
         <ResultsMeta

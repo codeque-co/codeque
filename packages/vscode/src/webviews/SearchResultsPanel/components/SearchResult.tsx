@@ -1,30 +1,16 @@
-import {
-  Checkbox,
-  Flex,
-  IconButton,
-  Link,
-  Text,
-  Tooltip,
-} from '@chakra-ui/react'
-import { Match, MatchWithFileInfo } from '@codeque/core'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { Checkbox, Flex, IconButton } from '@chakra-ui/react'
+import { MatchWithFileInfo } from '@codeque/core'
+import { memo, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { IoMdClose } from 'react-icons/io'
-import { MdContentCopy } from 'react-icons/md'
-import { eventBusInstance } from '../../../EventBus'
 import { CodeBlock } from '../../components/CodeBlock'
-import {
-  darkTheme,
-  lightTheme,
-  MyPrismTheme,
-} from '../../components/codeHighlightThemes'
+import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
-import { useCopyToClipboard } from '../../components/useCopyToClipboard'
-import { FileLink } from './FileLink'
-import { getBorderColor, getIconButtonProps, groupHeaderHeight } from './utils'
 import { CopyPath } from './CopyPath'
+import { FileLink } from './FileLink'
 import { usePreventScrollJump } from './usePreventScrollJump'
+import { getBorderColor, getIconButtonProps, groupHeaderHeight } from './utils'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
@@ -114,10 +100,6 @@ export const SearchResult = memo(function SearchResult({
   const shouldDedentResult =
     containsInitialWhitespace &&
     (extendedCodeFrame.startLine as number) >= match.loc.start.line
-
-  const shouldHighlight =
-    removeWhiteSpaces(extendedCodeFrameCode).length !==
-    removeWhiteSpaces(match.code).length
 
   const highlightColumnChangeDueToDedent = shouldDedentResult
     ? initialWhitespaceSequence.length

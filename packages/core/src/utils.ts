@@ -9,6 +9,7 @@ import {
   Mode,
   NodesComparator,
   NodesComparatorParameters,
+  MatchPosition,
 } from './types'
 
 export const getMode = (mode: Mode = 'include') => {
@@ -154,7 +155,9 @@ export const nonIdentifierOrKeywordGlobal = new RegExp(
   'g',
 )
 
-export const dedupMatches = <M extends AstMatch>(matches: M[]): M[] => {
+export const dedupMatches = <M extends MatchWithFileInfo>(
+  matches: M[],
+): M[] => {
   const deduped: M[] = []
 
   matches.forEach((match) => {
@@ -184,7 +187,7 @@ export const prepareCodeResult = ({
   start,
   end,
   loc,
-}: { fileContent: string } & Omit<Match, 'node'>) => {
+}: { fileContent: string } & MatchPosition) => {
   const frame = fileContent.substring(start - loc.start.column, end)
   const firstLineWhiteCharsCountRegExp = new RegExp(`^\\s*`)
 
@@ -244,3 +247,9 @@ export const groupBy = <K extends string, T extends Record<K, string>>(
     }, {} as Record<T[K], T[]>),
   )
 }
+
+export const decomposeString = (str: string, splitter: RegExp) =>
+  str
+    .split(splitter)
+    .map((part) => normalizeText(part).split(SPACE_CHAR))
+    .flat(1)

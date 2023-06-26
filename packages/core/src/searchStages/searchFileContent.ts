@@ -56,7 +56,7 @@ export const searchFileContent = ({
 
     allMatches = results
       .map(({ query, matches }) => {
-        return matches.map((match) => {
+        return matches.map(({ node, ...match }) => {
           const { code, indentationBase } = prepareCodeResult({
             fileContent,
             ...match,
@@ -84,8 +84,6 @@ export const searchFileContent = ({
 
     measureSearch()
   }
-
-  // console.log('all matches', allMatches)
 
   return allMatches
 }

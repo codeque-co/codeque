@@ -10,6 +10,7 @@ type Props = FlexProps & {
   theme: 'light' | 'dark'
   onEditorFocus?: () => void
   onEditorBlur?: () => void
+  fileExtension?: string
 }
 
 const customTextAreaCn = 'editor-text-area'
@@ -21,6 +22,7 @@ export function Editor({
   theme: themeType,
   onEditorFocus,
   onEditorBlur,
+  fileExtension,
   ...rest
 }: Props) {
   const theme = themeType === 'dark' ? darkTheme : lightTheme
@@ -61,6 +63,7 @@ export function Editor({
               theme={theme}
               highlight
               customHighlight={customHighlight}
+              fileExtension={fileExtension}
               // startLineNumber={1}
             >
               {code}

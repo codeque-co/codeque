@@ -102,7 +102,7 @@ export const validateMatch = (
 
         if (Array.isArray(fileValue as PoorNodeType[])) {
           log('validate: is array')
-          const nodesArr = (fileValue as PoorNodeType[]).filter(
+          const fileNodesArr = (fileValue as PoorNodeType[]).filter(
             parserSettings.shouldCompareNode,
           )
           const queryNodesArr = (queryValue as PoorNodeType[]).filter(
@@ -110,12 +110,12 @@ export const validateMatch = (
           )
 
           if (isExact) {
-            if (nodesArr.length !== queryNodesArr.length) {
+            if (fileNodesArr.length !== queryNodesArr.length) {
               return false
             }
 
-            for (let i = 0; i < nodesArr.length; i++) {
-              const newCurrentNode = nodesArr[i]
+            for (let i = 0; i < fileNodesArr.length; i++) {
+              const newCurrentNode = fileNodesArr[i]
               const newCurrentQueryNode = queryNodesArr[i]
 
               if (
@@ -132,7 +132,9 @@ export const validateMatch = (
               }
             }
           } else {
-            if (queryNodesArr.length > nodesArr.length) {
+            if (queryNodesArr.length > fileNodesArr.length) {
+              log('validate: more query nodes than array nodes')
+
               return false
             }
 
@@ -150,8 +152,8 @@ export const validateMatch = (
             for (let i = 0; i < queryNodesArrSorted.length; i++) {
               const newQueryNode = queryNodesArrSorted[i]
 
-              for (let j = 0; j < nodesArr.length; j++) {
-                const newFileNode = nodesArr[j]
+              for (let j = 0; j < fileNodesArr.length; j++) {
+                const newFileNode = fileNodesArr[j]
 
                 if (!matchedIndexes.includes(j)) {
                   if (
@@ -195,6 +197,8 @@ export const validateMatch = (
                 return false
               }
             }
+
+            log('validate: non boolean return result for comparing nodes array')
           }
         } else {
           log('validate: is Node')

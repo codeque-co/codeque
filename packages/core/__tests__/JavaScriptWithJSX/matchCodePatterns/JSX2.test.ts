@@ -314,4 +314,27 @@ describe('JSX', () => {
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(2)
   })
+
+  it('Should find jsx with title prop using query without title prop', () => {
+    const fileContent = `
+      <div title="Test">
+        asd
+      </div>
+    `
+
+    const queries = [
+      `
+      <$$>asd</$$>
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      files: [{ content: fileContent, path: '' }],
+      queryCodes: queries,
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
 })

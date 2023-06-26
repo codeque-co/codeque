@@ -2,12 +2,11 @@ import { createWildcardUtils } from '../../wildcardUtilsFactory'
 import { PoorNodeType } from '../../types'
 
 /*
- * TextAttribute is considered identifier node name only for purpose of shallow match
- * It contains both prop and value strings.
- * We have custom matcher for TextAttribute node so it will never get compared by generic wildcard utils
+ * We don't have purely identifier nodes in this parser
+ * We compare everything using string wildcards
  */
 
-export const identifierNodeTypes = ['Element$1', 'TextAttribute']
+export const identifierNodeTypes: string[] = []
 
 const wildcardChar = '$'
 const numericWildcard = '0x0'

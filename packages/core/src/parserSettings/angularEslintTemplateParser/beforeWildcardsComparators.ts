@@ -1,7 +1,8 @@
 import { NodesComparator } from '../../types'
 import { createMatchWildcardsInPropValueNodesComparator } from '../nodeComparatorFactories/Other/matchWildcardsInPropValueNodes'
+import { matchWildcardsInPropValueNodesComparator } from './matchMultilineQueriesNodesComparator'
 
-const matchWildcardsInPropValueNodesComparator =
+const matchWildcardsInTextAttributeNodesComparator =
   createMatchWildcardsInPropValueNodesComparator({
     nodeType: 'TextAttribute',
     keysToTraverse: [],
@@ -9,6 +10,15 @@ const matchWildcardsInPropValueNodesComparator =
     keysWithWildcards: ['name', 'value'],
   })
 
+const matchWildcardsInElement$1NodesComparator =
+  createMatchWildcardsInPropValueNodesComparator({
+    nodeType: 'Element$1',
+    keysToTraverse: ['attributes', 'children'],
+    keysWithWildcards: ['name'],
+  })
+
 export const beforeWildcardsComparators: NodesComparator[] = [
+  matchWildcardsInTextAttributeNodesComparator,
+  matchWildcardsInElement$1NodesComparator,
   matchWildcardsInPropValueNodesComparator,
 ]

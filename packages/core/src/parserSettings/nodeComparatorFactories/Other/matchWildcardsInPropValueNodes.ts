@@ -19,9 +19,10 @@ export const createMatchWildcardsInPropValueNodesComparator =
   (
     { queryNode, fileNode, searchSettings, matchContext },
     _,
-    { fileKeysToTraverseForOtherMatches },
+    { fileKeysToTraverseForOtherMatches, log },
   ) => {
     if (queryNode?.type === nodeType && fileNode?.type === nodeType) {
+      log('Compare PropValue Node', nodeType)
       const { wildcardUtils } = searchSettings.parserSettings
       const { caseInsensitive } = searchSettings
 

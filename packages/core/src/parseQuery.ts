@@ -6,26 +6,29 @@ import {
   PoorNodeType,
   Position,
 } from './types'
-import { measureStart, SPACE_CHAR, normalizeText } from './utils'
+import { measureStart, decomposeString } from './utils'
 import { isNodeArray, getKeysToCompare } from './astUtils'
 
 const MIN_TOKEN_LEN = 2
 
-export const decomposeString = (str: string, anyStringWildcardRegExp: RegExp) =>
-  str
-    .split(anyStringWildcardRegExp)
-    .map((part) => normalizeText(part).split(SPACE_CHAR))
-    .flat(1)
-
-export const getUniqueTokens = (
-  queryNode: PoorNodeType,
-  caseInsensitive: boolean,
-  parserSettings: ParserSettings,
-  tokens: Set<string> = new Set(),
-) => {
-  const { numericLiteralUtils, stringLikeLiteralUtils, getIdentifierNodeName } =
-    parserSettings
+const defaultGetUniqueTokensFromStringOrIdentifierNode = ({
+  queryNode,
+  caseInsensitive,
+  parserSettings,
+}: {
+  queryNode: PoorNodeType
+  caseInsensitive: boolean
+  parserSettings: Pick<
+    ParserSettings,
+    | 'isIdentifierNode'
+    | 'stringLikeLiteralUtils'
+    | 'getIdentifierNodeName'
+    | 'wildcardUtils'
+  >
+}) => {
+  const { stringLikeLiteralUtils, getIdentifierNodeName } = parserSettings
   const { anyStringWildcardRegExp } = parserSettings.wildcardUtils
+  const tokens: string[] = []
 
   if (parserSettings.isIdentifierNode(queryNode)) {
     const trimmedWildcards = parserSettings.wildcardUtils
@@ -34,7 +37,7 @@ export const getUniqueTokens = (
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
-        tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
+        tokens.push(caseInsensitive ? part.toLocaleLowerCase() : part)
       }
     })
   }
@@ -52,10 +55,30 @@ export const getUniqueTokens = (
 
     trimmedWildcards.forEach((part) => {
       if (part.length >= MIN_TOKEN_LEN) {
-        tokens.add(caseInsensitive ? part.toLocaleLowerCase() : part)
+        tokens.push(caseInsensitive ? part.toLocaleLowerCase() : part)
       }
     })
   }
+
+  return tokens
+}
+
+export const getUniqueTokens = (
+  queryNode: PoorNodeType,
+  caseInsensitive: boolean,
+  parserSettings: ParserSettings,
+  tokens: Set<string> = new Set(),
+) => {
+  const { numericLiteralUtils } = parserSettings
+
+  const tokensFromStringsOrIdNode =
+    defaultGetUniqueTokensFromStringOrIdentifierNode({
+      queryNode,
+      caseInsensitive,
+      parserSettings,
+    })
+
+  tokensFromStringsOrIdNode.forEach(tokens.add, tokens)
 
   if (numericLiteralUtils.isNumericLiteralNode(queryNode)) {
     const raw = numericLiteralUtils.getNumericLiteralValue(queryNode)
@@ -101,6 +124,10 @@ export const extractQueryNode = (
   parserSettings: ParserSettings,
 ) => {
   const queryBody = parserSettings.getProgramBodyFromRootNode(fileNode)
+
+  if (queryBody.length === 0) {
+    throw new Error('Query is empty or code was not parsed correctly')
+  }
 
   if (queryBody.length === 1) {
     return {
@@ -210,7 +237,9 @@ export const parseQueries = (
         parserSettings.preprocessQueryCode?.(queryText) ?? queryText
 
       try {
-        const parsedAsIs = parserSettings.parseCode(preprocessedQueryCode)
+        const parsedAsIs = parserSettings.parseCode(
+          preprocessedQueryCode.trim(),
+        )
 
         const { queryNode, isMultistatement } = extractQueryNode(
           parsedAsIs,

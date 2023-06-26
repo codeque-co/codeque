@@ -1,5 +1,7 @@
 import dedent from 'dedent'
 import { useEffect, useState } from 'react'
+import { ParserType } from '@codeque/core'
+import { SearchFileType } from './StateManager'
 
 // eslint-disable-next-line
 export function simpleDebounce<F extends (...args: any) => unknown>(func: F, timeout = 300) {
@@ -56,4 +58,10 @@ export function getScrollParent(node: any): any {
   } else {
     return getScrollParent(node.parentNode)
   }
+}
+
+export const parserNameMap: Record<SearchFileType, ParserType> = {
+  all: 'babel', // it does not matter, just need value for happy TS
+  html: 'angular-eslint-template-parser',
+  'js-ts-json': 'babel',
 }

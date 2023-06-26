@@ -6,7 +6,9 @@ import { Mode, searchInStrings } from '@codeque/core/web'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
-import useDebounce from '../../../utils'
+import useDebounce, { parserNameMap } from '../../../utils'
+
+import { SearchFileType } from '../../../StateManager'
 
 type Error = {
   text: string
@@ -26,6 +28,7 @@ type Props = {
   setQuery: (query: string) => void
   mode: Mode
   setHasQueryError: (value: boolean) => void
+  fileType: SearchFileType
 }
 
 const renderHint = (hint: Hint) => {
@@ -60,11 +63,22 @@ const getParseErrorHighlight = (errorLocation: {
   }
 }
 
+const getHighlightFileExtension = (fileType: SearchFileType) => {
+  const map: Record<SearchFileType, string> = {
+    all: 'tsx',
+    html: 'html',
+    'js-ts-json': 'tsx',
+  }
+
+  return map[fileType]
+}
+
 export function QueryEditor({
   query,
   setQuery,
   setHasQueryError,
   mode,
+  fileType,
 }: Props) {
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
@@ -84,7 +98,8 @@ export function QueryEditor({
     setQueryHint(null)
 
     try {
-      //@ts-ignore
+      const parser = parserNameMap[fileType]
+
       const matches = searchInStrings({
         queryCodes: [query],
         files: [
@@ -94,11 +109,14 @@ export function QueryEditor({
           },
         ],
         mode,
+        parser,
       })
+
       const hint = matches.hints?.[0]?.[0] ?? null
       setQueryHint(hint)
 
       if (matches.errors.length > 0) {
+        console.error(matches.errors)
         const error = matches.errors[0]
 
         // indicates query parse error
@@ -149,6 +167,7 @@ export function QueryEditor({
           borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
           onEditorFocus={handleEditorFocus}
           onEditorBlur={handleEditorBlur}
+          fileExtension={getHighlightFileExtension(fileType)}
         />
         {!isEditorFocusedDebounced && (
           <Box

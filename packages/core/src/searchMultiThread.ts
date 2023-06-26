@@ -21,6 +21,7 @@ export const searchMultiThread = async ({
   maxResultsLimit,
   singleThreadFilesCountLimitStructural = singleThreadFilesCountLimitStructuralDefault,
   singleThreadFilesCountLimitText = singleThreadFilesCountLimitTextDefault,
+  debug,
   ...params
 }: FileSystemSearchArgs & {
   hardStopFlag?: HardStopFlag
@@ -147,7 +148,7 @@ export const searchMultiThread = async ({
     },
   )
 
-  if (params.debug) {
+  if (debug) {
     logMetrics()
   }
 

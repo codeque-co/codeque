@@ -34,7 +34,7 @@ export const getLanguageBasedOnFileExtension = (
     return 'javascript'
   }
 
-  const markupLike = ['html']
+  const markupLike = ['html', 'htm']
 
   if (markupLike.includes(fileExtension)) {
     return 'markup'

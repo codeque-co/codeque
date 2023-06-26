@@ -12,7 +12,11 @@ export const getLocationOfMultilineMatch = (
 
   const statements = queryNode[blockNodeBodyKey] as PoorNodeType[]
 
-  const alreadyPickedStatementNodes: PoorNodeType[] = []
+  /**
+   * We initialise already picked statements with the top-level match node to filter it out in results.
+   * For some parses, like angular-eslint, top-level node can be matched by query statement node.
+   */
+  const alreadyPickedStatementNodes: PoorNodeType[] = [match.node]
 
   const subMatches = statements
     .map((statement) => {

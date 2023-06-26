@@ -20,7 +20,7 @@ import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape, SearchFileType } from './StateManager'
-import { simpleDebounce } from './utils'
+import { simpleDebounce, parserNameMap } from './utils'
 
 type FilesLists = {
   files: string[]
@@ -33,12 +33,6 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   all: /\.(.)+$/,
   html: htmlFamilyExtensionTester,
   'js-ts-json': typeScriptFamilyExtensionTester,
-}
-
-const parserNameMap: Record<SearchFileType, ParserType> = {
-  all: 'babel', // it does not matter, just need value for happy TS
-  html: 'angular-eslint-template-parser',
-  'js-ts-json': 'babel',
 }
 
 export class SearchManager {
@@ -439,7 +433,10 @@ export class SearchManager {
                 hardStopFlag: this.currentSearchHardStopFlag,
                 maxResultsLimit: this.maxResultsLimit,
               })
+
               const searchEnd = Date.now()
+
+              const searchTime = (searchEnd - searchStart) / 1000
 
               eventBusInstance.dispatch('have-results', {
                 results: this.processSearchResults(
@@ -447,7 +444,7 @@ export class SearchManager {
                   roots,
                   isWorkspace,
                 ),
-                time: (searchEnd - searchStart) / 1000,
+                time: searchTime,
                 files: filesListFilteredByExtension,
                 isWorkspace,
               })

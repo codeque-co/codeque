@@ -85,6 +85,7 @@ export type FileSystemSearchArgs = {
   maxResultsLimit?: number
   hardStopFlag?: HardStopFlag
   parser?: ParserType
+  returnMatchedNodes?: boolean
 }
 
 export type ParseError = {
@@ -187,6 +188,7 @@ export type NodesComparator = (
     fileKeysMapper: (key: string) => string
     fileKeysToTraverseForOtherMatches: string[]
     measureCompare: () => void
+    log: (...text: string[]) => void
   },
 ) => CompareNodesReturnType | undefined
 
@@ -226,6 +228,18 @@ export type ProgramNodeAndBlockNodeUtils = {
   programNodeBodyKey: string
   blockNodeBodyKey: string
 }
+
+export type GetUniqueTokensFromStringOrIdentifierNode = (arg: {
+  queryNode: PoorNodeType
+  caseInsensitive: boolean
+  parserSettings: Pick<
+    ParserSettings,
+    | 'isIdentifierNode'
+    | 'stringLikeLiteralUtils'
+    | 'getIdentifierNodeName'
+    | 'wildcardUtils'
+  >
+}) => string[]
 
 export type ParserSettings = {
   supportedExtensions: string[]
@@ -268,4 +282,5 @@ export type ParserSettings = {
   alternativeNodeTypes: Record<string, string[]>
   preprocessQueryCode?: (code: string) => string
   postprocessQueryNode?: (queryNode: PoorNodeType) => PoorNodeType
+  getUniqueTokensFromStringOrIdentifierNode?: GetUniqueTokensFromStringOrIdentifierNode
 }

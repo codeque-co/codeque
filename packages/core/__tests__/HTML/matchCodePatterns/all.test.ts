@@ -1,4 +1,5 @@
 import { searchInStrings } from '../../../src/searchInStrings'
+import dedent from 'dedent'
 
 describe('Basic queries', () => {
   const fileContent = `<html>
@@ -10,7 +11,7 @@ describe('Basic queries', () => {
           <img src="" />
         </div>
       </div>
-      <br>
+      
       <p>Some other text</p>
     </html>`
 
@@ -117,7 +118,7 @@ describe('Basic queries', () => {
     const queries = [`<$$><p>Some text</p></$$>`]
 
     const { matches, errors } = searchInStrings({
-      mode: 'exact',
+      mode: 'include',
       caseInsensitive: true,
       queryCodes: queries,
       files: [
@@ -164,7 +165,6 @@ describe('Basic queries', () => {
           content: fileContent,
         },
       ],
-      debug: true,
     })
 
     expect(errors).toHaveLength(0)
@@ -207,5 +207,75 @@ describe('Basic queries', () => {
 
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(2)
+  })
+
+  it('Should find multiple nodes 1', () => {
+    const fileContent = `
+        <div class="test" style="color:red;">
+          <p>Some text</p>
+        </div>
+        <p></p>
+        <div> 
+          <img src="" />
+        </div>
+    `
+
+    const queries = [
+      `
+        <div></div>
+        <div></div>
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should find multiple nodes 2', () => {
+    const queries = [
+      `
+        <div></div>
+        <div></div>
+      `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+    console.log(matches[0].code)
+
+    expect(
+      dedent`
+        <div class="test" style="color:red;">
+          <p>Some text</p>
+        </div>
+        <div> 
+          <img src="" />
+        </div>
+      `,
+    ).toBe(matches[0].code)
   })
 })

@@ -92,6 +92,7 @@ export const compareNodes = (
     fileKeysMapper,
     fileKeysToTraverseForOtherMatches,
     measureCompare,
+    log,
   }
 
   const maybeCompareResult =

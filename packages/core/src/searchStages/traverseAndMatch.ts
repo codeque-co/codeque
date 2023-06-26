@@ -224,9 +224,9 @@ export const traverseAndMatch = (
     // We keep logs in IIFE to get the whole logic removed during build
     log(
       'foundMatchStart:\n',
-      getCodeForNode(fileNode, 'file'),
-      '\n',
       getCodeForNode(queryNode, 'query'),
+      '\n',
+      getCodeForNode(fileNode, 'file'),
       '\n'.padEnd(10, '_'),
     )
 
@@ -242,6 +242,8 @@ export const traverseAndMatch = (
           matchContext.getAllAliases(),
         ),
       )
+    } else {
+      log('match not validated')
     }
   }
 

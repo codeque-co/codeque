@@ -68,6 +68,7 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
     all: 'tsx',
     html: 'html',
     'js-ts-json': 'tsx',
+    css: 'css',
   }
 
   return map[fileType]

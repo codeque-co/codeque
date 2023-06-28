@@ -3,7 +3,7 @@ import { NodesComparator } from '../../types'
 /*
  * Support performing multiline html queries by changing query Program node into ElementNode
  */
-export const matchWildcardsInPropValueNodesComparator: NodesComparator = (
+export const matchMultilineQueriesNodesComparator: NodesComparator = (
   { queryNode, fileNode },
   _,
   { fileKeysToTraverseForOtherMatches },

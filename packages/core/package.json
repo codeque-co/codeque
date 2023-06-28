@@ -88,6 +88,7 @@
     "test:espree": "jest --selectProjects=espree",
     "test:espree:traversal": "jest --selectProjects=espree:traversal",
     "test:angular-eslint-template-parser": "jest --selectProjects=angular-eslint-template-parser",
+    "test:css-tree": "jest --selectProjects=css-tree",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "test:setup": "node ./tools/getFixtures.js",
     "lint": "eslint --ext .js,.ts src",

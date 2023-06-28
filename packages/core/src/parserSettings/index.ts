@@ -13,5 +13,5 @@ export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
   ['angular-eslint-template-parser']: resolveParserSettings(
     'angularEslintTemplateParser',
   ),
-  ['csstree']: resolveParserSettings('csstree'),
+  ['css-tree']: resolveParserSettings('cssTree'),
 }

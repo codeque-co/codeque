@@ -64,4 +64,5 @@ export const parserNameMap: Record<SearchFileType, ParserType> = {
   all: 'babel', // it does not matter, just need value for happy TS
   html: 'angular-eslint-template-parser',
   'js-ts-json': 'babel',
+  css: 'css-tree',
 }

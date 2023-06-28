@@ -1,24 +1,33 @@
 import { NodesComparator } from '../../types'
 import { createMatchWildcardsInPropValueNodesComparator } from '../nodeComparatorFactories/Other/matchWildcardsInPropValueNodes'
-import { matchWildcardsInPropValueNodesComparator } from './matchMultilineQueriesNodesComparator'
+import { matchWildcardInDeclarationProperty } from './matchWildcardInDeclarationProperty'
+import { matchWildcardsInDimension } from './matchWildcardsInDimension'
 
-const matchWildcardsInTextAttributeNodesComparator =
-  createMatchWildcardsInPropValueNodesComparator({
-    nodeType: 'TextAttribute',
-    keysToTraverse: [],
-    // Order of keys definition does matter for matchContext! In case someone would use the same alias in eg. prop and value
-    keysWithWildcards: ['name', 'value'],
-  })
+const nodeTypesWithNameAndChildren = ['Function']
 
-const matchWildcardsInElement$1NodesComparator =
-  createMatchWildcardsInPropValueNodesComparator({
-    nodeType: 'Element$1',
-    keysToTraverse: ['attributes', 'children'],
-    keysWithWildcards: ['name'],
-  })
+const matchWildcardsInNodeTypesWithNameAndChildrenNodesComparator =
+  nodeTypesWithNameAndChildren.map((nodeType) =>
+    createMatchWildcardsInPropValueNodesComparator({
+      nodeType,
+      keysToTraverse: ['children'],
+      keysWithWildcards: ['name'],
+    }),
+  )
+
+const nodeTypesWithNameAndValue = ['MediaFeature']
+
+const matchWildcardsInNodeTypesWithNameAndValueNodesComparator =
+  nodeTypesWithNameAndValue.map((nodeType) =>
+    createMatchWildcardsInPropValueNodesComparator({
+      nodeType,
+      keysToTraverse: ['value'],
+      keysWithWildcards: ['name'],
+    }),
+  )
 
 export const beforeWildcardsComparators: NodesComparator[] = [
-  matchWildcardsInTextAttributeNodesComparator,
-  matchWildcardsInElement$1NodesComparator,
-  matchWildcardsInPropValueNodesComparator,
+  ...matchWildcardsInNodeTypesWithNameAndChildrenNodesComparator,
+  ...matchWildcardsInNodeTypesWithNameAndValueNodesComparator,
+  matchWildcardInDeclarationProperty,
+  matchWildcardsInDimension,
 ]

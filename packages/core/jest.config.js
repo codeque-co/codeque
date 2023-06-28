@@ -16,6 +16,7 @@ const typeScriptParserTestFiles = [
 ]
 
 const htmlParserTestFiles = ['<rootDir>/__tests__/HTML/**/*.test.ts']
+const cssParserTestFiles = ['<rootDir>/__tests__/CSS/**/*.test.ts']
 
 module.exports = {
   testPathIgnorePatterns: [
@@ -141,6 +142,15 @@ module.exports = {
       setupFiles: [
         '<rootDir>/jest/shared.setup.ts',
         '<rootDir>/jest/angular-eslint-template-parser.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'css-tree', color: 'blue' },
+      testMatch: cssParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/css-tree.setup.ts',
       ],
     },
   ],

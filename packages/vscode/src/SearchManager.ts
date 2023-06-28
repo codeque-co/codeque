@@ -33,6 +33,7 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   all: /\.(.)+$/,
   html: htmlFamilyExtensionTester,
   'js-ts-json': typeScriptFamilyExtensionTester,
+  css: cssExtensionTester,
 }
 
 export class SearchManager {

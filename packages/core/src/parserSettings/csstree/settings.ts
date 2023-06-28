@@ -1,4 +1,4 @@
-import { parse } from 'css-tree'
+import { parse, ParseOptions, toPlainObject } from 'css-tree'
 import {
   Location,
   MatchPosition,
@@ -23,13 +23,14 @@ import {
 } from './common'
 import { traverseAst } from '../../searchStages/traverseAndMatch'
 import { beforeWildcardsComparators } from './beforeWildcardsComparators'
+import { afterWildcardsComparators } from '../cssTree/afterWildcardsComparators'
 
-const supportedExtensions = ['html', 'htm']
+const supportedExtensions = ['css']
 
 const getProgramNodeFromRootNode = (rootNode: PoorNodeType) => rootNode // root node is program node
 
 const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
-  return fileNode.templateNodes as PoorNodeType[]
+  return fileNode.children as PoorNodeType[]
 }
 
 const unwrapExpressionStatement = (node: PoorNodeType) => {
@@ -37,11 +38,11 @@ const unwrapExpressionStatement = (node: PoorNodeType) => {
 }
 
 const createBlockStatementNode = (
-  templateNodes: PoorNodeType[],
+  children: PoorNodeType[],
   position: MatchPosition,
 ) => ({
-  type: 'Program',
-  templateNodes,
+  type: 'Block',
+  children,
   ...position,
 })
 
@@ -53,33 +54,31 @@ const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
   return true
 }
 
-const astPropsToSkip = [
-  'range',
-  'sourceSpan',
-  'startSourceSpan',
-  'endSourceSpan',
-  'valueSpan',
-  'keySpan',
-  'loc',
-  'start',
-  'end',
-  'extra',
-  'trailingComments',
-  'leadingComments',
-  'innerComments',
-  'comments',
-  'tail', // Support for partial matching of template literals
-]
+const astPropsToSkip = ['loc']
 
-const parseCode = (code: string, filePath = '') => {
-  return parseForESLint(code, { filePath, range: true, loc: true })
-    .ast as PoorNodeType
+const parseCode = (code: string) => {
+  const sharedOptions: ParseOptions = {
+    parseAtrulePrelude: true,
+    parseRulePrelude: true,
+    parseValue: true,
+    positions: true,
+  }
+
+  if (code.includes('{')) {
+    return toPlainObject(
+      parse(code, { ...sharedOptions, context: 'stylesheet' }),
+    ) as unknown as PoorNodeType
+  } else {
+    return toPlainObject(
+      parse(code, { ...sharedOptions, context: 'declarationList' }),
+    ) as unknown as PoorNodeType
+  }
 }
 
 type NodeValueSanitizers = Record<string, Record<string, (a: any) => any>>
 
 const nodeValuesSanitizers: NodeValueSanitizers = {
-  ['Text$3']: {
+  ['Raw']: {
     value: normalizeText,
   },
 }
@@ -99,8 +98,12 @@ const getSanitizedNodeValue = (
 }
 
 const shouldCompareNode = (node: PoorNodeType) => {
-  if (node.type === 'Text$3') {
-    const value: string = getSanitizedNodeValue('Text$3', 'value', node.value)
+  if (node.type === 'WhiteSpace') {
+    return false
+  }
+
+  if (node.type === 'Raw') {
+    const value: string = getSanitizedNodeValue('Raw', 'value', node.value)
 
     const shouldCompare = value.length > 0
 
@@ -115,32 +118,44 @@ const getNodeType = (node: PoorNodeType) => node.type as string
 const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
+const stringLikeNodeTypes = [
+  'TypeSelector',
+  'Raw',
+  'ClassSelector',
+  'Identifier',
+  'IdSelector',
+  'Url',
+]
+
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
-  // Text$3 is only pure string node
-  isStringLikeLiteralNode: (node: PoorNodeType) => node.type === 'Text$3',
+  // Raw is only pure string node
+  isStringLikeLiteralNode: (node: PoorNodeType) =>
+    stringLikeNodeTypes.includes(node.type as string),
   getStringLikeLiteralValue: (node: PoorNodeType) => {
-    return node?.value as string
+    return (node?.value as string) || (node?.name as string)
   },
 }
 
+const pureNumericNodes = ['Percentage', 'Number', 'Hash']
+
 const numericLiteralUtils: NumericLiteralUtils = {
-  isNumericLiteralNode: (node: PoorNodeType) => node.type === 'NumericLiteral',
-  getNumericLiteralValue: (node: PoorNodeType) =>
-    (node.extra as any).raw as string,
+  isNumericLiteralNode: (node: PoorNodeType) =>
+    pureNumericNodes.includes(node.type as string),
+  getNumericLiteralValue: (node: PoorNodeType) => node.value as string,
 }
 
 const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
-  isProgramNode: (node: PoorNodeType) => node.type === 'Program',
-  isBlockNode: (node: PoorNodeType) => node.type === 'Program',
-  programNodeBodyKey: 'templateNodes',
-  blockNodeBodyKey: 'templateNodes',
+  isProgramNode: (node: PoorNodeType) => node.type === 'StyleSheet',
+  isBlockNode: (node: PoorNodeType) => node.type === 'Block',
+  programNodeBodyKey: 'children',
+  blockNodeBodyKey: 'children',
 }
 
 const getNodePosition: ParserSettings['getNodePosition'] = (
   node: PoorNodeType,
 ) => ({
-  start: ((node?.sourceSpan as any)?.start?.offset as number) ?? 0,
-  end: ((node?.sourceSpan as any)?.end?.offset as number) ?? 0,
+  start: ((node?.loc as any)?.start?.offset as number) ?? 0,
+  end: ((node?.loc as any)?.end?.offset as number) ?? 0,
   loc: node.loc as unknown as Location,
 })
 
@@ -157,120 +172,107 @@ const alternativeNodeTypes = {
  * To support wildcards in caa we have to
  * - encode wildcard, do it in query text before parsing $$ => a_a_x
  * - decode wildcard, traverse parsed query and: a_a_x => $$
+ * - Same for numeric wildcard 0x0 -> 00000000 // 0{8}
  * `$$` is invalid tag name start in all html parsers
  */
-const encodedWildcardSequence = 'a_a_x'
+const encodedStringWildcardSequence = 'a_a_x'
+const encodedNumericWildcardSequence = '00000000'
 
 const preprocessQueryCode = (code: string) => {
-  const queryCode = code.replace(/(\$\$)/g, () => encodedWildcardSequence)
+  const queryCode = code
+    .replace(/(\$\$)/g, () => encodedStringWildcardSequence)
+    .replace(/0x0/g, encodedNumericWildcardSequence)
 
   return queryCode
 }
 
 const replaceEncodedWildcards = (value: string) =>
-  value.replace(/a_\$\$_x/g, () => '$$')
+  value.replace(/a_a_x/g, () => '$$').replace(/0{8}/g, '0x0')
+
+const stringNodeTypes = {
+  withName: [
+    'Identifier',
+    'IdSelector',
+    'MediaFeature',
+    'ClassSelector',
+    'PseudoClassSelector',
+    'PseudoElementSelector',
+    'TypeSelector',
+    'Function',
+    'Combinator',
+  ],
+  withValue: ['String', 'Url'],
+  withProperty: ['Declaration'],
+}
+
+const postprocessQueryNodeWithName = (node: PoorNodeType) => {
+  const name = node.name as string
+
+  if (name.includes(encodedStringWildcardSequence)) {
+    node.name = replaceEncodedWildcards(name)
+  }
+}
+
+const postprocessQueryNodeWithValue = (node: PoorNodeType) => {
+  const value = node.value as string
+
+  if (
+    value.includes(encodedStringWildcardSequence) ||
+    value.includes(encodedNumericWildcardSequence)
+  ) {
+    node.value = replaceEncodedWildcards(value)
+  }
+}
+
+const postprocessQueryNodeWithProperty = (node: PoorNodeType) => {
+  const property = node.property as string
+
+  if (property.includes(encodedStringWildcardSequence)) {
+    node.property = replaceEncodedWildcards(property)
+  }
+}
+
+const createVisitorsForNodeTypes = (
+  types: string[],
+  visitorFn: (node: PoorNodeType) => void,
+) =>
+  types.reduce(
+    (visitorsMap, nodeType) => ({
+      ...visitorsMap,
+      [nodeType]: visitorFn,
+    }),
+    {},
+  )
+
+const postprocessVisitors = {
+  ...createVisitorsForNodeTypes(
+    stringNodeTypes.withName,
+    postprocessQueryNodeWithName,
+  ),
+  ...createVisitorsForNodeTypes(
+    stringNodeTypes.withProperty,
+    postprocessQueryNodeWithProperty,
+  ),
+  ...createVisitorsForNodeTypes(
+    [...stringNodeTypes.withValue, ...pureNumericNodes],
+    postprocessQueryNodeWithValue,
+  ),
+  Dimension: (node: PoorNodeType) => {
+    const unit = node.unit as string
+    const value = node.value as string
+
+    if (unit.includes(encodedStringWildcardSequence)) {
+      node.unit = replaceEncodedWildcards(unit)
+    }
+
+    if (value === encodedNumericWildcardSequence) {
+      node.value = replaceEncodedWildcards(value)
+    }
+  },
+}
 
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
-  traverseAst(queryNode, isNode, {
-    Declaration: (node) => {
-      const property = node.property as string
-
-      if (property.includes(encodedWildcardSequence)) {
-        node.property = replaceEncodedWildcards(property)
-      }
-    },
-    Identifier: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    IdSelector: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    MediaFeature: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    ClassSelector: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    PseudoClassSelector: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    PseudoElementSelector: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    TypeSelector: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    Function: (node) => {
-      const name = node.name as string
-
-      if (name.includes(encodedWildcardSequence)) {
-        node.name = replaceEncodedWildcards(name)
-      }
-    },
-    Number: (node) => {
-      const value = node.value as string
-
-      if (value.includes(encodedWildcardSequence)) {
-        node.value = replaceEncodedWildcards(value)
-      }
-    },
-    Percentage: (node) => {
-      const value = node.value as string
-
-      if (value.includes(encodedWildcardSequence)) {
-        node.value = replaceEncodedWildcards(value)
-      }
-    },
-    String: (node) => {
-      const value = node.value as string
-
-      if (value.includes(encodedWildcardSequence)) {
-        node.value = replaceEncodedWildcards(value)
-      }
-    },
-    Hash: (node) => {
-      const value = node.value as string
-
-      if (value.includes(encodedWildcardSequence)) {
-        node.value = replaceEncodedWildcards(value)
-      }
-    },
-    Url: (node) => {
-      const value = node.value as string
-
-      if (value.includes(encodedWildcardSequence)) {
-        node.value = replaceEncodedWildcards(value)
-      }
-    },
-  })
+  traverseAst(queryNode, isNode, postprocessVisitors)
 
   return queryNode
 }
@@ -279,6 +281,12 @@ const compareNodesBeforeWildcardsComparison = (
   ...nodeComparatorParams: NodesComparatorParameters
 ) => {
   return runNodesComparators(beforeWildcardsComparators, nodeComparatorParams)
+}
+
+const compareNodesAfterWildcardsComparison = (
+  ...nodeComparatorParams: NodesComparatorParameters
+) => {
+  return runNodesComparators(afterWildcardsComparators, nodeComparatorParams)
 }
 
 const getUniqueTokensFromStringOrIdentifierNode: GetUniqueTokensFromStringOrIdentifierNode =
@@ -290,16 +298,15 @@ const getUniqueTokensFromStringOrIdentifierNode: GetUniqueTokensFromStringOrIden
 
     const valuesToProcess: string[] = []
 
-    if (queryNode.type === 'TextAttribute') {
-      valuesToProcess.push(queryNode.name as string)
-      valuesToProcess.push(queryNode.value as string)
-    }
-
-    if (queryNode.type === 'Element$1') {
+    if (stringNodeTypes.withName.includes(queryNode.type as string)) {
       valuesToProcess.push(queryNode.name as string)
     }
 
-    if (queryNode.type === 'Text$3') {
+    if (stringNodeTypes.withProperty.includes(queryNode.type as string)) {
+      valuesToProcess.push(queryNode.property as string)
+    }
+
+    if (stringNodeTypes.withValue.includes(queryNode.type as string)) {
       valuesToProcess.push(queryNode.value as string)
     }
 
@@ -320,7 +327,7 @@ const getUniqueTokensFromStringOrIdentifierNode: GetUniqueTokensFromStringOrIden
     return tokens
   }
 
-export const angularEslintTemplateParser: ParserSettings = {
+export const cssTree: ParserSettings = {
   supportedExtensions,
   parseCode,
   isNode,
@@ -339,7 +346,7 @@ export const angularEslintTemplateParser: ParserSettings = {
   shouldCompareNode,
   wildcardUtils,
   compareNodesBeforeWildcardsComparison,
-  compareNodesAfterWildcardsComparison: () => undefined,
+  compareNodesAfterWildcardsComparison,
   identifierTypeAnnotationFieldName: 'typeAnnotation',
   stringLikeLiteralUtils,
   numericLiteralUtils,
@@ -352,4 +359,4 @@ export const angularEslintTemplateParser: ParserSettings = {
   getUniqueTokensFromStringOrIdentifierNode,
 }
 
-export default angularEslintTemplateParser
+export default cssTree

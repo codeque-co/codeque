@@ -74,7 +74,7 @@ export type ParserType =
   | 'esprima'
   | 'babel-eslint-parser'
   | 'angular-eslint-template-parser'
-  | 'csstree'
+  | 'css-tree'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]

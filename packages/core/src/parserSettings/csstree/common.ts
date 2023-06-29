@@ -6,7 +6,7 @@ import { PoorNodeType } from '../../types'
  * We compare everything using string wildcards
  */
 
-export const identifierNodeTypes: string[] = []
+export const identifierNodeTypes: string[] = ['Identifier']
 
 const wildcardChar = '$'
 const numericWildcard = '0x0'

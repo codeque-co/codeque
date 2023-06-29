@@ -2,6 +2,7 @@ import { NodesComparator } from '../../types'
 import { createMatchWildcardsInPropValueNodesComparator } from '../nodeComparatorFactories/Other/matchWildcardsInPropValueNodes'
 import { matchWildcardInDeclarationProperty } from './matchWildcardInDeclarationProperty'
 import { matchWildcardsInDimension } from './matchWildcardsInDimension'
+import { matchHashWithWildcard } from '../cssTree/matchHashWithWildcard'
 
 const nodeTypesWithNameAndChildren = ['Function']
 
@@ -30,4 +31,5 @@ export const beforeWildcardsComparators: NodesComparator[] = [
   ...matchWildcardsInNodeTypesWithNameAndValueNodesComparator,
   matchWildcardInDeclarationProperty,
   matchWildcardsInDimension,
+  matchHashWithWildcard,
 ]

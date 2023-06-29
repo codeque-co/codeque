@@ -153,11 +153,24 @@ const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
 
 const getNodePosition: ParserSettings['getNodePosition'] = (
   node: PoorNodeType,
-) => ({
-  start: ((node?.loc as any)?.start?.offset as number) ?? 0,
-  end: ((node?.loc as any)?.end?.offset as number) ?? 0,
-  loc: node.loc as unknown as Location,
-})
+) => {
+  const location = node.loc as unknown as Location
+
+  return {
+    start: ((location as any)?.start?.offset as number) ?? 0,
+    end: ((location as any)?.end?.offset as number) ?? 0,
+    loc: {
+      start: {
+        line: location.start.line,
+        column: location.start.column - 1, // We need 0-based, parser return 1-based
+      },
+      end: {
+        line: location.end.line,
+        column: location.end.column - 1, // We need 0-based, parser return 1-based
+      },
+    },
+  }
+}
 
 const getParseErrorLocation = (e: any) => ({
   line: e.loc?.line ?? 0,
@@ -175,11 +188,14 @@ const alternativeNodeTypes = {
  * - Same for numeric wildcard 0x0 -> 00000000 // 0{8}
  * `$$` is invalid tag name start in all html parsers
  */
-const encodedStringWildcardSequence = 'a_a_x'
+const encodedStringWildcardSequence = 'a_a_a'
+const encodedNodesTreeWildcardSequence = 'z_z_z'
+
 const encodedNumericWildcardSequence = '00000000'
 
 const preprocessQueryCode = (code: string) => {
   const queryCode = code
+    .replace(/(\$\$\$)/g, () => encodedNodesTreeWildcardSequence)
     .replace(/(\$\$)/g, () => encodedStringWildcardSequence)
     .replace(/0x0/g, encodedNumericWildcardSequence)
 
@@ -187,7 +203,10 @@ const preprocessQueryCode = (code: string) => {
 }
 
 const replaceEncodedWildcards = (value: string) =>
-  value.replace(/a_a_x/g, () => '$$').replace(/0{8}/g, '0x0')
+  value
+    .replace(/a_a_a/g, () => '$$')
+    .replace(/z_z_z/g, () => '$$$')
+    .replace(/0{8}/g, '0x0')
 
 const stringNodeTypes = {
   withName: [
@@ -208,7 +227,10 @@ const stringNodeTypes = {
 const postprocessQueryNodeWithName = (node: PoorNodeType) => {
   const name = node.name as string
 
-  if (name.includes(encodedStringWildcardSequence)) {
+  if (
+    name.includes(encodedStringWildcardSequence) ||
+    name.includes(encodedNodesTreeWildcardSequence)
+  ) {
     node.name = replaceEncodedWildcards(name)
   }
 }
@@ -218,6 +240,7 @@ const postprocessQueryNodeWithValue = (node: PoorNodeType) => {
 
   if (
     value.includes(encodedStringWildcardSequence) ||
+    value.includes(encodedNodesTreeWildcardSequence) ||
     value.includes(encodedNumericWildcardSequence)
   ) {
     node.value = replaceEncodedWildcards(value)
@@ -227,7 +250,10 @@ const postprocessQueryNodeWithValue = (node: PoorNodeType) => {
 const postprocessQueryNodeWithProperty = (node: PoorNodeType) => {
   const property = node.property as string
 
-  if (property.includes(encodedStringWildcardSequence)) {
+  if (
+    property.includes(encodedStringWildcardSequence) ||
+    property.includes(encodedNodesTreeWildcardSequence)
+  ) {
     node.property = replaceEncodedWildcards(property)
   }
 }

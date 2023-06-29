@@ -20,7 +20,7 @@ import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape, SearchFileType } from './StateManager'
-import { simpleDebounce, parserNameMap } from './utils'
+import { simpleDebounce, fileTypeToParserMap } from './utils'
 
 type FilesLists = {
   files: string[]
@@ -419,7 +419,7 @@ export class SearchManager {
             extensionTester,
           )
 
-          const parser = parserNameMap[settings.fileType]
+          const parser = fileTypeToParserMap[settings.fileType]
 
           // We start search in next tick so not block events delivery and UI update
           setTimeout(

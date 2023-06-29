@@ -559,7 +559,7 @@ describe('Wildcard queries', () => {
     expect(matches.length).toBe(1)
   })
 
-  it('Should match color hash with string wildcard', () => {
+  it('Should match color hash with node wildcard', () => {
     const fileContent = `
       p {
         background: #000
@@ -601,6 +601,36 @@ describe('Wildcard queries', () => {
           background: #0x0
         }
       `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'exact',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+  })
+
+  it('Should match dimension with node wildcard', () => {
+    const fileContent = `
+    p {
+      width: 100px
+    }
+  `
+    const queries = [
+      `
+      p {
+        width: $$$
+      }
+    `,
     ]
 
     const { matches, errors } = searchInStrings({

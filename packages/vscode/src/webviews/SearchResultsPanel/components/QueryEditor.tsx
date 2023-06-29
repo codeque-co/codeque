@@ -6,7 +6,7 @@ import { Mode, searchInStrings } from '@codeque/core/web'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
-import useDebounce, { parserNameMap } from '../../../utils'
+import useDebounce, { fileTypeToParserMap } from '../../../utils'
 
 import { SearchFileType } from '../../../StateManager'
 
@@ -99,7 +99,7 @@ export function QueryEditor({
     setQueryHint(null)
 
     try {
-      const parser = parserNameMap[fileType]
+      const parser = fileTypeToParserMap[fileType]
 
       const matches = searchInStrings({
         queryCodes: [query],

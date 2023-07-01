@@ -127,3 +127,11 @@ TIMING=1 CODEQUE_DEBUG=true yarn YOUR_LINT_SCRIPT
 ```
 
 > Use TIMING=all to list all ESLint rules.
+
+## Telemetry
+
+Plugin collects completely anonymous telemetry that helps me get insights about usage.
+
+It's implemented using `applicationinsights` and you can easily opt-out.
+
+Learn more about [telemetry](https://codeque.co/docs/telemetry#es-lint-plugin)

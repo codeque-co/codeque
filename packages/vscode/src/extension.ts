@@ -18,10 +18,14 @@ import {
   supportedParsers,
   parserToFileTypeMap,
 } from './utils'
+import { activateReporter } from './telemetry'
 
 let dispose = (() => undefined) as () => void
 
 export function activate(context: vscode.ExtensionContext) {
+  const telemetryReporter = activateReporter()
+  context.subscriptions.push(telemetryReporter)
+
   const { extensionUri } = context
 
   const stateManager = new StateManager(context.workspaceState)
@@ -46,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
     stateManager,
   )
 
-  const searchManager = new SearchManager(stateManager)
+  const searchManager = new SearchManager(stateManager, telemetryReporter)
 
   dispose = searchManager.dispose
   const item = vscode.window.createStatusBarItem(

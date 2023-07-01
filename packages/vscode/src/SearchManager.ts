@@ -21,6 +21,7 @@ import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape, SearchFileType } from './StateManager'
 import { simpleDebounce, fileTypeToParserMap } from './utils'
+import TelemetryReporter from '@vscode/extension-telemetry'
 
 type FilesLists = {
   files: string[]
@@ -54,14 +55,19 @@ export class SearchManager {
     workspaceFoldersChangeListener: undefined as vscode.Disposable | undefined,
   }
   private lastSearchSettings: StateShape | undefined
+  private telemetryReporter: TelemetryReporter
 
-  constructor(private readonly stateManager: StateManager) {
+  constructor(
+    private readonly stateManager: StateManager,
+    telemetryReporter: TelemetryReporter,
+  ) {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
 
     this.initializeSearchRoots()
     this.maybeStartWatchingFilesList()
     this.watchWorkspaceChanges()
+    this.telemetryReporter = telemetryReporter
   }
 
   private determineRoots() {
@@ -439,12 +445,14 @@ export class SearchManager {
 
               const searchTime = (searchEnd - searchStart) / 1000
 
+              const processedResults = this.processSearchResults(
+                { ...results, matches: allPartialMatches },
+                roots,
+                isWorkspace,
+              )
+
               eventBusInstance.dispatch('have-results', {
-                results: this.processSearchResults(
-                  { ...results, matches: allPartialMatches },
-                  roots,
-                  isWorkspace,
-                ),
+                results: processedResults,
                 time: searchTime,
                 files: filesListFilteredByExtension,
                 isWorkspace,
@@ -455,6 +463,27 @@ export class SearchManager {
               this.currentSearchHardStopFlag?.destroy()
               this.currentFilesGetHardStopFlag = undefined
               this.currentSearchHardStopFlag = undefined
+
+              try {
+                this.telemetryReporter.sendTelemetryEvent(
+                  'vscode:search_results',
+                  {
+                    mode: settings.mode,
+                    caseType: settings.caseType,
+                    fileType: settings.fileType,
+                    isWorkspace: isWorkspace ? 'true' : 'false',
+                  },
+                  {
+                    queryLength: settings.query.length,
+                    searchTime: searchTime,
+                    resultsCount: processedResults.matches.length,
+                    errorsCount: processedResults.errors.length,
+                    searchedFilesCount: filesListFilteredByExtension.length,
+                  },
+                )
+              } catch (e) {
+                console.error(e)
+              }
             }).bind(this),
             0,
           )
@@ -482,6 +511,8 @@ export class SearchManager {
 
       console.error(error)
 
+      const searchTime = (Date.now() - searchStart) / 1000
+
       eventBusInstance.dispatch('have-results', {
         results: {
           matches: [],
@@ -491,12 +522,30 @@ export class SearchManager {
           groupedMatches: {},
           workspacesMap: {},
         },
-        time: (Date.now() - searchStart) / 1000,
+        time: searchTime,
         files: [],
         isWorkspace: isWorkspace ?? false,
       })
 
       this.searchRunning = false
+
+      try {
+        this.telemetryReporter.sendTelemetryErrorEvent(
+          'vscode:search_error',
+          {
+            mode: settings.mode,
+            caseType: settings.caseType,
+            fileType: settings.fileType,
+            isWorkspace: isWorkspace ? 'true' : 'false',
+          },
+          {
+            queryLength: settings.query.length,
+            searchTime,
+          },
+        )
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
   public dispose() {

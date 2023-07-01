@@ -302,7 +302,13 @@ useRequest({
   apiMethod: $$$ ? $$$ : $$$
 })
 ```
+## Telemetry
 
+Extension collects anonymous telemetry to help me get insights about usage.
+
+It's implemented using `@vscode/extension-telemetry` and respects you editor telemetry settings.
+
+Learn more about [telemetry](https://codeque.co/docs/telemetry#vs-code-extension)
 
 ## Support, Feedback and more
 

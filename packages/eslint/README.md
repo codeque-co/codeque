@@ -1,15 +1,15 @@
 <p align="center">
-  <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
+  <a href="https://codeque.co/?utm_source=readme_eslint" title="Learn more about CodeQue" target="_blank">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
   </a>
   <br/>
   </p>
 <p align="center">
-  <a href="https://codeque.co">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
-  <a href="https://codeque.co/docs">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/roadmap">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/mission">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/playground"><b>Playground</b></a>
+  <a href="https://codeque.co/?utm_source=readme_eslint">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs?utm_source=readme_eslint">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap?utm_source=readme_eslint">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission?utm_source=readme_eslint">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/playground?utm_source=readme_eslint"><b>Playground</b></a>
 </p>
 
 <p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
@@ -28,7 +28,7 @@ Structural code search is available for JavaScript, TypesScript, HTML, CSS and m
 
 Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
-<p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
+<p align="center"><a href="https://codeque.co/playground?utm_source=readme_eslint"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
@@ -37,7 +37,7 @@ __Integrations__
 
 CodeQue is available as:
 
-- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for enhanced code search and navigation experience.
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for delightful code search and navigation experience.
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
 - [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
@@ -48,7 +48,7 @@ CodeQue will be soon available as:
 - Advanced ESLint rules creator 
 
 
-<p align="center"><a href="https://jayu.dev/newsletter"><b>🔔 Get notified 🔔 </b></a></p>
+<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_eslint"><b>🔔 Get notified 🔔 </b></a></p>
 
 <p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
@@ -66,19 +66,6 @@ Custom ESLint rules can help execute on long-term refactors or prevent introduci
 Rules can replace your decision log and help standardizing coding conventions across the project or organization.
 
 CodeQue ESLint integration is a no-brainier for any team willing to improve their codebase quality.
-
-### Needs more flexibility or custom solution?
-
-This ESLint integration is just scratching the surface of actual possibilities that will be unlocked with **CodeQue's advanced ESLint rules creator**.
-
-Declarative ESLint rule creator will allow for:
-- correlating code from different parts of the file, 
-- executing boolean queries, 
-- precisely defining problematic code location,
-- declaring autofix suggestions,
-- and more.
-
-<p align="center"><a href="https://jayu.dev/newsletter"><b>Join CodeQue newsletter too book early access</b></a><p>
 
 <!-- ESLINT INTRO END -->
 

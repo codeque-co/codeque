@@ -71,6 +71,35 @@ ${contentAfterEslintIntro.trimStart()}`
   })
 }
 
+const syncVscodeIntro = () => {
+  console.log('Syncing VSCode intro')
+  const vscodeIntroContentPath = path.join(cwd, 'readmePartials/vscodeIntro.md')
+
+  const vscodeIntroContent = fs.readFileSync(vscodeIntroContentPath).toString()
+
+  const pathsToUpdate = [vscodeReadmePath, mainReadmePath]
+
+  const vscodeIntroStartComment = '<!-- VSCODE INTRO START -->'
+  const vscodeIntroEndComment = '<!-- VSCODE INTRO END -->'
+
+  pathsToUpdate.forEach((filePath) => {
+    const content = fs.readFileSync(filePath).toString()
+
+    const contentBeforeEslintIntro = content.split(vscodeIntroStartComment)[0]
+
+    const contentAfterEslintIntro = content.split(vscodeIntroEndComment)[1]
+
+    const newContent = `${contentBeforeEslintIntro.trimEnd()}
+  
+${vscodeIntroContent}
+
+${contentAfterEslintIntro.trimStart()}`
+
+    fs.writeFileSync(filePath, newContent)
+    console.log('Saved', filePath.replace(cwd + '/', './'))
+  })
+}
+
 const syncFooters = () => {
   console.log('Syncing footer')
 
@@ -106,6 +135,44 @@ ${footerContent.trimStart()}`
   })
 }
 
+const addUtmSourceParams = () => {
+  const pathsToUpdate = [
+    { filePath: mainReadmePath, utmSource: 'readme_main' },
+    { filePath: cliReadmePath, utmSource: 'readme_cli' },
+    { filePath: coreReadmePath, utmSource: 'readme_core' },
+    { filePath: ESLintReadmePath, utmSource: 'readme_eslint' },
+    { filePath: vscodeReadmePath, utmSource: 'readme_vscode' },
+  ]
+
+  pathsToUpdate.forEach(({ filePath, utmSource }) => {
+    let content = fs.readFileSync(filePath).toString()
+
+    const linkRegExp = /"https:\/\/((codeque\.co)|(jayu\.dev)).*?"/g
+
+    const links = [...new Set(content.match(linkRegExp))].filter(
+      (link) => !link.includes('utm_source'),
+    )
+
+    console.log('links', links)
+
+    links.forEach((link) => {
+      const url = new URL(link.replace(/"/g, ''))
+
+      url.searchParams.append('utm_source', utmSource)
+
+      const newLink = `"${url.toString()}"`
+
+      console.log(link, '->', newLink)
+
+      content = content.replaceAll(link, newLink)
+    })
+
+    fs.writeFileSync(filePath, content)
+  })
+}
+
 syncHero()
 syncEslintIntro()
+syncVscodeIntro()
 syncFooters()
+addUtmSourceParams()

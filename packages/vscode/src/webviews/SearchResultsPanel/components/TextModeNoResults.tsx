@@ -17,7 +17,9 @@ export function TextModeNoResults() {
       <Heading mb="5" mt="50px" size="lg">
         About text search mode
       </Heading>
-      <Text my="1">Text mode supports searching in any type of text file.</Text>
+      <Text my="1">
+        Text mode supports searching in every type of text file.
+      </Text>
       <Text my="1">
         It transforms the query into special regular expression making search
         whitespace agnostic.

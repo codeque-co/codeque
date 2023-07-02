@@ -2,7 +2,7 @@ import { NodesComparator } from '../../types'
 import { createMatchWildcardsInPropValueNodesComparator } from '../nodeComparatorFactories/Other/matchWildcardsInPropValueNodes'
 import { matchWildcardInDeclarationProperty } from './matchWildcardInDeclarationProperty'
 import { matchWildcardsInDimension } from './matchWildcardsInDimension'
-import { matchHashWithWildcard } from '../cssTree/matchHashWithWildcard'
+import { matchHashWithWildcard } from './matchHashWithWildcard'
 
 const nodeTypesWithNameAndChildren = ['Function']
 

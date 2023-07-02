@@ -19,7 +19,7 @@ export function StructuralModeNoResults() {
       </Heading>
       <Text my="1">
         Structural modes supports searching only in{' '}
-        <b>JavaScript, TypeScript and JSON source files.</b>
+        <b>JavaScript, TypeScript, JSON, HTML and CSS source files.</b>
       </Text>
       <Text my="1">
         They are powerful tool for advanced search allowing for finding complex

@@ -23,7 +23,7 @@ import {
 } from './common'
 import { traverseAst } from '../../searchStages/traverseAndMatch'
 import { beforeWildcardsComparators } from './beforeWildcardsComparators'
-import { afterWildcardsComparators } from '../cssTree/afterWildcardsComparators'
+import { afterWildcardsComparators } from './afterWildcardsComparators'
 
 const supportedExtensions = ['css']
 

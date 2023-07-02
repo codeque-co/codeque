@@ -1,6 +1,6 @@
 {
   "name": "@codeque/eslint-plugin",
-  "version": "0.0.0-beta.0",
+  "version": "0.1.0",
   "description": "Create custom ESLint rules based on code samples. Utilizing CodeQue - structural code search engine.",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",

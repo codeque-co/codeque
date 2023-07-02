@@ -97,25 +97,25 @@ Each rule should be provided with a list of rule config objects with CodeQue que
 
 Learn more about writing queries from [CodeQue docs](https://codeque.co/docs)
 
-```js
+```json
 {
-  plugins: ["@codeque"],
-  rules: [
+  "plugins": ["@codeque"],
+  "rules": {
     "@codeque/error": ["error", [
       {
         "query": "fetchData()",
-        mode: "exact",
-        message: "Using fetchData() without parameters causes app crash!",
+        "mode": "exact",
+        "message": "Using fetchData() without parameters causes app crash!",
       },
     ]],
     "@codeque/warning": ["warn", [
       {
         "query": "import $$$ from 'lodash';",
-        mode: "include",
-        message: "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
+        "mode": "include",
+        "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
       },
     ]]
-  ]
+  }
 }
 ```
 
@@ -172,17 +172,17 @@ Searching for console logs, warnings, errors is quite simple use-case and can be
 
 This rule warns about all places in the code that can output some (usually unwanted) logs.
 
-```ts
+```json
 {
-  rules: [
+  "rules": {
     "@codeque/warning": ["warn", [
       {
         "query": "console.$$()",
-        mode: "include",
-        message: "Prefer to use 'Logger' util.",
+        "mode": "include",
+        "message": "Prefer to use 'Logger' util.",
       },
     ]]
-  ]
+  }
 }
 ```
 
@@ -196,18 +196,18 @@ Third party code not always work as expected. Whenever you spot a problem, add c
 
 The rule warns against using `disabled` property on `SomeLibComponent`, and suggest using not documented `isDisabled` prop instead.
 
-```ts
+```json
 {
-  rules: [
+  "rules": {
     "@codeque/warning": ["warn", [
       {
         "query": "<SomeLibComponent disabled />",
-        mode: "include",
-        message: "'disabled' property does not work as expected. Use 'isDisabled' instead",
-        includeFiles: ["**/*.tsx"]
+        "mode": "include",
+        "message": "'disabled' property does not work as expected. Use 'isDisabled' instead",
+        "includeFiles": ["**/*.tsx"]
       },
     ]]
-  ]
+  }
 }
 ```
 
@@ -219,17 +219,17 @@ In this rule we rise an error when `confirm` callback from `useAsyncDialog` is u
 
 This is interesting example that links together two statements in the same code block, that does not necessarily have to directly follow each other.
 
-```ts
+```json
 {
-  rules: [
+  "rules": {
     "@codeque/error": ["error", [
       {
         "query": "const { confirm } = useAsyncDialog(); const $$ = useCallback($$$, [confirm]);",
-        mode: "include",
-        message: "'confirm' is known to be unstable. Using it in hook dependency array can cause render loop",
+        "mode": "include",
+        "message": "'confirm' is known to be unstable. Using it in hook dependency array can cause render loop",
       },
     ]]
-  ]
+  }
 }
 ```
 
@@ -244,24 +244,24 @@ First rule restricts usage of object literal as a prop. Object literal could be 
 Second rule restricts places where a given array is mapped directly in JSX. It could be memoized to make the array reference stable and reduce re-renders.
 
 
-```ts
+```json
 {
-  rules: [
+  "rules": {
     "@codeque/error": ["error", [
       {
         "query": "<$$ $$={{}} />",
-        mode: "include",
-        message: "Don't use object literal in JSX props",
-        includeFiles: ["**/*.tsx"]
+        "mode": "include",
+        "message": "Don't use object literal in JSX props",
+        "includeFiles": ["**/*.tsx"]
       },
       {
         "query": "<$$ $$={$$$.map(() => ($$$))} />",
-        mode: "include",
-        message: "'disabled' property does not work as expected. Use 'isDisabled' instead",
-        includeFiles: ["**/*.tsx"]
+        "mode": "include",
+        "message": "'disabled' property does not work as expected. Use 'isDisabled' instead",
+        "includeFiles": ["**/*.tsx"]
       },
     ]]
-  ]
+  }
 }
 ```
 

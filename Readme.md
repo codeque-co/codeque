@@ -108,25 +108,25 @@ __Usage ✨__
 
 Enhance your `.eslintrc` with following setup:
 
-```js
+```json
 {
-  plugins: ["@codeque"],
-  rules: [
+  "plugins": ["@codeque"],
+  "rules": {
     "@codeque/error": ["error", [
       {
         "query": "fetchData()",
-        mode: "exact",
-        message: "Using fetchData() without parameters causes app crash!",
+        "mode": "exact",
+        "message": "Using fetchData() without parameters causes app crash!",
       },
     ]],
     "@codeque/warning": ["warn", [
       {
         "query": "import $$$ from 'lodash';",
-        mode: "include",
-        message: "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
+        "mode": "include",
+        "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
       },
     ]]
-  ]
+  }
 }
 ```
 Find more information in [`@codeque/eslint-plugin` package readme](https://www.npmjs.com/package/@codeque/eslint-plugin)

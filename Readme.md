@@ -82,6 +82,8 @@ Advanced code search options and todo-like list of accurate search results will 
 
 <!-- VSCODE INTRO END -->
 
+<p align="center"><a href="https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque"><b>Get extension from marketplace</b></a></p>
+  
 <!-- ESLINT INTRO START -->
 ## ESLint integration 💅
 
@@ -95,43 +97,58 @@ CodeQue ESLint integration is a no-brainier for any team willing to improve thei
 
 <!-- ESLINT INTRO END -->
 
-Installation 👇
+__Installation 👇__
 
 ```sh
 yarn add --dev @codeque/eslint-plugin
 ```
 
 
-Usage ✨
+__Usage ✨__
 
-[See docs on npm](https://www.npmjs.com/package/@codeque/eslint-plugin)
+Enhance your `.eslintrc` with following setup:
 
-
-```ts
+```js
 {
-  plugins: ['@codeque'],
+  plugins: ["@codeque"],
   rules: [
     "@codeque/error": ["error", [
       {
-        "query": "throw new Error()",
+        "query": "fetchData()",
+        mode: "exact",
+        message: "Using fetchData() without parameters causes app crash!",
+      },
+    ]],
+    "@codeque/warning": ["warn", [
+      {
+        "query": "import $$$ from 'lodash';",
         mode: "include",
-        message: "Use only project defined error classes.",
+        message: "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
       },
     ]]
   ]
 }
 ```
+Find more information in [`@codeque/eslint-plugin` package readme](https://www.npmjs.com/package/@codeque/eslint-plugin)
+
+
+</br>
 
 <p align="center">
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/error-example.png?raw=true" width="500px"/>
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/disabled-prop.gif?raw=true" />
 </p>
 
-
+</br>
+  
+<!-- CLI INTRO START -->
 ## CLI tool 🔥
 
-CodeQue can be also used as a CLI tool.
+CodeQue CLI is a complementary tool that can be used for
+- Searching code patterns right from terminal including headless environments
+- Building scripts to assert that some code patterns exist or not exist
+- Enhancing git hooks to avoid committing or pushing unwanted code
 
-Use it to search code or utilize it in git hooks like pre-commit.
+<!-- CLI INTRO END -->
 
 __Installation 👇__
 
@@ -139,15 +156,19 @@ __Installation 👇__
 yarn global add @codeque/cli
 ```
 
-__Usage 🕵️__
+__Usage ✨__
 
 ```sh
 codeque
 ```
 
-<img src="./packages/cli/demo.gif" alt="codeque cli demo" width="500px"/>
+</br>
 
-Find more info in [`@codeque/cli` package docs](./packages/cli/README.md)
+<p align="center"><img src="./packages/cli/demo.gif" alt="codeque cli demo" width="500px"/><p>
+
+</br>
+
+Find more information in [`@codeque/cli` package readme](https://www.npmjs.com/package/@codeque/cli)
 
 <!-- FOOTER START -->
 

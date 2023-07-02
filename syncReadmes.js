@@ -100,6 +100,35 @@ ${contentAfterEslintIntro.trimStart()}`
   })
 }
 
+const syncCliIntro = () => {
+  console.log('Syncing CLI intro')
+  const cliIntroContentPath = path.join(cwd, 'readmePartials/cliIntro.md')
+
+  const cliIntroContent = fs.readFileSync(cliIntroContentPath).toString()
+
+  const pathsToUpdate = [cliReadmePath, mainReadmePath]
+
+  const cliIntroStartComment = '<!-- CLI INTRO START -->'
+  const cliIntroEndComment = '<!-- CLI INTRO END -->'
+
+  pathsToUpdate.forEach((filePath) => {
+    const content = fs.readFileSync(filePath).toString()
+
+    const contentBeforeEslintIntro = content.split(cliIntroStartComment)[0]
+
+    const contentAfterEslintIntro = content.split(cliIntroEndComment)[1]
+
+    const newContent = `${contentBeforeEslintIntro.trimEnd()}
+  
+${cliIntroContent}
+
+${contentAfterEslintIntro.trimStart()}`
+
+    fs.writeFileSync(filePath, newContent)
+    console.log('Saved', filePath.replace(cwd + '/', './'))
+  })
+}
+
 const syncFooters = () => {
   console.log('Syncing footer')
 
@@ -153,8 +182,6 @@ const addUtmSourceParams = () => {
       (link) => !link.includes('utm_source'),
     )
 
-    console.log('links', links)
-
     links.forEach((link) => {
       const url = new URL(link.replace(/"/g, ''))
 
@@ -162,17 +189,23 @@ const addUtmSourceParams = () => {
 
       const newLink = `"${url.toString()}"`
 
-      console.log(link, '->', newLink)
-
       content = content.replaceAll(link, newLink)
     })
 
     fs.writeFileSync(filePath, content)
+
+    console.log(
+      'Updated',
+      links.length,
+      'links in',
+      filePath.replace(cwd + '/', './'),
+    )
   })
 }
 
 syncHero()
 syncEslintIntro()
 syncVscodeIntro()
+syncCliIntro()
 syncFooters()
 addUtmSourceParams()

@@ -42,7 +42,8 @@ const getProjectId = () => {
 }
 
 export const telemetryDisabled =
-  process.env.CQ_ESLINT_TELEMETRY_DISABLE === 'true'
+  process.env.CQ_ESLINT_TELEMETRY_DISABLE === 'true' ||
+  process.env.NODE_ENV === 'test'
 
 export const createTelemetryInstance = (): TelemetryModule => {
   if (telemetryDisabled) {
@@ -96,7 +97,6 @@ export const createTelemetryInstance = (): TelemetryModule => {
 
         telemetryClient.flush()
         dispose()
-        console.log('telemetry reported')
       } catch (e) {
         console.error('Failed to report telemetry for config')
       }

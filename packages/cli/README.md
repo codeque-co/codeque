@@ -41,6 +41,8 @@ CodeQue is available as:
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
 - [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+
 CodeQue will be soon available as:
 
 - Duplicated code identification
@@ -50,7 +52,6 @@ CodeQue will be soon available as:
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_cli"><b>🔔 Get notified 🔔 </b></a></p>
 
-<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
@@ -82,7 +83,9 @@ codeque
 
 Type query and hit `ctrl+s` to run your first search!
 
-<img src="https://github.com/codeque-co/codeque/blob/df44bcfd393c5a954877790c9d1eb0adc5a2f4da/packages/cli/demo.gif?raw=true" alt="codeque cli demo" width="500px"/>
+<p align="center">
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/cli/demo.gif?raw=true" alt="codeque cli demo" />
+</p>
 
 ### CodeQue CLI features:
 

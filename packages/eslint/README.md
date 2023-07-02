@@ -41,6 +41,8 @@ CodeQue is available as:
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
 - [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+
 CodeQue will be soon available as:
 
 - Duplicated code identification
@@ -50,7 +52,6 @@ CodeQue will be soon available as:
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_eslint"><b>🔔 Get notified 🔔 </b></a></p>
 
-<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
@@ -124,7 +125,7 @@ The above configuration
 - reports a warning when utility is imported from main `lodash` package
 
 <p align="center">
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/disabled-prop.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/getting-started.gif?raw=true" />
 </p>
 
 
@@ -210,6 +211,10 @@ The rule warns against using `disabled` property on `SomeLibComponent`, and sugg
   }
 }
 ```
+
+<p align="center">
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/disabled-prop.gif?raw=true" />
+</p>
 
 ### Unstable hook reference
 

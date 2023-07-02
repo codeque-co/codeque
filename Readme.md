@@ -41,6 +41,8 @@ CodeQue is available as:
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
 - [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+
 CodeQue will be soon available as:
 
 - Duplicated code identification
@@ -50,7 +52,6 @@ CodeQue will be soon available as:
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_main"><b>🔔 Get notified 🔔 </b></a></p>
 
-<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
@@ -81,6 +82,8 @@ Advanced code search options and todo-like list of accurate search results will 
 </br>
 
 <!-- VSCODE INTRO END -->
+
+</br>
 
 <p align="center"><a href="https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque"><b>Get extension from marketplace</b></a></p>
   
@@ -135,7 +138,7 @@ Find more information in [`@codeque/eslint-plugin` package readme](https://www.n
 </br>
 
 <p align="center">
-<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/disabled-prop.gif?raw=true" />
+<img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/getting-started.gif?raw=true" />
 </p>
 
 </br>
@@ -164,7 +167,7 @@ codeque
 
 </br>
 
-<p align="center"><img src="./packages/cli/demo.gif" alt="codeque cli demo" width="500px"/><p>
+<p align="center"><img src="./packages/cli/demo.gif" alt="codeque cli demo" /><p>
 
 </br>
 

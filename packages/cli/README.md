@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://codeque.co/?utm_source=readme_cli" title="Learn more about CodeQue" target="_blank">
-    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="150px" />
   </a>
   <br/>
   </p>

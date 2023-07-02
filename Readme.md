@@ -56,13 +56,19 @@ CodeQue will be soon available as:
 
 <!-- HERO END -->
 
+<!-- VSCODE INTRO START -->
 ## Visual Studio Code Extension 🔮
-
 VScode extension aims to make your workflow more efficient.
 
-[👉 Read about features](https://github.com/codeque-co/codeque/tree/master/packages/vscode#readme)
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
 
-[👉 Get VScode Extension from Marketplace](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque)
+You don't need to have any Regex knowledge to query complex code patterns. 
+
+With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
+
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
+
+Advanced code search options and todo-like list of accurate search results will streamline your workflow.
 
 </br>
 
@@ -73,6 +79,7 @@ VScode extension aims to make your workflow more efficient.
 </a>
 
 </br>
+<!-- VSCODE INTRO END -->
   
 <!-- ESLINT INTRO START -->
 ## ESLint integration 💅

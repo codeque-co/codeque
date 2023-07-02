@@ -56,14 +56,19 @@ CodeQue will be soon available as:
 
 <!-- HERO END -->
 
-## CodeQue - multiline and structural code search for Visual Studio Code
-VSCode extension aims to improve code search and navigation experience. 
+<!-- VSCODE INTRO START -->
+## Visual Studio Code Extension 🔮
+VScode extension aims to make your workflow more efficient.
 
-Advanced code search options and todo-like list of accurate search results makes it your new super power.
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
 
-CodeQue supports multiline code search for every programming language and structural code search for JavaScript and TypeScript.
+You don't need to have any Regex knowledge to query complex code patterns. 
 
-Structural code search support for other programming languages will be added soon.
+With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
+
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
+
+Advanced code search options and todo-like list of accurate search results will streamline your workflow.
 
 </br>
 
@@ -73,19 +78,11 @@ Structural code search support for other programming languages will be added soo
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
 </a>
 
-## Benefits of using CodeQue VSCode extension
+</br>
 
-CodeQue is more than just a search tool - it's a refactoring tool as well. 
+<!-- VSCODE INTRO END -->
 
-It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
-
-You don't need to have any knowledge of Regular Expressions to query complex code patterns. 
-
-It helps developers with code refactoring, speeds up project discovery, and makes it easy to find duplicated or similar code patterns. 
-
-With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
-
-## Overview 
+## About 
 One of the main strengths of CodeQue is its easy-to-use query language, but it also offers several additional features that make it a great support tool for your daily work.
 
 **Features**
@@ -244,7 +241,7 @@ You can check search error details in tooltip available after click the error co
 
 ## Query examples
 
-CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you definitely would  find some more complex during day to day work.
+CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely  find some more complex during day to day work.
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
@@ -339,6 +336,22 @@ useRequest({
   apiMethod: $$$ ? $$$ : $$$
 })
 ```
+
+### Unstable hook reference
+
+Some 3rd party hooks are not implemented correctly and return non-memoized variables.
+
+Let's assume you've found out that `confirm` callback from `useAsyncDialog` is unstable.
+
+You can use the snipped below to search for all similar places across the codebase and fix then if necessary.
+
+This is interesting example that links together two statements in the same code block, that does not necessarily have to directly follow each other.
+
+```ts
+const { confirm } = useAsyncDialog(); 
+const $$ = useCallback($$$, [confirm])
+```
+
 ## Telemetry
 
 Extension collects anonymous telemetry to help me get insights about usage.

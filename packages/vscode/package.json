@@ -2,7 +2,7 @@
   "name": "codeque",
   "publisher": "CodeQue",
   "displayName": "CodeQue - Multiline and Structural Code Search",
-  "description": "Multiline code search for every language. Structural code search for TypeScript, JavaScript, CSS and HTML",
+  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML and CSS",
   "repository": {
     "type": "git",
     "url": "https://github.com/codeque-co/codeque"
@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/codeque-co/codeque/issues"
   },
-  "version": "0.22.0",
+  "version": "0.23.0",
   "engines": {
     "vscode": "^1.68.0",
     "node": ">=14"

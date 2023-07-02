@@ -1729,6 +1729,21 @@
   dependencies:
     "@chakra-ui/utils" "2.0.4"
 
+"@codeque/core@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@codeque/core/-/core-0.5.0.tgz#826494ea60654c19ec3c66c0bec9654d7003c853"
+  integrity sha512-esHXooT3KTed2CyaoPOTA+F6deSWgH8iucqq+i+LMgN+SpybYx1TNbS1cwPtAJYFxnhdgsUkltANuyfs9D8bkQ==
+  dependencies:
+    "@babel/parser" "7.19.4"
+    "@babel/plugin-syntax-typescript" "7.18.6"
+    "@babel/types" "7.19.4"
+    "@types/css-tree" "^2.3.1"
+    dedent "^0.7.0"
+    dpdm "^3.12.0"
+    glob-escape "^0.0.2"
+    ignore "^5.1.9"
+    minimatch "^5.1.0"
+
 "@ctrl/tinycolor@^3.4.0":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.1.tgz#75b4c27948c81e88ccd3a8902047bcd797f38d32"

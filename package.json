@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
@@ -27,6 +30,7 @@
     "typecheck": "yarn workspaces run typecheck",
     "test": "yarn workspaces run test",
     "checks": "yarn typecheck && yarn lint && yarn test",
-    "postinstall": "node fix-framer-motion.js"
+    "postinstall": "node fix-framer-motion.js",
+    "syncReadmes": "node ./syncReadmes.js"
   }
 }

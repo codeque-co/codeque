@@ -1,30 +1,70 @@
-<h3 align="center">
-  <code>CodeQue</code>
-</h3>
-
 <p align="center">
-  Supercharged structural code search and replace tool
+  <a href="https://codeque.co/?utm_source=readme_cli" title="Learn more about CodeQue" target="_blank">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
+  </a>
+  <br/>
+  </p>
+<p align="center">
+  <a href="https://codeque.co/?utm_source=readme_cli">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs?utm_source=readme_cli">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap?utm_source=readme_cli">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission?utm_source=readme_cli">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/playground?utm_source=readme_cli"><b>Playground</b></a>
 </p>
 
----
+<p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
 
-## Overview 📣
+___ 
 
-CodeQue is structural code search tool for TypeScript and JavaScript projects.
+# What is CodeQue?
 
-CodeQue can be used to search for any code, from simple symbol search to complex multiline patterns.
+CodeQue is semantic code search engine that understands the code syntax. 
 
-It reduces struggle by providing accurate results regardless the formatting noise.
+It matches code structurally which makes it excellent for more complex queries.
 
-It makes it easy to get familiar with codebase and helps make better decisions as a result.
+Query language offers wildcards, partial matching and ignores code formatting. 
 
-You can also use it as a linter.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS and more soon.
 
-Find out more about the project on [codeque.co](https://codeque.co)
+Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
-[Try CodeQue Visual Studio Code Extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque)
+<p align="center"><a href="https://codeque.co/playground?utm_source=readme_cli"><b>Give it a try in 
+ playground</b></a></p>
 
-[Get CodeQue ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) and create custom linting rules in zero time.
+<p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
+
+__Integrations__
+
+CodeQue is available as:
+
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for delightful code search and navigation experience.
+- [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
+
+CodeQue will be soon available as:
+
+- Duplicated code identification
+- Batch code refactoring 
+- Advanced ESLint rules creator 
+
+
+<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_cli"><b>🔔 Get notified 🔔 </b></a></p>
+
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+
+</br>
+
+<!-- HERO END -->
+  
+<!-- CLI INTRO START -->
+## CLI tool 🔥
+
+CodeQue CLI is a complementary tool that can be used for
+- Searching code patterns right from terminal including headless environments
+- Building scripts to assert that some code patterns exist or not exist
+- Enhancing git hooks to avoid committing or pushing unwanted code
+
+<!-- CLI INTRO END -->
 
 ## Installation 👇
 
@@ -142,3 +182,13 @@ codeque [options]
 - `-ogi, --omitGitIgnore` - Search files regardless .gitignore settings (_optional_)
 - `-ae, --allExtensions` - Search in all file extensions. Useful for text search mode. (_optional_)
 <!-- cli-docs-end -->
+
+<!-- FOOTER START -->
+
+## Support and feedback
+
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement

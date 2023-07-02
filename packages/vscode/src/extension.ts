@@ -2,8 +2,7 @@ import * as vscode from 'vscode'
 import { SidebarProvider } from './SidebarProvider'
 import { SearchResultsPanel } from './SearchResultsPanel'
 import { StateManager, StateShape } from './StateManager'
-import dedent from 'dedent'
-import { EventBus, eventBusInstance } from './EventBus'
+import { eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
 import {
   parseQueries,
@@ -13,11 +12,20 @@ import {
 } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
-import { dedentPatched } from './utils'
+import {
+  dedentPatched,
+  SupportedParsers,
+  supportedParsers,
+  parserToFileTypeMap,
+} from './utils'
+import { activateReporter } from './telemetry'
 
 let dispose = (() => undefined) as () => void
 
 export function activate(context: vscode.ExtensionContext) {
+  const telemetryReporter = activateReporter()
+  context.subscriptions.push(telemetryReporter)
+
   const { extensionUri } = context
 
   const stateManager = new StateManager(context.workspaceState)
@@ -42,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
     stateManager,
   )
 
-  const searchManager = new SearchManager(stateManager)
+  const searchManager = new SearchManager(stateManager, telemetryReporter)
 
   dispose = searchManager.dispose
   const item = vscode.window.createStatusBarItem(
@@ -82,15 +90,25 @@ export function activate(context: vscode.ExtensionContext) {
         : selectedCode
 
     if (newQuery) {
-      const [, queryParseOk] = parseQueries(
-        [newQuery],
-        false,
-        __internal.parserSettingsMap['babel'](),
-      )
+      let foundParser: SupportedParsers | null = null
+
+      for (const parser of supportedParsers) {
+        const [, queryParseOk] = parseQueries(
+          [newQuery],
+          false,
+          __internal.parserSettingsMap[parser](),
+        )
+
+        if (queryParseOk) {
+          foundParser = parser
+          break
+        }
+      }
 
       stateManager.setState({
         query: newQuery,
-        mode: !queryParseOk && state.mode !== 'text' ? 'text' : state.mode,
+        mode: !foundParser && state.mode !== 'text' ? 'text' : state.mode,
+        fileType: !foundParser ? 'all' : parserToFileTypeMap[foundParser],
       })
     }
 

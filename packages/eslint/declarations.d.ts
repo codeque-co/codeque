@@ -3,3 +3,5 @@ declare global {
   //eslint-disable-next-line no-var
   var ruleTester: RuleTester
 }
+
+declare module 'is-ci'

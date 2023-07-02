@@ -21,6 +21,7 @@ import {
   assertCompatibleParser,
   parserNamesMappingsToCodeQueInternal,
 } from './utils'
+import { telemetryDisabled, createTelemetryInstance } from './telemetry'
 
 const queriesCache = {} as Record<string, ParsedQuery>
 
@@ -43,10 +44,19 @@ process.on('beforeExit', () => {
     console.log('filteringFilePathsTime', filteringFilePathsTime)
     console.log('searchTimeForQueries', searchTimeForQueries)
     console.log('')
+    console.log('Telemetry is', telemetryDisabled ? 'disabled' : 'enabled')
   }
 })
 
-export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
+const telemetryReported = {
+  problem: false,
+  suggestion: false,
+  layout: false,
+}
+
+export const createLintCode = (
+  type: NonNullable<Rule.RuleMetaData['type']>,
+) => ({
   meta: {
     type: type,
     docs: {
@@ -89,6 +99,7 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     ],
   },
   create: function (context: Rule.RuleContext) {
+    const telemetry = createTelemetryInstance()
     const prepStart = performance.now()
     const parser = assertCompatibleParser(context.parserPath)
 
@@ -313,6 +324,26 @@ export const createLintCode = (type: Rule.RuleMetaData['type']) => ({
     )
     preparingVisitorsTime += performance.now() - preparingVisitorsStart
     preparationTime += performance.now() - prepStart
+
+    if (!telemetryReported[type]) {
+      telemetry.reportConfig({
+        ruleType: type === 'problem' ? 'error' : 'warning',
+        queriesCount: queryCodes.length,
+        mode_include:
+          searchModes.includes('include') ||
+          settings.some(({ mode }) => mode === undefined),
+        mode_exact: searchModes.includes('exact'),
+        mode_include_w_order: searchModes.includes('include-with-order'),
+        fileFilters_include: settings.some(
+          ({ includeFiles }) => includeFiles !== undefined,
+        ),
+        fileFilters_exclude: settings.some(
+          ({ excludeFiles }) => excludeFiles !== undefined,
+        ),
+      })
+
+      telemetryReported[type] = true
+    }
 
     return visitors as unknown as Record<string, (node: Rule.Node) => void>
   },

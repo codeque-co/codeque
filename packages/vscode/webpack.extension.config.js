@@ -47,6 +47,8 @@ module.exports = (env, argv) => {
         espree: false,
         esprima: false,
         '@babel/eslint-parser': false,
+        'applicationinsights-native-metrics': false,
+        '@azure/functions-core': false,
       },
     },
     module: {

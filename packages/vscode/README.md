@@ -1,54 +1,88 @@
 <p align="center">
-  <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
+  <a href="https://codeque.co/?utm_source=readme_vscode" title="Learn more about CodeQue" target="_blank">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
   </a>
   <br/>
   </p>
 <p align="center">
-  <a href="https://codeque.co">Home Page</a> | 
-  <a href="https://codeque.co/docs">Docs </a> | 
-  <a href="https://codeque.co/roadmap">Roadmap</a> | 
-  <a href="https://codeque.co/mission">Mission</a> | 
-  <a href="https://codeque.co/playground"><b>Playground</b></a>
+  <a href="https://codeque.co/?utm_source=readme_vscode">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs?utm_source=readme_vscode">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap?utm_source=readme_vscode">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission?utm_source=readme_vscode">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/playground?utm_source=readme_vscode"><b>Playground</b></a>
 </p>
 
-# CodeQue - multiline and structural code search for Visual Studio Code
+<p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
 
-CodeQue is code search engine that understands the code syntax. 
+___ 
 
-It matches structure rather than plain text, which makes it very effective for complex queries.
+# What is CodeQue?
 
-VSCode extension aims to improve code search and navigation experience. 
+CodeQue is semantic code search engine that understands the code syntax. 
 
-Advanced search options and todo-like list of accurate search results makes it your new super power.
+It matches code structurally which makes it excellent for more complex queries.
 
-It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and [ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom rules in zero time.
+Query language offers wildcards, partial matching and ignores code formatting. 
 
-CodeQue supports multiline code search for any programming language and structural code search for JavaScript and TypeScript.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS and more soon.
 
-Structural search support for other programming languages will be added soon.
+Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
-<br/>
+<p align="center"><a href="https://codeque.co/playground?utm_source=readme_vscode"><b>Give it a try in 
+ playground</b></a></p>
 
-<p align="center"><b>Click to watch extension in action 👇</b></p>
+<p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
 
-<a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
-    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
-  </a>
+__Integrations__
 
-## Benefits of using CodeQue VSCode extension
+CodeQue is available as:
 
-CodeQue is more than just a search tool - it's a refactoring tool as well. 
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for delightful code search and navigation experience.
+- [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
-It addresses the problems of standard search by providing multiline support and an easy way to add gaps or use wildcards into the query. 
+CodeQue will be soon available as:
 
-You don't need to have any knowledge of Regular Expressions to query complex code patterns. 
+- Duplicated code identification
+- Batch code refactoring 
+- Advanced ESLint rules creator 
 
-It helps developers with code refactoring, speeds up project discovery, and makes it easy to find duplicated or similar code. patterns. 
+
+<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_vscode"><b>🔔 Get notified 🔔 </b></a></p>
+
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+
+</br>
+
+<!-- HERO END -->
+  
+<!-- VSCODE INTRO START -->
+## Visual Studio Code Extension 🔮
+VScode extension aims to make your workflow more efficient.
+
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
+
+You don't need to have any Regex knowledge to query complex code patterns. 
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 
-## Overview 
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
+
+Advanced code search options and todo-like list of accurate search results will streamline your workflow.
+
+</br>
+
+<p align="center"><b>Watch extension in action in 1 minute (external link) 👇</b></p>
+
+<a href="https://codeque.co/vscode-demo-sound.mp4?utm_source=readme_vscode" target="_blank" title="Click to watch demo video">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
+</a>
+
+</br>
+
+<!-- VSCODE INTRO END -->
+
+## About 
 One of the main strengths of CodeQue is its easy-to-use query language, but it also offers several additional features that make it a great support tool for your daily work.
 
 **Features**
@@ -207,7 +241,7 @@ You can check search error details in tooltip available after click the error co
 
 ## Query examples
 
-CodeQue is general purpose search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you definitely would  find some more complex during day to day work.
+CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely  find some more complex during day to day work.
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
@@ -243,7 +277,7 @@ More specifically it will match all objects with at least one address entry with
 
 ### React component with specific props combination
 
-I found it very useful to find props with specific props combination. Sometimes props depends on each other and we might want to refactor some of them, but how do we determine whether they are used together? We can review long list of results for basic search, but who has time for that 😉
+I found it very useful to find props with specific props combination. Sometimes props depends on each other and we might want to refactor some of them, but how do we determine whether they are used together? We can review long list of results for basic code search, but who has time for that 😉
 
 ```tsx
 <Button
@@ -303,18 +337,43 @@ useRequest({
 })
 ```
 
+### Unstable hook reference
 
-## Support, Feedback and more
+Some 3rd party hooks are not implemented correctly and return non-memoized variables.
 
-Playground 👉  [codeque.co/playground](https://codeque.co/playground)
+Let's assume you've found out that `confirm` callback from `useAsyncDialog` is unstable.
 
-Bugs, feature requests, help 👉 [Github Issues](https://github.com/codeque-co/codeque/issues)
+You can use the snipped below to search for all similar places across the codebase and fix then if necessary.
 
-Documentation 👉  [codeque.co/docs](https://codeque.co/docs)
+This is interesting example that links together two statements in the same code block, that does not necessarily have to directly follow each other.
 
-Roadmap 👉  [codeque.co/roadmap](https://codeque.co/roadmap)
+```ts
+const { confirm } = useAsyncDialog(); 
+const $$ = useCallback($$$, [confirm])
+```
 
-Mission 👉  [codeque.co/mission](https://codeque.co/mission)
+## Telemetry
 
-Wanna contribute 👉  [Internal readme](./InternalReadme.md)
+Extension collects anonymous telemetry to help me get insights about usage.
 
+It's implemented using `@vscode/extension-telemetry` and respects you editor telemetry settings.
+
+Learn more about [telemetry](https://codeque.co/docs/telemetry#vs-code-extension)
+
+## Support and feedback
+
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement
+
+<!-- FOOTER START -->
+
+## Support and feedback
+
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement

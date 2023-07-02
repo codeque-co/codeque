@@ -1,15 +1,15 @@
 <p align="center">
-  <a href="https://codeque.co/?utm_source=readme_core" title="Learn more about CodeQue" target="_blank">
+  <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
   </a>
   <br/>
   </p>
 <p align="center">
-  <a href="https://codeque.co/?utm_source=readme_core">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
-  <a href="https://codeque.co/docs?utm_source=readme_core">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/roadmap?utm_source=readme_core">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/mission?utm_source=readme_core">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
-  <a href="https://codeque.co/playground?utm_source=readme_core"><b>Playground</b></a>
+  <a href="https://codeque.co">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/playground"><b>Playground</b></a>
 </p>
 
 <p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
@@ -28,7 +28,7 @@ Structural code search is available for JavaScript, TypesScript, HTML, CSS and m
 
 Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
-<p align="center"><a href="https://codeque.co/playground?utm_source=readme_core"><b>Give it a try in 
+<p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
@@ -48,28 +48,10 @@ CodeQue will be soon available as:
 - Advanced ESLint rules creator 
 
 
-<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_core"><b>🔔 Get notified 🔔 </b></a></p>
+<p align="center"><a href="https://jayu.dev/newsletter"><b>🔔 Get notified 🔔 </b></a></p>
 
 <p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
 <!-- HERO END -->
-
-## `@codeque/core`
-
-It's internal package and it's not meant to be used directly.
-
-The exposed API might have breaking changes between releases.
-
-To use CodeQue check available platforms listed above.
-
-<!-- FOOTER START -->
-
-## Support and feedback
-
-Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
-to
-- ask for help with writing a query
-- report a bug or doubt
-- suggest feature or improvement

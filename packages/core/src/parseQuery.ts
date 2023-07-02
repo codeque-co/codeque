@@ -69,14 +69,18 @@ export const getUniqueTokens = (
   parserSettings: ParserSettings,
   tokens: Set<string> = new Set(),
 ) => {
-  const { numericLiteralUtils } = parserSettings
+  const { numericLiteralUtils, getUniqueTokensFromStringOrIdentifierNode } =
+    parserSettings
 
-  const tokensFromStringsOrIdNode =
-    defaultGetUniqueTokensFromStringOrIdentifierNode({
-      queryNode,
-      caseInsensitive,
-      parserSettings,
-    })
+  const getUniqueTokensFn =
+    getUniqueTokensFromStringOrIdentifierNode ??
+    defaultGetUniqueTokensFromStringOrIdentifierNode
+
+  const tokensFromStringsOrIdNode = getUniqueTokensFn({
+    queryNode,
+    caseInsensitive,
+    parserSettings,
+  })
 
   tokensFromStringsOrIdNode.forEach(tokens.add, tokens)
 
@@ -120,10 +124,10 @@ export const getUniqueTokens = (
 }
 
 export const extractQueryNode = (
-  fileNode: PoorNodeType,
+  topLevelQueryNode: PoorNodeType,
   parserSettings: ParserSettings,
 ) => {
-  const queryBody = parserSettings.getProgramBodyFromRootNode(fileNode)
+  const queryBody = parserSettings.getProgramBodyFromRootNode(topLevelQueryNode)
 
   if (queryBody.length === 0) {
     throw new Error('Query is empty or code was not parsed correctly')
@@ -136,7 +140,7 @@ export const extractQueryNode = (
     }
   }
 
-  const position = parserSettings.getNodePosition(fileNode)
+  const position = parserSettings.getNodePosition(topLevelQueryNode)
 
   return {
     queryNode: parserSettings.createBlockStatementNode(queryBody, position),

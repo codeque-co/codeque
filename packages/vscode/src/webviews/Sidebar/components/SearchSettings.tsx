@@ -294,6 +294,14 @@ export function SearchSettings({
               >
                 HTML
               </Radio>
+              <Radio
+                value="css"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                CSS
+              </Radio>
             </Stack>
           </RadioGroup>
         </Flex>

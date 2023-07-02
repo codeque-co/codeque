@@ -1,7 +1,7 @@
 {
   "name": "@codeque/core",
-  "version": "0.4.0",
-  "description": "Supercharged multiline code search and replace tool",
+  "version": "0.5.0",
+  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML and CSS",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",
   "engines": {
@@ -26,9 +26,9 @@
     "url": "https://github.com/codeque-co/codeque"
   },
   "devDependencies": {
+    "@angular-eslint/template-parser": "^15.2.1",
     "@babel/eslint-parser": "^7.21.8",
     "@babel/generator": "^7.21.4",
-    "@angular-eslint/template-parser": "^15.2.1",
     "@types/dedent": "^0.7.0",
     "@types/esprima": "^4.0.3",
     "@types/glob": "^7.2.0",
@@ -42,6 +42,7 @@
     "babel-jest": "^27.4.4",
     "babel-plugin-root-import": "^6.6.0",
     "concurrently": "^7.2.1",
+    "css-tree": "^2.3.1",
     "deep-object-diff": "^1.1.7",
     "espree": "^9.5.2",
     "esprima": "^4.0.1",
@@ -56,6 +57,7 @@
     "@babel/parser": "7.19.4",
     "@babel/plugin-syntax-typescript": "7.18.6",
     "@babel/types": "7.19.4",
+    "@types/css-tree": "^2.3.1",
     "dedent": "^0.7.0",
     "dpdm": "^3.12.0",
     "glob-escape": "^0.0.2",
@@ -86,6 +88,7 @@
     "test:espree": "jest --selectProjects=espree",
     "test:espree:traversal": "jest --selectProjects=espree:traversal",
     "test:angular-eslint-template-parser": "jest --selectProjects=angular-eslint-template-parser",
+    "test:css-tree": "jest --selectProjects=css-tree",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "test:setup": "node ./tools/getFixtures.js",
     "lint": "eslint --ext .js,.ts src",

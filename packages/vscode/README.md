@@ -5,46 +5,84 @@
   <br/>
   </p>
 <p align="center">
-  <a href="https://codeque.co">Home Page</a> | 
-  <a href="https://codeque.co/docs">Docs </a> | 
-  <a href="https://codeque.co/roadmap">Roadmap</a> | 
-  <a href="https://codeque.co/mission">Mission</a> | 
+  <a href="https://codeque.co">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
   <a href="https://codeque.co/playground"><b>Playground</b></a>
 </p>
 
-# CodeQue - multiline and structural code search for Visual Studio Code
+<p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
 
-CodeQue is code search engine that understands the code syntax. 
+___ 
 
-It matches structure rather than plain text, which makes it very effective for complex queries.
+# What is CodeQue?
 
+CodeQue is semantic code search engine that understands the code syntax. 
+
+It matches code structurally which makes it excellent for more complex queries.
+
+Query language offers wildcards, partial matching and ignores code formatting. 
+
+Structural search is available for JavaScript, TypesScript, HTML, CSS and more soon.
+
+Text search with handy wildcards is available for __every language__ and covers common regex search use cases.
+
+<p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
+ playground</b></a></p>
+
+<p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
+
+__Integrations__
+
+CodeQue is available as:
+
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for enhanced code search and navigation experience.
+- [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code, creating git hooks and more.
+
+CodeQue will be soon available as:
+
+- Duplicated code identification
+- Batch code refactoring 
+- Advanced ESLint rules generator 
+
+</br>
+
+<p align="center"><a href="https://codeque.co/playground"> 🔔 Get notified 🔔 </a></p>
+
+</br>
+
+<!-- HERO END -->
+
+## CodeQue - multiline and structural code search for Visual Studio Code
 VSCode extension aims to improve code search and navigation experience. 
+
+
 
 Advanced search options and todo-like list of accurate search results makes it your new super power.
 
-It's one of the tools in the ecosystem. There is also [CLI tool](https://www.npmjs.com/package/@codeque/cli) and [ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom rules in zero time.
-
-CodeQue supports multiline code search for any programming language and structural code search for JavaScript and TypeScript.
+CodeQue supports multiline code search for every programming language and structural code search for JavaScript and TypeScript.
 
 Structural search support for other programming languages will be added soon.
 
-<br/>
+</br>
 
-<p align="center"><b>Click to watch extension in action 👇</b></p>
+<p align="center"><b>Watch extension in action in 1 minute (external link) 👇</b></p>
 
 <a href="https://codeque.co/vscode-demo-sound.mp4" target="_blank" title="Click to watch demo video">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
-  </a>
+</a>
 
 ## Benefits of using CodeQue VSCode extension
 
 CodeQue is more than just a search tool - it's a refactoring tool as well. 
 
-It addresses the problems of standard search by providing multiline support and an easy way to add gaps or use wildcards into the query. 
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
 
 You don't need to have any knowledge of Regular Expressions to query complex code patterns. 
 
-It helps developers with code refactoring, speeds up project discovery, and makes it easy to find duplicated or similar code. patterns. 
+It helps developers with code refactoring, speeds up project discovery, and makes it easy to find duplicated or similar code patterns. 
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 

@@ -1,30 +1,66 @@
-<h3 align="center">
-  <code>CodeQue</code>
-</h3>
-
 <p align="center">
-  Supercharged structural code search and replace tool
+  <a href="https://codeque.co" title="Learn more about CodeQue" target="_blank">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="200px" />
+  </a>
+  <br/>
+  </p>
+<p align="center">
+  <a href="https://codeque.co">Website</a>&nbsp;&nbsp;•&nbsp;&nbsp;  
+  <a href="https://codeque.co/docs">Docs </a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/roadmap">Roadmap</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/mission">Mission</a>&nbsp;&nbsp;•&nbsp;&nbsp; 
+  <a href="https://codeque.co/playground"><b>Playground</b></a>
 </p>
 
----
+<p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
 
-## Overview 📣
+___ 
 
-CodeQue is structural code search tool for TypeScript and JavaScript projects.
+# What is CodeQue?
 
-CodeQue can be used to search for any code, from simple symbol search to complex multiline patterns.
+CodeQue is semantic code search engine that understands the code syntax. 
 
-It reduces struggle by providing accurate results regardless the formatting noise.
+It matches code structurally which makes it excellent for more complex queries.
 
-It makes it easy to get familiar with codebase and helps make better decisions as a result.
+Query language offers wildcards, partial matching and ignores code formatting. 
 
-You can also use it as a linter.
+Structural search is available for JavaScript, TypesScript, HTML, CSS and more soon.
 
-Find out more about the project on [codeque.co](https://codeque.co)
+Text search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
-[Try CodeQue Visual Studio Code Extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque)
+<p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
+ playground</b></a></p>
 
-[Get CodeQue ESLint plugin](https://www.npmjs.com/package/@codeque/eslint-plugin) and create custom linting rules in zero time.
+<p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
+
+__Integrations__
+
+CodeQue is available as:
+
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for enhanced code search and navigation experience.
+- [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more, also in headless environments.
+
+CodeQue will be soon available as:
+
+- Duplicated code identification
+- Batch code refactoring 
+- Advanced ESLint rules generator 
+
+</br>
+
+<p align="center"><a href="https://codeque.co/playground"> 🔔 Get notified 🔔 </a></p>
+
+</br>
+
+<!-- HERO END -->
+
+## CLI tool
+
+CodeQue CLI is a complementary tool that can be used for
+- Searching code patterns right from terminal including headless environments
+- Building scripts to assert that some code patterns exist or not exist
+- Enhancing git hooks to avoid committing or pushing unwanted code
 
 ## Installation 👇
 

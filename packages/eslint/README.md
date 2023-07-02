@@ -43,14 +43,16 @@ CodeQue is available as:
 
 <p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
+__Coming soon__
+
 CodeQue will be soon available as:
 
 - Duplicated code identification
 - Batch code refactoring 
-- Advanced ESLint rules creator 
+- Advanced ESLint rule creator 
 
 
-<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_eslint"><b>🔔 Get notified 🔔 </b></a></p>
+<p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_eslint"><b>🔔 Get notified about updates 🔔 </b></a></p>
 
 
 </br>

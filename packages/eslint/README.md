@@ -24,9 +24,9 @@ It matches code structurally which makes it excellent for more complex queries.
 
 Query language offers wildcards, partial matching and ignores code formatting. 
 
-Structural search is available for JavaScript, TypesScript, HTML, CSS and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS and more soon.
 
-Text search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
  playground</b></a></p>
@@ -39,31 +39,35 @@ CodeQue is available as:
 
 - [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for enhanced code search and navigation experience.
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
-- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more, also in headless environments.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
 - Batch code refactoring 
-- Advanced ESLint rules generator 
+- Advanced ESLint rules creator 
 
-</br>
 
-<p align="center"><a href="https://codeque.co/playground"> 🔔 Get notified 🔔 </a></p>
+<p align="center"><a href="https://jayu.dev/newsletter"><b>🔔 Get notified 🔔 </b></a></p>
+
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
 <!-- HERO END -->
-
+  
+<!-- ESLINT INTRO START -->
 ## ESLint integration 💅
 
 Using CodeQue ESLint plugin you can create your own custom linting rules in zero time.
 
 Custom ESLint rules can help execute on long-term refactors or prevent introducing codebase specific bugs or bad patterns.
 
-Rules can replace your decision log and help standardizing coding conventions across the project.
+Rules can replace your decision log and help standardizing coding conventions across the project or organization.
 
-CodeQue is a no-brainier for any team willing to improve their codebase quality.
+CodeQue ESLint integration is a no-brainier for any team willing to improve their codebase quality.
+
+<!-- ESLINT INTRO END -->
 
 ## Installation
 
@@ -170,3 +174,13 @@ Plugin collects completely anonymous telemetry that helps me get insights about 
 It's implemented using `applicationinsights` and you can easily opt-out.
 
 Learn more about [telemetry](https://codeque.co/docs/telemetry#es-lint-plugin)
+
+<!-- FOOTER START -->
+
+## Support and feedback
+
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement

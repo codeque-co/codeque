@@ -24,9 +24,9 @@ It matches code structurally which makes it excellent for more complex queries.
 
 Query language offers wildcards, partial matching and ignores code formatting. 
 
-Structural search is available for JavaScript, TypesScript, HTML, CSS and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS and more soon.
 
-Text search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
  playground</b></a></p>
@@ -39,17 +39,18 @@ CodeQue is available as:
 
 - [VSCode extension](https://marketplace.visualstudio.com/items?itemName=CodeQue.codeque) for enhanced code search and navigation experience.
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
-- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code, creating git hooks and more.
+- [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
 - Batch code refactoring 
-- Advanced ESLint rules generator 
+- Advanced ESLint rules creator 
 
-</br>
 
-<p align="center"><a href="https://codeque.co/playground"> 🔔 Get notified 🔔 </a></p>
+<p align="center"><a href="https://jayu.dev/newsletter"><b>🔔 Get notified 🔔 </b></a></p>
+
+<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
 
 </br>
 
@@ -58,13 +59,11 @@ CodeQue will be soon available as:
 ## CodeQue - multiline and structural code search for Visual Studio Code
 VSCode extension aims to improve code search and navigation experience. 
 
-
-
-Advanced search options and todo-like list of accurate search results makes it your new super power.
+Advanced code search options and todo-like list of accurate search results makes it your new super power.
 
 CodeQue supports multiline code search for every programming language and structural code search for JavaScript and TypeScript.
 
-Structural search support for other programming languages will be added soon.
+Structural code search support for other programming languages will be added soon.
 
 </br>
 
@@ -245,7 +244,7 @@ You can check search error details in tooltip available after click the error co
 
 ## Query examples
 
-CodeQue is general purpose search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you definitely would  find some more complex during day to day work.
+CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you definitely would  find some more complex during day to day work.
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
@@ -281,7 +280,7 @@ More specifically it will match all objects with at least one address entry with
 
 ### React component with specific props combination
 
-I found it very useful to find props with specific props combination. Sometimes props depends on each other and we might want to refactor some of them, but how do we determine whether they are used together? We can review long list of results for basic search, but who has time for that 😉
+I found it very useful to find props with specific props combination. Sometimes props depends on each other and we might want to refactor some of them, but how do we determine whether they are used together? We can review long list of results for basic code search, but who has time for that 😉
 
 ```tsx
 <Button
@@ -348,17 +347,20 @@ It's implemented using `@vscode/extension-telemetry` and respects you editor tel
 
 Learn more about [telemetry](https://codeque.co/docs/telemetry#vs-code-extension)
 
-## Support, Feedback and more
+## Support and feedback
 
-Playground 👉  [codeque.co/playground](https://codeque.co/playground)
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement
 
-Bugs, feature requests, help 👉 [Github Issues](https://github.com/codeque-co/codeque/issues)
+<!-- FOOTER START -->
 
-Documentation 👉  [codeque.co/docs](https://codeque.co/docs)
+## Support and feedback
 
-Roadmap 👉  [codeque.co/roadmap](https://codeque.co/roadmap)
-
-Mission 👉  [codeque.co/mission](https://codeque.co/mission)
-
-Wanna contribute 👉  [Internal readme](./InternalReadme.md)
-
+Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
+to
+- ask for help with writing a query
+- report a bug or doubt
+- suggest feature or improvement

@@ -11,3 +11,5 @@ devFile
 dist
 *.temp
 .vscode/settings.json
+*.tgz
+*.tar.gz

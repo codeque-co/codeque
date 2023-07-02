@@ -1,6 +1,6 @@
 {
   "name": "@codeque/cli",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML and CSS",
   "bin": {
     "codeque": "./bin.js"

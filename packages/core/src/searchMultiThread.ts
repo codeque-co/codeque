@@ -84,12 +84,18 @@ export const searchMultiThread = async ({
          * Timeout to not block starting other searches
          */
         setTimeout(() => {
-          const results = searchInFileSystem({
-            ...searchParams,
-            onPartialResult,
-            hardStopFlag,
-          })
-          resolve(results)
+          try {
+            const results = searchInFileSystem({
+              ...searchParams,
+              onPartialResult,
+              hardStopFlag,
+            })
+            resolve(results)
+          } catch (e) {
+            reject(
+              'Search on main thread failed with error ' + (e as Error).message,
+            )
+          }
         }, 0)
       } else {
         const measureWorkerReturnResult = measureStart('WorkerReturnResult')

@@ -1,9 +1,9 @@
 import type { Mode } from '@codeque/core'
-import { CaseType } from 'types'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 
 export type SearchFileType = 'all' | 'js-ts-json' | 'html' | 'css'
+export type CaseType = 'sensitive' | 'insensitive'
 
 export type StateShape = {
   fileType: SearchFileType

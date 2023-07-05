@@ -6,25 +6,24 @@ import { eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
 import {
   parseQueries,
-  extensionTester,
+  typeScriptFamilyExtensionTester,
   pathToPosix,
   __internal,
 } from '@codeque/core'
 import { sanitizeFsPath } from './nodeUtils'
 import path from 'path'
-import {
-  dedentPatched,
-  SupportedParsers,
-  supportedParsers,
-  parserToFileTypeMap,
-} from './utils'
-import { activateReporter } from './telemetry'
+import { dedentPatched, fileTypeToParserMap } from './utils'
+import { getFileTypeFromFileExtension } from './nodeUtils'
+import { activateReporter, telemetryModuleFactory } from './telemetry'
 
 let dispose = (() => undefined) as () => void
 
 export function activate(context: vscode.ExtensionContext) {
-  const telemetryReporter = activateReporter()
-  context.subscriptions.push(telemetryReporter)
+  const { telemetryModule, nativeReporter } = activateReporter()
+
+  if (nativeReporter) {
+    context.subscriptions.push(nativeReporter)
+  }
 
   const { extensionUri } = context
 
@@ -50,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
     stateManager,
   )
 
-  const searchManager = new SearchManager(stateManager, telemetryReporter)
+  const searchManager = new SearchManager(stateManager, telemetryModule)
 
   dispose = searchManager.dispose
   const item = vscode.window.createStatusBarItem(
@@ -73,6 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
     const { activeTextEditor } = vscode.window
 
     let selectedCode: string | null = ''
+    let selectedCodeFileExtension: string | null = null
 
     const state = stateManager.getState()
 
@@ -80,6 +80,13 @@ export function activate(context: vscode.ExtensionContext) {
       selectedCode = activeTextEditor.document.getText(
         activeTextEditor.selection,
       )
+
+      const extensionMatch =
+        activeTextEditor.document.fileName.match(/\.(\w)+$/g)
+
+      if (extensionMatch?.[0] !== undefined) {
+        selectedCodeFileExtension = extensionMatch[0]
+      }
     } else {
       selectedCode = state.webviewTextSelection
     }
@@ -90,25 +97,38 @@ export function activate(context: vscode.ExtensionContext) {
         : selectedCode
 
     if (newQuery) {
-      let foundParser: SupportedParsers | null = null
+      const fileType = getFileTypeFromFileExtension(selectedCodeFileExtension)
 
-      for (const parser of supportedParsers) {
-        const [, queryParseOk] = parseQueries(
-          [newQuery],
-          false,
-          __internal.parserSettingsMap[parser](),
-        )
+      let newMode = fileType !== 'all' ? state.mode : 'text'
 
-        if (queryParseOk) {
-          foundParser = parser
-          break
+      // For text mode we can always parse
+      let canParseCodeForFileType = newMode === 'text'
+
+      if (newMode !== 'text') {
+        try {
+          const parser = fileTypeToParserMap[fileType]
+
+          const [_, parseOk] = parseQueries(
+            [newQuery],
+            false,
+            __internal.parserSettingsMap[parser](),
+          )
+          canParseCodeForFileType = parseOk
+        } catch (e) {
+          canParseCodeForFileType = false
+          console.log('Error while parsing query for search from selection', e)
         }
+      }
+
+      // If cannot parse the code with parser appropriate for the extension, fallback to text mode
+      if (!canParseCodeForFileType) {
+        newMode = 'text'
       }
 
       stateManager.setState({
         query: newQuery,
-        mode: !foundParser && state.mode !== 'text' ? 'text' : state.mode,
-        fileType: !foundParser ? 'all' : parserToFileTypeMap[foundParser],
+        mode: newMode,
+        fileType: fileType,
       })
     }
 
@@ -161,7 +181,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         const { ext } = path.parse(relativePath)
 
-        if (!extensionTester.test(ext)) {
+        if (!typeScriptFamilyExtensionTester.test(ext)) {
           vscode.window.showErrorMessage(
             'Search error: Unsupported entry point file extension: ' + ext,
           )

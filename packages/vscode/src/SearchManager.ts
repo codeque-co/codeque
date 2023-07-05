@@ -22,6 +22,7 @@ import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape, SearchFileType } from './StateManager'
 import { simpleDebounce, fileTypeToParserMap } from './utils'
 import TelemetryReporter from '@vscode/extension-telemetry'
+import { TelemetryModule } from './telemetry'
 
 type FilesLists = {
   files: string[]
@@ -55,11 +56,11 @@ export class SearchManager {
     workspaceFoldersChangeListener: undefined as vscode.Disposable | undefined,
   }
   private lastSearchSettings: StateShape | undefined
-  private telemetryReporter: TelemetryReporter
+  private telemetryReporter: TelemetryModule
 
   constructor(
     private readonly stateManager: StateManager,
-    telemetryReporter: TelemetryReporter,
+    telemetryReporter: TelemetryModule,
   ) {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
@@ -68,6 +69,8 @@ export class SearchManager {
     this.maybeStartWatchingFilesList()
     this.watchWorkspaceChanges()
     this.telemetryReporter = telemetryReporter
+
+    console.log('node env', process.env.NODE_ENV)
   }
 
   private determineRoots() {
@@ -427,66 +430,65 @@ export class SearchManager {
 
           const parser = fileTypeToParserMap[settings.fileType]
 
-          // We start search in next tick so not block events delivery and UI update
-          setTimeout(
-            (async () => {
-              const results = await searchMultiThread({
-                parser,
-                filePaths: filesListFilteredByExtension,
-                queryCodes: [settings.query],
-                mode: settings.mode,
-                caseInsensitive: settings.caseType === 'insensitive',
-                onPartialResult: reportPartialResults,
-                hardStopFlag: this.currentSearchHardStopFlag,
-                maxResultsLimit: this.maxResultsLimit,
-              })
+          await new Promise<void>((resolve, reject) => {
+            // We start search in next tick so not block events delivery and UI update
+            setTimeout(
+              (async () => {
+                try {
+                  const results = await searchMultiThread({
+                    parser,
+                    filePaths: filesListFilteredByExtension,
+                    queryCodes: [settings.query],
+                    mode: settings.mode,
+                    caseInsensitive: settings.caseType === 'insensitive',
+                    onPartialResult: reportPartialResults,
+                    hardStopFlag: this.currentSearchHardStopFlag,
+                    maxResultsLimit: this.maxResultsLimit,
+                  })
 
-              const searchEnd = Date.now()
+                  const searchEnd = Date.now()
 
-              const searchTime = (searchEnd - searchStart) / 1000
+                  const searchTime = (searchEnd - searchStart) / 1000
 
-              const processedResults = this.processSearchResults(
-                { ...results, matches: allPartialMatches },
-                roots,
-                isWorkspace,
-              )
+                  const processedResults = this.processSearchResults(
+                    { ...results, matches: allPartialMatches },
+                    roots,
+                    isWorkspace,
+                  )
 
-              eventBusInstance.dispatch('have-results', {
-                results: processedResults,
-                time: searchTime,
-                files: filesListFilteredByExtension,
-                isWorkspace,
-              })
+                  eventBusInstance.dispatch('have-results', {
+                    results: processedResults,
+                    time: searchTime,
+                    files: filesListFilteredByExtension,
+                    isWorkspace,
+                  })
 
-              this.searchRunning = false
-              this.currentFilesGetHardStopFlag?.destroy()
-              this.currentSearchHardStopFlag?.destroy()
-              this.currentFilesGetHardStopFlag = undefined
-              this.currentSearchHardStopFlag = undefined
+                  this.searchRunning = false
+                  this.currentFilesGetHardStopFlag?.destroy()
+                  this.currentSearchHardStopFlag?.destroy()
+                  this.currentFilesGetHardStopFlag = undefined
+                  this.currentSearchHardStopFlag = undefined
 
-              try {
-                this.telemetryReporter.sendTelemetryEvent(
-                  'vscode:search_results',
-                  {
+                  this.telemetryReporter.reportSearch({
                     mode: settings.mode,
                     caseType: settings.caseType,
                     fileType: settings.fileType,
                     isWorkspace: isWorkspace ? 'true' : 'false',
-                  },
-                  {
                     queryLength: settings.query.length,
                     searchTime: searchTime,
                     resultsCount: processedResults.matches.length,
                     errorsCount: processedResults.errors.length,
                     searchedFilesCount: filesListFilteredByExtension.length,
-                  },
-                )
-              } catch (e) {
-                console.error(e)
-              }
-            }).bind(this),
-            0,
-          )
+                  })
+
+                  resolve()
+                } catch (e) {
+                  reject(e)
+                }
+              }).bind(this),
+              0,
+            )
+          })
 
           // console.log(
           //   'files:',
@@ -529,23 +531,14 @@ export class SearchManager {
 
       this.searchRunning = false
 
-      try {
-        this.telemetryReporter.sendTelemetryErrorEvent(
-          'vscode:search_error',
-          {
-            mode: settings.mode,
-            caseType: settings.caseType,
-            fileType: settings.fileType,
-            isWorkspace: isWorkspace ? 'true' : 'false',
-          },
-          {
-            queryLength: settings.query.length,
-            searchTime,
-          },
-        )
-      } catch (e) {
-        console.error(e)
-      }
+      this.telemetryReporter.reportSearchError({
+        mode: settings.mode,
+        caseType: settings.caseType,
+        fileType: settings.fileType,
+        isWorkspace: isWorkspace ? 'true' : 'false',
+        queryLength: settings.query.length,
+        searchTime,
+      })
     }
   }
   public dispose() {

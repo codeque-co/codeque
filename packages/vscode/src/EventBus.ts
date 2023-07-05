@@ -108,12 +108,14 @@ export class EventBus {
     data?: EventTypes[T],
     dispatchThroughTransports = true,
   ) => {
-    // console.log(`dispatch:${this.env}`, eventType, data)
+    console.log(`dispatch:${this.env}`, eventType, data)
+
     try {
       await Promise.all(
         this.listeners[eventType].map((callback) => callback(data)),
       )
     } catch (e) {
+      console.log(this.env, 'Dispatch error')
       console.error(this.env, 'internal dispatch error', e)
     }
 
@@ -137,6 +139,8 @@ export class EventBus {
           }),
         )
       } catch (e) {
+        console.log(this.env, 'Dispatch transports error')
+
         console.error(
           this.env,
           'transports dispatch error',

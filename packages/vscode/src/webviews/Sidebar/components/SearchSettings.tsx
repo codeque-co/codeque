@@ -65,9 +65,12 @@ export function SearchSettings({
 
   // Handle initial settings change from backend
   useEffect(() => {
-    // We handle only mode change for now
     if (initialSettings.mode !== undefined) {
       setMode(initialSettings.mode)
+    }
+
+    if (initialSettings.fileType !== undefined) {
+      setFileType(initialSettings.fileType)
     }
 
     if (initialSettings.caseType !== undefined) {

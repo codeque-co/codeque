@@ -1729,9 +1729,10 @@
   dependencies:
     "@chakra-ui/utils" "2.0.4"
 
-"@codeque/core@http://127.0.0.1:8080/codeque-core-0.5.1.tgz":
+"@codeque/core@^0.5.1":
   version "0.5.1"
-  resolved "http://127.0.0.1:8080/codeque-core-0.5.1.tgz#70335a1ed77774474415f92c0fa37083cf2315bc"
+  resolved "https://registry.yarnpkg.com/@codeque/core/-/core-0.5.1.tgz#842b1754c5905b4ff91fd02fb4116a32a355c2e7"
+  integrity sha512-TB9zSy6/TjoPDxqqP3GTXAvCDrV/31cpJLKaqxwH4FH1bkYLqmNbO8e0b4i/6e3LIELa38OtBCAjba1MY9J1wQ==
   dependencies:
     "@babel/parser" "7.19.4"
     "@babel/plugin-syntax-typescript" "7.18.6"

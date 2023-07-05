@@ -12,7 +12,7 @@
   <a href="https://codeque.co/playground?utm_source=readme_core"><b>Playground</b></a>
 </p>
 
-<p align="center">Streamline your workflow by finding and linting complex code patterns effortlessly.</p>
+<p align="center">Find and lint complex code patterns effortlessly</p>
 
 ___ 
 
@@ -41,7 +41,7 @@ CodeQue is available as:
 - [ESLint integration](https://www.npmjs.com/package/@codeque/eslint-plugin) for creating custom linting rules in zero time.
 - [CLI tool](https://www.npmjs.com/package/@codeque/cli) for searching code and more including headless environments.
 
-<p align="center"><i>All CodeQue tools <b>operate offline</b> hence code never leaves your local environment.</i></p>
+<p align="center"><i>All CodeQue tools <b>work offline</b> hence code never leaves your local environment.</i></p>
 
 __Coming soon__
 

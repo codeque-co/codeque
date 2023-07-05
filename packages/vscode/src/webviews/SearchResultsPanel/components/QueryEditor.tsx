@@ -9,6 +9,7 @@ import { useThemeType } from '../../components/useThemeType'
 import useDebounce, { fileTypeToParserMap } from '../../../utils'
 
 import { SearchFileType } from '../../../StateManager'
+import { isQueryRestricted } from '../../../restrictedQueries'
 
 type Error = {
   text: string
@@ -98,51 +99,58 @@ export function QueryEditor({
     setQueryError(null)
     setQueryHint(null)
 
-    try {
-      const parser = fileTypeToParserMap[fileType]
-
-      const matches = searchInStrings({
-        queryCodes: [query],
-        files: [
-          {
-            content: '',
-            path: 'file.ts',
-          },
-        ],
-        mode,
-        parser,
+    if (isQueryRestricted(query, fileType)) {
+      setQueryError({
+        text: 'Query restricted for performance reasons',
+        location: { line: 0, column: 0 },
       })
+    } else {
+      try {
+        const parser = fileTypeToParserMap[fileType]
 
-      const hint = matches.hints?.[0]?.[0] ?? null
-      setQueryHint(hint)
+        const matches = searchInStrings({
+          queryCodes: [query],
+          files: [
+            {
+              content: '',
+              path: 'file.ts',
+            },
+          ],
+          mode,
+          parser,
+        })
 
-      if (matches.errors.length > 0) {
-        console.error(matches.errors)
-        const error = matches.errors[0]
+        const hint = matches.hints?.[0]?.[0] ?? null
+        setQueryHint(hint)
 
-        // indicates query parse error
-        if (typeof error === 'object' && 'queryNode' in error) {
-          if (mode !== 'text' && hint) {
-            // Don't display error when there are hints available
+        if (matches.errors.length > 0) {
+          console.error(matches.errors)
+          const error = matches.errors[0]
 
-            setQueryError(null)
-          } else if (!error.error.text.includes('Empty query')) {
+          // indicates query parse error
+          if (typeof error === 'object' && 'queryNode' in error) {
+            if (mode !== 'text' && hint) {
+              // Don't display error when there are hints available
+
+              setQueryError(null)
+            } else if (!error.error.text.includes('Empty query')) {
+              setQueryError({
+                text: error.error.text,
+                location: error.error.location,
+              })
+            }
+          } else {
             setQueryError({
-              text: error.error.text,
-              location: error.error.location,
+              text: error,
+              location: { line: 0, column: 0 },
             })
           }
-        } else {
-          setQueryError({
-            text: error,
-            location: { line: 0, column: 0 },
-          })
         }
+      } catch (e) {
+        console.error('Query parse error', e)
       }
-    } catch (e) {
-      console.error('search error', e)
     }
-  }, [mode, query])
+  }, [mode, query, fileType])
 
   const queryCustomHighlight = queryError?.location
     ? [getParseErrorHighlight(queryError.location)]

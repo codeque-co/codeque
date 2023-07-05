@@ -23,6 +23,7 @@ import { StateManager, StateShape, SearchFileType } from './StateManager'
 import { simpleDebounce, fileTypeToParserMap } from './utils'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { TelemetryModule } from './telemetry'
+import { isQueryRestricted } from './restrictedQueries'
 
 type FilesLists = {
   files: string[]
@@ -209,7 +210,11 @@ export class SearchManager {
   }
 
   private startSearch = () => {
-    this.performSearch(this.stateManager.getState())
+    const state = this.stateManager.getState()
+
+    if (!isQueryRestricted(state.query, state.fileType)) {
+      this.performSearch(state)
+    }
   }
 
   private stopCurrentSearch = () => {

@@ -453,7 +453,7 @@ export function SearchSettings({
       </Flex>
       <Flex flexDir="column" marginTop="auto" alignItems="center">
         <Link
-          href="https://codeque.co/docs"
+          href="https://codeque.co/docs?utm_source=vscode_sidebar"
           color="var(--vscode-textLink-foreground);"
         >
           Documentation

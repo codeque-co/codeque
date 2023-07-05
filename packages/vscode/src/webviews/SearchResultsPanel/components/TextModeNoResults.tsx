@@ -45,7 +45,7 @@ export function TextModeNoResults() {
       </UnorderedList>
       <Link
         my="4"
-        href="https://codeque.co/docs#text-search-mode"
+        href="https://codeque.co/docs?utm_source=vscode_text-search-results#text-search-mode"
         target="_blank"
         color="var(--vscode-textLink-foreground);"
       >

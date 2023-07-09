@@ -175,6 +175,9 @@ Searching for console logs, warnings, errors is quite simple use-case and can be
 
 This rule warns about all places in the code that can output some (usually unwanted) logs.
 
+<details>
+<summary>Show configuration</summary>
+
 ```json
 {
   "rules": {
@@ -189,6 +192,8 @@ This rule warns about all places in the code that can output some (usually unwan
 }
 ```
 
+</details>
+
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/console-log.gif?raw=true" />
 </p>
@@ -198,6 +203,9 @@ This rule warns about all places in the code that can output some (usually unwan
 Third party code not always work as expected. Whenever you spot a problem, add custom eslint rule to spread that knowledge across your team.
 
 The rule warns against using `disabled` property on `SomeLibComponent`, and suggest using not documented `isDisabled` prop instead.
+
+<details>
+<summary>Show configuration</summary>
 
 ```json
 {
@@ -214,6 +222,8 @@ The rule warns against using `disabled` property on `SomeLibComponent`, and sugg
 }
 ```
 
+</details>
+
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/disabled-prop.gif?raw=true" />
 </p>
@@ -225,6 +235,9 @@ Some 3rd party hooks are not implemented correctly and return non-memoized varia
 In this rule we rise an error when `confirm` callback from `useAsyncDialog` is used as an item of `useCallback` dependency array.
 
 This is interesting example that links together two statements in the same code block, that does not necessarily have to directly follow each other.
+
+<details>
+<summary>Show configuration</summary>
 
 ```json
 {
@@ -240,6 +253,9 @@ This is interesting example that links together two statements in the same code 
 }
 ```
 
+</details>
+
+
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/unstable-hook.gif?raw=true" />
 </p>
@@ -250,6 +266,9 @@ First rule restricts usage of object literal as a prop. Object literal could be 
 
 Second rule restricts places where a given array is mapped directly in JSX. It could be memoized to make the array reference stable and reduce re-renders.
 
+
+<details>
+<summary>Show configuration</summary>
 
 ```json
 {
@@ -264,7 +283,7 @@ Second rule restricts places where a given array is mapped directly in JSX. It c
       {
         "query": "<$$ $$={$$$.map(() => ($$$))} />",
         "mode": "include",
-        "message": "'disabled' property does not work as expected. Use 'isDisabled' instead",
+        "message": "Don't use map directly in JSX, memoize map result instead",
         "includeFiles": ["**/*.tsx"]
       },
     ]]
@@ -272,11 +291,28 @@ Second rule restricts places where a given array is mapped directly in JSX. It c
 }
 ```
 
+</details>
+
+
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/object-literals.gif?raw=true" />
 </p>
 
-## Debugging performance
+## What about performance?
+
+Usually rules works very fast unless they are too generic.
+
+CodeQue performs shallow matching based on strings in query, so it can filter out most of the source files before AST comparison even starts.
+
+Query that contains wildcards only, eg. `$$.$$()` will be looked for in every file, as query does not include any specific characters sequence.
+
+However query `console.$$()` would match only on files that contains `console` string somewhere within it's contents. 
+
+Remember to be as specific as possible and use file filtering options eg. to not run  JSX rules on `*.js` files.
+
+CodeQue will run faster for more specific patterns that occurs rarely in the codebase. If pattern is very common, it would have to do more comparisons, hence would run longer.
+
+### Debugging performance
 
 You can check performance of your CodeQue ESLint rules by running
 
@@ -284,9 +320,95 @@ You can check performance of your CodeQue ESLint rules by running
 TIMING=ALL CODEQUE_DEBUG=true yarn YOUR_LINT_SCRIPT
 ```
 
-Very generic rules or those containing wildcards on top level might be slow.
+All the tests below were run on Typescript codebase with ~4000 source files.
 
-Remember to be specific if possible and use file filtering options eg. to not run  JSX rules on `*.js` files.
+It's not a benchmark, it's an example to give a reference. Results were not averaged.
+
+#### Linting specific code patterns
+
+Linting code pattern specific to your code base is what CodeQue eslint integration is build for.
+
+Rule from examples section that captures issue with unstable hook reference occurs rare in the codebase, but can prevent various important bugs.
+
+```
+const { confirm } = useAsyncDialog(); 
+const $$ = useCallback($$$, [confirm]);
+```
+
+For 12 occurrences it runs only ~60ms
+
+```sh
+✖ 12 problems (0 errors, 12 warnings)
+
+Rule             | Time (ms) | Relative
+:----------------|----------:|--------:
+@codeque/warning |    64.425 |   100.0%
+```
+
+You should strive to eliminate that pattern, so assuming you've fixed all places, the rule takes ~30ms
+
+```sh
+0 problems (0 errors, 0 warnings)
+
+Rule             | Time (ms) | Relative
+:----------------|----------:|--------:
+@codeque/warning |    28.286 |   100.0%
+```
+
+
+And for new introduction of the pattern while you code, it will be captures in ~30ms 
+
+```sh
+✖ 1 problems (0 errors, 1 warning)
+
+Rule             | Time (ms) | Relative
+:----------------|----------:|--------:
+@codeque/warning |    30.553 |   100.0%
+```
+
+It's not much comparing to the value it gives. 
+
+Consider how much time it would take to implement such rule with standard approach. No one has budget for that and instead time will be spend on fixing bugs.
+
+#### Capturing restricted imports
+
+Here is the comparison of `no-restricted-imports` ESLint rule with CodeQue rule. 
+
+Both restricts importing `useCallback` from `react`.
+
+CodeQue query is using `include` mode.
+
+```ts
+import { useCallback } from 'react'
+```
+
+Execution takes similar amount of time for both approaches.
+
+```sh
+✖ 648 problems (0 errors, 648 warnings)
+
+Rule                  | Time (ms) | Relative
+:---------------------|----------:|--------:
+@codeque/warning      |    38.700 |    56.1%
+no-restricted-imports |    30.239 |    43.9%
+```
+
+
+#### Restricting console usage
+
+The performance result of ESLint `no-console` rule comparing to CodeQue `console.$$()` query on TypeScript codebase with ~4000 source files.
+
+CodeQue is 4 times slower for this use case, but it's still only ~80ms for ~4000 source files!
+
+```sh
+✖ 404 problems (0 errors, 404 warnings)
+
+Rule             | Time (ms) | Relative
+:----------------|----------:|--------:
+@codeque/warning |    81.267 |    79.1%
+no-console       |    21.482 |    20.9%
+```
+
 
 ## Telemetry
 

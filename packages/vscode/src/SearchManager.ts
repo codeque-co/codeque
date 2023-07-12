@@ -15,12 +15,19 @@ import {
   ParserType,
   __internal,
 } from '@codeque/core'
-import { sanitizeFsPath } from './nodeUtils'
+import {
+  getMainSearchExtensionFromFilesList,
+  sanitizeFsPath,
+} from './nodeUtils'
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { StateManager, StateShape, SearchFileType } from './StateManager'
-import { simpleDebounce, fileTypeToParserMap } from './utils'
+import {
+  simpleDebounce,
+  fileTypeToParserMap,
+  nonSearchableExtensions,
+} from './utils'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { TelemetryModule } from './telemetry'
 import { isQueryRestricted } from './restrictedQueries'
@@ -70,8 +77,6 @@ export class SearchManager {
     this.maybeStartWatchingFilesList()
     this.watchWorkspaceChanges()
     this.telemetryReporter = telemetryReporter
-
-    console.log('node env', process.env.NODE_ENV)
   }
 
   private determineRoots() {
@@ -431,6 +436,11 @@ export class SearchManager {
           const filesListFilteredByExtension = filterExtensions(
             files,
             extensionTester,
+          ).filter(
+            (filePath) =>
+              !nonSearchableExtensions.some((nonSearchableExtension) =>
+                filePath.endsWith(nonSearchableExtension),
+              ),
           )
 
           const parser = fileTypeToParserMap[settings.fileType]
@@ -474,6 +484,10 @@ export class SearchManager {
                   this.currentFilesGetHardStopFlag = undefined
                   this.currentSearchHardStopFlag = undefined
 
+                  const mainExt = getMainSearchExtensionFromFilesList(
+                    filesListFilteredByExtension,
+                  )
+
                   this.telemetryReporter.reportSearch({
                     mode: settings.mode,
                     caseType: settings.caseType,
@@ -484,6 +498,7 @@ export class SearchManager {
                     resultsCount: processedResults.matches.length,
                     errorsCount: processedResults.errors.length,
                     searchedFilesCount: filesListFilteredByExtension.length,
+                    mainExt: mainExt,
                   })
 
                   resolve()

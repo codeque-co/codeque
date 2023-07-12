@@ -83,3 +83,50 @@ export const parserToFileTypeMap: Record<SupportedParsers, SearchFileType> = {
   babel: 'js-ts-json',
   ['css-tree']: 'css',
 }
+
+const imageExtensions = [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.bmp',
+  '.svg',
+  '.tiff',
+  '.webp',
+  '.exif',
+  '.raw',
+  '.ico',
+  '.jfif',
+  '.ppm',
+  '.pgm',
+  '.pbm',
+  '.pnm',
+  '.bat',
+  '.bpg',
+  '.rle',
+  '.dds',
+  '.dng',
+  '.psd',
+  '.psb',
+  '.xcf',
+]
+
+const fontExtensions = ['.ttf', '.otf', '.woff', '.woff2', '.eot']
+const archiveExtensions = [
+  '.zip',
+  '.rar',
+  '.7z',
+  '.tar',
+  '.gz',
+  '.bz2',
+  '.xz',
+  '.iso',
+  '.dmg',
+  '.pkg',
+]
+
+export const nonSearchableExtensions = [
+  ...imageExtensions,
+  ...fontExtensions,
+  ...archiveExtensions,
+]

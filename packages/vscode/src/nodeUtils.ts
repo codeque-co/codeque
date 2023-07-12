@@ -41,3 +41,24 @@ export const getFileTypeFromFileExtension = (
 
   return 'all'
 }
+
+export const getMainSearchExtensionFromFilesList = (filesList: string[]) => {
+  const extensionsCountMap = new Map<string, number>()
+
+  filesList.forEach((filePath) => {
+    const getExtensionRegExp = /\.(\w)+$/
+    const extensions = filePath.match(getExtensionRegExp)
+
+    if (extensions !== null) {
+      const extension = extensions[0].replace('.', '')
+      const currentCount = extensionsCountMap.get(extension) ?? 0
+      extensionsCountMap.set(extension, currentCount + 1)
+    }
+  })
+
+  const topExtension = [...extensionsCountMap].sort(
+    ([, countA], [, countB]) => countB - countA,
+  )[0]?.[0]
+
+  return topExtension ?? 'unknown'
+}

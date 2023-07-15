@@ -298,7 +298,7 @@ const postprocessVisitors = {
 }
 
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
-  traverseAst(queryNode, isNode, postprocessVisitors)
+  traverseAst(queryNode, isNode, getNodeType, postprocessVisitors)
 
   return queryNode
 }

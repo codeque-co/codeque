@@ -1,5 +1,6 @@
 import { createWildcardUtils } from '../../wildcardUtilsFactory'
 import { PoorNodeType } from '../../types'
+import { getNodeType } from '../espreeParser/common'
 
 /*
  * We don't have purely identifier nodes in this parser
@@ -21,4 +22,5 @@ export const wildcardUtils = createWildcardUtils(
   numericWildcard,
   wildcardChar,
   getIdentifierNodeName,
+  getNodeType,
 )

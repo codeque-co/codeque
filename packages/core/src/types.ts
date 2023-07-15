@@ -75,6 +75,7 @@ export type ParserType =
   | 'babel-eslint-parser'
   | 'angular-eslint-template-parser'
   | 'css-tree'
+  | 'python'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]
@@ -284,4 +285,5 @@ export type ParserSettings = {
   preprocessQueryCode?: (code: string) => string
   postprocessQueryNode?: (queryNode: PoorNodeType) => PoorNodeType
   getUniqueTokensFromStringOrIdentifierNode?: GetUniqueTokensFromStringOrIdentifierNode
+  parserInitPromise?: Promise<void>
 }

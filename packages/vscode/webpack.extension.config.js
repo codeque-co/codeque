@@ -19,8 +19,8 @@ module.exports = (env, argv) => {
       extension: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
       ...(isProduction
         ? {
-          searchWorker: '../core/src/searchWorker.ts',
-        }
+            searchWorker: '../core/src/searchWorker.ts',
+          }
         : {}),
     },
     output: {
@@ -35,8 +35,8 @@ module.exports = (env, argv) => {
       ...(isProduction
         ? {}
         : {
-          '@codeque/core': 'commonjs @codeque/core',
-        }),
+            '@codeque/core': 'commonjs @codeque/core',
+          }),
     },
     resolve: {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
@@ -59,6 +59,14 @@ module.exports = (env, argv) => {
           use: [
             {
               loader: 'ts-loader',
+            },
+          ],
+        },
+        {
+          test: /\.wasm$/,
+          use: [
+            {
+              loader: 'file-loader',
             },
           ],
         },

@@ -305,6 +305,14 @@ export function SearchSettings({
               >
                 CSS
               </Radio>
+              <Radio
+                value="python"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                Python
+              </Radio>
             </Stack>
           </RadioGroup>
         </Flex>

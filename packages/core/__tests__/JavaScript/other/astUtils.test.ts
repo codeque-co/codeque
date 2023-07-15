@@ -4,6 +4,8 @@ import { sortByLeastIdentifierStrength } from '../../../src/astUtils'
 
 describe('AST utils', () => {
   const getIdentifierNodeName = (node: PoorNodeType) => node.name as string
+  const getNodeType = (node: PoorNodeType) => node.type as string
+
   const identifierTypes: string[] = ['Identifier']
   const numericWildcard = '0x0'
   const wildcardChar = '$'
@@ -12,6 +14,7 @@ describe('AST utils', () => {
     numericWildcard,
     wildcardChar,
     getIdentifierNodeName,
+    getNodeType,
   )
 
   const idNode = (name: string) => ({ type: 'Identifier', name })

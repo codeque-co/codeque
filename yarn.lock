@@ -1729,7 +1729,7 @@
   dependencies:
     "@chakra-ui/utils" "2.0.4"
 
-"@codeque/core@^0.5.1":
+"@codeque/core@^0.5.0":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@codeque/core/-/core-0.5.1.tgz#842b1754c5905b4ff91fd02fb4116a32a355c2e7"
   integrity sha512-TB9zSy6/TjoPDxqqP3GTXAvCDrV/31cpJLKaqxwH4FH1bkYLqmNbO8e0b4i/6e3LIELa38OtBCAjba1MY9J1wQ==
@@ -10096,6 +10096,11 @@ web-streams-polyfill@^3.0.3, web-streams-polyfill@^3.1.1:
   version "3.2.0"
   resolved "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz"
   integrity sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==
+
+web-tree-sitter@^0.20.8:
+  version "0.20.8"
+  resolved "https://registry.yarnpkg.com/web-tree-sitter/-/web-tree-sitter-0.20.8.tgz#1e371cb577584789cadd75cb49c7ddfbc99d04c8"
+  integrity sha512-weOVgZ3aAARgdnb220GqYuh7+rZU0Ka9k9yfKtGAzEYMa6GgiCzW9JjQRJyCJakvibQW+dfjJdihjInKuuCAUQ==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

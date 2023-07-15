@@ -10,6 +10,7 @@ export {
   typeScriptFamilyExtensionTester,
   htmlFamilyExtensionTester,
   cssExtensionTester,
+  pythonExtensionTester,
   pathToPosix,
   filterExtensions,
 } from './getFilesList'

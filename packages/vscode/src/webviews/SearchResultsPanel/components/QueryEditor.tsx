@@ -1,7 +1,7 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
 import { Editor } from '../../components/Editor'
 //@ts-ignore
-import { Mode, searchInStrings } from '@codeque/core/web'
+import { Mode, searchInStrings, __internal } from '@codeque/core/web'
 
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
@@ -70,6 +70,7 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
     html: 'html',
     'js-ts-json': 'tsx',
     css: 'css',
+    python: 'py',
   }
 
   return map[fileType]
@@ -105,50 +106,56 @@ export function QueryEditor({
         location: { line: 0, column: 0 },
       })
     } else {
-      try {
-        const parser = fileTypeToParserMap[fileType]
+      const handleParse = async () => {
+        try {
+          const parser = fileTypeToParserMap[fileType]
 
-        const matches = searchInStrings({
-          queryCodes: [query],
-          files: [
-            {
-              content: '',
-              path: 'file.ts',
-            },
-          ],
-          mode,
-          parser,
-        })
+          await __internal.parserSettingsMap[parser]().parserInitPromise
 
-        const hint = matches.hints?.[0]?.[0] ?? null
-        setQueryHint(hint)
+          const matches = searchInStrings({
+            queryCodes: [query],
+            files: [
+              {
+                content: '',
+                path: 'file.ts',
+              },
+            ],
+            mode,
+            parser,
+          })
 
-        if (matches.errors.length > 0) {
-          console.error(matches.errors)
-          const error = matches.errors[0]
+          const hint = matches.hints?.[0]?.[0] ?? null
+          setQueryHint(hint)
 
-          // indicates query parse error
-          if (typeof error === 'object' && 'queryNode' in error) {
-            if (mode !== 'text' && hint) {
-              // Don't display error when there are hints available
+          if (matches.errors.length > 0) {
+            console.error(matches.errors)
+            const error = matches.errors[0]
 
-              setQueryError(null)
-            } else if (!error.error.text.includes('Empty query')) {
+            // indicates query parse error
+            if (typeof error === 'object' && 'queryNode' in error) {
+              if (mode !== 'text' && hint) {
+                // Don't display error when there are hints available
+
+                setQueryError(null)
+              } else if (!error.error.text.includes('Empty query')) {
+                setQueryError({
+                  text: error.error.text,
+                  location: error.error.location,
+                })
+              }
+            } else {
               setQueryError({
-                text: error.error.text,
-                location: error.error.location,
+                text: error,
+                location: { line: 0, column: 0 },
               })
             }
-          } else {
-            setQueryError({
-              text: error,
-              location: { line: 0, column: 0 },
-            })
           }
+        } catch (e) {
+          console.error('Query parse error', e)
         }
-      } catch (e) {
-        console.error('Query parse error', e)
       }
+
+      handleParse()
     }
   }, [mode, query, fileType])
 

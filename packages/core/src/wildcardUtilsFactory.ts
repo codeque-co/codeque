@@ -6,6 +6,7 @@ export const createWildcardUtils = (
   numericWildcard: string,
   identifierWildcardBase: string,
   getIdentifierNodeName: (node: PoorNodeType) => string,
+  getNodeType: (node: PoorNodeType) => string,
   stringWildcardBase = identifierWildcardBase,
 ): WildcardUtils => {
   const identifierWildcard = identifierWildcardBase.repeat(2)
@@ -129,12 +130,14 @@ export const createWildcardUtils = (
   const getIdentifierWildcardsFromNode = (
     node: PoorNodeType,
   ): WildcardMeta[] => {
-    if (typeof node.type !== 'string') {
+    const nodeType = getNodeType(node)
+
+    if (typeof nodeType !== 'string') {
       return []
     }
 
     const isIdentifierNode =
-      typeof node.type === 'string' && identifierNodeTypes.includes(node.type)
+      typeof nodeType === 'string' && identifierNodeTypes.includes(nodeType)
 
     if (isIdentifierNode && typeof getIdentifierNodeName(node) === 'string') {
       return getIdentifierWildcardsFromString(getIdentifierNodeName(node))
@@ -143,7 +146,7 @@ export const createWildcardUtils = (
     /**
      * TODO: make it generic
      */
-    const isTypeReferenceNode = node.type === 'TSTypeReference'
+    const isTypeReferenceNode = nodeType === 'TSTypeReference'
 
     if (isTypeReferenceNode) {
       const maybeWildcardString = (node?.typeName as unknown as PoorNodeType)

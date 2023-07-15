@@ -1,12 +1,17 @@
 import { parentPort, workerData as _workerData } from 'worker_threads'
+import { parserSettingsMap } from './parserSettings'
 
 import { searchInFileSystem } from './searchInFs'
 
 import { Matches, SearchWorkerData, WorkerOutboundMessage } from './types'
 
-//
-;(async () => {
+const searchWorkerRuntime = async () => {
   const workerData = _workerData as SearchWorkerData
+  const parser = workerData.parser
+
+  if (parser) {
+    await parserSettingsMap[parser]().parserInitPromise
+  }
 
   const onPartialResult = workerData.reportEachMatch
     ? (partialResult: Matches) => {
@@ -26,4 +31,6 @@ import { Matches, SearchWorkerData, WorkerOutboundMessage } from './types'
     type: 'ALL_RESULTS',
     data: results,
   } as WorkerOutboundMessage)
-})()
+}
+
+searchWorkerRuntime()

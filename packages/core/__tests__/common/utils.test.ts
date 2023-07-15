@@ -5,6 +5,8 @@ import { PoorNodeType } from '../../src/types'
 
 describe('Utils', () => {
   const getIdentifierNodeName = (node: PoorNodeType) => node.name as string
+  const getNodeType = (node: PoorNodeType) => node.type as string
+
   const identifierTypes: string[] = [] // not needed for this test
   const numericWildcard = '0x0'
   const wildcardChar = '$'
@@ -13,6 +15,7 @@ describe('Utils', () => {
     numericWildcard,
     wildcardChar,
     getIdentifierNodeName,
+    getNodeType,
   )
 
   describe('should transform strings to regexes', () => {

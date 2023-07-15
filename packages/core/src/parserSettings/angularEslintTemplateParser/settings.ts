@@ -171,7 +171,7 @@ const replaceEncodedWildcards = (value: string) =>
   value.replace(/a_\$\$_x/g, () => '$$')
 
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
-  traverseAst(queryNode, isNode, {
+  traverseAst(queryNode, isNode, getNodeType, {
     Element$1: (node) => {
       const nodeName = node.name as string
 

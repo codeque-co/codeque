@@ -27,6 +27,8 @@ module.exports = {
       esprima: false,
       '@babel/eslint-parser': false,
       assert: false, // for angular-eslint
+      path: false,
+      fs: false,
     },
   },
   output: {

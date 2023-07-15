@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/codeque-co/codeque/issues"
   },
-  "version": "0.25.0",
+  "version": "0.26.0-local-4",
   "engines": {
     "vscode": "^1.68.0",
     "node": ">=14"
@@ -129,9 +129,9 @@
     "vscode:prepublish": "yarn lint && yarn typecheck && yarn run package",
     "compile": "webpack",
     "watch:extension": "webpack --config webpack.extension.config.js --watch",
-    "package:extension": "webpack --config webpack.extension.config.js --mode production",
+    "package:extension": "webpack --config webpack.extension.config.js --mode production && cp ./tree-sitter.wasm ./dist/tree-sitter.wasm && cp ./tree-sitter-python.wasm ./dist/tree-sitter-python.wasm",
     "watch:webviews": "webpack --config webpack.webviews.config.js --watch",
-    "package:webviews": "webpack --config webpack.webviews.config.js --mode production",
+    "package:webviews": "webpack --config webpack.webviews.config.js --mode production && cp ./tree-sitter.wasm ./dist-webviews/tree-sitter.wasm && cp ./tree-sitter-python.wasm ./dist-webviews/tree-sitter-python.wasm",
     "package": "yarn package:extension && yarn package:webviews",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
@@ -158,7 +158,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.4",
-    "@codeque/core": "^0.5.1",
+    "@codeque/core": "^0.6.0",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@types/react": "^18.0.15",

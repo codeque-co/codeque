@@ -12,7 +12,7 @@ import {
   cssExtensionTester,
   htmlFamilyExtensionTester,
   filterExtensions,
-  ParserType,
+  pythonExtensionTester,
   __internal,
 } from '@codeque/core'
 import {
@@ -28,7 +28,6 @@ import {
   fileTypeToParserMap,
   nonSearchableExtensions,
 } from './utils'
-import TelemetryReporter from '@vscode/extension-telemetry'
 import { TelemetryModule } from './telemetry'
 import { isQueryRestricted } from './restrictedQueries'
 
@@ -44,6 +43,7 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   html: htmlFamilyExtensionTester,
   'js-ts-json': typeScriptFamilyExtensionTester,
   css: cssExtensionTester,
+  python: pythonExtensionTester,
 }
 
 export class SearchManager {
@@ -444,6 +444,8 @@ export class SearchManager {
           )
 
           const parser = fileTypeToParserMap[settings.fileType]
+
+          await __internal.parserSettingsMap[parser]().parserInitPromise
 
           await new Promise<void>((resolve, reject) => {
             // We start search in next tick so not block events delivery and UI update

@@ -14,4 +14,5 @@ export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
     'angularEslintTemplateParser',
   ),
   ['css-tree']: resolveParserSettings('cssTree'),
+  ['python']: resolveParserSettings('python'),
 }

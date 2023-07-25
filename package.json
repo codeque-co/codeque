@@ -32,5 +32,8 @@
     "checks": "yarn typecheck && yarn lint && yarn test",
     "postinstall": "node fix-framer-motion.js",
     "syncReadmes": "node ./syncReadmes.js"
+  },
+  "dependencies": {
+    "@codeque/eslint-plugin": "^0.1.1"
   }
 }

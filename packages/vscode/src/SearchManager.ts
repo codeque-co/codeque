@@ -533,7 +533,7 @@ export class SearchManager {
         'Search error: ' + error?.message + '\n\nStack:\n' + error?.stack,
       )
 
-      console.error(error)
+      console.error(typeof error, error, error.stack, error.message)
 
       const searchTime = (Date.now() - searchStart) / 1000
 

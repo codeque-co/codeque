@@ -11,16 +11,15 @@ export const activateReporter = (): {
   nativeReporter: TelemetryReporter | null
   telemetryModule: TelemetryModule
 } => {
-  // TODO re-enable telemetry
-  //if (process.env.NODE_ENV !== 'production') {
-  return {
-    nativeReporter: null,
-    telemetryModule: {
-      reportSearch: () => undefined,
-      reportSearchError: () => undefined,
-    },
+  if (process.env.NODE_ENV !== 'production') {
+    return {
+      nativeReporter: null,
+      telemetryModule: {
+        reportSearch: () => undefined,
+        reportSearchError: () => undefined,
+      },
+    }
   }
-  //}
 
   const nativeReporter = new TelemetryReporter(
     applicationInsightsInstrumentationKey,

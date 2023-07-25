@@ -1,6 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'node', 'prettier'],
+  plugins: ['@typescript-eslint', 'node', 'prettier', '@codeque'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -57,6 +57,14 @@ module.exports = {
         prev: 'multiline-expression',
         next: '*',
       }, // padding after multiline-expression
+    ],
+    '@codeque/error': [
+      'error',
+      [
+        {
+          query: 'console.log()',
+        },
+      ],
     ],
   },
 }

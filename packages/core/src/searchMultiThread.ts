@@ -92,9 +92,12 @@ export const searchMultiThread = async ({
             })
             resolve(results)
           } catch (e) {
-            reject(
+            const error = new Error(
               'Search on main thread failed with error ' + (e as Error).message,
             )
+            error.stack = (e as Error)?.stack
+
+            reject(error)
           }
         }, 0)
       } else {

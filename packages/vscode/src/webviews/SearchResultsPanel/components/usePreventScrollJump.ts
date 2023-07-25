@@ -6,10 +6,7 @@ export const usePreventScrollJump = (
   scrollElRef: MutableRefObject<HTMLDivElement | null>,
 ) => {
   return useCallback(() => {
-    console.log('preventing scroll jump pre check')
-
     if (wrapperRef.current && headingRef.current && scrollElRef.current) {
-      console.log('preventing scroll jump')
       const wrapperTop = wrapperRef.current.getBoundingClientRect().top
       const headingTop = headingRef.current.getBoundingClientRect().top
 

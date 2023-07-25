@@ -45,7 +45,7 @@ export const searchAst = (
 
         return queryCode.substring(pos.start, pos.end)
       } catch {
-        console.log('Failed getting position for node', node)
+        console.error('Failed getting position for node', node)
       }
 
       return ''

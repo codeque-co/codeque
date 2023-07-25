@@ -99,8 +99,8 @@ const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
 const getNodePosition: ParserSettings['getNodePosition'] = (
   node: PoorNodeType,
 ) => ({
-  start: ((node?.loc as any)?.startIndex as number) ?? 0,
-  end: ((node?.loc as any)?.endIndex as number) ?? 0,
+  start: ((node?.loc as any)?.start?.index as number) ?? 0,
+  end: ((node?.loc as any)?.end?.index as number) ?? 0,
   loc: node.loc as unknown as Location,
 })
 
@@ -181,5 +181,9 @@ export default pythonParser
 
 /**
  * TODOs:
- * Check how types structure is represented and whether our fields cache is breaking the types matching
+ * - Check how types structure is represented and whether our fields cache is breaking the types matching
+ * - Support string interpolation `f"project:{self.project_id}:rules"`
+ *   - We need to extract string literals and interpolated expressions to node
+ * - support detecting python in search from selection
+ * -
  */

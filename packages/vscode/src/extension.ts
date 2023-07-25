@@ -116,7 +116,11 @@ export function activate(context: vscode.ExtensionContext) {
           canParseCodeForFileType = parseOk
         } catch (e) {
           canParseCodeForFileType = false
-          console.log('Error while parsing query for search from selection', e)
+
+          console.error(
+            'Error while parsing query for search from selection',
+            e,
+          )
         }
       }
 

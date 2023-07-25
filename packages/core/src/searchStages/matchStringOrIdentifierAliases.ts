@@ -92,12 +92,6 @@ export const matchStringOrIdentifierAliases = ({
     )
 
     if (wildcardValuesExtractionMatch === null) {
-      console.log(
-        'wildcardValuesExtractionRegex',
-        wildcardValuesExtractionRegex,
-      )
-
-      console.log('fileNodeIdentifierName', fileNodeIdentifierName)
       throw new Error(
         'Wildcard alias extraction RegExp did not match, thus it was build incorrectly.',
       )

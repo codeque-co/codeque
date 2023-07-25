@@ -33,18 +33,19 @@ let filteringFilePathsTime = 0
 const searchTimeForQueries = {} as Record<string, number>
 
 process.on('beforeExit', () => {
+  const print = console.log
   const shouldPrintMetric = process.env.CODEQUE_DEBUG === 'true'
 
   if (shouldPrintMetric) {
-    console.log('\nCodeQue debug metrics:\n')
-    console.log('preparationTime', preparationTime)
-    console.log('shallowSearchTime', shallowSearchTime)
-    console.log('preparingVisitorsTime', preparingVisitorsTime)
-    console.log('preparingQueriesTime', preparingQueriesTime)
-    console.log('filteringFilePathsTime', filteringFilePathsTime)
-    console.log('searchTimeForQueries', searchTimeForQueries)
-    console.log('')
-    console.log('Telemetry is', telemetryDisabled ? 'disabled' : 'enabled')
+    print('\nCodeQue debug metrics:\n')
+    print('preparationTime', preparationTime)
+    print('shallowSearchTime', shallowSearchTime)
+    print('preparingVisitorsTime', preparingVisitorsTime)
+    print('preparingQueriesTime', preparingQueriesTime)
+    print('filteringFilePathsTime', filteringFilePathsTime)
+    print('searchTimeForQueries', searchTimeForQueries)
+    print('')
+    print('Telemetry is', telemetryDisabled ? 'disabled' : 'enabled')
   }
 })
 

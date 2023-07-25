@@ -1,3 +1,4 @@
+/* eslint-disable @codeque/error */
 import {
   getMode,
   Mode,

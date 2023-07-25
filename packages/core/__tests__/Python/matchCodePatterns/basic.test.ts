@@ -1,5 +1,5 @@
 import { searchInStrings } from '../../../src/searchInStrings'
-import { getParserSettings } from '../../utils'
+import { getParserSettings, compareCode } from '../../utils'
 
 describe('Basic queries', () => {
   beforeAll(async () => {
@@ -118,8 +118,17 @@ describe('Basic queries', () => {
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(1)
 
-    expect(matches[0].aliases.identifierAliasesMap['refPrint'].aliasValue).toBe(
+    const match = matches[0]
+
+    expect(match.aliases.identifierAliasesMap['refPrint'].aliasValue).toBe(
       'print',
     )
+
+    expect(compareCode(fileContent, match.code)).toBe(true)
+
+    expect(match.loc).toStrictEqual({
+      start: { line: 2, column: 6, index: 7 },
+      end: { line: 7, column: 15, index: 131 },
+    })
   })
 })

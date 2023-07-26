@@ -13,3 +13,5 @@ dist
 .vscode/settings.json
 *.tgz
 *.tar.gz
+**/getAstJson/*.json
+**/getAstJson/*.txt

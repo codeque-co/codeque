@@ -1,11 +1,6 @@
 import { createWildcardUtils } from '../../wildcardUtilsFactory'
 import { PoorNodeType } from '../../types'
 
-/*
- * We don't have purely identifier nodes in this parser
- * We compare everything using string wildcards
- */
-
 export const identifierNodeTypes: string[] = ['identifier']
 
 const wildcardChar = '$'

@@ -180,10 +180,40 @@ export const pythonParser: ParserSettings = {
 export default pythonParser
 
 /**
+ * Introduce proper recognition of node fields
+ *
+ * A script that would change node-types.json into simplified version
+ * - node type maps to
+ *   - fields list, where field maps to
+ *     - is multiple
+ *     - possible node types
+ *
+ * Another script for detecting conflict in node fields
+ * - A conflict is a situation when there are 2 or more fields (including children field) that can have multiple nodes
+ *   and there is the same node type allowed in both.
+ *   In this situation we cannot properly group children into fields, as we cannot make distinction
+ *
+ * We need those because
+ * - We cannot relay on fields cache as some fields are optional and might not be cached
+ * - We cannot get all nodes for named fields that are multiple
+ *   - To workaround that, we have to get remaining children and distribute them into fields that can have multiple nodes based on node types
+ *   - If node types has a conflict, we won't be able to do that and we would have to skip one of the named fields in favour of children property
+ *
+ * Let's store node-types.json in one directory with *.wasm file and package.json (to have version) of given tree-sitter-*
+ * - Create a script that would fetch newest files from GH, so we can automate updates
+ */
+
+/**
  * TODOs:
- * - Check how types structure is represented and whether our fields cache is breaking the types matching
  * - Support string interpolation `f"project:{self.project_id}:rules"`
  *   - We need to extract string literals and interpolated expressions to node
  * - support detecting python in search from selection
- * -
+ * - better manage wasm files
+ * - detect parser errors by looking for "nodeType": "ERROR" nodes in tree
+ *   - we can throw in collect to avoid additional traversal
+ * - browse python grammar to see which other nodes needs 'rawValue' field
+ *   - we can identify leaf nodes from node-types.json by looking at primary expressions
+ * - think of other way for async parsing
+ *    - how much does it cost to support async parsing
+ *    - is initialize with promise good enough for now ?
  */

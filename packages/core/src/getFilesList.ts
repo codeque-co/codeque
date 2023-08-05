@@ -260,14 +260,37 @@ export const getFilesList = async ({
         // add initial '/' or 'C:\' back
         .map((p) => `${fsRoot}${p}`)
 
-      let directories = await asyncFilter(
-        filteredAbsolutePaths,
-        async (pathName) => {
-          const stat = await fs.lstat(pathName)
+      const absolutePathsWithStats = await Promise.all(
+        filteredAbsolutePaths.map(async (absolutePath) => {
+          try {
+            let resolvedPath = absolutePath
+            let stat = await fs.lstat(absolutePath)
 
-          return stat.isDirectory()
-        },
+            if (stat.isSymbolicLink()) {
+              resolvedPath = await fs.realpath(absolutePath)
+              stat = await fs.stat(resolvedPath)
+            }
+
+            return {
+              absolutePath,
+              size: stat.size,
+              isFile: stat.isFile(),
+              isDirectory: stat.isDirectory(),
+            }
+          } catch (e) {
+            return {
+              absolutePath,
+              size: -1,
+              isFile: false,
+              isDirectory: false,
+            }
+          }
+        }),
       )
+
+      let directories = absolutePathsWithStats
+        .filter(({ isDirectory }) => isDirectory)
+        .map(({ absolutePath }) => absolutePath)
 
       directories = directories.filter((pathName) => {
         const isOnBlackList = directoriesBlackList.some((directoryName) =>
@@ -277,16 +300,12 @@ export const getFilesList = async ({
         return !isOnBlackList
       })
 
-      const files = await asyncFilter(
-        filteredAbsolutePaths,
-        async (pathName) => {
-          const stat = await fs.lstat(pathName)
-
-          return (
-            stat.isFile() && (stat.size < bigFileSizeInBytes || searchBigFiles)
-          )
-        },
-      )
+      const files = absolutePathsWithStats
+        .filter(
+          ({ isFile, size }) =>
+            (isFile && size < bigFileSizeInBytes) || searchBigFiles,
+        )
+        .map(({ absolutePath }) => absolutePath)
 
       const directoriesScanResult = (
         await Promise.all(directories.map((dir) => scan(dir, localIgnore)))

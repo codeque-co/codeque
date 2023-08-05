@@ -1,0 +1,1990 @@
+{
+  "aliased_import": {
+    "type": "aliased_import",
+    "singleFieldNames": ["alias", "name"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "argument_list": {
+    "type": "argument_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "dictionary_splat": "children",
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "keyword_argument": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "as_pattern": {
+    "type": "as_pattern",
+    "singleFieldNames": ["alias"],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "assert_statement": {
+    "type": "assert_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "assignment": {
+    "type": "assignment",
+    "singleFieldNames": ["left", "right", "type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "attribute": {
+    "type": "attribute",
+    "singleFieldNames": ["attribute", "object"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "augmented_assignment": {
+    "type": "augmented_assignment",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "binary_operator": {
+    "type": "binary_operator",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "block": {
+    "type": "block",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "case_clause": "alternative",
+      "class_definition": "children",
+      "decorated_definition": "children",
+      "for_statement": "children",
+      "function_definition": "children",
+      "if_statement": "children",
+      "match_statement": "children",
+      "try_statement": "children",
+      "while_statement": "children",
+      "with_statement": "children",
+      "assert_statement": "children",
+      "break_statement": "children",
+      "continue_statement": "children",
+      "delete_statement": "children",
+      "exec_statement": "children",
+      "expression_statement": "children",
+      "future_import_statement": "children",
+      "global_statement": "children",
+      "import_from_statement": "children",
+      "import_statement": "children",
+      "nonlocal_statement": "children",
+      "pass_statement": "children",
+      "print_statement": "children",
+      "raise_statement": "children",
+      "return_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["alternative", "children"]
+  },
+  "boolean_operator": {
+    "type": "boolean_operator",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "break_statement": {
+    "type": "break_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "call": {
+    "type": "call",
+    "singleFieldNames": ["arguments", "function"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "case_clause": {
+    "type": "case_clause",
+    "singleFieldNames": ["consequence", "guard"],
+    "nodeTypeToMultipleFieldName": {
+      "case_pattern": "pattern"
+    },
+    "multipleOrChildrenFieldNames": ["pattern"]
+  },
+  "chevron": {
+    "type": "chevron",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "class_definition": {
+    "type": "class_definition",
+    "singleFieldNames": ["body", "name", "superclasses"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "comparison_operator": {
+    "type": "comparison_operator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "!=": "operators",
+      "<": "operators",
+      "<=": "operators",
+      "<>": "operators",
+      "==": "operators",
+      ">": "operators",
+      ">=": "operators",
+      "in": "operators",
+      "is": "operators",
+      "is not": "operators",
+      "not in": "operators",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["operators", "children"]
+  },
+  "concatenated_string": {
+    "type": "concatenated_string",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "string": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "conditional_expression": {
+    "type": "conditional_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "continue_statement": {
+    "type": "continue_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "decorated_definition": {
+    "type": "decorated_definition",
+    "singleFieldNames": ["definition"],
+    "nodeTypeToMultipleFieldName": {
+      "decorator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "decorator": {
+    "type": "decorator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "default_parameter": {
+    "type": "default_parameter",
+    "singleFieldNames": ["name", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "delete_statement": {
+    "type": "delete_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "expression_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dictionary": {
+    "type": "dictionary",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "dictionary_splat": "children",
+      "pair": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dictionary_comprehension": {
+    "type": "dictionary_comprehension",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "for_in_clause": "children",
+      "if_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dictionary_splat": {
+    "type": "dictionary_splat",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dictionary_splat_pattern": {
+    "type": "dictionary_splat_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "identifier": "children",
+      "subscript": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dotted_name": {
+    "type": "dotted_name",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "elif_clause": {
+    "type": "elif_clause",
+    "singleFieldNames": ["condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "else_clause": {
+    "type": "else_clause",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "except_clause": {
+    "type": "except_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "block": "children",
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "except_group_clause": {
+    "type": "except_group_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "block": "children",
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "exec_statement": {
+    "type": "exec_statement",
+    "singleFieldNames": ["code"],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "expression_list": {
+    "type": "expression_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "expression_statement": {
+    "type": "expression_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "assignment": "children",
+      "augmented_assignment": "children",
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "yield": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "finally_clause": {
+    "type": "finally_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "block": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "for_in_clause": {
+    "type": "for_in_clause",
+    "singleFieldNames": ["left"],
+    "nodeTypeToMultipleFieldName": {
+      ",": "right",
+      "as_pattern": "right",
+      "boolean_operator": "right",
+      "comparison_operator": "right",
+      "conditional_expression": "right",
+      "lambda": "right",
+      "named_expression": "right",
+      "not_operator": "right",
+      "attribute": "right",
+      "await": "right",
+      "binary_operator": "right",
+      "call": "right",
+      "concatenated_string": "right",
+      "dictionary": "right",
+      "dictionary_comprehension": "right",
+      "ellipsis": "right",
+      "false": "right",
+      "float": "right",
+      "generator_expression": "right",
+      "identifier": "right",
+      "integer": "right",
+      "list": "right",
+      "list_comprehension": "right",
+      "list_splat": "right",
+      "none": "right",
+      "parenthesized_expression": "right",
+      "set": "right",
+      "set_comprehension": "right",
+      "string": "right",
+      "subscript": "right",
+      "true": "right",
+      "tuple": "right",
+      "unary_operator": "right"
+    },
+    "multipleOrChildrenFieldNames": ["right"]
+  },
+  "for_statement": {
+    "type": "for_statement",
+    "singleFieldNames": ["alternative", "body", "left", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "format_expression": {
+    "type": "format_expression",
+    "singleFieldNames": ["expression", "format_specifier", "type_conversion"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "format_specifier": {
+    "type": "format_specifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "format_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "function_definition": {
+    "type": "function_definition",
+    "singleFieldNames": ["body", "name", "parameters", "return_type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "future_import_statement": {
+    "type": "future_import_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "aliased_import": "name",
+      "dotted_name": "name"
+    },
+    "multipleOrChildrenFieldNames": ["name"]
+  },
+  "generator_expression": {
+    "type": "generator_expression",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "for_in_clause": "children",
+      "if_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "global_statement": {
+    "type": "global_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "if_clause": {
+    "type": "if_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "if_statement": {
+    "type": "if_statement",
+    "singleFieldNames": ["condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {
+      "elif_clause": "alternative",
+      "else_clause": "alternative"
+    },
+    "multipleOrChildrenFieldNames": ["alternative"]
+  },
+  "import_from_statement": {
+    "type": "import_from_statement",
+    "singleFieldNames": ["module_name"],
+    "nodeTypeToMultipleFieldName": {
+      "aliased_import": "name",
+      "dotted_name": "name",
+      "wildcard_import": "children"
+    },
+    "multipleOrChildrenFieldNames": ["name", "children"]
+  },
+  "import_prefix": {
+    "type": "import_prefix",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "import_statement": {
+    "type": "import_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "aliased_import": "name",
+      "dotted_name": "name"
+    },
+    "multipleOrChildrenFieldNames": ["name"]
+  },
+  "interpolation": {
+    "type": "interpolation",
+    "singleFieldNames": ["expression", "format_specifier", "type_conversion"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "keyword_argument": {
+    "type": "keyword_argument",
+    "singleFieldNames": ["name", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "keyword_separator": {
+    "type": "keyword_separator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "lambda_parameters": {
+    "type": "lambda_parameters",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "default_parameter": "children",
+      "dictionary_splat_pattern": "children",
+      "identifier": "children",
+      "keyword_separator": "children",
+      "list_splat_pattern": "children",
+      "positional_separator": "children",
+      "tuple_pattern": "children",
+      "typed_default_parameter": "children",
+      "typed_parameter": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "list": {
+    "type": "list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "parenthesized_list_splat": "children",
+      "yield": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "list_comprehension": {
+    "type": "list_comprehension",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "for_in_clause": "children",
+      "if_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "list_pattern": {
+    "type": "list_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "identifier": "children",
+      "list_pattern": "children",
+      "list_splat_pattern": "children",
+      "subscript": "children",
+      "tuple_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "list_splat": {
+    "type": "list_splat",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "list_splat_pattern": {
+    "type": "list_splat_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "identifier": "children",
+      "subscript": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "match_statement": {
+    "type": "match_statement",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "subject",
+      "boolean_operator": "subject",
+      "comparison_operator": "subject",
+      "conditional_expression": "subject",
+      "lambda": "subject",
+      "named_expression": "subject",
+      "not_operator": "subject",
+      "attribute": "subject",
+      "await": "subject",
+      "binary_operator": "subject",
+      "call": "subject",
+      "concatenated_string": "subject",
+      "dictionary": "subject",
+      "dictionary_comprehension": "subject",
+      "ellipsis": "subject",
+      "false": "subject",
+      "float": "subject",
+      "generator_expression": "subject",
+      "identifier": "subject",
+      "integer": "subject",
+      "list": "subject",
+      "list_comprehension": "subject",
+      "list_splat": "subject",
+      "none": "subject",
+      "parenthesized_expression": "subject",
+      "set": "subject",
+      "set_comprehension": "subject",
+      "string": "subject",
+      "subscript": "subject",
+      "true": "subject",
+      "tuple": "subject",
+      "unary_operator": "subject"
+    },
+    "multipleOrChildrenFieldNames": ["subject"]
+  },
+  "module": {
+    "type": "module",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "class_definition": "children",
+      "decorated_definition": "children",
+      "for_statement": "children",
+      "function_definition": "children",
+      "if_statement": "children",
+      "match_statement": "children",
+      "try_statement": "children",
+      "while_statement": "children",
+      "with_statement": "children",
+      "assert_statement": "children",
+      "break_statement": "children",
+      "continue_statement": "children",
+      "delete_statement": "children",
+      "exec_statement": "children",
+      "expression_statement": "children",
+      "future_import_statement": "children",
+      "global_statement": "children",
+      "import_from_statement": "children",
+      "import_statement": "children",
+      "nonlocal_statement": "children",
+      "pass_statement": "children",
+      "print_statement": "children",
+      "raise_statement": "children",
+      "return_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "named_expression": {
+    "type": "named_expression",
+    "singleFieldNames": ["name", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "nonlocal_statement": {
+    "type": "nonlocal_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "not_operator": {
+    "type": "not_operator",
+    "singleFieldNames": ["argument"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "pair": {
+    "type": "pair",
+    "singleFieldNames": ["key", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "parameters": {
+    "type": "parameters",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "default_parameter": "children",
+      "dictionary_splat_pattern": "children",
+      "identifier": "children",
+      "keyword_separator": "children",
+      "list_splat_pattern": "children",
+      "positional_separator": "children",
+      "tuple_pattern": "children",
+      "typed_default_parameter": "children",
+      "typed_parameter": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parenthesized_expression": {
+    "type": "parenthesized_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "yield": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parenthesized_list_splat": {
+    "type": "parenthesized_list_splat",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "list_splat": "children",
+      "parenthesized_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "pass_statement": {
+    "type": "pass_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "pattern_list": {
+    "type": "pattern_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "identifier": "children",
+      "list_pattern": "children",
+      "list_splat_pattern": "children",
+      "subscript": "children",
+      "tuple_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "positional_separator": {
+    "type": "positional_separator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "print_statement": {
+    "type": "print_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "argument",
+      "boolean_operator": "argument",
+      "comparison_operator": "argument",
+      "conditional_expression": "argument",
+      "lambda": "argument",
+      "named_expression": "argument",
+      "not_operator": "argument",
+      "attribute": "argument",
+      "await": "argument",
+      "binary_operator": "argument",
+      "call": "argument",
+      "concatenated_string": "argument",
+      "dictionary": "argument",
+      "dictionary_comprehension": "argument",
+      "ellipsis": "argument",
+      "false": "argument",
+      "float": "argument",
+      "generator_expression": "argument",
+      "identifier": "argument",
+      "integer": "argument",
+      "list": "argument",
+      "list_comprehension": "argument",
+      "list_splat": "argument",
+      "none": "argument",
+      "parenthesized_expression": "argument",
+      "set": "argument",
+      "set_comprehension": "argument",
+      "string": "argument",
+      "subscript": "argument",
+      "true": "argument",
+      "tuple": "argument",
+      "unary_operator": "argument",
+      "chevron": "children"
+    },
+    "multipleOrChildrenFieldNames": ["argument", "children"]
+  },
+  "raise_statement": {
+    "type": "raise_statement",
+    "singleFieldNames": ["cause"],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "expression_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "relative_import": {
+    "type": "relative_import",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "dotted_name": "children",
+      "import_prefix": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "return_statement": {
+    "type": "return_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "expression_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "set": {
+    "type": "set",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "parenthesized_list_splat": "children",
+      "yield": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "set_comprehension": {
+    "type": "set_comprehension",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "for_in_clause": "children",
+      "if_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "slice": {
+    "type": "slice",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "string": {
+    "type": "string",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "interpolation": "children",
+      "string_content": "children",
+      "string_end": "children",
+      "string_start": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "string_content": {
+    "type": "string_content",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "escape_sequence": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "subscript": {
+    "type": "subscript",
+    "singleFieldNames": ["value"],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "subscript",
+      "boolean_operator": "subscript",
+      "comparison_operator": "subscript",
+      "conditional_expression": "subscript",
+      "lambda": "subscript",
+      "named_expression": "subscript",
+      "not_operator": "subscript",
+      "attribute": "subscript",
+      "await": "subscript",
+      "binary_operator": "subscript",
+      "call": "subscript",
+      "concatenated_string": "subscript",
+      "dictionary": "subscript",
+      "dictionary_comprehension": "subscript",
+      "ellipsis": "subscript",
+      "false": "subscript",
+      "float": "subscript",
+      "generator_expression": "subscript",
+      "identifier": "subscript",
+      "integer": "subscript",
+      "list": "subscript",
+      "list_comprehension": "subscript",
+      "list_splat": "subscript",
+      "none": "subscript",
+      "parenthesized_expression": "subscript",
+      "set": "subscript",
+      "set_comprehension": "subscript",
+      "string": "subscript",
+      "subscript": "subscript",
+      "true": "subscript",
+      "tuple": "subscript",
+      "unary_operator": "subscript",
+      "slice": "subscript"
+    },
+    "multipleOrChildrenFieldNames": ["subscript"]
+  },
+  "try_statement": {
+    "type": "try_statement",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "else_clause": "children",
+      "except_clause": "children",
+      "except_group_clause": "children",
+      "finally_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "tuple": {
+    "type": "tuple",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children",
+      "parenthesized_list_splat": "children",
+      "yield": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "tuple_pattern": {
+    "type": "tuple_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children",
+      "identifier": "children",
+      "list_pattern": "children",
+      "list_splat_pattern": "children",
+      "subscript": "children",
+      "tuple_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "type": {
+    "type": "type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "boolean_operator": "children",
+      "comparison_operator": "children",
+      "conditional_expression": "children",
+      "lambda": "children",
+      "named_expression": "children",
+      "not_operator": "children",
+      "attribute": "children",
+      "await": "children",
+      "binary_operator": "children",
+      "call": "children",
+      "concatenated_string": "children",
+      "dictionary": "children",
+      "dictionary_comprehension": "children",
+      "ellipsis": "children",
+      "false": "children",
+      "float": "children",
+      "generator_expression": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list": "children",
+      "list_comprehension": "children",
+      "list_splat": "children",
+      "none": "children",
+      "parenthesized_expression": "children",
+      "set": "children",
+      "set_comprehension": "children",
+      "string": "children",
+      "subscript": "children",
+      "true": "children",
+      "tuple": "children",
+      "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "typed_default_parameter": {
+    "type": "typed_default_parameter",
+    "singleFieldNames": ["name", "type", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "typed_parameter": {
+    "type": "typed_parameter",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {
+      "dictionary_splat_pattern": "children",
+      "identifier": "children",
+      "list_splat_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "unary_operator": {
+    "type": "unary_operator",
+    "singleFieldNames": ["argument", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "while_statement": {
+    "type": "while_statement",
+    "singleFieldNames": ["alternative", "body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "wildcard_import": {
+    "type": "wildcard_import",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "with_clause": {
+    "type": "with_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "with_item": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "with_item": {
+    "type": "with_item",
+    "singleFieldNames": ["value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "with_statement": {
+    "type": "with_statement",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {
+      "with_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "!=": {
+    "type": "!=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "%": {
+    "type": "%",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "%=": {
+    "type": "%=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&": {
+    "type": "&",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&=": {
+    "type": "&=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "*": {
+    "type": "*",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "**": {
+    "type": "**",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "**=": {
+    "type": "**=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "*=": {
+    "type": "*=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "+": {
+    "type": "+",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "+=": {
+    "type": "+=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "-": {
+    "type": "-",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "-=": {
+    "type": "-=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "/": {
+    "type": "/",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "//": {
+    "type": "//",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "//=": {
+    "type": "//=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "/=": {
+    "type": "/=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<": {
+    "type": "<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<<": {
+    "type": "<<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<<=": {
+    "type": "<<=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<=": {
+    "type": "<=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<>": {
+    "type": "<>",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "==": {
+    "type": "==",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">": {
+    "type": ">",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">=": {
+    "type": ">=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">>": {
+    "type": ">>",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">>=": {
+    "type": ">>=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "@": {
+    "type": "@",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "@=": {
+    "type": "@=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "^": {
+    "type": "^",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "^=": {
+    "type": "^=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "and": {
+    "type": "and",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "comment": {
+    "type": "comment",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ellipsis": {
+    "type": "ellipsis",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "escape_sequence": {
+    "type": "escape_sequence",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "false": {
+    "type": "false",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "float": {
+    "type": "float",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "identifier": {
+    "type": "identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "in": {
+    "type": "in",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "integer": {
+    "type": "integer",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "is": {
+    "type": "is",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "is not": {
+    "type": "is not",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "line_continuation": {
+    "type": "line_continuation",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "none": {
+    "type": "none",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "not in": {
+    "type": "not in",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "or": {
+    "type": "or",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "string_end": {
+    "type": "string_end",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "string_start": {
+    "type": "string_start",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "true": {
+    "type": "true",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "type_conversion": {
+    "type": "type_conversion",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "|": {
+    "type": "|",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "|=": {
+    "type": "|=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "~": {
+    "type": "~",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  }
+}

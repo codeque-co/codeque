@@ -287,3 +287,13 @@ export type ParserSettings = {
   getUniqueTokensFromStringOrIdentifierNode?: GetUniqueTokensFromStringOrIdentifierNode
   parserInitPromise?: Promise<void>
 }
+
+export type TreeSitterNodeFieldsMeta = Record<
+  string,
+  {
+    type: string
+    singleFieldNames: string[]
+    nodeTypeToMultipleFieldName: Record<string, string>
+    multipleOrChildrenFieldNames: string[]
+  }
+>

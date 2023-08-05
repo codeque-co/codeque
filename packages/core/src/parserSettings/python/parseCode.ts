@@ -1,12 +1,12 @@
 import Parser from 'web-tree-sitter'
 import { collectAstFromTree } from '../../treeSitterUtils'
+import pythonFieldsMeta from './python-fields-meta.json'
 
-const defineRawValueForNodeTypes = ['identifier', 'integer', 'string']
+const defineRawValueForNodeTypes = ['identifier', 'integer', 'string_content']
 
 const parserModule = (() => {
   let parser: Parser | null = null
   let parserInitError: Error | null = null
-  const nodeTypeToFieldsCache: Record<string, string[]> = {}
 
   const init = () => {
     return Parser.init()
@@ -40,13 +40,13 @@ const parserModule = (() => {
     const ast = collectAstFromTree(
       tree,
       code,
-      nodeTypeToFieldsCache,
       defineRawValueForNodeTypes,
+      pythonFieldsMeta,
     )
 
     tree.delete()
 
-    return ast
+    return ast ?? { nodeType: 'empty' } // this is to make TS happy, won't happen in real life.
   }
 
   return { init, parse }

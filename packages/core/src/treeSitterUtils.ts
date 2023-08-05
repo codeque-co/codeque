@@ -1,14 +1,12 @@
 import type { SyntaxNode, Tree } from 'web-tree-sitter'
-import { PoorNodeType } from './types'
+import { PoorNodeType, TreeSitterNodeFieldsMeta } from './types'
 
 export function collectAstFromTree(
   tree: Tree,
   codeText: string,
-  nodeTypeToFieldsCache: Record<string, string[]>,
   defineRawValueForNodeTypes: string[],
+  nodeFieldsMeta: TreeSitterNodeFieldsMeta,
 ) {
-  const allFieldNames = (tree.rootNode.tree as any).language.fields as string[]
-
   const getPosition = (node: SyntaxNode) => {
     const startPosition = node.startPosition
     const endPosition = node.endPosition
@@ -29,70 +27,75 @@ export function collectAstFromTree(
     }
   }
 
-  function collectAstFromTree(node: SyntaxNode, level = 0, fieldName = '') {
+  function collectAstFromTreeInner(node: SyntaxNode, level = 0) {
     const nodeType = node.type
-    const fields = []
-    const filedNodes = []
+    const nodeMeta = nodeFieldsMeta[nodeType]
 
-    /**
-     * Cache which node has which fields to not check all fields all the time?
-     */
-    if (nodeTypeToFieldsCache[nodeType]) {
-      for (const fieldName of nodeTypeToFieldsCache[nodeType]) {
-        const childForName = node.childForFieldName(fieldName)
-
-        if (childForName) {
-          filedNodes.push(childForName)
-          fields.push({ fieldName, node: childForName })
-        }
-      }
-    } else {
-      for (const fieldName of allFieldNames) {
-        const childForName = node.childForFieldName(fieldName)
-
-        if (childForName) {
-          filedNodes.push(childForName)
-          fields.push({ fieldName, node: childForName })
-        }
-      }
-
-      nodeTypeToFieldsCache[nodeType] = fields.map(({ fieldName }) => fieldName)
+    if (!nodeMeta) {
+      /**
+       * We don't care about node types that are not in meta mapping
+       */
+      return null
     }
 
-    const fieldChildNodes = {} as Record<string, PoorNodeType>
-    const childNodes = []
-
-    fields.forEach(({ fieldName, node }) => {
-      fieldChildNodes[fieldName] = collectAstFromTree(
-        node,
-        level + 1,
+    const fields = Object.fromEntries([
+      ...nodeMeta.multipleOrChildrenFieldNames.map((fieldName) => [
         fieldName,
-      )
+        [],
+      ]),
+      ...nodeMeta.singleFieldNames.map((fieldName) => [fieldName, null]),
+    ])
+
+    const filedNodes: SyntaxNode[] = []
+
+    nodeMeta.singleFieldNames.forEach((fieldName) => {
+      const childForName = node.childForFieldName(fieldName)
+
+      if (childForName) {
+        filedNodes.push(childForName)
+
+        fields[fieldName] = collectAstFromTreeInner(childForName, level + 1)
+      }
     })
 
-    const namedChildCount = node.namedChildCount
+    const childCount = node.childCount
 
-    for (let i = 0; i < namedChildCount; i++) {
-      const childNode = node.namedChild(i)
+    for (let i = 0; i < childCount; i++) {
+      const childNode = node.child(i)
 
       if (
         childNode &&
         !filedNodes.some((fieldNode) => fieldNode.equals(childNode))
       ) {
-        childNodes.push(collectAstFromTree(childNode, level + 1, 'child'))
+        const collectedNode = collectAstFromTreeInner(childNode, level + 1)
+
+        if (collectedNode) {
+          const field =
+            nodeMeta.nodeTypeToMultipleFieldName[
+              collectedNode.nodeType as string
+            ]
+
+          if (field) {
+            fields[field].push(collectedNode)
+          } else {
+            throw new Error('Field for node not found.')
+          }
+        }
       }
     }
 
     const rawNode = {
       nodeType: nodeType,
       loc: getPosition(node),
-      ...fieldChildNodes,
-      ...(childNodes.length > 0 ? { children: childNodes } : {}),
+      ...fields,
     } as PoorNodeType
 
-    const isLeaf = fields.length === 0 && childNodes.length === 0
+    const isLeaf =
+      nodeMeta.multipleOrChildrenFieldNames.length === 0 &&
+      nodeMeta.singleFieldNames.length === 0
 
-    if (isLeaf && defineRawValueForNodeTypes.includes(nodeType)) {
+    // Temporary disable check for leaf node, perhaps it's not needed. Now breaks stuff for string_content, which itself needs more adjustments to work properly
+    if (/*isLeaf && */ defineRawValueForNodeTypes.includes(nodeType)) {
       rawNode.rawValue = codeText.substring(
         //@ts-ignore
         rawNode.loc.start.index,
@@ -104,5 +107,5 @@ export function collectAstFromTree(
     return rawNode
   }
 
-  return collectAstFromTree(tree.rootNode)
+  return collectAstFromTreeInner(tree.rootNode)
 }

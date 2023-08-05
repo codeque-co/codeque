@@ -8,7 +8,7 @@ import {
   ProgramNodeAndBlockNodeUtils,
   StringLikeLiteralUtils,
 } from '../../types'
-import { normalizeText } from '../../utils'
+
 import {
   getIdentifierNodeName,
   getNodeType,
@@ -78,7 +78,8 @@ const isIdentifierNode = (node: PoorNodeType) =>
 
 // TODO remove ' and " from string
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
-  isStringLikeLiteralNode: (node: PoorNodeType) => node.nodeType === 'string',
+  isStringLikeLiteralNode: (node: PoorNodeType) =>
+    node.nodeType === 'string_content',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
     return node?.rawValue as string
   },

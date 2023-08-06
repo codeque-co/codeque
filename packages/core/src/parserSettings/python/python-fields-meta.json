@@ -1861,12 +1861,6 @@
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
   },
-  "comment": {
-    "type": "comment",
-    "singleFieldNames": [],
-    "nodeTypeToMultipleFieldName": {},
-    "multipleOrChildrenFieldNames": []
-  },
   "ellipsis": {
     "type": "ellipsis",
     "singleFieldNames": [],

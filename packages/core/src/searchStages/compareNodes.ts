@@ -68,9 +68,9 @@ export const compareNodes = (
 
   log(
     'compare: query node type',
-    queryNode.type,
+    parserSettings.getNodeType(queryNode),
     'file node type',
-    fileNode.type,
+    parserSettings.getNodeType(fileNode),
   )
 
   log('compare: queryKeys', queryKeys)

@@ -26,18 +26,18 @@ const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
   return fileNode.children as PoorNodeType[]
 }
 
-//TODO
 const unwrapExpressionStatement = (node: PoorNodeType) => {
-  return node as PoorNodeType
+  return node.nodeType === 'expression_statement' && node.children
+    ? ((node.children as PoorNodeType[])[0] as PoorNodeType)
+    : node
 }
 
-//TODO
 const createBlockStatementNode = (
-  templateNodes: PoorNodeType[],
+  children: PoorNodeType[],
   position: MatchPosition,
 ) => ({
-  type: 'Program',
-  templateNodes,
+  nodeType: 'block',
+  children,
   ...position,
 })
 
@@ -45,11 +45,13 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.nodeType === 'string'
 }
 
+// todo remove from all parsers
 const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
   return true
 }
 
-const astPropsToSkip = ['loc']
+/* start and end is added by CQ in multiline queries  */
+const astPropsToSkip = ['loc', 'start', 'end']
 
 type NodeValueSanitizers = Record<string, Record<string, (a: any) => any>>
 
@@ -76,7 +78,6 @@ const shouldCompareNode = (node: PoorNodeType) => {
 const isIdentifierNode = (node: PoorNodeType) =>
   identifierNodeTypes.includes(getNodeType(node))
 
-// TODO remove ' and " from string
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
   isStringLikeLiteralNode: (node: PoorNodeType) =>
     node.nodeType === 'string_content',
@@ -94,7 +95,7 @@ const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
   isProgramNode: (node: PoorNodeType) => node.nodeType === 'module',
   isBlockNode: (node: PoorNodeType) => node.nodeType === 'block',
   programNodeBodyKey: 'children',
-  blockNodeBodyKey: 'body',
+  blockNodeBodyKey: 'children',
 }
 
 const getNodePosition: ParserSettings['getNodePosition'] = (
@@ -181,27 +182,8 @@ export const pythonParser: ParserSettings = {
 export default pythonParser
 
 /**
- * Introduce proper recognition of node fields
- *
- * A script that would change node-types.json into simplified version
- * - node type maps to
- *   - fields list, where field maps to
- *     - is multiple
- *     - possible node types
- *
- * Another script for detecting conflict in node fields
- * - A conflict is a situation when there are 2 or more fields (including children field) that can have multiple nodes
- *   and there is the same node type allowed in both.
- *   In this situation we cannot properly group children into fields, as we cannot make distinction
- *
- * We need those because
- * - We cannot relay on fields cache as some fields are optional and might not be cached
- * - We cannot get all nodes for named fields that are multiple
- *   - To workaround that, we have to get remaining children and distribute them into fields that can have multiple nodes based on node types
- *   - If node types has a conflict, we won't be able to do that and we would have to skip one of the named fields in favour of children property
- *
- * Let's store node-types.json in one directory with *.wasm file and package.json (to have version) of given tree-sitter-*
- * - Create a script that would fetch newest files from GH, so we can automate updates
+ * Let's store <parser>-fields-meta.json in one directory with *.wasm file and package.json (to have version) of given tree-sitter-*
+ * - Create a script that would fetch newest files from GH, build wasm, so we can automate updates
  */
 
 /**
@@ -210,6 +192,7 @@ export default pythonParser
  *   - We need to extract string literals and interpolated expressions to node
  * - support detecting python in search from selection
  * - better manage wasm files
+ * - support numeric wildcards
  * - detect parser errors by looking for "nodeType": "ERROR" nodes in tree
  *   - we can throw in collect to avoid additional traversal
  * - browse python grammar to see which other nodes needs 'rawValue' field

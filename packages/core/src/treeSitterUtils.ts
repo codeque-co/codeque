@@ -27,8 +27,15 @@ export function collectAstFromTree(
     }
   }
 
-  function collectAstFromTreeInner(node: SyntaxNode, level = 0) {
-    const nodeType = node.type
+  function collectAstFromTreeInner(
+    node: SyntaxNode,
+    level = 0,
+    nodeTypeFromParent?: string,
+  ) {
+    /**
+     * Receiving node type from parent is performance optimization for slow access to WASM memory
+     */
+    const nodeType = nodeTypeFromParent ?? node.type
     const nodeMeta = nodeFieldsMeta[nodeType]
 
     if (!nodeMeta) {
@@ -67,18 +74,33 @@ export function collectAstFromTree(
         childNode &&
         !filedNodes.some((fieldNode) => fieldNode.equals(childNode))
       ) {
-        const collectedNode = collectAstFromTreeInner(childNode, level + 1)
+        const collectedNodeType = childNode.type as string
 
-        if (collectedNode) {
-          const field =
-            nodeMeta.nodeTypeToMultipleFieldName[
-              collectedNode.nodeType as string
-            ]
+        /**
+         * We ignore nodes with types that are not in mapping
+         */
+        if (nodeFieldsMeta[collectedNodeType]) {
+          const collectedNode = collectAstFromTreeInner(
+            childNode,
+            level + 1,
+            collectedNodeType,
+          )
 
-          if (field) {
-            fields[field].push(collectedNode)
-          } else {
-            throw new Error('Field for node not found.')
+          if (collectedNode) {
+            const field =
+              nodeMeta.nodeTypeToMultipleFieldName[collectedNodeType]
+
+            if (field) {
+              if (fields[field]) {
+                fields[field].push(collectedNode)
+              } else {
+                console.error(`No field "${field}" for ${collectedNodeType}`)
+              }
+            }
+
+            /**
+             * When node field was not found in mapping, it most likely mean that node was some language keyword that can be skipped
+             */
           }
         }
       }

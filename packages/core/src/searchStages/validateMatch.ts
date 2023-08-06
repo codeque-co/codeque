@@ -100,7 +100,10 @@ export const validateMatch = (
         log('validate: query val', queryValue)
         log('validate: file val', fileValue)
 
-        if (Array.isArray(fileValue as PoorNodeType[])) {
+        if (
+          Array.isArray(fileValue as PoorNodeType[]) &&
+          Array.isArray(queryValue as PoorNodeType[])
+        ) {
           log('validate: is array')
           const fileNodesArr = (fileValue as PoorNodeType[]).filter(
             parserSettings.shouldCompareNode,

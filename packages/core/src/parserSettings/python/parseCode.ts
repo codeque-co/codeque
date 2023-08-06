@@ -8,7 +8,7 @@ const parserModule = (() => {
   let parser: Parser | null = null
   let parserInitError: Error | null = null
 
-  const init = () => {
+  const init = async () => {
     return Parser.init()
       .then(async () => {
         const Python = await Parser.Language.load(

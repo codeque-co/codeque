@@ -131,4 +131,114 @@ describe('Basic queries', () => {
       end: { line: 7, column: 15, index: 131 },
     })
   })
+
+  it('Should match function with return type by query without return type in include mode', () => {
+    const fileContent = `
+      def accepts() -> str:
+        a
+    `
+    const queries = [
+      `
+      def accepts():
+        a
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+
+    const match = matches[0]
+
+    expect(match.loc).toStrictEqual({
+      start: { line: 2, column: 6, index: 7 },
+      end: { line: 3, column: 9, index: 38 },
+    })
+  })
+
+  it('Should match string literal in code', () => {
+    const fileContent = `
+      scopes = BitField(
+        flags=(
+            ("project:read", "project:read")
+        )
+      )
+    `
+
+    const queries = [
+      `
+      "project:read"
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(2)
+  })
+
+  it('Should match multiline', () => {
+    const fileContent = `
+      def from_dsn(cls, dsn):
+        urlparts = urlparse(dsn)
+
+        public_key = urlparts.username
+        project_id = urlparts.path.rsplit("/", 1)[-1]
+
+        try:
+            return ProjectKey.objects.get(public_key=public_key, project=project_id)
+        except ValueError:
+            raise ProjectKey.DoesNotExist("ProjectKey matching query does not exist.")
+    `
+
+    const queries = [
+      `
+      public_key = urlparts.username
+      project_id = urlparts.path.rsplit("/", 1)[-1]
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+
+    const match = matches[0]
+
+    expect(match.loc).toStrictEqual({
+      start: { line: 5, column: 8, index: 73 },
+      end: { line: 6, column: 53, index: 157 },
+    })
+  })
 })

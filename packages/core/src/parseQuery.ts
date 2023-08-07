@@ -88,13 +88,14 @@ export const getUniqueTokens = (
     const raw = numericLiteralUtils.getNumericLiteralValue(queryNode)
 
     if (raw !== parserSettings.wildcardUtils.numericWildcard) {
-      tokens.add(raw)
+      tokens.add(caseInsensitive ? raw.toLocaleLowerCase() : raw)
     }
   }
 
   const nodeKeys = getKeysToCompare(
     queryNode,
     parserSettings.astPropsToSkip,
+    parserSettings.getNodeType,
   ).filter(
     (key) =>
       parserSettings.isNode(queryNode[key] as PoorNodeType) ||

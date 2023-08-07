@@ -265,7 +265,6 @@ describe('Basic queries', () => {
 
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(1)
-    console.log(matches[0].code)
 
     expect(
       dedent`

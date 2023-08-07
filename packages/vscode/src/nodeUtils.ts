@@ -3,6 +3,7 @@ import {
   typeScriptFamilyExtensionTester,
   cssExtensionTester,
   htmlFamilyExtensionTester,
+  pythonExtensionTester,
 } from '@codeque/core'
 import { SearchFileType } from './StateManager'
 
@@ -37,6 +38,10 @@ export const getFileTypeFromFileExtension = (
 
   if (fileExtension.match(htmlFamilyExtensionTester) !== null) {
     return 'html'
+  }
+
+  if (fileExtension.match(pythonExtensionTester) !== null) {
+    return 'python'
   }
 
   return 'all'

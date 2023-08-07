@@ -1,73 +1,54 @@
 import { searchInStrings } from '../../../src/searchInStrings'
-import { getParserSettings, compareCode } from '../../utils'
+import { getParserSettings } from '../../utils'
 
-describe('Basic queries', () => {
+describe('Wildcards', () => {
   beforeAll(async () => {
     await getParserSettings().parserInitPromise
   })
 
-  it('Should exact match identifier', async () => {
+  it('Should match string wildcard', () => {
     const fileContent = `
-      print;
+      scopes = BitField(
+        flags=(
+            ("project:read", "project:read")
+        )
+      )
     `
-    const queries = [fileContent]
 
-    const { matches, errors } = searchInStrings({
-      mode: 'exact',
-      caseInsensitive: true,
-      queryCodes: queries,
-      files: [
-        {
-          path: 'mock',
-          content: fileContent,
-        },
-      ],
-    })
-
-    expect(errors).toHaveLength(0)
-    expect(matches.length).toBe(1)
-  })
-
-  it('Should exact match function definition', () => {
-    const fileContent = `
-      def fib(n):
-        a, b = 0, 1
-        while a < n:
-            print(a, end=' ')
-            a, b = b, a+b
-        print()
-    `
-    const queries = [fileContent]
-
-    const { matches, errors } = searchInStrings({
-      mode: 'exact',
-      caseInsensitive: true,
-      queryCodes: queries,
-      files: [
-        {
-          path: 'mock',
-          content: fileContent,
-        },
-      ],
-    })
-
-    expect(errors).toHaveLength(0)
-    expect(matches.length).toBe(1)
-  })
-
-  it('Should partial match function definition', () => {
-    const fileContent = `
-      def fib(n):
-        a, b = 0, 1
-        while a < n:
-            print(a, end=' ')
-            a, b = b, a+b
-        print()
-    `
     const queries = [
       `
-      def fib(n):
-        print()
+      "pro$$t:read"
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(2)
+  })
+
+  it('Should match node wildcard', () => {
+    const fileContent = `
+      scopes = BitField(
+        flags=(
+            ("project:read", "project:read")
+        )
+      )
+    `
+
+    const queries = [
+      `
+      scopes = $$$
     `,
     ]
 
@@ -87,15 +68,18 @@ describe('Basic queries', () => {
     expect(matches.length).toBe(1)
   })
 
-  it('Should match function with return type by query without return type in include mode', () => {
+  it('Should match identifier wildcard', () => {
     const fileContent = `
-      def accepts() -> str:
-        a
+      scopes = BitField(
+        flags=(
+            ("project:read", "project:read")
+        )
+      )
     `
+
     const queries = [
       `
-      def accepts():
-        a
+      scopes = $$()
     `,
     ]
 
@@ -113,33 +97,16 @@ describe('Basic queries', () => {
 
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(1)
-
-    const match = matches[0]
-
-    expect(match.loc).toStrictEqual({
-      start: { line: 2, column: 6, index: 7 },
-      end: { line: 3, column: 9, index: 38 },
-    })
   })
 
-  it('Should match multiline', () => {
+  it('Should match integer wildcard', () => {
     const fileContent = `
-      def from_dsn(cls, dsn):
-        urlparts = urlparse(dsn)
-
-        public_key = urlparts.username
-        project_id = urlparts.path.rsplit("/", 1)[-1]
-
-        try:
-            return ProjectKey.objects.get(public_key=public_key, project=project_id)
-        except ValueError:
-            raise ProjectKey.DoesNotExist("ProjectKey matching query does not exist.")
+      val = 123
     `
 
     const queries = [
       `
-      public_key = urlparts.username
-      project_id = urlparts.path.rsplit("/", 1)[-1]
+      0x0
     `,
     ]
 
@@ -157,12 +124,32 @@ describe('Basic queries', () => {
 
     expect(errors).toHaveLength(0)
     expect(matches.length).toBe(1)
+  })
 
-    const match = matches[0]
+  it('Should match float wildcard', () => {
+    const fileContent = `
+      val = 123.123
+    `
 
-    expect(match.loc).toStrictEqual({
-      start: { line: 5, column: 8, index: 73 },
-      end: { line: 6, column: 53, index: 157 },
+    const queries = [
+      `
+      0x0
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
     })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
   })
 })

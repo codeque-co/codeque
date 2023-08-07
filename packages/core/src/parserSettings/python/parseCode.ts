@@ -2,7 +2,12 @@ import Parser from 'web-tree-sitter'
 import { collectAstFromTree } from '../../treeSitterUtils'
 import pythonFieldsMeta from './python-fields-meta.json'
 
-const defineRawValueForNodeTypes = ['identifier', 'integer', 'string_content']
+const defineRawValueForNodeTypes = [
+  'identifier',
+  'integer',
+  'string_content',
+  'float',
+]
 
 const parserModule = (() => {
   let parser: Parser | null = null

@@ -87,7 +87,8 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
 }
 // TODO add other numeric types
 const numericLiteralUtils: NumericLiteralUtils = {
-  isNumericLiteralNode: (node: PoorNodeType) => node.nodeType === 'Integer',
+  isNumericLiteralNode: (node: PoorNodeType) =>
+    node.nodeType === 'integer' || node.nodeType === 'float',
   getNumericLiteralValue: (node: PoorNodeType) => node?.rawValue as string,
 }
 
@@ -132,6 +133,16 @@ const replaceEncodedWildcards = (value: string) =>
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
   traverseAst(queryNode, isNode, getNodeType, {
     identifier: (node) => {
+      const nodeName = node.rawValue as string
+
+      if (
+        nodeName.includes(encodedNodeWildcardSequence) ||
+        nodeName.includes(encodedIdentifierWildcardSequence)
+      ) {
+        node.rawValue = replaceEncodedWildcards(nodeName)
+      }
+    },
+    string_content: (node) => {
       const nodeName = node.rawValue as string
 
       if (
@@ -188,11 +199,8 @@ export default pythonParser
 
 /**
  * TODOs:
- * - Support string interpolation `f"project:{self.project_id}:rules"`
- *   - We need to extract string literals and interpolated expressions to node
- * - support detecting python in search from selection
  * - better manage wasm files
- * - support numeric wildcards
+ * - support string wildcards
  * - detect parser errors by looking for "nodeType": "ERROR" nodes in tree
  *   - we can throw in collect to avoid additional traversal
  * - browse python grammar to see which other nodes needs 'rawValue' field

@@ -101,47 +101,6 @@ export const traverseAst = (
   }
 }
 
-export const traverseAstIterative = (
-  fileNode: PoorNodeType,
-  isNode: ParserSettings['isNode'],
-  visitors: Record<string, (node: PoorNodeType) => void>,
-  onNode?: (node: PoorNodeType) => void,
-) => {
-  const stack = [fileNode]
-
-  while (stack.length > 0) {
-    const node = stack.pop() as PoorNodeType
-
-    const visitor = visitors[node.type as string]
-
-    visitor?.(node)
-    onNode?.(node)
-
-    const keysWithNodes: string[] = getKeysWithNodes(
-      node,
-      Object.keys(node),
-      isNode,
-    )
-
-    for (let i = 0; i < keysWithNodes.length; i++) {
-      const key = keysWithNodes[i]
-
-      if (node[key] !== undefined) {
-        if (isNode(node[key] as PoorNodeType)) {
-          stack.push(node[key] as PoorNodeType)
-        } else {
-          const nestedNodesArray = node[key] as PoorNodeType[]
-
-          for (let j = 0; j < nestedNodesArray.length; j++) {
-            const nestedNode = nestedNodesArray[j]
-            stack.push(nestedNode)
-          }
-        }
-      }
-    }
-  }
-}
-
 export const test_traverseAndMatchWithVisitors = (
   fileNode: PoorNodeType,
   queryNode: PoorNodeType,
@@ -167,14 +126,14 @@ export const test_traverseAndMatchWithVisitors = (
 
   const visitorKeysForAliasedTreeWildcards =
     initialMatchContext?.nodesTreeAliasesMap
-      ? Object.values(initialMatchContext?.nodesTreeAliasesMap).map(
-          (alias) => alias.aliasNode.type as string,
+      ? Object.values(initialMatchContext?.nodesTreeAliasesMap).map((alias) =>
+          settings.parserSettings.getNodeType(alias.aliasNode),
         )
       : []
 
   const visitorsMap = uniqueItems(
     getVisitorKeysForQueryNodeType(
-      queryNode.type as string,
+      settings.parserSettings.getNodeType(queryNode),
       settings.parserSettings,
     ),
     ...visitorKeysForAliasedTreeWildcards.map((nodeType) =>

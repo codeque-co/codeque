@@ -36,6 +36,19 @@ export function collectAstFromTree(
      * Receiving node type from parent is performance optimization for slow access to WASM memory
      */
     const nodeType = nodeTypeFromParent ?? node.type
+
+    if (nodeType === 'ERROR') {
+      const errorLocation = getPosition(node)
+      const error = Error(
+        `Parse error at ${errorLocation.start.line}:${errorLocation.start.column}-${errorLocation.end.line}:${errorLocation.end.column}`,
+      )
+
+      //@ts-ignore
+      error.loc = errorLocation
+
+      throw error
+    }
+
     const nodeMeta = nodeFieldsMeta[nodeType]
 
     if (!nodeMeta) {
@@ -75,6 +88,10 @@ export function collectAstFromTree(
         !filedNodes.some((fieldNode) => fieldNode.equals(childNode))
       ) {
         const collectedNodeType = childNode.type as string
+
+        if (collectedNodeType === 'ERROR') {
+          collectAstFromTreeInner(childNode, level + 1, collectedNodeType)
+        }
 
         /**
          * We ignore nodes with types that are not in mapping

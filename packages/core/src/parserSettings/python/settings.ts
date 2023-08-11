@@ -108,8 +108,8 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
 })
 
 const getParseErrorLocation = (e: any) => ({
-  line: e.loc?.line ?? 0,
-  column: e.loc?.column ?? 0,
+  line: e.loc?.start?.line ?? 0,
+  column: e.loc.start?.column ?? 0,
 })
 
 const alternativeNodeTypes = {
@@ -199,13 +199,6 @@ export default pythonParser
 
 /**
  * TODOs:
- * - better manage wasm files
- * - support string wildcards
- * - detect parser errors by looking for "nodeType": "ERROR" nodes in tree
- *   - we can throw in collect to avoid additional traversal
- * - browse python grammar to see which other nodes needs 'rawValue' field
- *   - we can identify leaf nodes from node-types.json by looking at primary expressions
- * - think of other way for async parsing
- *    - how much does it cost to support async parsing
- *    - is initialize with promise good enough for now ?
+ * - better manage wasm files -> standardise it
+ * - check if parsing of query works in query editor
  */

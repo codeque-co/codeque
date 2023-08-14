@@ -109,7 +109,7 @@ const getNodePosition: ParserSettings['getNodePosition'] = (
 
 const getParseErrorLocation = (e: any) => ({
   line: e.loc?.start?.line ?? 0,
-  column: e.loc.start?.column ?? 0,
+  column: e.loc?.start?.column ?? 0,
 })
 
 const alternativeNodeTypes = {

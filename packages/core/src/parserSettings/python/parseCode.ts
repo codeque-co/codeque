@@ -57,6 +57,10 @@ export const parserModule = (() => {
   }
 
   const parse = (code: string) => {
+    if (parserInitError !== null) {
+      throw parserInitError
+    }
+
     if (parser === null) {
       throw new Error('Parser not ready')
     }

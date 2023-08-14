@@ -1,6 +1,5 @@
 import type { SyntaxNode, Tree } from 'web-tree-sitter'
 import { PoorNodeType, TreeSitterNodeFieldsMeta } from './types'
-import path from 'path'
 
 export function collectAstFromTree(
   tree: Tree,
@@ -166,7 +165,11 @@ export const getFieldsMeta = async (
     return (await fetch(basePath + '/' + path)).json()
   }
 
-  return require(sanitizeFsPath(basePath + '/' + path))
+  return JSON.parse(
+    require('fs')
+      .readFileSync(sanitizeFsPath(basePath + '/' + path))
+      .toString(),
+  )
 }
 
 export const getTreeSitterWasmPath = (

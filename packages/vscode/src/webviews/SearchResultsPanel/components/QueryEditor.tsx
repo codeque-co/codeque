@@ -76,6 +76,16 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
   return map[fileType]
 }
 
+const getHostSystemFilesFetchBaseUrl = () => {
+  const mainScriptSrc = document
+    .getElementById('main-script')
+    ?.getAttribute('src')
+
+  if (mainScriptSrc) {
+    return mainScriptSrc.split('/dist-webviews')[0]
+  }
+}
+
 export function QueryEditor({
   query,
   setQuery,
@@ -86,11 +96,16 @@ export function QueryEditor({
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
   const [isEditorFocused, setIsEditorFocused] = useState(false)
-
+  const [hostSystemFilesFetchBaseUrl, setHostSystemFilesFetchBaseUrl] =
+    useState('')
   const handleEditorFocus = useCallback(() => setIsEditorFocused(true), [])
   const handleEditorBlur = useCallback(() => setIsEditorFocused(false), [])
 
   const isEditorFocusedDebounced = useDebounce(isEditorFocused, 200)
+
+  useEffect(() => {
+    setHostSystemFilesFetchBaseUrl(getHostSystemFilesFetchBaseUrl() ?? '')
+  }, [])
 
   useEffect(() => {
     setHasQueryError(Boolean(queryError))
@@ -105,12 +120,15 @@ export function QueryEditor({
         text: 'Query restricted for performance reasons',
         location: { line: 0, column: 0 },
       })
-    } else {
+      // Do not init parser until hostSystemFilesFetchBaseUrl is determined
+    } else if (hostSystemFilesFetchBaseUrl) {
       const handleParse = async () => {
         try {
           const parser = fileTypeToParserMap[fileType]
 
-          await __internal.parserSettingsMap[parser]().parserInitPromise
+          await __internal.parserSettingsMap[parser]().init?.(
+            hostSystemFilesFetchBaseUrl,
+          )
 
           const matches = searchInStrings({
             queryCodes: [query],
@@ -157,7 +175,7 @@ export function QueryEditor({
 
       handleParse()
     }
-  }, [mode, query, fileType])
+  }, [mode, query, fileType, hostSystemFilesFetchBaseUrl])
 
   const queryCustomHighlight = queryError?.location
     ? [getParseErrorHighlight(queryError.location)]

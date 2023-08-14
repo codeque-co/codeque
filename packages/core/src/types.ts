@@ -88,6 +88,7 @@ export type FileSystemSearchArgs = {
   hardStopFlag?: HardStopFlag
   parser?: ParserType
   returnMatchedNodes?: boolean
+  parserFilesBasePath?: string
 }
 
 export type ParseError = {
@@ -285,7 +286,7 @@ export type ParserSettings = {
   preprocessQueryCode?: (code: string) => string
   postprocessQueryNode?: (queryNode: PoorNodeType) => PoorNodeType
   getUniqueTokensFromStringOrIdentifierNode?: GetUniqueTokensFromStringOrIdentifierNode
-  parserInitPromise?: Promise<void>
+  init?: (basePath?: string) => Promise<void>
 }
 
 export type TreeSitterNodeFieldsMeta = Record<

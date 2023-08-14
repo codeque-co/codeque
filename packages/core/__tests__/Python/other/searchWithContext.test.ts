@@ -3,7 +3,7 @@ import { compareCode, getParserSettings } from '../../utils'
 
 describe('Search with context', () => {
   beforeAll(async () => {
-    await getParserSettings().parserInitPromise
+    await getParserSettings().init?.()
   })
 
   it('Should partial match function definition using wildcard and alias', () => {

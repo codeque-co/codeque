@@ -44,12 +44,13 @@ export function activate(context: vscode.ExtensionContext) {
     }
   })
 
-  const sidebarProvider = new SidebarProvider(
-    context.extensionUri,
-    stateManager,
-  )
+  const sidebarProvider = new SidebarProvider(extensionUri, stateManager)
 
-  const searchManager = new SearchManager(stateManager, telemetryModule)
+  const searchManager = new SearchManager(
+    stateManager,
+    telemetryModule,
+    sanitizeFsPath(extensionUri.fsPath),
+  )
 
   dispose = searchManager.dispose
   const item = vscode.window.createStatusBarItem(

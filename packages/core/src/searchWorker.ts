@@ -8,9 +8,10 @@ import { Matches, SearchWorkerData, WorkerOutboundMessage } from './types'
 const searchWorkerRuntime = async () => {
   const workerData = _workerData as SearchWorkerData
   const parser = workerData.parser
+  const parserFilesBasePath = workerData.parserFilesBasePath
 
   if (parser) {
-    await parserSettingsMap[parser]().parserInitPromise
+    await parserSettingsMap[parser]().init?.(parserFilesBasePath)
   }
 
   const onPartialResult = workerData.reportEachMatch

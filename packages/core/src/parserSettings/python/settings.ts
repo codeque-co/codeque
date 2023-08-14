@@ -16,7 +16,7 @@ import {
   setIdentifierNodeName,
   wildcardUtils,
 } from './common'
-import { parseCode, parserInitPromise } from './parseCode'
+import { parseCode, parserModule } from './parseCode'
 
 const supportedExtensions = ['py']
 
@@ -187,18 +187,20 @@ export const pythonParser: ParserSettings = {
   alternativeNodeTypes,
   preprocessQueryCode,
   postprocessQueryNode,
-  parserInitPromise,
+  init: parserModule.init,
 }
 
 export default pythonParser
 
 /**
- * Let's store <parser>-fields-meta.json in one directory with *.wasm file and package.json (to have version) of given tree-sitter-*
- * - Create a script that would fetch newest files from GH, build wasm, so we can automate updates
- */
-
-/**
  * TODOs:
  * - better manage wasm files -> standardise it
- * - check if parsing of query works in query editor
+ *   - script to copy tree-sitter-port `output` directory into vscode extension dist 
+ *   - script to copy tree-sitter-port `output` directory into core package dist 
+ *   - update webpack config to bundle wasm properly
+ *   - or it actually make more sense to pass wasm file paths into `core` while initialising, because we have 2 webpack configs, so we can avoid two bundles
+ *.  - we can also move parsing query in editor into extension core
+       - it might be a bit slower interaction, but it would be step forward to remove 'web' part of core
+       - no point removing 'web' version from core 'for now'
+ * - check if parsing of query works in query editor and if not fix it
  */

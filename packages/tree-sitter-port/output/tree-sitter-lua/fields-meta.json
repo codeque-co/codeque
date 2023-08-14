@@ -1,0 +1,483 @@
+{
+  "argument_list": {
+    "type": "argument_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "expression_list": "children",
+      "string": "children",
+      "table": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "attribute": {
+    "type": "attribute",
+    "singleFieldNames": ["name"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "binary_expression": {
+    "type": "binary_expression",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "block": {
+    "type": "block",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "return_statement": "children",
+      "break_statement": "children",
+      "call": "children",
+      "do_statement": "children",
+      "empty_statement": "children",
+      "for_generic_statement": "children",
+      "for_numeric_statement": "children",
+      "function_definition_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "label_statement": "children",
+      "local_function_definition_statement": "children",
+      "local_variable_declaration": "children",
+      "repeat_statement": "children",
+      "variable_assignment": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "call": {
+    "type": "call",
+    "singleFieldNames": ["arguments", "function"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "chunk": {
+    "type": "chunk",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "return_statement": "children",
+      "shebang": "children",
+      "break_statement": "children",
+      "call": "children",
+      "do_statement": "children",
+      "empty_statement": "children",
+      "for_generic_statement": "children",
+      "for_numeric_statement": "children",
+      "function_definition_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "label_statement": "children",
+      "local_function_definition_statement": "children",
+      "local_variable_declaration": "children",
+      "repeat_statement": "children",
+      "variable_assignment": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "comment": {
+    "type": "comment",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "do_statement": {
+    "type": "do_statement",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "else_clause": {
+    "type": "else_clause",
+    "singleFieldNames": ["body"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "elseif_clause": {
+    "type": "elseif_clause",
+    "singleFieldNames": ["condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "empty_statement": {
+    "type": "empty_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "expression_list": {
+    "type": "expression_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "binary_expression": "children",
+      "false": "children",
+      "function_definition": "children",
+      "nil": "children",
+      "number": "children",
+      "call": "children",
+      "parenthesized_expression": "children",
+      "variable": "children",
+      "string": "children",
+      "table": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "vararg_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "field": {
+    "type": "field",
+    "singleFieldNames": ["key", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "field_list": {
+    "type": "field_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "field": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "for_generic_statement": {
+    "type": "for_generic_statement",
+    "singleFieldNames": ["body", "left", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "for_numeric_statement": {
+    "type": "for_numeric_statement",
+    "singleFieldNames": ["body", "end", "name", "start", "step"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "function_definition": {
+    "type": "function_definition",
+    "singleFieldNames": ["body", "parameters"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "function_definition_statement": {
+    "type": "function_definition_statement",
+    "singleFieldNames": ["body", "name", "parameters"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "goto_statement": {
+    "type": "goto_statement",
+    "singleFieldNames": ["name"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "if_statement": {
+    "type": "if_statement",
+    "singleFieldNames": ["condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {
+      "else_clause": "alternative",
+      "elseif_clause": "alternative"
+    },
+    "multipleOrChildrenFieldNames": ["alternative"]
+  },
+  "label_statement": {
+    "type": "label_statement",
+    "singleFieldNames": ["name"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "local_function_definition_statement": {
+    "type": "local_function_definition_statement",
+    "singleFieldNames": ["body", "name", "parameters"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "local_variable_declaration": {
+    "type": "local_variable_declaration",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "expression_list": "children",
+      "variable_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parameter_list": {
+    "type": "parameter_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "name",
+      "vararg_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["name", "children"]
+  },
+  "parenthesized_expression": {
+    "type": "parenthesized_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "binary_expression": "children",
+      "false": "children",
+      "function_definition": "children",
+      "nil": "children",
+      "number": "children",
+      "call": "children",
+      "parenthesized_expression": "children",
+      "variable": "children",
+      "string": "children",
+      "table": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "vararg_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "repeat_statement": {
+    "type": "repeat_statement",
+    "singleFieldNames": ["body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "return_statement": {
+    "type": "return_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "empty_statement": "children",
+      "expression_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "string": {
+    "type": "string",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "table": {
+    "type": "table",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "field_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "unary_expression": {
+    "type": "unary_expression",
+    "singleFieldNames": ["argument", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "variable": {
+    "type": "variable",
+    "singleFieldNames": ["field", "method", "name", "table"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "variable_assignment": {
+    "type": "variable_assignment",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "expression_list": "children",
+      "variable_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "variable_list": {
+    "type": "variable_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "name",
+      "variable": "children"
+    },
+    "multipleOrChildrenFieldNames": ["name", "children"]
+  },
+  "while_statement": {
+    "type": "while_statement",
+    "singleFieldNames": ["body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "#": {
+    "type": "#",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "%": {
+    "type": "%",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&": {
+    "type": "&",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "*": {
+    "type": "*",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "+": {
+    "type": "+",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "-": {
+    "type": "-",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "..": {
+    "type": "..",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "/": {
+    "type": "/",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "//": {
+    "type": "//",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<": {
+    "type": "<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<<": {
+    "type": "<<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<=": {
+    "type": "<=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "==": {
+    "type": "==",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">": {
+    "type": ">",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">=": {
+    "type": ">=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">>": {
+    "type": ">>",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "^": {
+    "type": "^",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "and": {
+    "type": "and",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "break_statement": {
+    "type": "break_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "false": {
+    "type": "false",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "identifier": {
+    "type": "identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "nil": {
+    "type": "nil",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "not": {
+    "type": "not",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "number": {
+    "type": "number",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "or": {
+    "type": "or",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "shebang": {
+    "type": "shebang",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "true": {
+    "type": "true",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "vararg_expression": {
+    "type": "vararg_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "|": {
+    "type": "|",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "~": {
+    "type": "~",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "~=": {
+    "type": "~=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  }
+}

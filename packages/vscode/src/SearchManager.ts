@@ -65,10 +65,12 @@ export class SearchManager {
   }
   private lastSearchSettings: StateShape | undefined
   private telemetryReporter: TelemetryModule
+  private extensionSourceRootPath: string
 
   constructor(
     private readonly stateManager: StateManager,
     telemetryReporter: TelemetryModule,
+    extensionSourceRootPath: string,
   ) {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
@@ -77,6 +79,7 @@ export class SearchManager {
     this.maybeStartWatchingFilesList()
     this.watchWorkspaceChanges()
     this.telemetryReporter = telemetryReporter
+    this.extensionSourceRootPath = extensionSourceRootPath
   }
 
   private determineRoots() {
@@ -445,8 +448,6 @@ export class SearchManager {
 
           const parser = fileTypeToParserMap[settings.fileType]
 
-          await __internal.parserSettingsMap[parser]().parserInitPromise
-
           await new Promise<void>((resolve, reject) => {
             // We start search in next tick so not block events delivery and UI update
             setTimeout(
@@ -461,6 +462,7 @@ export class SearchManager {
                     onPartialResult: reportPartialResults,
                     hardStopFlag: this.currentSearchHardStopFlag,
                     maxResultsLimit: this.maxResultsLimit,
+                    parserFilesBasePath: this.extensionSourceRootPath,
                   })
 
                   const searchEnd = Date.now()

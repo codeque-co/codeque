@@ -3,7 +3,7 @@ import { getParserSettings } from '../../utils'
 
 describe('Wildcards', () => {
   beforeAll(async () => {
-    await getParserSettings().parserInitPromise
+    await getParserSettings().init?.()
   })
 
   it('Should match string wildcard', () => {

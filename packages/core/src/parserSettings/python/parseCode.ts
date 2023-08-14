@@ -1,6 +1,12 @@
 import Parser from 'web-tree-sitter'
-import { collectAstFromTree } from '../../treeSitterUtils'
-import pythonFieldsMeta from './python-fields-meta.json'
+import {
+  collectAstFromTree,
+  getFilePaths,
+  getFieldsMeta,
+  getTreeSitterWasmPath,
+} from '../../treeSitterUtils'
+
+import { TreeSitterNodeFieldsMeta } from '../../types'
 
 const defineRawValueForNodeTypes = [
   'identifier',
@@ -9,15 +15,33 @@ const defineRawValueForNodeTypes = [
   'float',
 ]
 
-const parserModule = (() => {
+const getDefaultBasePath = () => {
+  return typeof process?.cwd !== 'undefined' ? process.cwd() : '/'
+}
+
+export const parserModule = (() => {
+  const treeSitterParserName = 'tree-sitter-python'
   let parser: Parser | null = null
   let parserInitError: Error | null = null
+  let fieldsMeta: TreeSitterNodeFieldsMeta | null = null
 
-  const init = async () => {
-    return Parser.init()
+  const filePaths = getFilePaths(treeSitterParserName)
+
+  const init = async (basePathOption?: string | undefined) => {
+    if (parser) {
+      return
+    }
+
+    const basePath = basePathOption ?? getDefaultBasePath()
+
+    return Parser.init({
+      locateFile: () =>
+        getTreeSitterWasmPath(basePath, filePaths.treeSitterWasm),
+    })
       .then(async () => {
+        fieldsMeta = await getFieldsMeta(basePath, filePaths.fieldsMeta)
         const Python = await Parser.Language.load(
-          __dirname + '/tree-sitter-python.wasm',
+          getTreeSitterWasmPath(basePath, filePaths.parserWasm),
         )
 
         const localParser = new Parser()
@@ -37,16 +61,21 @@ const parserModule = (() => {
       throw new Error('Parser not ready')
     }
 
+    if (fieldsMeta === null) {
+      throw new Error("Couldn't load fields meta")
+    }
+
     if (parserInitError) {
       throw parserInitError
     }
 
     const tree = parser.parse(code, undefined)
+
     const ast = collectAstFromTree(
       tree,
       code,
       defineRawValueForNodeTypes,
-      pythonFieldsMeta,
+      fieldsMeta,
     )
 
     tree.delete()
@@ -56,8 +85,6 @@ const parserModule = (() => {
 
   return { init, parse }
 })()
-
-export const parserInitPromise = parserModule.init()
 
 export function parseCode(code: string) {
   return parserModule.parse(code)

@@ -70,7 +70,7 @@
     "esprima": "^4.0.1"
   },
   "scripts": {
-    "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\" && cp ./src/parserSettings/python/tree-sitter-python.wasm ./dist/parserSettings/python/tree-sitter-python.wasm && cp ./src/parserSettings/python/python-fields-meta.json ./dist/parserSettings/python/python-fields-meta.json",
+    "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\"",
     "build:performance": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production_performance yarn build:code\" ",
     "build:test": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=test yarn build:code\" ",
     "build:watch": "rm -rf dist && concurrently \"yarn build:declarations --watch\" \"yarn build:code --watch\" ",

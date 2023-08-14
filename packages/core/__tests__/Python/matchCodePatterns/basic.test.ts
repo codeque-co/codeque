@@ -3,7 +3,7 @@ import { getParserSettings, compareCode } from '../../utils'
 
 describe('Basic queries', () => {
   beforeAll(async () => {
-    await getParserSettings().parserInitPromise
+    await getParserSettings().init?.()
   })
 
   it('Should exact match identifier', async () => {

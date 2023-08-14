@@ -9,6 +9,7 @@ import {
 } from './types'
 import { measureStart, logMetrics } from './utils'
 import { searchInFileSystem } from './searchInFs'
+import { parserSettingsMap } from './parserSettings'
 
 const coresCount = Math.round(cpus().length / 2)
 const singleThreadFilesCountLimitStructuralDefault = 350
@@ -83,8 +84,14 @@ export const searchMultiThread = async ({
         /**
          * Timeout to not block starting other searches
          */
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
+            if (params.parser) {
+              await parserSettingsMap[params.parser]().init?.(
+                params.parserFilesBasePath,
+              )
+            }
+
             const results = searchInFileSystem({
               ...searchParams,
               onPartialResult,

@@ -1,5 +1,6 @@
 import type { SyntaxNode, Tree } from 'web-tree-sitter'
 import { PoorNodeType, TreeSitterNodeFieldsMeta } from './types'
+import path from 'path'
 
 export function collectAstFromTree(
   tree: Tree,
@@ -147,4 +148,45 @@ export function collectAstFromTree(
   }
 
   return collectAstFromTreeInner(tree.rootNode)
+}
+
+export const getFilePaths = (parserName: string) => {
+  return {
+    treeSitterWasm: `dist-tree-sitter/tree-sitter.wasm`,
+    parserWasm: `dist-tree-sitter/${parserName}/parser.wasm`,
+    fieldsMeta: `dist-tree-sitter/${parserName}/fields-meta.json`,
+  }
+}
+
+export const getFieldsMeta = async (
+  basePath: string,
+  path: string,
+): Promise<TreeSitterNodeFieldsMeta> => {
+  if (typeof window !== 'undefined') {
+    return (await fetch(basePath + '/' + path)).json()
+  }
+
+  return require(sanitizeFsPath(basePath + '/' + path))
+}
+
+export const getTreeSitterWasmPath = (
+  basePath: string,
+  parserPath: string,
+): string => {
+  if (typeof window !== 'undefined') {
+    return basePath + '/' + parserPath
+  }
+
+  return sanitizeFsPath(basePath + '/' + parserPath)
+}
+
+export const sanitizeFsPath = (fsPath: string) => {
+  const isWindows = process?.platform.includes('win32')
+
+  // For some reason vscode return lowercased drive letters on windows :/
+  if (isWindows) {
+    return fsPath.replace(/\//g, '\\')
+  }
+
+  return fsPath.replace(/\\/g, '/')
 }

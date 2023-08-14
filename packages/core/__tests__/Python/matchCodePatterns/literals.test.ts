@@ -3,7 +3,7 @@ import { getParserSettings } from '../../utils'
 
 describe('Literals', () => {
   beforeAll(async () => {
-    await getParserSettings().parserInitPromise
+    await getParserSettings().init?.()
   })
 
   it('Should match string literal', () => {

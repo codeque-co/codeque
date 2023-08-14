@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "skipLibCheck": true,
+    "declaration": false
+  },
+  "exclude": ["dist", "node_modules", "output", "input"]
+}

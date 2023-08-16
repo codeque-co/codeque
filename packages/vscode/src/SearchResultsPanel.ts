@@ -4,7 +4,8 @@ import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { getNonce } from './getNonce'
 import { StateManager } from './StateManager'
-
+import fs from 'fs'
+import path from 'path'
 export class SearchResultsPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -47,6 +48,7 @@ export class SearchResultsPanel {
         localResourceRoots: [
           vscode.Uri.joinPath(extensionUri, 'media'),
           vscode.Uri.joinPath(extensionUri, 'dist-webviews'),
+          vscode.Uri.joinPath(extensionUri, 'dist-tree-sitter'),
         ],
       },
     )
@@ -223,10 +225,6 @@ export class SearchResultsPanel {
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'),
     )
 
-    const cssUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css'),
-    )
-
     const nonce = getNonce()
 
     return dedent`
@@ -234,14 +232,14 @@ export class SearchResultsPanel {
       <html lang="en">
         <head>
           <meta charset="UTF-8">
-          <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
+          <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}' 'wasm-unsafe-eval' ;">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${stylesResetUri}" rel="stylesheet">
           <link href="${stylesMainUri}" rel="stylesheet">
         </head>
         <body>
           <div id="root"></div>
-          <script src="${scriptUri}" nonce="${nonce}">
+          <script id="main-script" src="${scriptUri}" nonce="${nonce}">
         </body>
       </html>
     `

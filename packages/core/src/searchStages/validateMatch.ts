@@ -51,7 +51,11 @@ export const validateMatch = (
     queryKeysToTraverseForValidatingMatch.length
   ) {
     throw new Error(
-      `Count of keys to validate in query and file does not match for nodes ${fileNode.type}:${fileNode?.name} ${queryNode.type}:${queryNode?.name}, [${fileKeysToTraverseForValidatingMatch}] [${queryKeysToTraverseForValidatingMatch}]`,
+      `Count of keys to validate in query and file does not match for nodes ${parserSettings.getNodeType(
+        fileNode,
+      )}:${fileNode?.name} ${parserSettings.getNodeType(queryNode)}:${
+        queryNode?.name
+      }, [${fileKeysToTraverseForValidatingMatch}] [${queryKeysToTraverseForValidatingMatch}]`,
     )
   }
 
@@ -100,7 +104,10 @@ export const validateMatch = (
         log('validate: query val', queryValue)
         log('validate: file val', fileValue)
 
-        if (Array.isArray(fileValue as PoorNodeType[])) {
+        if (
+          Array.isArray(fileValue as PoorNodeType[]) &&
+          Array.isArray(queryValue as PoorNodeType[])
+        ) {
           log('validate: is array')
           const fileNodesArr = (fileValue as PoorNodeType[]).filter(
             parserSettings.shouldCompareNode,

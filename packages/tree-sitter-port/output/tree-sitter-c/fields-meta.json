@@ -1,0 +1,1621 @@
+{
+  "abstract_array_declarator": {
+    "type": "abstract_array_declarator",
+    "singleFieldNames": ["declarator", "size"],
+    "nodeTypeToMultipleFieldName": {
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "abstract_function_declarator": {
+    "type": "abstract_function_declarator",
+    "singleFieldNames": ["declarator", "parameters"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "abstract_parenthesized_declarator": {
+    "type": "abstract_parenthesized_declarator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "abstract_array_declarator": "children",
+      "abstract_function_declarator": "children",
+      "abstract_parenthesized_declarator": "children",
+      "abstract_pointer_declarator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "abstract_pointer_declarator": {
+    "type": "abstract_pointer_declarator",
+    "singleFieldNames": ["declarator"],
+    "nodeTypeToMultipleFieldName": {
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "alignof_expression": {
+    "type": "alignof_expression",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "argument_list": {
+    "type": "argument_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "compound_statement": "children",
+      "preproc_defined": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "array_declarator": {
+    "type": "array_declarator",
+    "singleFieldNames": ["declarator", "size"],
+    "nodeTypeToMultipleFieldName": {
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "assignment_expression": {
+    "type": "assignment_expression",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "attribute": {
+    "type": "attribute",
+    "singleFieldNames": ["name", "prefix"],
+    "nodeTypeToMultipleFieldName": {
+      "argument_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "attribute_declaration": {
+    "type": "attribute_declaration",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attribute": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "attribute_specifier": {
+    "type": "attribute_specifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "argument_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "attributed_declarator": {
+    "type": "attributed_declarator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "array_declarator": "children",
+      "attributed_declarator": "children",
+      "function_declarator": "children",
+      "identifier": "children",
+      "parenthesized_declarator": "children",
+      "pointer_declarator": "children",
+      "field_identifier": "children",
+      "primitive_type": "children",
+      "type_identifier": "children",
+      "attribute_declaration": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "attributed_statement": {
+    "type": "attributed_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "attribute_declaration": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "binary_expression": {
+    "type": "binary_expression",
+    "singleFieldNames": ["left", "operator", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "bitfield_clause": {
+    "type": "bitfield_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "break_statement": {
+    "type": "break_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "call_expression": {
+    "type": "call_expression",
+    "singleFieldNames": ["arguments", "function"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "case_statement": {
+    "type": "case_statement",
+    "singleFieldNames": ["value"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "declaration": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "type_definition": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "cast_expression": {
+    "type": "cast_expression",
+    "singleFieldNames": ["type", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "char_literal": {
+    "type": "char_literal",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "character": "children",
+      "escape_sequence": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "comma_expression": {
+    "type": "comma_expression",
+    "singleFieldNames": ["left", "right"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "compound_literal_expression": {
+    "type": "compound_literal_expression",
+    "singleFieldNames": ["type", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "compound_statement": {
+    "type": "compound_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "concatenated_string": {
+    "type": "concatenated_string",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children",
+      "string_literal": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "conditional_expression": {
+    "type": "conditional_expression",
+    "singleFieldNames": ["alternative", "condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "continue_statement": {
+    "type": "continue_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "declaration": {
+    "type": "declaration",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {
+      "array_declarator": "declarator",
+      "attributed_declarator": "declarator",
+      "function_declarator": "declarator",
+      "identifier": "declarator",
+      "parenthesized_declarator": "declarator",
+      "pointer_declarator": "declarator",
+      "gnu_asm_expression": "declarator",
+      "init_declarator": "declarator",
+      "attribute_declaration": "children",
+      "attribute_specifier": "children",
+      "ms_declspec_modifier": "children",
+      "storage_class_specifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["declarator", "children"]
+  },
+  "declaration_list": {
+    "type": "declaration_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "do_statement": {
+    "type": "do_statement",
+    "singleFieldNames": ["body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "else_clause": {
+    "type": "else_clause",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "enum_specifier": {
+    "type": "enum_specifier",
+    "singleFieldNames": ["body", "name", "underlying_type"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_specifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "enumerator": {
+    "type": "enumerator",
+    "singleFieldNames": ["name", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "enumerator_list": {
+    "type": "enumerator_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "enumerator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "expression_statement": {
+    "type": "expression_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "comma_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "field_declaration": {
+    "type": "field_declaration",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {
+      "array_declarator": "declarator",
+      "attributed_declarator": "declarator",
+      "field_identifier": "declarator",
+      "function_declarator": "declarator",
+      "parenthesized_declarator": "declarator",
+      "pointer_declarator": "declarator",
+      "attribute_declaration": "children",
+      "attribute_specifier": "children",
+      "bitfield_clause": "children",
+      "ms_declspec_modifier": "children",
+      "storage_class_specifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["declarator", "children"]
+  },
+  "field_declaration_list": {
+    "type": "field_declaration_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "field_declaration": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "field_designator": {
+    "type": "field_designator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "field_identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "field_expression": {
+    "type": "field_expression",
+    "singleFieldNames": ["argument", "field", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "for_statement": {
+    "type": "for_statement",
+    "singleFieldNames": ["body", "condition", "initializer", "update"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "function_declarator": {
+    "type": "function_declarator",
+    "singleFieldNames": ["declarator", "parameters"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_specifier": "children",
+      "gnu_asm_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "function_definition": {
+    "type": "function_definition",
+    "singleFieldNames": ["body", "declarator", "type"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_declaration": "children",
+      "attribute_specifier": "children",
+      "declaration": "children",
+      "ms_call_modifier": "children",
+      "ms_declspec_modifier": "children",
+      "storage_class_specifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "generic_expression": {
+    "type": "generic_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "type_descriptor": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "gnu_asm_clobber_list": {
+    "type": "gnu_asm_clobber_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "string_literal": "register"
+    },
+    "multipleOrChildrenFieldNames": ["register"]
+  },
+  "gnu_asm_expression": {
+    "type": "gnu_asm_expression",
+    "singleFieldNames": [
+      "assembly_code",
+      "clobbers",
+      "goto_labels",
+      "input_operands",
+      "output_operands"
+    ],
+    "nodeTypeToMultipleFieldName": {
+      "gnu_asm_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "gnu_asm_goto_list": {
+    "type": "gnu_asm_goto_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "label"
+    },
+    "multipleOrChildrenFieldNames": ["label"]
+  },
+  "gnu_asm_input_operand": {
+    "type": "gnu_asm_input_operand",
+    "singleFieldNames": ["constraint", "symbol", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "gnu_asm_input_operand_list": {
+    "type": "gnu_asm_input_operand_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "gnu_asm_input_operand": "operand"
+    },
+    "multipleOrChildrenFieldNames": ["operand"]
+  },
+  "gnu_asm_output_operand": {
+    "type": "gnu_asm_output_operand",
+    "singleFieldNames": ["constraint", "symbol", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "gnu_asm_output_operand_list": {
+    "type": "gnu_asm_output_operand_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "gnu_asm_output_operand": "operand"
+    },
+    "multipleOrChildrenFieldNames": ["operand"]
+  },
+  "gnu_asm_qualifier": {
+    "type": "gnu_asm_qualifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "goto_statement": {
+    "type": "goto_statement",
+    "singleFieldNames": ["label"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "if_statement": {
+    "type": "if_statement",
+    "singleFieldNames": ["alternative", "condition", "consequence"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "init_declarator": {
+    "type": "init_declarator",
+    "singleFieldNames": ["declarator", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "initializer_list": {
+    "type": "initializer_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "initializer_list": "children",
+      "initializer_pair": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "initializer_pair": {
+    "type": "initializer_pair",
+    "singleFieldNames": ["value"],
+    "nodeTypeToMultipleFieldName": {
+      "field_designator": "designator",
+      "subscript_designator": "designator"
+    },
+    "multipleOrChildrenFieldNames": ["designator"]
+  },
+  "labeled_statement": {
+    "type": "labeled_statement",
+    "singleFieldNames": ["label"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "linkage_specification": {
+    "type": "linkage_specification",
+    "singleFieldNames": ["body", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "macro_type_specifier": {
+    "type": "macro_type_specifier",
+    "singleFieldNames": ["name", "type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ms_based_modifier": {
+    "type": "ms_based_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "argument_list": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "ms_call_modifier": {
+    "type": "ms_call_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ms_declspec_modifier": {
+    "type": "ms_declspec_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "ms_pointer_modifier": {
+    "type": "ms_pointer_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "ms_restrict_modifier": "children",
+      "ms_signed_ptr_modifier": "children",
+      "ms_unaligned_ptr_modifier": "children",
+      "ms_unsigned_ptr_modifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "ms_unaligned_ptr_modifier": {
+    "type": "ms_unaligned_ptr_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "null": {
+    "type": "null",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "offsetof_expression": {
+    "type": "offsetof_expression",
+    "singleFieldNames": ["member", "type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "parameter_declaration": {
+    "type": "parameter_declaration",
+    "singleFieldNames": ["declarator", "type"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_declaration": "children",
+      "attribute_specifier": "children",
+      "ms_declspec_modifier": "children",
+      "storage_class_specifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parameter_list": {
+    "type": "parameter_list",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children",
+      "parameter_declaration": "children",
+      "variadic_parameter": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parenthesized_declarator": {
+    "type": "parenthesized_declarator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "array_declarator": "children",
+      "attributed_declarator": "children",
+      "function_declarator": "children",
+      "identifier": "children",
+      "parenthesized_declarator": "children",
+      "pointer_declarator": "children",
+      "field_identifier": "children",
+      "primitive_type": "children",
+      "type_identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "parenthesized_expression": {
+    "type": "parenthesized_expression",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "comma_expression": "children",
+      "preproc_defined": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "pointer_declarator": {
+    "type": "pointer_declarator",
+    "singleFieldNames": ["declarator"],
+    "nodeTypeToMultipleFieldName": {
+      "ms_based_modifier": "children",
+      "ms_pointer_modifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "pointer_expression": {
+    "type": "pointer_expression",
+    "singleFieldNames": ["argument", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_call": {
+    "type": "preproc_call",
+    "singleFieldNames": ["argument", "directive"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_def": {
+    "type": "preproc_def",
+    "singleFieldNames": ["name", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_defined": {
+    "type": "preproc_defined",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_elif": {
+    "type": "preproc_elif",
+    "singleFieldNames": ["alternative", "condition"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "field_declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_elifdef": {
+    "type": "preproc_elifdef",
+    "singleFieldNames": ["alternative", "name"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_else": {
+    "type": "preproc_else",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "field_declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_function_def": {
+    "type": "preproc_function_def",
+    "singleFieldNames": ["name", "parameters", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_if": {
+    "type": "preproc_if",
+    "singleFieldNames": ["alternative", "condition"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "field_declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_ifdef": {
+    "type": "preproc_ifdef",
+    "singleFieldNames": ["alternative", "name"],
+    "nodeTypeToMultipleFieldName": {
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "while_statement": "children",
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "declaration": "children",
+      "field_declaration": "children",
+      "function_definition": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "type_definition": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "preproc_include": {
+    "type": "preproc_include",
+    "singleFieldNames": ["path"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_params": {
+    "type": "preproc_params",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "return_statement": {
+    "type": "return_statement",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children",
+      "comma_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "sized_type_specifier": {
+    "type": "sized_type_specifier",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "sizeof_expression": {
+    "type": "sizeof_expression",
+    "singleFieldNames": ["type", "value"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "storage_class_specifier": {
+    "type": "storage_class_specifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "string_literal": {
+    "type": "string_literal",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "escape_sequence": "children",
+      "string_content": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "struct_specifier": {
+    "type": "struct_specifier",
+    "singleFieldNames": ["body", "name"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_specifier": "children",
+      "ms_declspec_modifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "subscript_designator": {
+    "type": "subscript_designator",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "alignof_expression": "children",
+      "assignment_expression": "children",
+      "binary_expression": "children",
+      "call_expression": "children",
+      "cast_expression": "children",
+      "char_literal": "children",
+      "compound_literal_expression": "children",
+      "concatenated_string": "children",
+      "conditional_expression": "children",
+      "false": "children",
+      "field_expression": "children",
+      "generic_expression": "children",
+      "gnu_asm_expression": "children",
+      "identifier": "children",
+      "null": "children",
+      "number_literal": "children",
+      "offsetof_expression": "children",
+      "parenthesized_expression": "children",
+      "pointer_expression": "children",
+      "sizeof_expression": "children",
+      "string_literal": "children",
+      "subscript_expression": "children",
+      "true": "children",
+      "unary_expression": "children",
+      "update_expression": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "subscript_expression": {
+    "type": "subscript_expression",
+    "singleFieldNames": ["argument", "index"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "switch_statement": {
+    "type": "switch_statement",
+    "singleFieldNames": ["body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "translation_unit": {
+    "type": "translation_unit",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "enum_specifier": "children",
+      "macro_type_specifier": "children",
+      "primitive_type": "children",
+      "sized_type_specifier": "children",
+      "struct_specifier": "children",
+      "type_identifier": "children",
+      "union_specifier": "children",
+      "attributed_statement": "children",
+      "break_statement": "children",
+      "case_statement": "children",
+      "compound_statement": "children",
+      "continue_statement": "children",
+      "declaration": "children",
+      "do_statement": "children",
+      "expression_statement": "children",
+      "for_statement": "children",
+      "function_definition": "children",
+      "goto_statement": "children",
+      "if_statement": "children",
+      "labeled_statement": "children",
+      "linkage_specification": "children",
+      "preproc_call": "children",
+      "preproc_def": "children",
+      "preproc_function_def": "children",
+      "preproc_if": "children",
+      "preproc_ifdef": "children",
+      "preproc_include": "children",
+      "return_statement": "children",
+      "switch_statement": "children",
+      "type_definition": "children",
+      "while_statement": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "type_definition": {
+    "type": "type_definition",
+    "singleFieldNames": ["type"],
+    "nodeTypeToMultipleFieldName": {
+      "array_declarator": "declarator",
+      "attributed_declarator": "declarator",
+      "function_declarator": "declarator",
+      "parenthesized_declarator": "declarator",
+      "pointer_declarator": "declarator",
+      "primitive_type": "declarator",
+      "type_identifier": "declarator",
+      "attribute_specifier": "children",
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["declarator", "children"]
+  },
+  "type_descriptor": {
+    "type": "type_descriptor",
+    "singleFieldNames": ["declarator", "type"],
+    "nodeTypeToMultipleFieldName": {
+      "type_qualifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "type_qualifier": {
+    "type": "type_qualifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "unary_expression": {
+    "type": "unary_expression",
+    "singleFieldNames": ["argument", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "union_specifier": {
+    "type": "union_specifier",
+    "singleFieldNames": ["body", "name"],
+    "nodeTypeToMultipleFieldName": {
+      "attribute_specifier": "children",
+      "ms_declspec_modifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "update_expression": {
+    "type": "update_expression",
+    "singleFieldNames": ["argument", "operator"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "variadic_parameter": {
+    "type": "variadic_parameter",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "while_statement": {
+    "type": "while_statement",
+    "singleFieldNames": ["body", "condition"],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "!": {
+    "type": "!",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "!=": {
+    "type": "!=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "%": {
+    "type": "%",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "%=": {
+    "type": "%=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&": {
+    "type": "&",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&&": {
+    "type": "&&",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "&=": {
+    "type": "&=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "*": {
+    "type": "*",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "*=": {
+    "type": "*=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "+": {
+    "type": "+",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "++": {
+    "type": "++",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "+=": {
+    "type": "+=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "-": {
+    "type": "-",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "--": {
+    "type": "--",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "-=": {
+    "type": "-=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "->": {
+    "type": "->",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ".": {
+    "type": ".",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "/": {
+    "type": "/",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "/=": {
+    "type": "/=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<": {
+    "type": "<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<<": {
+    "type": "<<",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<<=": {
+    "type": "<<=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "<=": {
+    "type": "<=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "=": {
+    "type": "=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "==": {
+    "type": "==",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">": {
+    "type": ">",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">=": {
+    "type": ">=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">>": {
+    "type": ">>",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  ">>=": {
+    "type": ">>=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "^": {
+    "type": "^",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "^=": {
+    "type": "^=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "character": {
+    "type": "character",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "comment": {
+    "type": "comment",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "escape_sequence": {
+    "type": "escape_sequence",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "false": {
+    "type": "false",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "field_identifier": {
+    "type": "field_identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "identifier": {
+    "type": "identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ms_restrict_modifier": {
+    "type": "ms_restrict_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ms_signed_ptr_modifier": {
+    "type": "ms_signed_ptr_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "ms_unsigned_ptr_modifier": {
+    "type": "ms_unsigned_ptr_modifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "number_literal": {
+    "type": "number_literal",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_arg": {
+    "type": "preproc_arg",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "preproc_directive": {
+    "type": "preproc_directive",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "primitive_type": {
+    "type": "primitive_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "statement_identifier": {
+    "type": "statement_identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "string_content": {
+    "type": "string_content",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "system_lib_string": {
+    "type": "system_lib_string",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "true": {
+    "type": "true",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "type_identifier": {
+    "type": "type_identifier",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "|": {
+    "type": "|",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "|=": {
+    "type": "|=",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "||": {
+    "type": "||",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "~": {
+    "type": "~",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  }
+}

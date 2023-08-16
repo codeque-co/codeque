@@ -20,4 +20,5 @@ export const wildcardUtils = createWildcardUtils(
   numericWildcard,
   wildcardChar,
   getIdentifierNodeName,
+  getNodeType,
 )

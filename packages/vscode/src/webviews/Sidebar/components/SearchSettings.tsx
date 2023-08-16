@@ -309,6 +309,23 @@ export function SearchSettings({
           </RadioGroup>
         </Flex>
         <Text fontWeight="medium" mb="1">
+          Experimental file types:
+        </Text>
+        <Flex mb="4" alignItems="center">
+          <RadioGroup value={fileType} onChange={handleFileTypeChange}>
+            <Stack direction="row" flexWrap="wrap">
+              <Radio
+                value="python"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                Python
+              </Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
+        <Text fontWeight="medium" mb="1">
           Mode:
         </Text>
         <Flex mb="4" alignItems="center">
@@ -322,29 +339,34 @@ export function SearchSettings({
               >
                 text
               </Radio>
-              <Flex {...disabledSearchModeCursorProps}>
+              <Flex
+                {...disabledSearchModeCursorProps}
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+              >
                 <Flex {...disabledSearchModeProps}>
-                  <Radio
-                    value="include"
-                    marginStart="0 !important"
-                    marginEnd="1rem !important"
-                    borderColor="blue.200"
-                  >
+                  <Radio value="include" borderColor="blue.200">
                     include
                   </Radio>
-                  <Radio
-                    value="exact"
-                    marginStart="0 !important"
-                    marginEnd="1rem !important"
-                    borderColor="blue.200"
-                  >
+                </Flex>
+              </Flex>
+              <Flex
+                {...disabledSearchModeCursorProps}
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+              >
+                <Flex {...disabledSearchModeProps}>
+                  <Radio value="exact" borderColor="blue.200">
                     exact
                   </Radio>
-                  <Radio
-                    value="include-with-order"
-                    marginStart="0 !important"
-                    borderColor="blue.200"
-                  >
+                </Flex>
+              </Flex>
+              <Flex
+                {...disabledSearchModeCursorProps}
+                marginStart="0 !important"
+              >
+                <Flex {...disabledSearchModeProps}>
+                  <Radio value="include-with-order" borderColor="blue.200">
                     include with order
                   </Radio>
                 </Flex>

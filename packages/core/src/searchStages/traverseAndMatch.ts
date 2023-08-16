@@ -38,6 +38,7 @@ type ParentMeta = {
 export const traverseAst = (
   fileNode: PoorNodeType,
   isNode: ParserSettings['isNode'],
+  getNodeType: ParserSettings['getNodeType'],
   visitors: Record<string, (node: PoorNodeType) => void>,
   onNode?: (node: PoorNodeType, parentMeta?: ParentMeta) => void,
   parentMeta?: {
@@ -46,7 +47,7 @@ export const traverseAst = (
     index?: number
   },
 ) => {
-  const visitor = visitors[fileNode.type as string]
+  const visitor = visitors[getNodeType(fileNode)]
 
   visitor?.(fileNode)
   onNode?.(fileNode, parentMeta)
@@ -70,6 +71,7 @@ export const traverseAst = (
         traverseAst(
           fileNode[key] as PoorNodeType,
           isNode,
+          getNodeType,
           visitors,
           onNode,
           parentMeta,
@@ -84,48 +86,15 @@ export const traverseAst = (
             index: j,
           }
           const nestedNode = nestedNodesArray[j]
-          traverseAst(nestedNode, isNode, visitors, onNode, parentMeta)
-        }
-      }
-    }
-  }
-}
 
-export const traverseAstIterative = (
-  fileNode: PoorNodeType,
-  isNode: ParserSettings['isNode'],
-  visitors: Record<string, (node: PoorNodeType) => void>,
-  onNode?: (node: PoorNodeType) => void,
-) => {
-  const stack = [fileNode]
-
-  while (stack.length > 0) {
-    const node = stack.pop() as PoorNodeType
-
-    const visitor = visitors[node.type as string]
-
-    visitor?.(node)
-    onNode?.(node)
-
-    const keysWithNodes: string[] = getKeysWithNodes(
-      node,
-      Object.keys(node),
-      isNode,
-    )
-
-    for (let i = 0; i < keysWithNodes.length; i++) {
-      const key = keysWithNodes[i]
-
-      if (node[key] !== undefined) {
-        if (isNode(node[key] as PoorNodeType)) {
-          stack.push(node[key] as PoorNodeType)
-        } else {
-          const nestedNodesArray = node[key] as PoorNodeType[]
-
-          for (let j = 0; j < nestedNodesArray.length; j++) {
-            const nestedNode = nestedNodesArray[j]
-            stack.push(nestedNode)
-          }
+          traverseAst(
+            nestedNode,
+            isNode,
+            getNodeType,
+            visitors,
+            onNode,
+            parentMeta,
+          )
         }
       }
     }
@@ -157,14 +126,14 @@ export const test_traverseAndMatchWithVisitors = (
 
   const visitorKeysForAliasedTreeWildcards =
     initialMatchContext?.nodesTreeAliasesMap
-      ? Object.values(initialMatchContext?.nodesTreeAliasesMap).map(
-          (alias) => alias.aliasNode.type as string,
+      ? Object.values(initialMatchContext?.nodesTreeAliasesMap).map((alias) =>
+          settings.parserSettings.getNodeType(alias.aliasNode),
         )
       : []
 
   const visitorsMap = uniqueItems(
     getVisitorKeysForQueryNodeType(
-      queryNode.type as string,
+      settings.parserSettings.getNodeType(queryNode),
       settings.parserSettings,
     ),
     ...visitorKeysForAliasedTreeWildcards.map((nodeType) =>
@@ -178,7 +147,12 @@ export const test_traverseAndMatchWithVisitors = (
     {},
   )
 
-  traverseAst(fileNode, settings.parserSettings.isNode, visitorsMap)
+  traverseAst(
+    fileNode,
+    settings.parserSettings.isNode,
+    settings.parserSettings.getNodeType,
+    visitorsMap,
+  )
 
   return matches
 }

@@ -54,11 +54,6 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
 }
 
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  // Eslint-typescript is about to remove optionality of properties https://github.com/typescript-eslint/typescript-eslint/pull/6274
-  return true
-}
-
 const astPropsToSkip = [
   'loc',
   'range',
@@ -215,7 +210,6 @@ export const typescriptEslintParserSettings: ParserSettings = {
   isIdentifierNode,
   identifierNodeTypes,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,

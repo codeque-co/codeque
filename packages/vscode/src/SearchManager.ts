@@ -12,7 +12,7 @@ import {
   cssExtensionTester,
   htmlFamilyExtensionTester,
   filterExtensions,
-  ParserType,
+  pythonExtensionTester,
   __internal,
 } from '@codeque/core'
 import {
@@ -28,7 +28,6 @@ import {
   fileTypeToParserMap,
   nonSearchableExtensions,
 } from './utils'
-import TelemetryReporter from '@vscode/extension-telemetry'
 import { TelemetryModule } from './telemetry'
 import { isQueryRestricted } from './restrictedQueries'
 
@@ -44,6 +43,7 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   html: htmlFamilyExtensionTester,
   'js-ts-json': typeScriptFamilyExtensionTester,
   css: cssExtensionTester,
+  python: pythonExtensionTester,
 }
 
 export class SearchManager {
@@ -65,10 +65,12 @@ export class SearchManager {
   }
   private lastSearchSettings: StateShape | undefined
   private telemetryReporter: TelemetryModule
+  private extensionSourceRootPath: string
 
   constructor(
     private readonly stateManager: StateManager,
     telemetryReporter: TelemetryModule,
+    extensionSourceRootPath: string,
   ) {
     eventBusInstance.addListener('start-search', this.startSearch)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
@@ -77,6 +79,7 @@ export class SearchManager {
     this.maybeStartWatchingFilesList()
     this.watchWorkspaceChanges()
     this.telemetryReporter = telemetryReporter
+    this.extensionSourceRootPath = extensionSourceRootPath
   }
 
   private determineRoots() {
@@ -459,6 +462,7 @@ export class SearchManager {
                     onPartialResult: reportPartialResults,
                     hardStopFlag: this.currentSearchHardStopFlag,
                     maxResultsLimit: this.maxResultsLimit,
+                    parserFilesBasePath: this.extensionSourceRootPath,
                   })
 
                   const searchEnd = Date.now()
@@ -531,7 +535,7 @@ export class SearchManager {
         'Search error: ' + error?.message + '\n\nStack:\n' + error?.stack,
       )
 
-      console.error(error)
+      console.error(typeof error, error, error.stack, error.message)
 
       const searchTime = (Date.now() - searchStart) / 1000
 

@@ -49,10 +49,6 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
 }
 
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return true
-}
-
 const astPropsToSkip = [
   'range',
   'sourceSpan',
@@ -171,7 +167,7 @@ const replaceEncodedWildcards = (value: string) =>
   value.replace(/a_\$\$_x/g, () => '$$')
 
 const postprocessQueryNode = (queryNode: PoorNodeType) => {
-  traverseAst(queryNode, isNode, {
+  traverseAst(queryNode, isNode, getNodeType, {
     Element$1: (node) => {
       const nodeName = node.name as string
 
@@ -249,7 +245,6 @@ export const angularEslintTemplateParser: ParserSettings = {
   isNode,
   isIdentifierNode,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,

@@ -75,6 +75,7 @@ export type ParserType =
   | 'babel-eslint-parser'
   | 'angular-eslint-template-parser'
   | 'css-tree'
+  | 'python'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]
@@ -87,6 +88,7 @@ export type FileSystemSearchArgs = {
   hardStopFlag?: HardStopFlag
   parser?: ParserType
   returnMatchedNodes?: boolean
+  parserFilesBasePath?: string
 }
 
 export type ParseError = {
@@ -249,12 +251,6 @@ export type ParserSettings = {
   identifierNodeTypes: string[]
   isIdentifierNode: (node: PoorNodeType) => boolean
   astPropsToSkip: (string | { type: string; key: string })[]
-  /**
-   * This one is tricky, we use it to remove `null` or `undefined` properties from file node that are not present in query node
-   * Even if we use proper mapping for babel, we can also just `return true` to make it work
-   * Keeping this for now, but perhaps in future it could be removed, because we use it only in include mode, where everything should be optional
-   */
-  isNodeFieldOptional: (nodeType: string, nodeFieldKey: string) => boolean
   getProgramBodyFromRootNode: (node: PoorNodeType) => PoorNodeType[]
   getProgramNodeFromRootNode: (node: PoorNodeType) => PoorNodeType
   getNodeType: (node: PoorNodeType) => string
@@ -284,4 +280,15 @@ export type ParserSettings = {
   preprocessQueryCode?: (code: string) => string
   postprocessQueryNode?: (queryNode: PoorNodeType) => PoorNodeType
   getUniqueTokensFromStringOrIdentifierNode?: GetUniqueTokensFromStringOrIdentifierNode
+  init?: (basePath?: string) => Promise<void>
 }
+
+export type TreeSitterNodeFieldsMeta = Record<
+  string,
+  {
+    type: string
+    singleFieldNames: string[]
+    nodeTypeToMultipleFieldName: Record<string, string>
+    multipleOrChildrenFieldNames: string[]
+  }
+>

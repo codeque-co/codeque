@@ -1,5 +1,4 @@
 import { parse, ParserOptions, ParserPlugin } from '@babel/parser'
-import { NODE_FIELDS } from '@babel/types'
 import {
   ParserSettings,
   PoorNodeType,
@@ -58,14 +57,6 @@ const createBlockStatementNode = (
 
 const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
-}
-
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return Boolean(
-    (NODE_FIELDS[nodeType] as { [key: string]: { optional: boolean } })[
-      nodeFieldKey
-    ]?.optional ?? true,
-  )
 }
 
 const astPropsToSkip = [
@@ -231,7 +222,6 @@ export const babelParserSettings: ParserSettings = {
   isIdentifierNode,
   identifierNodeTypes,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,

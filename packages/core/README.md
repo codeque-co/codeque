@@ -24,7 +24,7 @@ It matches code structurally which makes it excellent for more complex queries.
 
 Query language offers wildcards, partial matching and ignores code formatting. 
 
-Structural code search is available for JavaScript, TypesScript, HTML, CSS and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python and more soon.
 
 Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
 

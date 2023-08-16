@@ -32,20 +32,22 @@ const isNodeKey = (
   node: PoorNodeType,
   key: string,
   keysToCheck: ParserSettings['astPropsToSkip'],
+  getNodeType: ParserSettings['getNodeType'],
 ) =>
   key.startsWith('__') ||
   keysToCheck.some((keyToCheck) =>
     typeof keyToCheck === 'string'
       ? key === keyToCheck
-      : node.type === keyToCheck.type && keyToCheck.key === key,
+      : getNodeType(node) === keyToCheck.type && keyToCheck.key === key,
   )
 
 export const getKeysToCompare = (
   node: PoorNodeType,
   astPropsToSkip: ParserSettings['astPropsToSkip'],
+  getNodeType: ParserSettings['getNodeType'],
 ) => {
   return Object.keys(node).filter(
-    (key) => !isNodeKey(node, key, astPropsToSkip),
+    (key) => !isNodeKey(node, key, astPropsToSkip, getNodeType),
   )
 }
 
@@ -54,12 +56,12 @@ export const getSetsOfKeysToCompare = (
   queryNode: PoorNodeType,
   isExact: boolean,
   astPropsToSkip: ParserSettings['astPropsToSkip'],
-  isNodeFieldOptional: ParserSettings['isNodeFieldOptional'],
+  getNodeType: ParserSettings['getNodeType'],
 ) => {
-  const allFileKeys = getKeysToCompare(fileNode, astPropsToSkip)
-  const allQueryKeys = getKeysToCompare(queryNode, astPropsToSkip)
+  const allFileKeys = getKeysToCompare(fileNode, astPropsToSkip, getNodeType)
+  const allQueryKeys = getKeysToCompare(queryNode, astPropsToSkip, getNodeType)
 
-  if (isExact || fileNode.type !== queryNode.type) {
+  if (isExact || getNodeType(fileNode) !== getNodeType(queryNode)) {
     return [allFileKeys, allQueryKeys, allFileKeys, allQueryKeys]
   }
 
@@ -73,8 +75,7 @@ export const getSetsOfKeysToCompare = (
 
   const fileKeysToRemove = allFileKeys.filter(
     (fileKey) =>
-      (!allQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey])) &&
-      isNodeFieldOptional(fileNode.type as string, fileKey),
+      !allQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey]),
   )
 
   const includeFileKeys = allFileKeys.filter(
@@ -94,11 +95,12 @@ export const getSetsOfKeysToCompare = (
 const removeKeysFromNode = (
   obj: PoorNodeType,
   keys: ParserSettings['astPropsToSkip'],
+  getNodeType: ParserSettings['getNodeType'],
 ) => {
   const newObj = {} as PoorNodeType
 
   Object.entries(obj).forEach(([key, val]) => {
-    if (!isNodeKey(obj, key, keys)) {
+    if (!isNodeKey(obj, key, keys, getNodeType)) {
       newObj[key] = val
     }
   })
@@ -113,9 +115,14 @@ export const cleanupAst = (
     shouldCompareNode: ParserSettings['shouldCompareNode']
     astPropsToSkip: ParserSettings['astPropsToSkip']
     getSanitizedNodeValue: ParserSettings['getSanitizedNodeValue']
+    getNodeType: ParserSettings['getNodeType']
   },
 ) => {
-  const cleanedAst = removeKeysFromNode(ast, parserSettings.astPropsToSkip)
+  const cleanedAst = removeKeysFromNode(
+    ast,
+    parserSettings.astPropsToSkip,
+    parserSettings.getNodeType,
+  )
 
   Object.keys(cleanedAst).forEach((key) => {
     if (parserSettings.isNode(cleanedAst[key] as PoorNodeType)) {
@@ -131,7 +138,7 @@ export const cleanupAst = (
         .map((subAst) => cleanupAst(subAst, parserSettings))
     } else {
       cleanedAst[key] = parserSettings.getSanitizedNodeValue(
-        cleanedAst.type as string,
+        parserSettings.getNodeType(cleanedAst),
         key,
         cleanedAst[key],
       )
@@ -148,6 +155,7 @@ type CompareCodeParserSettingsSubset = {
   parseCode: ParserSettings['parseCode']
   getSanitizedNodeValue: ParserSettings['getSanitizedNodeValue']
   getProgramNodeFromRootNode: ParserSettings['getProgramNodeFromRootNode']
+  getNodeType: ParserSettings['getNodeType']
 }
 
 export const compareCode = (

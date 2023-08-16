@@ -1,6 +1,6 @@
 {
   "name": "@codeque/core",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML and CSS",
   "author": "Jakub Mazurek (@jayu) <jakub.mazurek.dev@gmail.com>",
   "license": "Sustainable Use License",
@@ -56,20 +56,20 @@
   "dependencies": {
     "@babel/parser": "7.19.4",
     "@babel/plugin-syntax-typescript": "7.18.6",
-    "@babel/types": "7.19.4",
     "@types/css-tree": "^2.3.1",
     "dedent": "^0.7.0",
     "dpdm": "^3.12.0",
     "glob-escape": "^0.0.2",
     "ignore": "^5.1.9",
-    "minimatch": "^5.1.0"
+    "minimatch": "^5.1.0",
+    "web-tree-sitter": "^0.20.8"
   },
   "peerDependencies": {
     "@typescript-eslint/parser": "^5.50.0",
     "esprima": "^4.0.1"
   },
   "scripts": {
-    "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\" ",
+    "build": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production yarn build:code\"",
     "build:performance": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=production_performance yarn build:code\" ",
     "build:test": "rm -rf dist && concurrently \"yarn build:declarations\" \"BABEL_ENV=test yarn build:code\" ",
     "build:watch": "rm -rf dist && concurrently \"yarn build:declarations --watch\" \"yarn build:code --watch\" ",
@@ -88,6 +88,7 @@
     "test:espree": "jest --selectProjects=espree",
     "test:espree:traversal": "jest --selectProjects=espree:traversal",
     "test:angular-eslint-template-parser": "jest --selectProjects=angular-eslint-template-parser",
+    "test:python": "jest --selectProjects=python",
     "test:css-tree": "jest --selectProjects=css-tree",
     "test:circular": "dpdm --exit-code circular:1 --tree=false --warning=false './src/**'",
     "test:setup": "node ./tools/getFixtures.js",

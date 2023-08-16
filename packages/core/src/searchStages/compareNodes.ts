@@ -36,6 +36,8 @@ export const compareNodes = (
     getCodeForNode = () => 'getCodeForNode not provided',
   } = searchSettings
 
+  const { getNodeType } = parserSettings
+
   const queryKeysMapper = keyWithPrefix(queryKeysPrefix)
   const fileKeysMapper = keyWithPrefix(fileKeysPrefix)
 
@@ -63,14 +65,14 @@ export const compareNodes = (
     queryNode,
     isExact,
     parserSettings.astPropsToSkip,
-    parserSettings.isNodeFieldOptional,
+    parserSettings.getNodeType,
   )
 
   log(
     'compare: query node type',
-    queryNode.type,
+    getNodeType(queryNode),
     'file node type',
-    fileNode.type,
+    getNodeType(fileNode),
   )
 
   log('compare: queryKeys', queryKeys)
@@ -233,7 +235,7 @@ export const compareNodes = (
     const isStringWithWildcard =
       stringLikeLiteralUtils.isStringLikeLiteralNode(queryNode) &&
       stringLikeLiteralUtils.isStringLikeLiteralNode(fileNode) &&
-      queryNode.type === fileNode.type && // todo possibility to match string literals in other places (for include mode)
+      getNodeType(queryNode) === getNodeType(fileNode) && // todo possibility to match string literals in other places (for include mode)
       regExpTest(
         anyStringWildcardRegExp,
         stringLikeLiteralUtils.getStringLikeLiteralValue(queryNode),
@@ -337,7 +339,7 @@ export const compareNodes = (
 
   if (
     queryKeys.length !== fileKeys.length ||
-    fileNode.type !== queryNode.type
+    getNodeType(fileNode) !== getNodeType(queryNode)
   ) {
     measureCompare()
 
@@ -367,12 +369,12 @@ export const compareNodes = (
       primitivePropsCount++
 
       const sanitizedQueryValue = parserSettings.getSanitizedNodeValue(
-        queryNode.type as string,
+        getNodeType(queryNode),
         key,
         queryValue,
       )
       const sanitizedFileValue = parserSettings.getSanitizedNodeValue(
-        fileNode.type as string,
+        getNodeType(fileNode),
         key,
         fileValue,
       )

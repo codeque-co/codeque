@@ -65,10 +65,12 @@ export const searchInFileSystem = ({
   if (!parseOk) {
     log('Parse query failed')
 
+    const errors = queries.filter((queryResult) => queryResult.error)
+
     return {
       matches: [],
       hints: queries.map(({ hints }) => hints),
-      errors: queries.filter((queryResult) => queryResult.error),
+      errors,
     }
   }
 

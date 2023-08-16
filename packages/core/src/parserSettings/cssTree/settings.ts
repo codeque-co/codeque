@@ -50,10 +50,6 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
 }
 
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return true
-}
-
 const astPropsToSkip = ['loc']
 
 const parseCode = (code: string) => {
@@ -359,7 +355,6 @@ export const cssTree: ParserSettings = {
   isNode,
   isIdentifierNode,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,

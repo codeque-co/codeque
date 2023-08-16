@@ -56,7 +56,6 @@ export const getSetsOfKeysToCompare = (
   queryNode: PoorNodeType,
   isExact: boolean,
   astPropsToSkip: ParserSettings['astPropsToSkip'],
-  isNodeFieldOptional: ParserSettings['isNodeFieldOptional'],
   getNodeType: ParserSettings['getNodeType'],
 ) => {
   const allFileKeys = getKeysToCompare(fileNode, astPropsToSkip, getNodeType)
@@ -76,8 +75,7 @@ export const getSetsOfKeysToCompare = (
 
   const fileKeysToRemove = allFileKeys.filter(
     (fileKey) =>
-      (!allQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey])) &&
-      isNodeFieldOptional(getNodeType(fileNode), fileKey),
+      !allQueryKeys.includes(fileKey) || isNullOrUndef(queryNode[fileKey]),
   )
 
   const includeFileKeys = allFileKeys.filter(

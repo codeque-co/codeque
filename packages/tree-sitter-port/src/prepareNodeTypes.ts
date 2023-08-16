@@ -121,7 +121,7 @@ export const prepareNodeTypes = ({
                  */
                 nodeTypes: value.types
                   .map(({ type }) => extrapolateBySubtype(type))
-                  .flat(10),
+                  .flat(1),
               },
             ]
           }),
@@ -203,7 +203,7 @@ export const prepareNodeTypes = ({
         if (resolver) {
           const mergeSourceFieldName = [
             conflictObj.fieldNameA,
-            conflict.fieldNameB,
+            conflictObj.fieldNameB,
           ].filter((fieldName) => fieldName !== resolver.mergeToField)[0]
 
           fieldsMeta[resolver.mergeToField].nodeTypes = uniq([

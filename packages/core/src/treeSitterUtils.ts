@@ -66,13 +66,13 @@ export function collectAstFromTree(
       ...nodeMeta.singleFieldNames.map((fieldName) => [fieldName, null]),
     ])
 
-    const filedNodes: SyntaxNode[] = []
+    const fieldNodes: SyntaxNode[] = []
 
     nodeMeta.singleFieldNames.forEach((fieldName) => {
       const childForName = node.childForFieldName(fieldName)
 
       if (childForName) {
-        filedNodes.push(childForName)
+        fieldNodes.push(childForName)
 
         fields[fieldName] = collectAstFromTreeInner(childForName, level + 1)
       }
@@ -85,7 +85,7 @@ export function collectAstFromTree(
 
       if (
         childNode &&
-        !filedNodes.some((fieldNode) => fieldNode.equals(childNode))
+        !fieldNodes.some((fieldNode) => fieldNode.equals(childNode))
       ) {
         const collectedNodeType = childNode.type as string
 

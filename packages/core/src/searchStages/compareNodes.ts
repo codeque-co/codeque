@@ -65,7 +65,6 @@ export const compareNodes = (
     queryNode,
     isExact,
     parserSettings.astPropsToSkip,
-    parserSettings.isNodeFieldOptional,
     parserSettings.getNodeType,
   )
 

@@ -45,11 +45,6 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.nodeType === 'string'
 }
 
-// todo remove from all parsers
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return true
-}
-
 /* start and end is added by CQ in multiline queries  */
 const astPropsToSkip = ['loc', 'start', 'end']
 
@@ -85,7 +80,7 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
     return node?.rawValue as string
   },
 }
-// TODO add other numeric types
+
 const numericLiteralUtils: NumericLiteralUtils = {
   isNumericLiteralNode: (node: PoorNodeType) =>
     node.nodeType === 'integer' || node.nodeType === 'float',
@@ -163,7 +158,6 @@ export const pythonParser: ParserSettings = {
   isNode,
   isIdentifierNode,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,
@@ -177,8 +171,7 @@ export const pythonParser: ParserSettings = {
   wildcardUtils,
   compareNodesBeforeWildcardsComparison: () => undefined,
   compareNodesAfterWildcardsComparison: () => undefined,
-  // TODO
-  identifierTypeAnnotationFieldName: 'TODO',
+  identifierTypeAnnotationFieldName: '',
   stringLikeLiteralUtils,
   numericLiteralUtils,
   programNodeAndBlockNodeUtils,
@@ -194,13 +187,7 @@ export default pythonParser
 
 /**
  * TODOs:
- * - better manage wasm files -> standardise it
- *   - script to copy tree-sitter-port `output` directory into vscode extension dist 
- *   - script to copy tree-sitter-port `output` directory into core package dist 
- *   - update webpack config to bundle wasm properly
- *   - or it actually make more sense to pass wasm file paths into `core` while initialising, because we have 2 webpack configs, so we can avoid two bundles
- *.  - we can also move parsing query in editor into extension core
-       - it might be a bit slower interaction, but it would be step forward to remove 'web' part of core
-       - no point removing 'web' version from core 'for now'
- * - check if parsing of query works in query editor and if not fix it
+ * - Note that python support is experimental (in search settings)
+ * - Mention python in readme and keywords
+ * - fix layout bug with wrapping search modes
  */

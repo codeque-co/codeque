@@ -6,7 +6,7 @@ It includes:
 - Fetching newest versions of parsers
 - Building WASM files
 - Generating node type mappings
-- Copying generated files into `vscode` directory (`core` is currently not supported)
+- Copying generated files into `vscode` and `core` directories
 
 ## Usage
 

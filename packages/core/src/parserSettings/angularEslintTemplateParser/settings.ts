@@ -49,10 +49,6 @@ const isNode = (maybeNode: PoorNodeType) => {
   return typeof maybeNode?.type === 'string'
 }
 
-const isNodeFieldOptional = (nodeType: string, nodeFieldKey: string) => {
-  return true
-}
-
 const astPropsToSkip = [
   'range',
   'sourceSpan',
@@ -249,7 +245,6 @@ export const angularEslintTemplateParser: ParserSettings = {
   isNode,
   isIdentifierNode,
   astPropsToSkip,
-  isNodeFieldOptional,
   getProgramBodyFromRootNode,
   getProgramNodeFromRootNode,
   getIdentifierNodeName,

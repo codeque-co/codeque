@@ -165,4 +165,39 @@ describe('Basic queries', () => {
       end: { line: 6, column: 53, index: 157 },
     })
   })
+
+  it('Should match function named params with different formatting', () => {
+    const fileContent = `
+      ProjectKey.objects.get(public_key = public_key, project=   project_id)
+    `
+
+    const queries = [
+      `
+      ProjectKey.objects.get(public_key=public_key, project = project_id)
+
+    `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+
+    const match = matches[0]
+
+    expect(match.loc).toStrictEqual({
+      start: { line: 2, column: 6, index: 7 },
+      end: { line: 2, column: 76, index: 77 },
+    })
+  })
 })

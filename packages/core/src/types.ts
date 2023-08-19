@@ -5,6 +5,7 @@ export type Mode = 'exact' | 'include' | 'include-with-order' | 'text'
 export type Position = {
   line: number
   column: number
+  index?: number
 }
 
 export type Location = {
@@ -76,6 +77,7 @@ export type ParserType =
   | 'angular-eslint-template-parser'
   | 'css-tree'
   | 'python'
+  | 'lua'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]

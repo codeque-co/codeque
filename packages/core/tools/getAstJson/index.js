@@ -18,7 +18,7 @@ const parserName = userParser ?? defaultParser
 const parserSettings = __internal.parserSettingsMap[parserName]()
 
 const runtime = async () => {
-  await parserSettings?.parserInitPromise
+  await parserSettings?.init()
   print('Parser loaded')
 
   const filePathWithSourceCode = `${__dirname}/code.txt`

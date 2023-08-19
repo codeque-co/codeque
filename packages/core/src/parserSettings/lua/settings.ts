@@ -18,7 +18,7 @@ import {
 } from './common'
 import { parseCode, parserModule } from './parseCode'
 
-const supportedExtensions = ['py']
+const supportedExtensions = ['lua']
 
 const getProgramNodeFromRootNode = (rootNode: PoorNodeType) => rootNode // root node is program node
 
@@ -26,10 +26,22 @@ const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
   return fileNode.children as PoorNodeType[]
 }
 
+/**
+ *
+ * Lua has expression list, so there can be a tuple
+ * For single expression return it, for multiple expressions, return expression_list node, so the original node
+ */
+
 const unwrapExpressionStatement = (node: PoorNodeType) => {
-  return node.nodeType === 'expression_statement' && node.children
-    ? ((node.children as PoorNodeType[])[0] as PoorNodeType)
-    : node
+  if (node.nodeType === 'expression_list' && node.children) {
+    const children = node.children as PoorNodeType[]
+
+    if (children.length === 1) {
+      return children[0]
+    }
+  }
+
+  return node
 }
 
 const createBlockStatementNode = (
@@ -82,13 +94,12 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
 }
 
 const numericLiteralUtils: NumericLiteralUtils = {
-  isNumericLiteralNode: (node: PoorNodeType) =>
-    node.nodeType === 'integer' || node.nodeType === 'float',
+  isNumericLiteralNode: (node: PoorNodeType) => node.nodeType === 'number',
   getNumericLiteralValue: (node: PoorNodeType) => node?.rawValue as string,
 }
 
 const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
-  isProgramNode: (node: PoorNodeType) => node.nodeType === 'module',
+  isProgramNode: (node: PoorNodeType) => node.nodeType === 'chunk',
   isBlockNode: (node: PoorNodeType) => node.nodeType === 'block',
   programNodeBodyKey: 'children',
   blockNodeBodyKey: 'children',

@@ -322,6 +322,14 @@ export function SearchSettings({
               >
                 Python
               </Radio>
+              <Radio
+                value="lua"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                Lua
+              </Radio>
             </Stack>
           </RadioGroup>
         </Flex>

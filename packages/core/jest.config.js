@@ -18,6 +18,7 @@ const typeScriptParserTestFiles = [
 const htmlParserTestFiles = ['<rootDir>/__tests__/HTML/**/*.test.ts']
 const cssParserTestFiles = ['<rootDir>/__tests__/CSS/**/*.test.ts']
 const pythonParserTestFiles = ['<rootDir>/__tests__/Python/**/*.test.ts']
+const luaParserTestFiles = ['<rootDir>/__tests__/Lua/**/*.test.ts']
 
 module.exports = {
   testPathIgnorePatterns: [
@@ -161,6 +162,15 @@ module.exports = {
       setupFiles: [
         '<rootDir>/jest/shared.setup.ts',
         '<rootDir>/jest/python.setup.ts',
+      ],
+    },
+    {
+      ...sharedConfig,
+      displayName: { name: 'lua', color: 'gray' },
+      testMatch: luaParserTestFiles,
+      setupFiles: [
+        '<rootDir>/jest/shared.setup.ts',
+        '<rootDir>/jest/lua.setup.ts',
       ],
     },
   ],

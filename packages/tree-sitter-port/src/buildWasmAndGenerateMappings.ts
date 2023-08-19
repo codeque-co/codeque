@@ -6,7 +6,19 @@ import { logger as log } from './log'
 import fs from 'fs'
 import { prepareNodeTypes } from './prepareNodeTypes'
 
-for (const parserSettings of parsersSettings) {
+const userSelectedParsers = process.argv.slice(2)
+
+const selectedParsers =
+  userSelectedParsers.length > 0
+    ? parsersSettings.filter(({ parserType, parserName }) => {
+        return (
+          userSelectedParsers.includes(parserType) ||
+          userSelectedParsers.includes(parserName)
+        )
+      })
+    : parsersSettings
+
+for (const parserSettings of selectedParsers) {
   const parserLogName = `${parserSettings.parserType} (${parserSettings.parserName})`
   const localLogger = log.info('Generating for ' + parserLogName)
 

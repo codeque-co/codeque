@@ -44,15 +44,12 @@ export const parsersSettings: ParserSettings[] = [
     nodeTypesToIgnore: [','],
   },
   {
-    parserType: 'babel', // temporary for test
+    parserType: 'lua', // temporary for test
     parserName: 'tree-sitter-lua',
-    // TODO check other forks
-    // - https://github.com/tjdevries/tree-sitter-lua
-    // - https://github.com/MunifTanjim/tree-sitter-lua/blob/main/src/node-types.json
-    repoUrl: 'https://github.com/Azganoth/tree-sitter-lua.git',
+    repoUrl: 'https://github.com/MunifTanjim/tree-sitter-lua.git',
     nodeTypesLocation: 'src/node-types.json',
     buildWasmCommand: getWasmBuildCommand('tree-sitter-lua'),
-    nodeTypesToIgnore: [],
+    nodeTypesToIgnore: ["'", '"'],
     conflictResolvers: [
       {
         nodeType: 'expression_list',

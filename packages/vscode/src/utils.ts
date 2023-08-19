@@ -62,7 +62,7 @@ export function getScrollParent(node: any): any {
 
 export type SupportedParsers = Extract<
   ParserType,
-  'babel' | 'angular-eslint-template-parser' | 'css-tree' | 'python'
+  'babel' | 'angular-eslint-template-parser' | 'css-tree' | 'python' | 'lua'
 >
 
 export const supportedParsers: SupportedParsers[] = [
@@ -70,6 +70,7 @@ export const supportedParsers: SupportedParsers[] = [
   'angular-eslint-template-parser',
   'css-tree',
   'python',
+  'lua',
 ]
 
 export const fileTypeToParserMap: Record<SearchFileType, SupportedParsers> = {
@@ -78,6 +79,7 @@ export const fileTypeToParserMap: Record<SearchFileType, SupportedParsers> = {
   'js-ts-json': 'babel',
   css: 'css-tree',
   python: 'python',
+  lua: 'lua',
 }
 
 export const parserToFileTypeMap: Record<SupportedParsers, SearchFileType> = {
@@ -85,6 +87,7 @@ export const parserToFileTypeMap: Record<SupportedParsers, SearchFileType> = {
   babel: 'js-ts-json',
   ['css-tree']: 'css',
   ['python']: 'python',
+  ['lua']: 'lua',
 }
 
 const imageExtensions = [

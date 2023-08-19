@@ -1,12 +1,25 @@
 import type { SyntaxNode, Tree } from 'web-tree-sitter'
+import Parser from 'web-tree-sitter'
 import { PoorNodeType, TreeSitterNodeFieldsMeta } from './types'
 
-export function collectAstFromTree(
-  tree: Tree,
-  codeText: string,
-  defineRawValueForNodeTypes: string[],
-  nodeFieldsMeta: TreeSitterNodeFieldsMeta,
-) {
+export type PostProcessNodes = Record<
+  string,
+  (node: PoorNodeType, codeText: string) => PoorNodeType
+>
+
+export function collectAstFromTree({
+  tree,
+  codeText,
+  defineRawValueForNodeTypes,
+  nodeFieldsMeta,
+  postProcessNodes,
+}: {
+  tree: Tree
+  codeText: string
+  defineRawValueForNodeTypes: string[]
+  nodeFieldsMeta: TreeSitterNodeFieldsMeta
+  postProcessNodes?: PostProcessNodes
+}) {
   const getPosition = (node: SyntaxNode) => {
     const startPosition = node.startPosition
     const endPosition = node.endPosition
@@ -143,6 +156,10 @@ export function collectAstFromTree(
       )
     }
 
+    if (postProcessNodes?.[nodeType]) {
+      return postProcessNodes[nodeType](rawNode, codeText)
+    }
+
     return rawNode
   }
 
@@ -192,4 +209,87 @@ export const sanitizeFsPath = (fsPath: string) => {
   }
 
   return fsPath.replace(/\\/g, '/')
+}
+
+const getDefaultBasePath = () => {
+  return typeof process?.cwd !== 'undefined' ? process.cwd() : '/'
+}
+
+export const treeSitterParserModuleFactory = ({
+  treeSitterParserName,
+  defineRawValueForNodeTypes,
+  postProcessNodes,
+}: {
+  treeSitterParserName: string
+  defineRawValueForNodeTypes: string[]
+  postProcessNodes?: PostProcessNodes
+}) => {
+  let parser: Parser | null = null
+  let parserInitError: Error | null = null
+  let fieldsMeta: TreeSitterNodeFieldsMeta | null = null
+
+  const filePaths = getFilePaths(treeSitterParserName)
+
+  const init = async (basePathOption?: string | undefined) => {
+    if (parser) {
+      return
+    }
+
+    const basePath = basePathOption ?? getDefaultBasePath()
+
+    return Parser.init({
+      locateFile: () =>
+        getTreeSitterWasmPath(basePath, filePaths.treeSitterWasm),
+    })
+      .then(async () => {
+        fieldsMeta = await getFieldsMeta(basePath, filePaths.fieldsMeta)
+        const Python = await Parser.Language.load(
+          getTreeSitterWasmPath(basePath, filePaths.parserWasm),
+        )
+
+        const localParser = new Parser()
+
+        localParser.setLanguage(Python)
+        parser = localParser
+      })
+      .catch((error) => {
+        console.error('Parser init error', error)
+        parser = null
+        parserInitError = error
+      })
+  }
+
+  const parse = (code: string) => {
+    if (parserInitError !== null) {
+      throw parserInitError
+    }
+
+    if (parser === null) {
+      throw new Error('Parser not ready')
+    }
+
+    if (fieldsMeta === null) {
+      throw new Error("Couldn't load fields meta")
+    }
+
+    if (parserInitError) {
+      throw parserInitError
+    }
+
+    const tree = parser.parse(code, undefined)
+
+    const ast = collectAstFromTree({
+      tree,
+      codeText: code,
+      defineRawValueForNodeTypes,
+      nodeFieldsMeta: fieldsMeta,
+      postProcessNodes,
+    })
+
+    tree.delete()
+
+    return ast ?? { nodeType: 'empty' } // this is to make TS happy, won't happen in real life.
+  }
+
+  return { init, parse }
 }

@@ -13,6 +13,7 @@ import {
   htmlFamilyExtensionTester,
   filterExtensions,
   pythonExtensionTester,
+  luaExtensionTester,
   __internal,
 } from '@codeque/core'
 import {
@@ -44,6 +45,7 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   'js-ts-json': typeScriptFamilyExtensionTester,
   css: cssExtensionTester,
   python: pythonExtensionTester,
+  lua: luaExtensionTester,
 }
 
 export class SearchManager {

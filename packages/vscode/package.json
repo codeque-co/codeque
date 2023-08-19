@@ -2,7 +2,7 @@
   "name": "codeque",
   "publisher": "CodeQue",
   "displayName": "CodeQue - Multiline and Structural Code Search",
-  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML and CSS",
+  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML, CSS, Python and Lua",
   "repository": {
     "type": "git",
     "url": "https://github.com/codeque-co/codeque"
@@ -28,6 +28,7 @@
     "html",
     "css",
     "python",
+    "lua",
     "code search",
     "find",
     "match",

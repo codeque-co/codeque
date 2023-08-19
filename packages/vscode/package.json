@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/codeque-co/codeque/issues"
   },
-  "version": "0.27.0-local.2",
+  "version": "0.27.0",
   "engines": {
     "vscode": "^1.68.0",
     "node": ">=14"

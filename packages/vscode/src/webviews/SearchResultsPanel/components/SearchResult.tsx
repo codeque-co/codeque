@@ -219,7 +219,12 @@ export const SearchResult = memo(function SearchResult({
             customHighlight={matchHighlight}
             fileExtension={fileExtension}
           >
-            {extendedCodeFrameCode}
+            {/**
+             * replacing tabs with spaces fixes match highligh and improves code formatting
+             */}
+            {shouldDedentResult
+              ? extendedCodeFrameCode.replace(/\t/g, ' '.repeat(4))
+              : extendedCodeFrameCode}
           </CodeBlock>
         </Flex>
       ) : null}

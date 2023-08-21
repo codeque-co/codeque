@@ -37,6 +37,10 @@ export const searchFileContent = ({
   if (shallowSearchPassed) {
     const measureParseFile = measureStart('parseFile')
 
+    /**
+     *
+     * Used for debugging
+     */
     const getCodeForFileNode = (node: PoorNodeType) => {
       const pos = settings.parserSettings.getNodePosition(node)
 

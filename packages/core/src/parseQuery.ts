@@ -272,6 +272,7 @@ export const parseQueries = (
         }
       }
 
+      // TODO move to parse code, specific to JS
       try {
         const parsedAsExp = parserSettings.parseCode(
           `(${preprocessedQueryCode})`,

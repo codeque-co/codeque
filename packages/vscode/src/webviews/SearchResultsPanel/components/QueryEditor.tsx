@@ -116,7 +116,7 @@ export function QueryEditor({
     setQueryError(null)
     setQueryHint(null)
 
-    if (isQueryRestricted(query, fileType)) {
+    if (isQueryRestricted(query, fileType, mode)) {
       setQueryError({
         text: 'Query restricted for performance reasons',
         location: { line: 0, column: 0 },

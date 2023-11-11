@@ -23,6 +23,7 @@ export type StateShape = {
   searchBigFiles: boolean
   entryPoint: string | null
   webviewTextSelection: string | null
+  searchFinished: boolean
 }
 
 export class StateManager {
@@ -38,6 +39,7 @@ export class StateManager {
     searchBigFiles: false,
     entryPoint: null,
     webviewTextSelection: null,
+    searchFinished: true,
   }
 
   private readonly stateKey = 'codeque-data'
@@ -57,9 +59,22 @@ export class StateManager {
       void 0
     }
 
+    const queryOverride: Partial<StateShape> = {}
+
+    if (
+      'searchFinished' in savedStateParsed &&
+      !savedStateParsed.searchFinished
+    ) {
+      // Previous search did not finish, so perhaps it has performance issues.
+      // We reset query to prevent lock in of extension
+      queryOverride.query =
+        '// Previous query was removed due to detected performance issue.'
+    }
+
     this.localState = {
       ...this.defaultState,
       ...savedStateParsed,
+      ...queryOverride,
     }
   }
 

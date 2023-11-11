@@ -222,7 +222,7 @@ export class SearchManager {
   private startSearch = () => {
     const state = this.stateManager.getState()
 
-    if (!isQueryRestricted(state.query, state.fileType)) {
+    if (!isQueryRestricted(state.query, state.fileType, state.mode)) {
       this.performSearch(state)
     }
   }
@@ -455,6 +455,7 @@ export class SearchManager {
             setTimeout(
               (async () => {
                 try {
+                  this.stateManager.setState({ searchFinished: false })
                   const results = await searchMultiThread({
                     parser,
                     filePaths: filesListFilteredByExtension,
@@ -484,6 +485,7 @@ export class SearchManager {
                     isWorkspace,
                   })
 
+                  this.stateManager.setState({ searchFinished: true })
                   this.searchRunning = false
                   this.currentFilesGetHardStopFlag?.destroy()
                   this.currentSearchHardStopFlag?.destroy()

@@ -1,15 +1,16 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
-import { Editor } from '../../components/Editor'
+import { Editor, customTextAreaCn } from '../../components/Editor'
 //@ts-ignore
 import { Mode, searchInStrings, __internal } from '@codeque/core/web'
 
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
 import useDebounce, { fileTypeToParserMap } from '../../../utils'
 
 import { SearchFileType } from '../../../StateManager'
 import { isQueryRestricted } from '../../../restrictedQueries'
+import { eventBusInstance } from '../../../EventBus'
 
 type Error = {
   text: string
@@ -103,6 +104,38 @@ export function QueryEditor({
   const handleEditorBlur = useCallback(() => setIsEditorFocused(false), [])
 
   const isEditorFocusedDebounced = useDebounce(isEditorFocused, 200)
+
+  const queryEditorRef = useRef<any>(null)
+
+  const handleResultsPanelVisibilityChange = useCallback(
+    (isVisible: boolean) => {
+      const editorTextArea = document.querySelector<HTMLTextAreaElement>(
+        `.${customTextAreaCn}`,
+      )
+
+      if (isVisible) {
+        setTimeout(() => {
+          editorTextArea?.focus()
+          editorTextArea?.select()
+        }, 30)
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    eventBusInstance.addListener(
+      'results-panel-visibility',
+      handleResultsPanelVisibilityChange,
+    )
+
+    return () => {
+      eventBusInstance.removeListener(
+        'results-panel-visibility',
+        handleResultsPanelVisibilityChange,
+      )
+    }
+  }, [handleResultsPanelVisibilityChange])
 
   useEffect(() => {
     setHostSystemFilesFetchBaseUrl(getHostSystemFilesFetchBaseUrl() ?? '')

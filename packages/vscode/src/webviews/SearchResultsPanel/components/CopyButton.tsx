@@ -5,11 +5,17 @@ import { useThemeType } from '../../components/useThemeType'
 import { getIconButtonProps } from './utils'
 import { useCopyToClipboard } from '../../components/useCopyToClipboard'
 
-type CopyPathProps = {
-  fullFilePath: string
+type CopyButtonProps = {
+  value: string
+  ariaLabel: string
+  onCopyText?: string
 }
 
-export function CopyPath({ fullFilePath }: CopyPathProps) {
+export function CopyButton({
+  value,
+  ariaLabel,
+  onCopyText = 'Copied to clipboard!',
+}: CopyButtonProps) {
   const themeType = useThemeType()
   const isDarkTheme = themeType === 'dark'
   const highlightTheme = isDarkTheme ? darkTheme : lightTheme
@@ -17,21 +23,16 @@ export function CopyPath({ fullFilePath }: CopyPathProps) {
   const iconButtonStyleResetProps = getIconButtonProps(
     highlightTheme.plain.backgroundColor,
   )
-  const [hasCopiedFilePath, copyFilePath] = useCopyToClipboard(fullFilePath)
+  const [hasCopiedValue, copyValue] = useCopyToClipboard(value)
 
   return (
-    <>
+    <Tooltip isOpen={hasCopiedValue} label={onCopyText} placement="left">
       <IconButton
-        aria-label="copy file path"
+        aria-label={ariaLabel}
         icon={<MdContentCopy />}
         {...iconButtonStyleResetProps}
-        onClick={copyFilePath}
+        onClick={copyValue}
       />
-      {hasCopiedFilePath && (
-        <Tooltip label="Copied to clipboard!" defaultIsOpen={true}>
-          <span />
-        </Tooltip>
-      )}
-    </>
+    </Tooltip>
   )
 }

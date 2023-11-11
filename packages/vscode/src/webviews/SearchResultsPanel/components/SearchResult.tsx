@@ -1,4 +1,4 @@
-import { Checkbox, Flex, IconButton } from '@chakra-ui/react'
+import { Box, Checkbox, Flex, IconButton } from '@chakra-ui/react'
 import { MatchWithFileInfo } from '@codeque/core'
 import { memo, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
@@ -7,7 +7,7 @@ import { CodeBlock } from '../../components/CodeBlock'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
-import { CopyPath } from './CopyPath'
+import { CopyButton } from './CopyButton'
 import { FileLink } from './FileLink'
 import { usePreventScrollJump } from './usePreventScrollJump'
 import { getBorderColor, getIconButtonProps, groupHeaderHeight } from './utils'
@@ -127,6 +127,13 @@ export const SearchResult = memo(function SearchResult({
 
   const fileExtension = getFileExtension(match.filePath)
 
+  /**
+   * replacing tabs with spaces fixes match highligh and improves code formatting
+   */
+  const codeToRender = shouldDedentResult
+    ? extendedCodeFrameCode.replace(/\t/g, ' '.repeat(4))
+    : extendedCodeFrameCode
+
   return (
     <Flex flexDir="column" width="100%" pl={'4'} ref={wrapperRef}>
       <Flex
@@ -170,7 +177,11 @@ export const SearchResult = memo(function SearchResult({
           maxWidth="calc(100% - 150px)"
         />
         <Flex ml="2" mr="auto">
-          <CopyPath fullFilePath={fullFilePath} />
+          <CopyButton
+            value={fullFilePath}
+            ariaLabel="Copy match path"
+            onCopyText="Match path copied to clipboard!"
+          />
         </Flex>
         <Checkbox
           ml="3"
@@ -211,7 +222,15 @@ export const SearchResult = memo(function SearchResult({
           border={themeType !== 'dark' ? '1px solid' : ''}
           borderTopWidth={0}
           borderColor="gray.300"
+          position="relative"
         >
+          <Box position="absolute" top="10px" right="10px">
+            <CopyButton
+              value={match.code}
+              ariaLabel="Copy matched code"
+              onCopyText="Matched code copied to clipboard!"
+            />
+          </Box>
           <CodeBlock
             startLineNumber={extendedCodeFrame.startLine}
             theme={highlightTheme}
@@ -219,12 +238,7 @@ export const SearchResult = memo(function SearchResult({
             customHighlight={matchHighlight}
             fileExtension={fileExtension}
           >
-            {/**
-             * replacing tabs with spaces fixes match highligh and improves code formatting
-             */}
-            {shouldDedentResult
-              ? extendedCodeFrameCode.replace(/\t/g, ' '.repeat(4))
-              : extendedCodeFrameCode}
+            {codeToRender}
           </CodeBlock>
         </Flex>
       ) : null}

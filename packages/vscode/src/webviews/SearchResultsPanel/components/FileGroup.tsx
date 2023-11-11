@@ -9,7 +9,7 @@ import { useThemeType } from '../../components/useThemeType'
 import { getIconButtonProps, groupHeaderHeight, getBorderColor } from './utils'
 import { IoMdClose } from 'react-icons/io'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
-import { CopyPath } from './CopyPath'
+import { CopyButton } from './CopyButton'
 import { usePreventScrollJump } from './usePreventScrollJump'
 
 type FileGroupProps = {
@@ -117,7 +117,11 @@ export function FileGroup({
           maxWidth="calc(100% - 110px)"
         />
         <Flex ml="2" mr="auto">
-          <CopyPath fullFilePath={relativeFilePath} />
+          <CopyButton
+            value={relativeFilePath}
+            ariaLabel="Copy file path"
+            onCopyText="File path copied to clipboard!"
+          />
         </Flex>
         <Flex ml="2">({matches.length})</Flex>
         <DoubleClickButton

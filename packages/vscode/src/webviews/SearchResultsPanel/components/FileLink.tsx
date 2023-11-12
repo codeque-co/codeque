@@ -3,10 +3,9 @@ import { Match, MatchWithFileInfo } from '@codeque/core'
 import { openFile } from '../utils'
 
 type FileLinkProps = LinkProps & {
-  match: {
-    filePath: MatchWithFileInfo['filePath']
-    loc?: MatchWithFileInfo['loc']
-  }
+  filePath: MatchWithFileInfo['filePath']
+  locationsToSelect?: Array<MatchWithFileInfo['loc']>
+  locationsToDecorate?: Array<MatchWithFileInfo['loc']>
   relativeFilePath?: string
   matchStartLine?: number
   matchStartCol?: number
@@ -14,7 +13,9 @@ type FileLinkProps = LinkProps & {
 }
 
 export function FileLink({
-  match,
+  filePath,
+  locationsToSelect = [],
+  locationsToDecorate = [],
   relativeFilePath,
   matchStartCol,
   matchStartLine,
@@ -34,8 +35,9 @@ export function FileLink({
         onClick?.()
 
         openFile({
-          filePath: match.filePath,
-          location: match.loc,
+          filePath: filePath,
+          locationsToSelect,
+          locationsToDecorate,
         })
       }}
       fontWeight="500"

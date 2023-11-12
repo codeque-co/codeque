@@ -69,6 +69,8 @@ export function FileGroup({
     }
   }, [])
 
+  const allMatchesLocations = matches.map((match) => match.loc)
+
   return (
     <Flex
       key={filePath}
@@ -107,9 +109,9 @@ export function FileGroup({
           mr="2"
         />
         <FileLink
-          match={{
-            filePath,
-          }}
+          filePath={filePath}
+          locationsToSelect={allMatchesLocations}
+          locationsToDecorate={allMatchesLocations}
           relativeFilePath={relativeFilePath}
           onClick={() => {
             setIsResultFocused(true)
@@ -157,6 +159,7 @@ export function FileGroup({
               hasGroup={true}
               hasWorkspace={hasWorkspace}
               scrollElRef={scrollElRef}
+              allMatchesLocations={allMatchesLocations}
             />
           )
         })}

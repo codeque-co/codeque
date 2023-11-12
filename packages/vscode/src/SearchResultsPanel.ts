@@ -4,8 +4,11 @@ import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { getNonce } from './getNonce'
 import { StateManager } from './StateManager'
-import fs from 'fs'
-import path from 'path'
+
+import {
+  getMatchHighlightStyle,
+  getMatchHighlightStyleSecondary,
+} from './codeHighlightSettings'
 export class SearchResultsPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -152,32 +155,107 @@ export class SearchResultsPanel {
     eventBusInstance.dispatch('initial-settings', this.stateManager.getState())
   }
 
+  private getPositionsFromMatchLocation = (matchLocation: Match['loc']) => {
+    const startPos = new vscode.Position(
+      matchLocation.start.line - 1, // API has 0-based indexes
+      matchLocation.start.column,
+    )
+    const endPos = new vscode.Position(
+      matchLocation.end.line - 1, // API has 0-based indexes
+      matchLocation.end.column,
+    )
+
+    return [startPos, endPos] as const
+  }
+
   private openFile = ({
     filePath,
-    location,
+    locationsToSelect,
+    locationsToDecorate,
   }: {
     filePath: string
-    location?: Match['loc']
+    locationsToSelect?: Array<Match['loc']>
+    locationsToDecorate?: Array<Match['loc']>
   }) => {
     const setting: vscode.Uri = vscode.Uri.file(filePath)
 
     vscode.workspace.openTextDocument(setting).then(
-      (textDoc: vscode.TextDocument) => {
-        let selection = undefined
+      async (textDoc: vscode.TextDocument) => {
+        let mainSelection = undefined
 
-        if (location) {
-          const startPos = new vscode.Position(
-            location.start.line - 1, // API has 0-based indexes
-            location.start.column,
-          )
-          const endPos = new vscode.Position(
-            location.end.line - 1, // API has 0-based indexes
-            location.end.column,
-          )
-          selection = new vscode.Range(startPos, endPos)
+        if (locationsToSelect?.[0]) {
+          mainSelection = {
+            selection: new vscode.Range(
+              ...this.getPositionsFromMatchLocation(locationsToSelect?.[0]),
+            ),
+          }
         }
 
-        return vscode.window.showTextDocument(textDoc, { selection })
+        const selectLikeCodeDecoration =
+          vscode.window.createTextEditorDecorationType({
+            light: getMatchHighlightStyle(false),
+            dark: getMatchHighlightStyle(true),
+          })
+
+        const selectLikeCodeDecorationSecondary =
+          vscode.window.createTextEditorDecorationType({
+            light: getMatchHighlightStyleSecondary(false),
+            dark: getMatchHighlightStyleSecondary(true),
+          })
+
+        return vscode.window
+          .showTextDocument(textDoc, mainSelection)
+          .then(() => {
+            if (vscode.window.activeTextEditor) {
+              const selections = locationsToSelect
+                ? locationsToSelect.map(
+                    (locationToSelect) =>
+                      new vscode.Selection(
+                        ...this.getPositionsFromMatchLocation(locationToSelect),
+                      ),
+                  )
+                : []
+
+              const selectionDecorations: vscode.DecorationOptions[] = []
+              const secondaryDecorations: vscode.DecorationOptions[] = []
+
+              locationsToDecorate?.forEach((locationToDecorate) => {
+                const rangeToDecorate = new vscode.Range(
+                  ...this.getPositionsFromMatchLocation(locationToDecorate),
+                )
+                const hasMatchingSelection = selections.some((selection) =>
+                  selection.isEqual(rangeToDecorate),
+                )
+
+                if (hasMatchingSelection) {
+                  selectionDecorations.push({
+                    range: rangeToDecorate,
+                  })
+                } else {
+                  secondaryDecorations.push({ range: rangeToDecorate })
+                }
+              })
+
+              if (secondaryDecorations.length > 0) {
+                vscode.window.activeTextEditor.setDecorations(
+                  selectLikeCodeDecorationSecondary,
+                  secondaryDecorations,
+                )
+              }
+
+              // Apply selectionDecorations after secondary, so selection overlaps in case of intersection of ranges
+              if (selectionDecorations.length > 0) {
+                vscode.window.activeTextEditor.setDecorations(
+                  selectLikeCodeDecoration,
+                  selectionDecorations,
+                )
+              }
+
+              if (locationsToSelect && locationsToSelect.length > 1) {
+                vscode.window.activeTextEditor.selections = selections
+              }
+            }
+          })
       },
       (error: any) => {
         console.error('error opening file', filePath)

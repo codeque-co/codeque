@@ -3,7 +3,8 @@ import { eventBusInstance } from '../../EventBus'
 
 export const openFile = (data: {
   filePath: string
-  location?: Match['loc']
+  locationsToSelect?: Array<Match['loc']>
+  locationsToDecorate?: Array<Match['loc']>
 }) => {
   eventBusInstance.dispatch('open-file', data)
 }

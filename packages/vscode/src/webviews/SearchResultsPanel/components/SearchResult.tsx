@@ -1,5 +1,6 @@
 import { Box, Checkbox, Flex, IconButton } from '@chakra-ui/react'
 import { MatchWithFileInfo } from '@codeque/core'
+import { getMatchHighlightStyle } from '../../../codeHighlightSettings'
 import { memo, useEffect, useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { IoMdClose } from 'react-icons/io'
@@ -19,19 +20,7 @@ type SearchResultProps = {
   hasGroup: boolean
   hasWorkspace: boolean
   scrollElRef: React.MutableRefObject<HTMLDivElement | null>
-}
-
-const highlightColorOnLight = '#ddebf2'
-
-const highlightColorOnDark = '#35485b'
-
-const getMatchHighlightStyle = (isDark: boolean) => {
-  const highlightColor = isDark ? highlightColorOnDark : highlightColorOnLight
-
-  return {
-    backgroundColor: highlightColor,
-    boxShadow: `0px 5px 0px ${highlightColor}, 0px -5px 0px ${highlightColor}`,
-  }
+  allMatchesLocations: Array<MatchWithFileInfo['loc']>
 }
 
 const removeWhiteSpaces = (str: string) => str.replace(/\s+/g, '')
@@ -46,6 +35,7 @@ export const SearchResult = memo(function SearchResult({
   hasGroup,
   hasWorkspace,
   scrollElRef,
+  allMatchesLocations,
 }: SearchResultProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
@@ -167,7 +157,9 @@ export const SearchResult = memo(function SearchResult({
           mr="2"
         />
         <FileLink
-          match={match}
+          filePath={match.filePath}
+          locationsToSelect={[match.loc]}
+          locationsToDecorate={allMatchesLocations}
           relativeFilePath={relativeFilePath}
           onClick={() => {
             setIsResultFocused(true)

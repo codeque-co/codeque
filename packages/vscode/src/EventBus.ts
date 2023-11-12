@@ -18,7 +18,8 @@ type EventTypes = {
   'initial-settings': StateShape
   'open-file': {
     filePath: string
-    location?: Match['loc']
+    locationsToSelect?: Array<Match['loc']>
+    locationsToDecorate?: Array<Match['loc']>
   }
   'open-search-from-selection': null
   'start-search': null

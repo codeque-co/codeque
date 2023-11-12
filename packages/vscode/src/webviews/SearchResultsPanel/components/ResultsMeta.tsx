@@ -158,7 +158,7 @@ export function ResultsMeta({
 
                               openFile({
                                 filePath: error.filePath,
-                                location: location,
+                                locationsToSelect: [location],
                               })
                             }}
                           >

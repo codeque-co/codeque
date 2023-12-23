@@ -112,7 +112,7 @@ export const test_traverseAndMatchWithVisitors = (
   const searchInPath = (node: PoorNodeType) => {
     const matchContext = createMatchContext(initialMatchContext)
 
-    const match = validateMatch(node, queryNode, settings, matchContext)
+    const { match } = validateMatch(node, queryNode, settings, matchContext)
 
     if (match) {
       const matchData = getMatchFromNode(
@@ -205,7 +205,7 @@ export const traverseAndMatch = (
     )
 
     const measureValidate = measureStart('validate')
-    const match = validateMatch(fileNode, queryNode, settings, matchContext)
+    const { match } = validateMatch(fileNode, queryNode, settings, matchContext)
     measureValidate()
 
     if (match) {

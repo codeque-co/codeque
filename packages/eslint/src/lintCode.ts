@@ -243,7 +243,7 @@ export const createLintCode = (
           }
 
           const matchContext = __internal.createMatchContext()
-          const match = __internal.validateMatch(
+          const { match } = __internal.validateMatch(
             node,
             queryWithSettings.parsedQuery.queryNode,
             searchOptions,

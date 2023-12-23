@@ -5,10 +5,10 @@ import {
   PoorNodeType,
   SearchSettings,
   SearchSettingsWithOptionalLogger,
+  ValidateMatchReturnType,
 } from '../types'
 import { getKeyFromObject, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
-import { Logger } from '../logger'
 import { MatchContext } from '../matchContext'
 
 export const validateMatch = (
@@ -16,7 +16,7 @@ export const validateMatch = (
   queryNode: PoorNodeType,
   settings: SearchSettingsWithOptionalLogger & GetCodeForNode,
   matchContext: MatchContext,
-) => {
+): ValidateMatchReturnType => {
   const settingsWithLogger: SearchSettings & GetCodeForNode = {
     ...settings,
     logger: settings.logger ?? noopLogger,
@@ -88,7 +88,7 @@ export const validateMatch = (
       log('nodes incompat:\n\n', 'invalid code')
     }
 
-    return false
+    return { match: false }
   } else {
     if (queryKeysToTraverseForValidatingMatch.length > 0) {
       for (let i = 0; i < queryKeysToTraverseForValidatingMatch.length; i++) {
@@ -118,31 +118,33 @@ export const validateMatch = (
 
           if (isExact) {
             if (fileNodesArr.length !== queryNodesArr.length) {
-              return false
+              return { match: false }
             }
 
             for (let i = 0; i < fileNodesArr.length; i++) {
               const newCurrentNode = fileNodesArr[i]
               const newCurrentQueryNode = queryNodesArr[i]
 
-              if (
-                !newCurrentNode ||
-                !newCurrentQueryNode ||
-                !validateMatch(
-                  newCurrentNode,
-                  newCurrentQueryNode,
-                  settings,
-                  matchContext,
-                )
-              ) {
-                return false
+              if (!newCurrentNode || !newCurrentQueryNode) {
+                return { match: false }
+              }
+
+              const validateMatchResult = validateMatch(
+                newCurrentNode,
+                newCurrentQueryNode,
+                settings,
+                matchContext,
+              )
+
+              if (!validateMatchResult.match) {
+                return { match: false }
               }
             }
           } else {
             if (queryNodesArr.length > fileNodesArr.length) {
               log('validate: more query nodes than array nodes')
 
-              return false
+              return { match: false }
             }
 
             const matchedIndexes: number[] = []
@@ -163,22 +165,23 @@ export const validateMatch = (
                 const newFileNode = fileNodesArr[j]
 
                 if (!matchedIndexes.includes(j)) {
-                  if (
-                    validateMatch(
-                      newFileNode,
-                      newQueryNode,
-                      settings,
-                      matchContext,
-                    )
-                  ) {
+                  const validateMatchResult = validateMatch(
+                    newFileNode,
+                    newQueryNode,
+                    settings,
+                    matchContext,
+                  )
+
+                  if (validateMatchResult.match) {
                     matchedIndexes.push(j)
+
                     break
                   }
                 }
               }
 
               if (matchedIndexes.length !== i + 1) {
-                return false
+                return { match: false }
               }
             }
 
@@ -197,11 +200,11 @@ export const validateMatch = (
                 !propsFoundInOrder ||
                 matchedIndexes.length !== queryNodesArr.length
               ) {
-                return false
+                return { match: false }
               }
             } else {
               if (matchedIndexes.length !== queryNodesArr.length) {
-                return false
+                return { match: false }
               }
             }
 
@@ -215,19 +218,30 @@ export const validateMatch = (
           log('validate: newFileNode', newFileNode)
           log('validate: newQueryNode', newQueryNode)
 
-          if (
-            !newFileNode ||
-            !newQueryNode ||
-            !validateMatch(newFileNode, newQueryNode, settings, matchContext)
-          ) {
-            return false
+          if (!newFileNode || !newQueryNode) {
+            return { match: false }
+          }
+
+          const validateMatchResult = validateMatch(
+            newFileNode,
+            newQueryNode,
+            settings,
+            matchContext,
+          )
+
+          if (!validateMatchResult.match) {
+            return { match: false }
           }
         }
       }
 
-      return true
+      return {
+        match: true,
+      }
     } else {
-      return true
+      return {
+        match: true,
+      }
     }
   }
 }

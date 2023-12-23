@@ -294,3 +294,7 @@ export type TreeSitterNodeFieldsMeta = Record<
     multipleOrChildrenFieldNames: string[]
   }
 >
+
+export type ValidateMatchReturnType = {
+  match: boolean
+}

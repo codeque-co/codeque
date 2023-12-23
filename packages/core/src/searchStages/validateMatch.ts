@@ -147,69 +147,76 @@ export const validateMatch = (
               return { match: false }
             }
 
-            const matchedIndexes: number[] = []
+            if (mode === 'include') {
+              const matchedIndexes: number[] = []
 
-            const queryNodesArrSorted = [...queryNodesArr].sort((a, b) =>
-              sortByLeastIdentifierStrength(
-                a,
-                b,
-                parserSettings.wildcardUtils,
-                parserSettings.getIdentifierNodeName,
-              ),
-            )
+              const queryNodesArrSorted = [...queryNodesArr].sort((a, b) =>
+                sortByLeastIdentifierStrength(
+                  a,
+                  b,
+                  parserSettings.wildcardUtils,
+                  parserSettings.getIdentifierNodeName,
+                ),
+              )
 
-            for (let i = 0; i < queryNodesArrSorted.length; i++) {
-              const newQueryNode = queryNodesArrSorted[i]
+              for (let i = 0; i < queryNodesArrSorted.length; i++) {
+                const newQueryNode = queryNodesArrSorted[i]
 
-              for (let j = 0; j < fileNodesArr.length; j++) {
-                const newFileNode = fileNodesArr[j]
+                for (let j = 0; j < fileNodesArr.length; j++) {
+                  const newFileNode = fileNodesArr[j]
 
-                if (!matchedIndexes.includes(j)) {
-                  const validateMatchResult = validateMatch(
-                    newFileNode,
-                    newQueryNode,
-                    settings,
-                    matchContext,
-                  )
+                  if (!matchedIndexes.includes(j)) {
+                    const validateMatchResult = validateMatch(
+                      newFileNode,
+                      newQueryNode,
+                      settings,
+                      matchContext,
+                    )
 
-                  if (validateMatchResult.match) {
-                    matchedIndexes.push(j)
+                    if (validateMatchResult.match) {
+                      matchedIndexes.push(j)
 
-                    break
+                      break
+                    }
                   }
+                }
+
+                if (matchedIndexes.length !== i + 1) {
+                  return { match: false }
                 }
               }
 
-              if (matchedIndexes.length !== i + 1) {
-                return { match: false }
-              }
-            }
-
-            if (mode === ('include-with-order' as Mode)) {
-              const propsFoundInOrder = matchedIndexes.every(
-                (val, idx, arr) => {
-                  if (idx + 1 === arr.length) {
-                    return true
-                  } else {
-                    return val < arr[idx + 1]
-                  }
-                },
-              )
-
-              if (
-                !propsFoundInOrder ||
-                matchedIndexes.length !== queryNodesArr.length
-              ) {
-                return { match: false }
-              }
-            } else {
               if (matchedIndexes.length !== queryNodesArr.length) {
                 return { match: false }
               }
-            }
+            } else {
+              // mode is include-with-order
 
-            log('validate: non boolean return result for comparing nodes array')
+              let queryNodeIndexToMatch = 0
+
+              for (let j = 0; j < fileNodesArr.length; j++) {
+                const newFileNode = fileNodesArr[j]
+                const newQueryNode = queryNodesArr[queryNodeIndexToMatch]
+
+                const validateMatchResult = validateMatch(
+                  newFileNode,
+                  newQueryNode,
+                  settings,
+                  matchContext,
+                )
+
+                if (validateMatchResult.match) {
+                  queryNodeIndexToMatch++
+                }
+              }
+
+              if (queryNodeIndexToMatch !== queryNodesArr.length) {
+                return { match: false }
+              }
+            }
           }
+
+          log('validate: non boolean return result for comparing nodes array')
         } else {
           log('validate: is Node')
 

@@ -1048,4 +1048,46 @@ describe('Search with context', () => {
       ).toBe(`'content'`)
     })
   }
+
+  it('should not bind wildcard alias to first encounter partially matching pattern, if rest of the node is not matched', () => {
+    const fileContent = `
+      (() => {
+          function func1() {
+            1
+          }
+          function func2() {
+            2
+          }
+      })()
+    `
+
+    const queries = [
+      `
+        (() => {
+          function $$_ref1() {
+              2
+          }
+        })();
+     `,
+    ]
+
+    const { matches, errors } = searchInStrings({
+      mode: 'include',
+      caseInsensitive: true,
+      queryCodes: queries,
+      files: [
+        {
+          path: 'mock',
+          content: fileContent,
+        },
+      ],
+    })
+
+    expect(errors).toHaveLength(0)
+    expect(matches.length).toBe(1)
+
+    expect(matches[0].aliases.identifierAliasesMap['ref1'].aliasValue).toBe(
+      'func2',
+    )
+  })
 })

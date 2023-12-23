@@ -9,7 +9,7 @@ import {
 } from '../types'
 import { getKeyFromObject, noopLogger } from '../utils'
 import { compareNodes } from './compareNodes'
-import { MatchContext } from '../matchContext'
+import { MatchContext, createMatchContext } from '../matchContext'
 
 export const validateMatch = (
   fileNode: PoorNodeType,
@@ -17,6 +17,7 @@ export const validateMatch = (
   settings: SearchSettingsWithOptionalLogger & GetCodeForNode,
   matchContext: MatchContext,
 ): ValidateMatchReturnType => {
+  const localMatchContext = createMatchContext(matchContext.getAllAliases())
   const settingsWithLogger: SearchSettings & GetCodeForNode = {
     ...settings,
     logger: settings.logger ?? noopLogger,
@@ -43,7 +44,7 @@ export const validateMatch = (
     fileNode: fileNode,
     queryNode: queryNode,
     searchSettings: settingsWithLogger,
-    matchContext,
+    matchContext: localMatchContext,
   })
 
   if (
@@ -88,7 +89,7 @@ export const validateMatch = (
       log('nodes incompat:\n\n', 'invalid code')
     }
 
-    return { match: false }
+    return { match: false, matchContext: localMatchContext }
   } else {
     if (queryKeysToTraverseForValidatingMatch.length > 0) {
       for (let i = 0; i < queryKeysToTraverseForValidatingMatch.length; i++) {
@@ -118,7 +119,7 @@ export const validateMatch = (
 
           if (isExact) {
             if (fileNodesArr.length !== queryNodesArr.length) {
-              return { match: false }
+              return { match: false, matchContext: localMatchContext }
             }
 
             for (let i = 0; i < fileNodesArr.length; i++) {
@@ -126,25 +127,29 @@ export const validateMatch = (
               const newCurrentQueryNode = queryNodesArr[i]
 
               if (!newCurrentNode || !newCurrentQueryNode) {
-                return { match: false }
+                return { match: false, matchContext: localMatchContext }
               }
 
               const validateMatchResult = validateMatch(
                 newCurrentNode,
                 newCurrentQueryNode,
                 settings,
-                matchContext,
+                localMatchContext,
               )
 
               if (!validateMatchResult.match) {
-                return { match: false }
+                return { match: false, matchContext: localMatchContext }
               }
+
+              localMatchContext.merge(
+                validateMatchResult.matchContext.getAllAliases(),
+              )
             }
           } else {
             if (queryNodesArr.length > fileNodesArr.length) {
               log('validate: more query nodes than array nodes')
 
-              return { match: false }
+              return { match: false, matchContext: localMatchContext }
             }
 
             if (mode === 'include') {
@@ -170,11 +175,15 @@ export const validateMatch = (
                       newFileNode,
                       newQueryNode,
                       settings,
-                      matchContext,
+                      localMatchContext,
                     )
 
                     if (validateMatchResult.match) {
                       matchedIndexes.push(j)
+
+                      localMatchContext.merge(
+                        validateMatchResult.matchContext.getAllAliases(),
+                      )
 
                       break
                     }
@@ -182,12 +191,12 @@ export const validateMatch = (
                 }
 
                 if (matchedIndexes.length !== i + 1) {
-                  return { match: false }
+                  return { match: false, matchContext: localMatchContext }
                 }
               }
 
               if (matchedIndexes.length !== queryNodesArr.length) {
-                return { match: false }
+                return { match: false, matchContext: localMatchContext }
               }
             } else {
               // mode is include-with-order
@@ -202,16 +211,20 @@ export const validateMatch = (
                   newFileNode,
                   newQueryNode,
                   settings,
-                  matchContext,
+                  localMatchContext,
                 )
 
                 if (validateMatchResult.match) {
                   queryNodeIndexToMatch++
+
+                  localMatchContext.merge(
+                    validateMatchResult.matchContext.getAllAliases(),
+                  )
                 }
               }
 
               if (queryNodeIndexToMatch !== queryNodesArr.length) {
-                return { match: false }
+                return { match: false, matchContext: localMatchContext }
               }
             }
           }
@@ -226,28 +239,34 @@ export const validateMatch = (
           log('validate: newQueryNode', newQueryNode)
 
           if (!newFileNode || !newQueryNode) {
-            return { match: false }
+            return { match: false, matchContext: localMatchContext }
           }
 
           const validateMatchResult = validateMatch(
             newFileNode,
             newQueryNode,
             settings,
-            matchContext,
+            localMatchContext,
           )
 
           if (!validateMatchResult.match) {
-            return { match: false }
+            return { match: false, matchContext: localMatchContext }
           }
+
+          localMatchContext.merge(
+            validateMatchResult.matchContext.getAllAliases(),
+          )
         }
       }
 
       return {
         match: true,
+        matchContext: localMatchContext,
       }
     } else {
       return {
         match: true,
+        matchContext: localMatchContext,
       }
     }
   }

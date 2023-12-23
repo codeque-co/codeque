@@ -297,4 +297,5 @@ export type TreeSitterNodeFieldsMeta = Record<
 
 export type ValidateMatchReturnType = {
   match: boolean
+  matchContext: MatchContext
 }

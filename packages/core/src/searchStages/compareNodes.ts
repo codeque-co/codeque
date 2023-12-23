@@ -146,6 +146,7 @@ export const compareNodes = (
 
         log('First Wildcard type', firstWildcard.wildcardType)
         log('wildcardWithoutAlias', firstWildcard.wildcardWithoutAlias)
+        log('MatchContext aliases', matchContext.getAllAliases())
 
         if (isNodesTreeWildcard) {
           levelMatch = true

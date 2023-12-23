@@ -48,12 +48,13 @@ export type MatchContext = {
   addNodesTreeAlias: (ref: NodesTreeWildcardAlias) => void
   getNodesTreeAlias: (alias: string) => NodesTreeWildcardAlias | null
   getAllAliases: () => MatchContextAliases
+  merge: (contextMatchAliases: MatchContextAliases) => void
 }
 
 export const createMatchContext = (
   initialContext?: MatchContextAliases,
 ): MatchContext => {
-  const identifierAliasesMap: IdentifierWildcardAliasesMap = initialContext
+  let identifierAliasesMap: IdentifierWildcardAliasesMap = initialContext
     ? { ...(initialContext.identifierAliasesMap ?? {}) }
     : {}
   const addIdentifierAlias = (wildcardAlias: IdentifierWildcardAlias) => {
@@ -64,7 +65,7 @@ export const createMatchContext = (
     return identifierAliasesMap[alias] ?? null
   }
 
-  const stringAliasesMap: StringWildcardAliasesMap = initialContext
+  let stringAliasesMap: StringWildcardAliasesMap = initialContext
     ? { ...(initialContext.stringAliasesMap ?? {}) }
     : {}
   const addStringAlias = (wildcardAlias: StringWildcardAlias) => {
@@ -75,7 +76,7 @@ export const createMatchContext = (
     return stringAliasesMap[alias] ?? null
   }
 
-  const nodesTreeAliasesMap: NodesTreeWildcardAliasesMap = initialContext
+  let nodesTreeAliasesMap: NodesTreeWildcardAliasesMap = initialContext
     ? { ...(initialContext.nodesTreeAliasesMap ?? {}) }
     : {}
 
@@ -85,6 +86,23 @@ export const createMatchContext = (
 
   const getNodesTreeAlias = (alias: string) => {
     return nodesTreeAliasesMap[alias] ?? null
+  }
+
+  const merge = (aliasesToMerge: MatchContextAliases) => {
+    identifierAliasesMap = {
+      ...identifierAliasesMap,
+      ...aliasesToMerge.identifierAliasesMap,
+    }
+
+    stringAliasesMap = {
+      ...stringAliasesMap,
+      ...aliasesToMerge.stringAliasesMap,
+    }
+
+    nodesTreeAliasesMap = {
+      ...nodesTreeAliasesMap,
+      ...aliasesToMerge.nodesTreeAliasesMap,
+    }
   }
 
   return {
@@ -99,5 +117,6 @@ export const createMatchContext = (
       stringAliasesMap,
       nodesTreeAliasesMap,
     }),
+    merge,
   }
 }

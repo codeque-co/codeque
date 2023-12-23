@@ -112,13 +112,18 @@ export const test_traverseAndMatchWithVisitors = (
   const searchInPath = (node: PoorNodeType) => {
     const matchContext = createMatchContext(initialMatchContext)
 
-    const { match } = validateMatch(node, queryNode, settings, matchContext)
+    const { match, matchContext: extendedMatchContext } = validateMatch(
+      node,
+      queryNode,
+      settings,
+      matchContext,
+    )
 
     if (match) {
       const matchData = getMatchFromNode(
         node,
         settings.parserSettings,
-        matchContext.getAllAliases(),
+        extendedMatchContext.getAllAliases(),
       )
       matches.push(matchData)
     }
@@ -176,7 +181,7 @@ export const traverseAndMatch = (
   logStepStart('traverse')
   const matches = []
 
-  const matchContext = createMatchContext(initialMatchContext)
+  const localMatchContext = createMatchContext(initialMatchContext)
 
   /**
    * LOOK FOR MATCH START
@@ -185,7 +190,8 @@ export const traverseAndMatch = (
     fileNode,
     queryNode,
     searchSettings: settingsWithLogger,
-    matchContext,
+    // To not bind ref in case rest of match is incorrect
+    matchContext: createMatchContext(initialMatchContext),
   })
 
   const foundMatchStart = levelMatch
@@ -205,7 +211,12 @@ export const traverseAndMatch = (
     )
 
     const measureValidate = measureStart('validate')
-    const { match } = validateMatch(fileNode, queryNode, settings, matchContext)
+    const { match, matchContext: extendedMatchContext } = validateMatch(
+      fileNode,
+      queryNode,
+      settings,
+      localMatchContext,
+    )
     measureValidate()
 
     if (match) {
@@ -213,7 +224,7 @@ export const traverseAndMatch = (
         getMatchFromNode(
           fileNode,
           parserSettings,
-          matchContext.getAllAliases(),
+          extendedMatchContext.getAllAliases(),
         ),
       )
     } else {

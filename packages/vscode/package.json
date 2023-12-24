@@ -163,7 +163,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.4",
-    "@codeque/core": "^0.6.0",
+    "@codeque/core": "^0.6.1",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@types/react": "^18.0.15",

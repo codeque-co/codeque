@@ -1,8 +1,9 @@
 import PrismHighlight from 'prism-react-renderer'
 import { defaultProps, PrismTheme } from 'prism-react-renderer'
-import React from 'react'
+import React, { useState } from 'react'
 import { darkTheme } from './codeHighlightThemes'
 import { getLanguageBasedOnFileExtension } from './getLanguageBasedOnFileExtension'
+import { CopyButton } from '../SearchResultsPanel/components/CopyButton'
 
 type Token = { types: string[]; content: string }
 
@@ -50,6 +51,8 @@ export function Highlight({
     return <span>{children}</span>
   }
 
+  const [hoveredLine, setHoveredLine] = useState<number | null>(null)
+
   const highlightLanguage = getLanguageBasedOnFileExtension(fileExtension)
 
   return (
@@ -63,7 +66,7 @@ export function Highlight({
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <>
           {tokens.map((line, lineIdx) => {
-            const showLineNumber =
+            const computedLineNumber =
               startLineNumber !== undefined
                 ? lineIdx + startLineNumber
                 : undefined
@@ -79,6 +82,7 @@ export function Highlight({
                 lineNumToCompareHighlight === highlight.line
               )
             })?.style
+            const isLineHovered = computedLineNumber === hoveredLine
 
             return (
               <div
@@ -88,21 +92,36 @@ export function Highlight({
                     ? { display: 'inline', ...customLineStyle }
                     : customLineStyle
                 }
+                onMouseEnter={() => setHoveredLine(computedLineNumber ?? null)}
+                onMouseLeave={() => setHoveredLine(null)}
               >
-                {showLineNumber !== undefined ? (
+                {computedLineNumber !== undefined ? (
                   <span
                     style={{
-                      pointerEvents: 'none',
                       color: 'gray',
                       userSelect: 'none',
-                      display: 'inline-block',
+                      display: 'inline-flex',
                       width:
-                        (tokens.length + showLineNumber).toString().length * 8 +
-                        10 +
+                        (tokens.length + computedLineNumber).toString().length *
+                          8 +
+                        30 +
                         'px',
                     }}
                   >
-                    {showLineNumber}
+                    <span>{computedLineNumber}</span>
+                    <div
+                      style={{
+                        opacity: isLineHovered ? 1 : 0,
+                        transition: 'opacity 0.3s ease',
+                        paddingLeft: 5,
+                      }}
+                    >
+                      <CopyButton
+                        ariaLabel="Copy line"
+                        value={line.map((token) => token.content).join('')}
+                        onCopyText="Line copied!"
+                      />
+                    </div>
                   </span>
                 ) : null}
                 {line.map((token, key) => {

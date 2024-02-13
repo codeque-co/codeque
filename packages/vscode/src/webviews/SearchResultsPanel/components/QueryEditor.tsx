@@ -1,16 +1,15 @@
 import { Box, Flex, Text } from '@chakra-ui/react'
-import { Editor, customTextAreaCn } from '../../components/Editor'
+import { Editor } from '../../components/Editor'
 //@ts-ignore
 import { Mode, searchInStrings, __internal } from '@codeque/core/web'
 
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { fileTypeToParserMap } from '../../../utils'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
-import useDebounce, { fileTypeToParserMap } from '../../../utils'
 
-import { SearchFileType } from '../../../StateManager'
 import { isQueryRestricted } from '../../../restrictedQueries'
-import { eventBusInstance } from '../../../EventBus'
+import { SearchFileType } from '../../../StateManager'
 
 type Error = {
   text: string
@@ -97,45 +96,8 @@ export function QueryEditor({
 }: Props) {
   const [queryHint, setQueryHint] = useState<Hint | null>(null)
   const [queryError, setQueryError] = useState<Error | null>(null)
-  const [isEditorFocused, setIsEditorFocused] = useState(false)
   const [hostSystemFilesFetchBaseUrl, setHostSystemFilesFetchBaseUrl] =
     useState('')
-  const handleEditorFocus = useCallback(() => setIsEditorFocused(true), [])
-  const handleEditorBlur = useCallback(() => setIsEditorFocused(false), [])
-
-  const isEditorFocusedDebounced = useDebounce(isEditorFocused, 200)
-
-  const queryEditorRef = useRef<any>(null)
-
-  const handleResultsPanelVisibilityChange = useCallback(
-    (isVisible: boolean) => {
-      const editorTextArea = document.querySelector<HTMLTextAreaElement>(
-        `.${customTextAreaCn}`,
-      )
-
-      if (isVisible) {
-        setTimeout(() => {
-          editorTextArea?.focus()
-          editorTextArea?.select()
-        }, 30)
-      }
-    },
-    [],
-  )
-
-  useEffect(() => {
-    eventBusInstance.addListener(
-      'results-panel-visibility',
-      handleResultsPanelVisibilityChange,
-    )
-
-    return () => {
-      eventBusInstance.removeListener(
-        'results-panel-visibility',
-        handleResultsPanelVisibilityChange,
-      )
-    }
-  }, [handleResultsPanelVisibilityChange])
 
   useEffect(() => {
     setHostSystemFilesFetchBaseUrl(getHostSystemFilesFetchBaseUrl() ?? '')
@@ -228,26 +190,13 @@ export function QueryEditor({
           theme={themeType}
           flex="1"
           customHighlight={queryCustomHighlight}
-          minHeight={isEditorFocusedDebounced ? '13vh' : '44px'}
-          maxHeight={isEditorFocusedDebounced ? '35vh' : '44px'}
+          minHeight="13vh"
+          maxHeight="30vh"
           transition="0.1s max-height ease-in-out, 0.1s min-height ease-in-out"
           border="1px solid"
-          borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
-          onEditorFocus={handleEditorFocus}
-          onEditorBlur={handleEditorBlur}
+          borderColor={isDarkTheme ? 'transparent' : 'gray.300'}
           fileExtension={getHighlightFileExtension(fileType)}
         />
-        {!isEditorFocusedDebounced && (
-          <Box
-            background={`linear-gradient(0deg, ${
-              isDarkTheme ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'
-            } 0%, transparent 100%)`}
-            position="absolute"
-            bottom="0px"
-            width="100%"
-            height="16px"
-          />
-        )}
       </Box>
 
       <Flex height="20px" alignItems="center" mt="2">

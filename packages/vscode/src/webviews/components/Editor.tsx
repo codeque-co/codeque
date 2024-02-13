@@ -13,7 +13,7 @@ type Props = FlexProps & {
   fileExtension?: string
 }
 
-export const customTextAreaCn = 'editor-text-area'
+const customTextAreaCn = 'editor-text-area'
 
 export function Editor({
   customHighlight,

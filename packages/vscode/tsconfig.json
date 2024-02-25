@@ -4,7 +4,8 @@
     "baseUrl": "./src",
     "skipLibCheck": true,
     "declaration": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "incremental": true
   },
   "exclude": ["dist", "dist-webviews", "node_modules", "media", "webpack.*"]
 }

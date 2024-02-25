@@ -1,9 +1,9 @@
 import { IconButton, Tooltip } from '@chakra-ui/react'
 import { MdContentCopy } from 'react-icons/md'
-import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
-import { useThemeType } from '../../components/useThemeType'
-import { getIconButtonProps } from './utils'
-import { useCopyToClipboard } from '../../components/useCopyToClipboard'
+import { darkTheme, lightTheme } from './codeHighlightThemes'
+import { useThemeType } from './useThemeType'
+import { getIconButtonProps } from '../SearchResultsPanel/components/utils'
+import { useCopyToClipboard } from './useCopyToClipboard'
 
 type CopyButtonProps = {
   value: string

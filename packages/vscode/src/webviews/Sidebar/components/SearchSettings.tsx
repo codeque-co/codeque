@@ -14,14 +14,14 @@ import Creatable from 'react-select/creatable'
 import { Mode } from '@codeque/core'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { eventBusInstance } from '../../../EventBus'
-import { StateShape } from '../../../StateManager'
+import { SearchStateShape } from '../../../SearchStateManager'
 import { CaseType } from '../../../types'
 import { reactSelectStyles } from '../../components/reactSelectStyles'
 import { simpleDebounce } from '../../../utils'
 
 type SearchSettingsProps = {
-  initialSettings: StateShape
-  setSettings: (settings: Partial<StateShape>) => void
+  initialSettings: SearchStateShape
+  setSettings: (settings: Partial<SearchStateShape>) => void
   resultsPanelVisible: boolean
 }
 type Options = { value: string; label: string }[]
@@ -114,7 +114,7 @@ export function SearchSettings({
   )
 
   const handleFileTypeChange = useCallback(
-    (fileType: StateShape['fileType']) => {
+    (fileType: SearchStateShape['fileType']) => {
       let newMode = mode
 
       if (fileType === 'all') {

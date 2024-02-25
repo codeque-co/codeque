@@ -23,7 +23,11 @@ import {
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
-import { StateManager, StateShape, SearchFileType } from './StateManager'
+import {
+  SearchStateManager,
+  SearchStateShape,
+  SearchFileType,
+} from './SearchStateManager'
 import {
   simpleDebounce,
   fileTypeToParserMap,
@@ -31,6 +35,7 @@ import {
 } from './utils'
 import { TelemetryModule } from './telemetry'
 import { isQueryRestricted } from './restrictedQueries'
+import { UserStateManager } from './UserStateManager'
 
 type FilesLists = {
   files: string[]
@@ -65,12 +70,13 @@ export class SearchManager {
     }[],
     workspaceFoldersChangeListener: undefined as vscode.Disposable | undefined,
   }
-  private lastSearchSettings: StateShape | undefined
+  private lastSearchSettings: SearchStateShape | undefined
   private telemetryReporter: TelemetryModule
   private extensionSourceRootPath: string
 
   constructor(
-    private readonly stateManager: StateManager,
+    private readonly searchStateManager: SearchStateManager,
+    private readonly userStateManager: UserStateManager,
     telemetryReporter: TelemetryModule,
     extensionSourceRootPath: string,
   ) {
@@ -220,7 +226,7 @@ export class SearchManager {
   }
 
   private startSearch = () => {
-    const state = this.stateManager.getState()
+    const state = this.searchStateManager.getState()
 
     if (!isQueryRestricted(state.query, state.fileType, state.mode)) {
       this.performSearch(state)
@@ -318,7 +324,7 @@ export class SearchManager {
     return adjustedEntryPoint
   }
 
-  public performSearch = async (settings: StateShape) => {
+  public performSearch = async (settings: SearchStateShape) => {
     this.lastSearchSettings = settings
 
     if (this.roots === undefined) {
@@ -455,7 +461,7 @@ export class SearchManager {
             setTimeout(
               (async () => {
                 try {
-                  this.stateManager.setState({ searchFinished: false })
+                  this.searchStateManager.setState({ searchFinished: false })
                   const results = await searchMultiThread({
                     parser,
                     filePaths: filesListFilteredByExtension,
@@ -485,7 +491,16 @@ export class SearchManager {
                     isWorkspace,
                   })
 
-                  this.stateManager.setState({ searchFinished: true })
+                  if (processedResults.matches.length > 0) {
+                    const searchesWithResultsCount =
+                      this.userStateManager.getState().searchesWithResultsCount
+
+                    this.userStateManager.setState({
+                      searchesWithResultsCount: searchesWithResultsCount + 1,
+                    })
+                  }
+
+                  this.searchStateManager.setState({ searchFinished: true })
                   this.searchRunning = false
                   this.currentFilesGetHardStopFlag?.destroy()
                   this.currentSearchHardStopFlag?.destroy()

@@ -11,7 +11,7 @@ export type SearchFileType =
   | 'lua'
 export type CaseType = 'sensitive' | 'insensitive'
 
-export type StateShape = {
+export type SearchStateShape = {
   fileType: SearchFileType
   mode: Mode
   caseType: CaseType
@@ -26,8 +26,8 @@ export type StateShape = {
   searchFinished: boolean
 }
 
-export class StateManager {
-  private readonly defaultState: StateShape = {
+export class SearchStateManager {
+  private readonly defaultState: SearchStateShape = {
     fileType: 'js-ts-json',
     mode: 'include',
     caseType: 'insensitive',
@@ -44,14 +44,14 @@ export class StateManager {
 
   private readonly stateKey = 'codeque-data'
   private workspaceState: vscode.ExtensionContext['workspaceState']
-  private localState: StateShape
+  private localState: SearchStateShape
 
   constructor(workspaceState: vscode.ExtensionContext['workspaceState']) {
     this.workspaceState = workspaceState
 
     const savedState = this.workspaceState.get(this.stateKey) as string
 
-    let savedStateParsed: Partial<StateShape> = {}
+    let savedStateParsed: Partial<SearchStateShape> = {}
     try {
       savedStateParsed = JSON.parse(savedState)
     } catch (e) {
@@ -59,7 +59,7 @@ export class StateManager {
       void 0
     }
 
-    const queryOverride: Partial<StateShape> = {}
+    const queryOverride: Partial<SearchStateShape> = {}
 
     if (
       'searchFinished' in savedStateParsed &&
@@ -78,7 +78,7 @@ export class StateManager {
     }
   }
 
-  private undefinedToNull = (state: StateShape) => {
+  private undefinedToNull = (state: SearchStateShape) => {
     return Object.entries(state)
       .map(([key, value]) => [key, value ?? null] as const)
       .reduce((state, [key, value]) => {
@@ -86,17 +86,17 @@ export class StateManager {
           ...state,
           [key]: value,
         }
-      }, {} as StateShape)
+      }, {} as SearchStateShape)
   }
 
   private getStateDiff = (
-    prevState: StateShape,
-    nextState: StateShape,
-  ): Partial<StateShape> => {
-    const diff = {} as StateShape
+    prevState: SearchStateShape,
+    nextState: SearchStateShape,
+  ): Partial<SearchStateShape> => {
+    const diff = {} as SearchStateShape
 
     Object.entries(prevState).forEach(([_key, value]) => {
-      const key = _key as keyof StateShape
+      const key = _key as keyof SearchStateShape
 
       if (JSON.stringify(value) !== JSON.stringify(nextState[key])) {
         const nextValue = nextState[key]
@@ -108,7 +108,7 @@ export class StateManager {
     return diff
   }
 
-  public setState = (data: Partial<StateShape>) => {
+  public setState = (data: Partial<SearchStateShape>) => {
     const oldState = { ...this.localState }
     const newState = this.undefinedToNull({
       ...oldState,
@@ -118,7 +118,7 @@ export class StateManager {
     this.localState = newState
 
     eventBusInstance.dispatch(
-      'settings-changed',
+      'search-settings-changed',
       this.getStateDiff(oldState, newState),
     )
 

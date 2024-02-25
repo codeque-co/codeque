@@ -9,7 +9,7 @@ import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
 
 import { isQueryRestricted } from '../../../restrictedQueries'
-import { SearchFileType } from '../../../StateManager'
+import { SearchFileType } from '../../../SearchStateManager'
 
 type Error = {
   text: string
@@ -188,8 +188,8 @@ export function QueryEditor({
           code={query}
           setCode={setQuery}
           theme={themeType}
-          flex="1"
           customHighlight={queryCustomHighlight}
+          flex="1"
           minHeight="13vh"
           maxHeight="30vh"
           transition="0.1s max-height ease-in-out, 0.1s min-height ease-in-out"

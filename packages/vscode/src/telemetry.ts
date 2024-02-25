@@ -1,7 +1,7 @@
 import { Mode } from '@codeque/core'
 import TelemetryReporter from '@vscode/extension-telemetry'
 import { CaseType } from './types'
-import { SearchFileType } from './StateManager'
+import { SearchFileType } from './SearchStateManager'
 
 const applicationInsightsInstrumentationKey =
   '8f838c47-7173-4f6c-851a-b012d45d9ad8'
@@ -16,6 +16,9 @@ export const activateReporter = (): {
       telemetryModule: {
         reportSearch: () => undefined,
         reportSearchError: () => undefined,
+        reportBannerClose: () => undefined,
+        reportBannerLinkClick: () => undefined,
+        reportBannersLoad: () => undefined,
       },
     }
   }
@@ -51,6 +54,9 @@ export type TelemetryModule = {
     queryLength: number
     searchTime: number
   }) => void
+  reportBannersLoad: () => void
+  reportBannerClose: (bannerId: string) => void
+  reportBannerLinkClick: (bannerId: string) => void
 }
 
 export const telemetryModuleFactory = (
@@ -76,6 +82,31 @@ export const telemetryModuleFactory = (
             searchedFilesCount: data.searchedFilesCount,
           },
         )
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportBannersLoad: async () => {
+      try {
+        reporter.sendTelemetryEvent('vscode:banners_load', {}, {})
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportBannerLinkClick: async (bannerId: string) => {
+      try {
+        reporter.sendTelemetryEvent('vscode:banner_link_click', {
+          bannerId,
+        })
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportBannerClose: async (bannerId: string) => {
+      try {
+        reporter.sendTelemetryEvent('vscode:banner_close', {
+          bannerId,
+        })
       } catch (e) {
         console.error('Send telemetry event error', e)
       }

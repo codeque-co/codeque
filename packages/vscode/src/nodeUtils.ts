@@ -6,7 +6,7 @@ import {
   pythonExtensionTester,
   luaExtensionTester,
 } from '@codeque/core'
-import { SearchFileType } from './StateManager'
+import { SearchFileType } from './SearchStateManager'
 
 export const sanitizeFsPath = (fsPath: string) => {
   const isWindows = process.platform.includes('win32')

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { SidebarProvider } from './SidebarProvider'
 import { SearchResultsPanel } from './SearchResultsPanel'
-import { StateManager, StateShape } from './StateManager'
+import { SearchStateManager, SearchStateShape } from './SearchStateManager'
 import { eventBusInstance } from './EventBus'
 import { SearchManager } from './SearchManager'
 import {
@@ -15,6 +15,8 @@ import path from 'path'
 import { dedentPatched, fileTypeToParserMap } from './utils'
 import { getFileTypeFromFileExtension } from './nodeUtils'
 import { activateReporter, telemetryModuleFactory } from './telemetry'
+import { UserStateManager } from './UserStateManager'
+import { UserManager } from './UserManager'
 
 let dispose = (() => undefined) as () => void
 
@@ -27,10 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   const { extensionUri } = context
 
-  const stateManager = new StateManager(context.workspaceState)
+  const searchStateManager = new SearchStateManager(context.workspaceState)
+  const userStateManager = new UserStateManager(context.globalState)
 
   const openSearchResults = () =>
-    SearchResultsPanel.createOrShow(extensionUri, stateManager)
+    SearchResultsPanel.createOrShow(extensionUri, searchStateManager)
 
   const openSidebar = async () =>
     vscode.commands.executeCommand(
@@ -44,15 +47,22 @@ export function activate(context: vscode.ExtensionContext) {
     }
   })
 
-  const sidebarProvider = new SidebarProvider(extensionUri, stateManager)
+  const sidebarProvider = new SidebarProvider(extensionUri, searchStateManager)
 
   const searchManager = new SearchManager(
-    stateManager,
+    searchStateManager,
+    userStateManager,
     telemetryModule,
     sanitizeFsPath(extensionUri.fsPath),
   )
 
-  dispose = searchManager.dispose
+  const userManager = new UserManager(userStateManager, telemetryModule)
+
+  dispose = () => {
+    searchManager.dispose()
+    userManager.dispose()
+  }
+
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
   )
@@ -68,14 +78,14 @@ export function activate(context: vscode.ExtensionContext) {
   )
 
   const openSearchWithOptionalQueryFromEditorSelection = async (
-    newSearchSettings?: Partial<StateShape>,
+    newSearchSettings?: Partial<SearchStateShape>,
   ) => {
     const { activeTextEditor } = vscode.window
 
     let selectedCode: string | null = ''
     let selectedCodeFileExtension: string | null = null
 
-    const state = stateManager.getState()
+    const state = searchStateManager.getState()
 
     if (activeTextEditor) {
       selectedCode = activeTextEditor.document.getText(
@@ -130,7 +140,7 @@ export function activate(context: vscode.ExtensionContext) {
         newMode = 'text'
       }
 
-      stateManager.setState({
+      searchStateManager.setState({
         query: newQuery,
         mode: newMode,
         fileType: fileType,
@@ -138,10 +148,10 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     if (newSearchSettings) {
-      stateManager.setState(newSearchSettings)
+      searchStateManager.setState(newSearchSettings)
     }
 
-    SearchResultsPanel.createOrShow(extensionUri, stateManager)
+    SearchResultsPanel.createOrShow(extensionUri, searchStateManager)
 
     await openSidebar()
 
@@ -229,7 +239,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Thanks Ben
     vscode.commands.registerCommand('codeque.refresh', async () => {
       SearchResultsPanel.kill()
-      SearchResultsPanel.createOrShow(extensionUri, stateManager)
+      SearchResultsPanel.createOrShow(extensionUri, searchStateManager)
       await vscode.commands.executeCommand('workbench.action.closeSidebar')
 
       await vscode.commands.executeCommand(

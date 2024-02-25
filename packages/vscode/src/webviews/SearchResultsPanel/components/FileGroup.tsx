@@ -9,7 +9,7 @@ import { useThemeType } from '../../components/useThemeType'
 import { getIconButtonProps, groupHeaderHeight, getBorderColor } from './utils'
 import { IoMdClose } from 'react-icons/io'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
-import { CopyButton } from './CopyButton'
+import { CopyButton } from '../../components/CopyButton'
 import { usePreventScrollJump } from './usePreventScrollJump'
 
 type FileGroupProps = {

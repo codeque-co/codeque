@@ -3,7 +3,7 @@ import dedent from 'dedent'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 import { getNonce } from './getNonce'
-import { StateManager } from './StateManager'
+import { SearchStateManager } from './SearchStateManager'
 
 import {
   getMatchHighlightStyle,
@@ -19,12 +19,12 @@ export class SearchResultsPanel {
 
   private readonly _panel: vscode.WebviewPanel
   private readonly _extensionUri: vscode.Uri
-  private readonly stateManager: StateManager
+  private readonly searchStateManager: SearchStateManager
   private _disposables: vscode.Disposable[] = []
 
   public static createOrShow(
     extensionUri: vscode.Uri,
-    stateManager: StateManager,
+    searchStateManager: SearchStateManager,
   ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -68,7 +68,7 @@ export class SearchResultsPanel {
     SearchResultsPanel.currentPanel = new SearchResultsPanel(
       panel,
       extensionUri,
-      stateManager,
+      searchStateManager,
     )
   }
 
@@ -81,23 +81,23 @@ export class SearchResultsPanel {
   public static revive(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    stateManager: StateManager,
+    searchStateManager: SearchStateManager,
   ) {
     SearchResultsPanel.currentPanel = new SearchResultsPanel(
       panel,
       extensionUri,
-      stateManager,
+      searchStateManager,
     )
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    stateManager: StateManager,
+    searchStateManager: SearchStateManager,
   ) {
     this._panel = panel
     this._extensionUri = extensionUri
-    this.stateManager = stateManager
+    this.searchStateManager = searchStateManager
     const webview = this._panel.webview
     // Set the webview's initial html content
     this._update()
@@ -148,11 +148,14 @@ export class SearchResultsPanel {
   }
 
   private setQueryData = (query: string | null) => {
-    this.stateManager.setState({ query: query ?? '' })
+    this.searchStateManager.setState({ query: query ?? '' })
   }
 
   private sendInitialDataToWebview = () => {
-    eventBusInstance.dispatch('initial-settings', this.stateManager.getState())
+    eventBusInstance.dispatch(
+      'initial-search-settings',
+      this.searchStateManager.getState(),
+    )
   }
 
   private getPositionsFromMatchLocation = (matchLocation: Match['loc']) => {

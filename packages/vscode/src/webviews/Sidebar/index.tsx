@@ -3,26 +3,28 @@ import { useEffect, useCallback, useState } from 'react'
 import { Providers } from '../components/Providers'
 import { SearchSettings } from './components/SearchSettings'
 import { eventBusInstance } from '../../EventBus'
-import { StateShape } from '../../StateManager'
+import { SearchStateShape } from '../../SearchStateManager'
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
 
 const Sidebar = () => {
   const [resultsPanelVisible, setResultsPanelVisible] = useState(true)
-  const [initialSettings, setInitialSettings] = useState<StateShape | null>(
-    null,
-  )
+  const [initialSettings, setInitialSettings] =
+    useState<SearchStateShape | null>(null)
 
-  const setSettings = useCallback((settings: Partial<StateShape>) => {
-    eventBusInstance.dispatch('set-settings', settings)
+  const setSettings = useCallback((settings: Partial<SearchStateShape>) => {
+    eventBusInstance.dispatch('set-search-settings', settings)
     eventBusInstance.dispatch('start-search')
   }, [])
 
-  const handleInitialSettings = useCallback((data: Partial<StateShape>) => {
-    setInitialSettings(
-      (prevSettings) => ({ ...prevSettings, ...data } as StateShape),
-    )
-  }, [])
+  const handleInitialSettings = useCallback(
+    (data: Partial<SearchStateShape>) => {
+      setInitialSettings(
+        (prevSettings) => ({ ...prevSettings, ...data } as SearchStateShape),
+      )
+    },
+    [],
+  )
 
   const handleResultsPanelVisibilityChange = useCallback((data: boolean) => {
     setResultsPanelVisible(data)
@@ -49,12 +51,26 @@ const Sidebar = () => {
   }, [])
 
   useEffect(() => {
-    eventBusInstance.addListener('initial-settings', handleInitialSettings)
-    eventBusInstance.addListener('settings-changed', handleInitialSettings)
+    eventBusInstance.addListener(
+      'initial-search-settings',
+      handleInitialSettings,
+    )
+
+    eventBusInstance.addListener(
+      'search-settings-changed',
+      handleInitialSettings,
+    )
 
     return () => {
-      eventBusInstance.removeListener('initial-settings', handleInitialSettings)
-      eventBusInstance.removeListener('settings-changed', handleInitialSettings)
+      eventBusInstance.removeListener(
+        'initial-search-settings',
+        handleInitialSettings,
+      )
+
+      eventBusInstance.removeListener(
+        'search-settings-changed',
+        handleInitialSettings,
+      )
     }
   }, [handleInitialSettings])
 

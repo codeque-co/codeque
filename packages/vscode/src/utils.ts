@@ -1,7 +1,7 @@
 import dedent from 'dedent'
 import { useEffect, useState } from 'react'
 import { ParserType } from '@codeque/core'
-import { SearchFileType } from './StateManager'
+import { SearchFileType } from './SearchStateManager'
 
 // eslint-disable-next-line
 export function simpleDebounce<F extends (...args: any) => unknown>(func: F, timeout = 300) {

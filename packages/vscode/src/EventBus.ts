@@ -1,6 +1,7 @@
-import { StateShape } from './StateManager'
+import { SearchStateShape } from './SearchStateManager'
 import { Match } from '@codeque/core'
-import { ExtendedSearchResults } from './types'
+import { Banner, ExtendedSearchResults } from './types'
+import { UserStateShape } from './UserStateManager'
 
 type ResultsEventData = {
   results: ExtendedSearchResults
@@ -14,8 +15,12 @@ type EventTypes = {
   'results-panel-opened': null
   'results-panel-visibility': boolean
   'show-results-panel': null
-  'set-settings': Partial<StateShape>
-  'initial-settings': StateShape
+  'set-search-settings': Partial<SearchStateShape>
+  'initial-search-settings': SearchStateShape
+  'search-settings-changed': Partial<SearchStateShape>
+  'set-user-settings': Partial<UserStateShape>
+  'initial-user-settings': UserStateShape
+  'user-settings-changed': Partial<UserStateShape>
   'open-file': {
     filePath: string
     locationsToSelect?: Array<Match['loc']>
@@ -26,10 +31,13 @@ type EventTypes = {
   'search-started': string
   'have-results': ResultsEventData
   'have-partial-results': ResultsEventData
-  'settings-changed': Partial<StateShape>
   'set-query-in-settings': string | null
   'set-query-on-ui': string
   'stop-search': null
+  'fetch:banners:start': null
+  'fetch:banners:response': Banner[]
+  'banner:close': string
+  'banner:clicked-link': string
 }
 
 type EventObjectTypes<T extends keyof EventTypes> = {
@@ -51,11 +59,11 @@ export class EventBus {
     'results-panel-opened': [],
     'show-results-panel': [],
     'results-panel-visibility': [],
-    'initial-settings': [],
-    'set-settings': [],
+    'initial-search-settings': [],
+    'set-search-settings': [],
+    'search-settings-changed': [],
     'set-query-in-settings': [],
     'set-query-on-ui': [],
-    'settings-changed': [],
     'open-file': [],
     'open-search-from-selection': [],
     'start-search': [],
@@ -63,6 +71,13 @@ export class EventBus {
     'have-results': [],
     'have-partial-results': [],
     'stop-search': [],
+    'set-user-settings': [],
+    'initial-user-settings': [],
+    'user-settings-changed': [],
+    'fetch:banners:start': [],
+    'fetch:banners:response': [],
+    'banner:close': [],
+    'banner:clicked-link': [],
   }
   public env = 'extension'
 

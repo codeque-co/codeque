@@ -1,3 +1,4 @@
 dist-webviews
 *.vsix
 builds
+tsconfig.tsbuildinfo

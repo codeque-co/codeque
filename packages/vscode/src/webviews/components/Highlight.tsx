@@ -3,7 +3,7 @@ import { defaultProps, PrismTheme } from 'prism-react-renderer'
 import React, { useState } from 'react'
 import { darkTheme } from './codeHighlightThemes'
 import { getLanguageBasedOnFileExtension } from './getLanguageBasedOnFileExtension'
-import { CopyButton } from '../SearchResultsPanel/components/CopyButton'
+import { CopyButton } from './CopyButton'
 
 type Token = { types: string[]; content: string }
 

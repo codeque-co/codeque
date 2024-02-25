@@ -1,7 +1,7 @@
 import dedent from 'dedent'
 import * as vscode from 'vscode'
 import { getNonce } from './getNonce'
-import { StateManager } from './StateManager'
+import { SearchStateManager } from './SearchStateManager'
 import { eventBusInstance } from './EventBus'
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView
@@ -9,7 +9,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private readonly stateManager: StateManager,
+    private readonly searchStateManager: SearchStateManager,
   ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -34,13 +34,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       eventBusInstance.dispatch('show-results-panel')
 
       eventBusInstance.dispatch(
-        'initial-settings',
-        this.stateManager.getState(),
+        'initial-search-settings',
+        this.searchStateManager.getState(),
       )
     })
 
-    eventBusInstance.addListener('set-settings', (data) => {
-      this.stateManager.setState(data)
+    eventBusInstance.addListener('set-search-settings', (data) => {
+      this.searchStateManager.setState(data)
     })
   }
 

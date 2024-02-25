@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Providers } from '../components/Providers'
 import { QueryEditor } from './components/QueryEditor'
-import { StateShape, SearchFileType } from '../../StateManager'
+import { SearchStateShape, SearchFileType } from '../../SearchStateManager'
 import { SearchResultsList } from './components/SearchResults'
 import { Flex, Spinner } from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
@@ -15,6 +15,7 @@ import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
 import { simpleDebounce } from '../../utils'
 import { Matches, Mode } from '@codeque/core'
+import { Banners } from './components/Banners'
 
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
@@ -54,17 +55,20 @@ const Panel = () => {
 
   const selectedText = useRef<string | null>(null)
 
-  const handleSettingsChanged = useCallback((data: Partial<StateShape>) => {
-    if (data.mode !== undefined) {
-      setMode(data.mode)
-    }
+  const handleSettingsChanged = useCallback(
+    (data: Partial<SearchStateShape>) => {
+      if (data.mode !== undefined) {
+        setMode(data.mode)
+      }
 
-    if (data.fileType !== undefined) {
-      setFileType(data.fileType)
-    }
-  }, [])
+      if (data.fileType !== undefined) {
+        setFileType(data.fileType)
+      }
+    },
+    [],
+  )
 
-  const handleInitialSettings = useCallback((data: StateShape) => {
+  const handleInitialSettings = useCallback((data: SearchStateShape) => {
     setInitialSettingsReceived(true)
 
     if (data.query !== undefined) {
@@ -122,7 +126,7 @@ const Panel = () => {
   const startSearch = useCallback(
     (useSelectionIfAvailable = false) => {
       if (selectedText.current && useSelectionIfAvailable) {
-        eventBusInstance.dispatch('set-settings', {
+        eventBusInstance.dispatch('set-search-settings', {
           query: selectedText.current,
         })
 
@@ -166,12 +170,26 @@ const Panel = () => {
   }, [])
 
   useEffect(() => {
-    eventBusInstance.addListener('settings-changed', handleSettingsChanged)
-    eventBusInstance.addListener('initial-settings', handleInitialSettings)
+    eventBusInstance.addListener(
+      'search-settings-changed',
+      handleSettingsChanged,
+    )
+
+    eventBusInstance.addListener(
+      'initial-search-settings',
+      handleInitialSettings,
+    )
 
     return () => {
-      eventBusInstance.removeListener('settings-changed', handleSettingsChanged)
-      eventBusInstance.removeListener('initial-settings', handleInitialSettings)
+      eventBusInstance.removeListener(
+        'search-settings-changed',
+        handleSettingsChanged,
+      )
+
+      eventBusInstance.removeListener(
+        'initial-search-settings',
+        handleInitialSettings,
+      )
     }
   }, [handleSettingsChanged])
 
@@ -274,7 +292,7 @@ const Panel = () => {
       if (text !== selectedText.current) {
         selectedText.current = text
 
-        eventBusInstance.dispatch('set-settings', {
+        eventBusInstance.dispatch('set-search-settings', {
           webviewTextSelection: text,
         })
       }
@@ -372,6 +390,8 @@ const Panel = () => {
           stopSearch={stopSearch}
           getRelativePath={getRelativePath}
         />
+
+        <Banners />
 
         <SearchResultsList
           isLoading={isLoading}

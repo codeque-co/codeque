@@ -50,6 +50,7 @@ export function Banners() {
               if (item.type === 'link') {
                 return (
                   <Link
+                    key={idx}
                     href={item.link}
                     textDecoration={'underline'}
                     _hover={{ color: 'gray.300' }}

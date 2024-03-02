@@ -21,14 +21,17 @@ export class UserStateManager {
     this.globalState = globalState
     this.globalState.setKeysForSync([this.stateKey])
 
-    const savedState = this.globalState.get(this.stateKey) as string
+    const savedState = this.globalState.get(this.stateKey) as string | undefined
 
     let savedStateParsed: Partial<UserStateShape> = {}
-    try {
-      savedStateParsed = JSON.parse(savedState)
-    } catch (e) {
-      console.error('saved state parse error', e)
-      void 0
+
+    if (savedState !== undefined) {
+      try {
+        savedStateParsed = JSON.parse(savedState)
+      } catch (e) {
+        console.error('saved state parse error', e)
+        void 0
+      }
     }
 
     this.localState = {

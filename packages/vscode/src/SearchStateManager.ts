@@ -52,11 +52,14 @@ export class SearchStateManager {
     const savedState = this.workspaceState.get(this.stateKey) as string
 
     let savedStateParsed: Partial<SearchStateShape> = {}
-    try {
-      savedStateParsed = JSON.parse(savedState)
-    } catch (e) {
-      console.error('saved state parse error', e)
-      void 0
+
+    if (savedState !== undefined) {
+      try {
+        savedStateParsed = JSON.parse(savedState)
+      } catch (e) {
+        console.error('saved state parse error', e)
+        void 0
+      }
     }
 
     const queryOverride: Partial<SearchStateShape> = {}

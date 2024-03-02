@@ -3,7 +3,7 @@ import { eventBusInstance } from './EventBus'
 import { TelemetryModule } from './telemetry'
 import { UserStateManager } from './UserStateManager'
 
-const userShouldSeeBannersAfterSearchesWithResultsCount = 7
+const userShouldSeeBannersAfterSearchesWithResultsCount = 3
 
 export class UserManager {
   private banners: Banner[] | null = []

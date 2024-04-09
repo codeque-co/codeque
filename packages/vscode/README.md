@@ -1,3 +1,9 @@
+<a href="https://codeque.co/vscode-demo-sound.mp4?utm_source=readme_vscode" target="_blank" title="Click to watch demo video">
+    <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/intro.gif?raw=true" />
+</a>
+
+<br>
+      
 <!-- HERO START -->
 
 <p align="center">

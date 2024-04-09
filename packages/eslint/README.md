@@ -1,3 +1,5 @@
+<!-- HERO START -->
+
 <p align="center">
   <a href="https://codeque.co/?utm_source=readme_eslint" title="Learn more about CodeQue" target="_blank">
     <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/media/logoShort.png?raw=true" width="150px" />

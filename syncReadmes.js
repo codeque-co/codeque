@@ -22,15 +22,21 @@ const syncHero = () => {
 
   const heroContent = fs.readFileSync(heroContentPath).toString()
 
+  const heroStartCommentLine = '<!-- HERO START -->'
+
+  const heroEndCommentLine = '<!-- HERO END -->'
+
   pathsToUpdate.forEach((filePath) => {
     const content = fs.readFileSync(filePath).toString()
 
-    const heroEndCommentLine = '<!-- HERO END -->'
+    const contentBeforeHero = content.split(heroStartCommentLine)[0]
 
     const contentAfterHero = content.split(heroEndCommentLine)[1]
 
-    if (contentAfterHero) {
-      const newContent = `${heroContent.trim()}
+    if (contentAfterHero || contentBeforeHero) {
+      const newContent = `${contentBeforeHero.trimEnd()}
+      
+${heroContent.trim()}
 
 ${contentAfterHero.trimStart()}`
 

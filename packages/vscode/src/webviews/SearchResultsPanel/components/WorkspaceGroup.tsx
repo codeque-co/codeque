@@ -48,7 +48,7 @@ export function WorkspaceGroup({
         position="sticky"
         top="0px"
         backgroundColor="var(--vscode-editor-background)"
-        zIndex="2"
+        zIndex="3"
         px="1"
         border="1px solid"
         borderColor={borderColor}

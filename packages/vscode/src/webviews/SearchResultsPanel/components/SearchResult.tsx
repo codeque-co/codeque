@@ -140,6 +140,7 @@ export const SearchResult = memo(function SearchResult({
         maxWidth="100%"
         ref={headingRef}
         height={groupHeaderHeight}
+        zIndex={1}
       >
         <IconButton
           onClick={() => {

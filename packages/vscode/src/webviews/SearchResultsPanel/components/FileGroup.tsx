@@ -84,7 +84,7 @@ export function FileGroup({
         top={hasWorkspace ? groupHeaderHeight : '0px'}
         backgroundColor="var(--vscode-editor-background)"
         transition="border 0.3s ease-in-out"
-        zIndex="1"
+        zIndex="2"
         px="1"
         border="1px solid"
         borderColor={borderColor}

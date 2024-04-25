@@ -19,6 +19,10 @@ export const activateReporter = (): {
         reportBannerClose: () => undefined,
         reportBannerLinkClick: () => undefined,
         reportBannersLoad: () => undefined,
+        reportGetLicenseCmd: () => undefined,
+        reportActivateLicenseCmd: () => undefined,
+        reportLicenseActivationError: () => undefined,
+        reportSuccessfulLicenseActivation: () => undefined,
       },
     }
   }
@@ -57,6 +61,10 @@ export type TelemetryModule = {
   reportBannersLoad: () => void
   reportBannerClose: (bannerId: string) => void
   reportBannerLinkClick: (bannerId: string) => void
+  reportGetLicenseCmd: () => void
+  reportActivateLicenseCmd: () => void
+  reportSuccessfulLicenseActivation: () => void
+  reportLicenseActivationError: (issue: string) => void
 }
 
 export const telemetryModuleFactory = (
@@ -128,6 +136,36 @@ export const telemetryModuleFactory = (
         )
       } catch (e) {
         console.error('Telemetry error event reporting error', e)
+      }
+    },
+    reportActivateLicenseCmd() {
+      try {
+        reporter.sendTelemetryEvent('vscode:activate_license_cmd', {})
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportGetLicenseCmd() {
+      try {
+        reporter.sendTelemetryEvent('vscode:get_license_cmd', {})
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportSuccessfulLicenseActivation() {
+      try {
+        reporter.sendTelemetryEvent('vscode:license_activation_success', {})
+      } catch (e) {
+        console.error('Send telemetry event error', e)
+      }
+    },
+    reportLicenseActivationError(issue) {
+      try {
+        reporter.sendTelemetryErrorEvent('vscode:license_activation_error', {
+          issue,
+        })
+      } catch (e) {
+        console.error('Send telemetry event error', e)
       }
     },
   }

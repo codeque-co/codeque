@@ -17,6 +17,7 @@ import { getFileTypeFromFileExtension } from './nodeUtils'
 import { activateReporter, telemetryModuleFactory } from './telemetry'
 import { UserStateManager } from './UserStateManager'
 import { UserManager } from './UserManager'
+import fetch from 'node-fetch'
 
 let dispose = (() => undefined) as () => void
 
@@ -234,6 +235,134 @@ export function activate(context: vscode.ExtensionContext) {
       })
     }),
   )
+
+  const openLicensePurchaseWebsite = () => {
+    vscode.env.openExternal(
+      vscode.Uri.parse(
+        'https://vscodesearch.com?utm_source=vscode_getLicenseCmd',
+      ),
+    )
+  }
+
+  const activateProLicense = async () => {
+    try {
+      telemetryModule.reportActivateLicenseCmd()
+
+      const licenseKey = await vscode.window.showInputBox({
+        title: 'License key (Get it on https://vscodesearch.com)',
+        placeHolder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      })
+
+      if (!licenseKey) {
+        const result = await vscode.window.showErrorMessage(
+          'Please provide license key to activate CodeQue Pro.',
+          {},
+          'Get license key',
+        )
+
+        const clickedGetLicense = result === 'Get license key'
+
+        if (clickedGetLicense) {
+          openLicensePurchaseWebsite()
+        }
+
+        telemetryModule.reportLicenseActivationError(
+          `Missing license key ${
+            clickedGetLicense ? ' - Clicked to get license' : ''
+          }`,
+        )
+
+        return
+      }
+
+      const licenseActivationResult = (await fetch(
+        'https://vscodesearch.com/api/vscode/activateLicense',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            licenseKey,
+            machineId: vscode.env.machineId,
+          }),
+        },
+      ).then((res) => res.json())) as { success: boolean }
+
+      if (!licenseActivationResult.success) {
+        telemetryModule.reportLicenseActivationError('Invalid license key')
+
+        return vscode.window.showErrorMessage('Invalid license key')
+      }
+
+      userStateManager.setState({ proLicenseKey: licenseKey })
+
+      const fileBlob = await (
+        await fetch(
+          'https://vscodesearch.com/api/vscode/getLatestProInstalator',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              licenseKey,
+              machineId: vscode.env.machineId,
+            }),
+          },
+        )
+      ).blob()
+
+      const buffer = await fileBlob.arrayBuffer()
+
+      const storagePath = context.storageUri?.fsPath
+
+      const fileUri = vscode.Uri.file(`${storagePath}/extension.vsix`)
+
+      await vscode.workspace.fs.writeFile(fileUri, Buffer.from(buffer))
+
+      await vscode.commands.executeCommand(
+        'workbench.extensions.installExtension',
+        fileUri,
+      )
+
+      telemetryModule.reportSuccessfulLicenseActivation()
+
+      const successAction = await vscode.window.showInformationMessage(
+        'CodeQue Pro installed correctly. Reload window to use it',
+        {},
+        'Reload window',
+      )
+
+      if (successAction === 'Reload window') {
+        vscode.commands.executeCommand('workbench.action.reloadWindow')
+      }
+    } catch (e) {
+      const error = e as Error
+      const errorText = `${error.message} at ${error.stack}`
+
+      telemetryModule.reportLicenseActivationError(`Unhandled: ${errorText}`)
+
+      const errorAction = await vscode.window.showErrorMessage(
+        `Unhandled license activation error: ${error}`,
+        {},
+        'Support via Github',
+      )
+
+      if (errorAction === 'Support via Github') {
+        vscode.env.openExternal(
+          vscode.Uri.parse('https://github.com/codeque-co/codeque/issues'),
+        )
+      }
+    }
+  }
+
+  vscode.commands.registerCommand(
+    'codeque.activateProLicense',
+    activateProLicense,
+  )
+
+  vscode.commands.registerCommand('codeque.getProLicense', () => {
+    telemetryModule.reportGetLicenseCmd()
+
+    openLicensePurchaseWebsite()
+  })
 
   context.subscriptions.push(
     // Thanks Ben

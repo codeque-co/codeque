@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/codeque-co/codeque/issues"
   },
-  "version": "0.32.3",
+  "version": "0.33.0",
   "engines": {
     "vscode": "^1.68.0",
     "node": ">=14"
@@ -89,19 +89,27 @@
     "commands": [
       {
         "command": "codeque.searchWithOptionalQuerySelectionFromEditor",
-        "title": "CQ: Open Search"
+        "title": "CQ (CodeQue): Open Search"
       },
       {
         "command": "codeque.searchByEntryPoint",
-        "title": "CQ: Search by Entry Point"
+        "title": "CQ (CodeQue): Search by Entry Point"
       },
       {
         "command": "codeque.searchInFolder",
-        "title": "CQ: Search in Folder"
+        "title": "CQ (CodeQue): Search in Folder"
       },
       {
         "command": "codeque.refresh",
-        "title": "CQ: Refresh extension"
+        "title": "CQ (CodeQue): Refresh extension"
+      },
+      {
+        "command": "codeque.activateProLicense",
+        "title": "CQ (CodeQue): Activate Pro license"
+      },
+      {
+        "command": "codeque.getProLicense",
+        "title": "CQ (CodeQue): Get Pro license"
       }
     ],
     "menus": {
@@ -172,6 +180,7 @@
     "copy-to-clipboard": "^3.3.2",
     "dedent": "^0.7.0",
     "framer-motion": "^6.5.1",
+    "node-fetch": "^3.3.2",
     "prism-react-renderer": "^1.3.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

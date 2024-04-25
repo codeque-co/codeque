@@ -1,16 +1,17 @@
-import type { Mode } from '@codeque/core'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
 
 export type UserStateShape = {
   closedBannerIds: string[]
   searchesWithResultsCount: number
+  proLicenseKey: string | null
 }
 
 export class UserStateManager {
   private readonly defaultState: UserStateShape = {
     closedBannerIds: [],
     searchesWithResultsCount: 0,
+    proLicenseKey: null,
   }
 
   private readonly stateKey = 'codeque-user-data'

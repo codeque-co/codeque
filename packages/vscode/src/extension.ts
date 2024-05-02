@@ -368,6 +368,30 @@ export function activate(context: vscode.ExtensionContext) {
     openLicensePurchaseWebsite()
   })
 
+  /** Handle stub replace */
+
+  eventBusInstance.addListener('pro-modal:closed', () => {
+    telemetryModule.reportStubReplaceModalClose()
+  })
+
+  eventBusInstance.addListener('pro-modal:subscribe_clicked', () => {
+    vscode.env.openExternal(
+      vscode.Uri.parse(
+        'https://jayu.dev/newsletter?utm_source=vscode_proModal',
+      ),
+    )
+
+    telemetryModule.reportStubReplaceModalSubscribeClick()
+  })
+
+  eventBusInstance.addListener('pro-modal:twitter_handler_clicked', () => {
+    vscode.env.openExternal(vscode.Uri.parse('https://twitter.com/jayu_dev'))
+
+    telemetryModule.reportStubReplaceModalNameClick()
+  })
+
+  /** Handle webviews reload */
+
   context.subscriptions.push(
     // Thanks Ben
     vscode.commands.registerCommand('codeque.refresh', async () => {

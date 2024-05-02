@@ -30,7 +30,7 @@ export const ThemeTypeProvider = (props: { children: React.ReactNode }) => {
 
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: [themeAttr]
+      attributeFilter: [themeAttr],
     })
   }, [])
 

@@ -43,6 +43,12 @@ export const activateReporter = (): {
           logTelemetryInDev('reportStubReplaceTypeChange', args),
         reportStubReplaceClick: (...args) =>
           logTelemetryInDev('reportStubReplaceClick', args),
+        reportStubReplaceModalClose: (...args) =>
+          logTelemetryInDev('reportStubReplaceModalClose', args),
+        reportStubReplaceModalSubscribeClick: (...args) =>
+          logTelemetryInDev('reportStubReplaceModalSubscribeClick', args),
+        reportStubReplaceModalNameClick: (...args) =>
+          logTelemetryInDev('reportStubReplaceModalNameClick', args),
       },
     }
   }
@@ -89,6 +95,9 @@ export type TelemetryModule = {
   reportStubReplaceModeChange: (mode: string) => void
   reportStubReplaceTypeChange: (type: string) => void
   reportStubReplaceClick: () => void
+  reportStubReplaceModalClose: () => void
+  reportStubReplaceModalSubscribeClick: () => void
+  reportStubReplaceModalNameClick: () => void
 }
 
 export const telemetryModuleFactory = (
@@ -218,6 +227,30 @@ export const telemetryModuleFactory = (
     reportStubReplaceClick: () => {
       try {
         reporter.sendTelemetryEvent('vscode:stub_replace_click', {})
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceModalClose: () => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replace_modal_close', {})
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceModalSubscribeClick: () => {
+      try {
+        reporter.sendTelemetryEvent(
+          'vscode:stub_replace_modal_subscribe_click',
+          {},
+        )
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceModalNameClick: () => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replace_modal_name_click', {})
       } catch (e) {
         console.error('Send telemetry event error, e')
       }

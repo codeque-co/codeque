@@ -45,6 +45,9 @@ type EventTypes = {
   'fetch:banners:response': Banner[]
   'banner:close': string
   'banner:clicked-link': string
+  'pro-modal:closed': null
+  'pro-modal:subscribe_clicked': null
+  'pro-modal:twitter_handler_clicked': null
 }
 
 type EventObjectTypes<T extends keyof EventTypes> = {
@@ -92,6 +95,9 @@ export class EventBus {
     'fetch:banners:response': [],
     'banner:close': [],
     'banner:clicked-link': [],
+    'pro-modal:closed': [],
+    'pro-modal:subscribe_clicked': [],
+    'pro-modal:twitter_handler_clicked': [],
   }
   public env = 'extension'
 

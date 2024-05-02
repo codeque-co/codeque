@@ -11,7 +11,22 @@ import { SearchStateShape } from '../../SearchStateManager'
 import { ReplaceMode, ReplaceType, SearchFileType } from '../../types'
 
 import { SearchResultsList } from './components/SearchResults'
-import { Flex } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  List,
+  ListItem,
+  Link,
+  UnorderedList,
+} from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
@@ -67,6 +82,7 @@ const Panel = () => {
 
   const [displayLimit, setDisplayLimit] = useState(50)
   const [isWorkspace, setIsWorkspace] = useState(false)
+  const [proModalVisible, setProModalVisible] = useState(false)
 
   const selectedText = useRef<string | null>(null)
 
@@ -183,8 +199,27 @@ const Panel = () => {
     [selectedText],
   )
 
+  const showProModal = () => {
+    setProModalVisible(true)
+  }
+
+  const closeProModal = () => {
+    setProModalVisible(false)
+    eventBusInstance.dispatch('pro-modal:closed')
+  }
+
+  const ctaClickProModal = () => {
+    setProModalVisible(false)
+    eventBusInstance.dispatch('pro-modal:subscribe_clicked')
+  }
+
+  const nameClickProModal = () => {
+    eventBusInstance.dispatch('pro-modal:twitter_handler_clicked')
+  }
+
   const startReplace = useCallback(() => {
     eventBusInstance.dispatch('start-replace')
+    showProModal()
   }, [selectedText])
 
   const setReplaceType = useCallback((replaceType: ReplaceType) => {
@@ -523,6 +558,70 @@ const Panel = () => {
           searchMode={mode}
           isWorkspace={isWorkspace}
         />
+      </Flex>
+      <Flex>
+        <Modal isOpen={proModalVisible} onClose={closeProModal}>
+          <ModalOverlay />
+          <ModalContent
+            minWidth="500px"
+            maxWidth="98vw"
+            width="auto"
+            backgroundColor={'var(--vscode-editor-background)'}
+          >
+            <ModalHeader>✨ CodeQue Pro is coming ✨</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody display="flex" flexDirection="column" gap="6px">
+              <Text>
+                Hey 👋{' '}
+                <Link onClick={nameClickProModal} textDecoration="underline">
+                  Jakub
+                </Link>{' '}
+                here.
+              </Text>
+              <Text>
+                I'm finalizing work on first release of <b>CodeQue Pro!</b>
+              </Text>
+              <Text>
+                Pro version will be packed with handful of useful features:
+              </Text>
+              <UnorderedList>
+                <ListItem>
+                  <b>Code replace</b> with meta variables
+                </ListItem>
+                <ListItem>Search history</ListItem>
+                <ListItem>Multiple searches grouped in tabs</ListItem>
+                <ListItem>Boolean conditions and nested searches</ListItem>
+                <ListItem>Bookmarking Search results</ListItem>
+                <ListItem>Editing code directly in results</ListItem>
+                <ListItem>Additional search results list in sidebar</ListItem>
+                <ListItem>Other UX improvements</ListItem>
+              </UnorderedList>
+              <Text>
+                Features will be released one by one to assure quality.
+              </Text>
+              <Text>
+                Regular <strong>price</strong> of the extension{' '}
+                <strong>will be 37€</strong> for perpetual license with 1 year
+                of updates.
+              </Text>
+              <Text>
+                By subscribing to CodeQue newsletter you will get{' '}
+                <strong>-63% discount price of 17€*!</strong>
+              </Text>
+              <Text>
+                Discount code will be send to all subscribers at the release
+                day.
+              </Text>
+              <Text fontSize={'10px'}>* Local tax applicable</Text>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="purple" mr={3} onClick={ctaClickProModal}>
+                Subscribe to book 17€* early bird price 💸
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Flex>
     </Providers>
   )

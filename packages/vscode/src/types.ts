@@ -1,7 +1,5 @@
 import { SearchResults, MatchWithFileInfo } from '@codeque/core'
 
-export type CaseType = 'sensitive' | 'insensitive'
-
 export type ExtendedSearchResults = SearchResults & {
   relativePathsMap: Record<string, string>
   workspacesMap: Record<string, string>
@@ -19,3 +17,16 @@ export type Banner = {
   startDate: Date
   endDate: Date
 }
+
+export type SearchFileType =
+  | 'all'
+  | 'js-ts-json'
+  | 'html'
+  | 'css'
+  | 'python'
+  | 'lua'
+
+export type CaseType = 'sensitive' | 'insensitive'
+export type QueryType = 'basic' | 'query-builder'
+export type ReplaceMode = 'text' | 'merge-code'
+export type ReplaceType = 'replace' | 'quick-replace'

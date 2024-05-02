@@ -11,6 +11,7 @@ import { IoMdClose } from 'react-icons/io'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { CopyButton } from '../../components/CopyButton'
 import { usePreventScrollJump } from './usePreventScrollJump'
+import { zIndices } from '../../components/zIndices'
 
 type FileGroupProps = {
   matches: MatchWithFileInfo[]
@@ -84,7 +85,7 @@ export function FileGroup({
         top={hasWorkspace ? groupHeaderHeight : '0px'}
         backgroundColor="var(--vscode-editor-background)"
         transition="border 0.3s ease-in-out"
-        zIndex="2"
+        zIndex={zIndices.fileGroup}
         px="1"
         border="1px solid"
         borderColor={borderColor}

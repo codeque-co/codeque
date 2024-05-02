@@ -15,6 +15,12 @@ import { IoMdInformationCircleOutline } from 'react-icons/io'
 import { useThemeType } from '../../components/useThemeType'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { openFile } from '../utils'
+//@ts-ignore
+import { Mode } from '@codeque/core/web'
+import { ReplaceType, SearchFileType } from '../../../types'
+import { ButtonWithOptionSelect } from '../../components/ButtonWithOptionSelect'
+import { useState } from 'react'
+import { zIndices } from '../../components/zIndices'
 
 type ResultsMetaProps = {
   time: number | string | undefined
@@ -23,9 +29,15 @@ type ResultsMetaProps = {
   matchedFilesCount: number | string | undefined
   errors: SearchResults['errors'] | undefined
   startSearch: (useSelectionIfAvailable: boolean) => void
+  startReplace: () => void
+  setReplaceType: (replaceType: ReplaceType) => void
   searchInProgress: boolean
-  stopSearch: () => void
+  replaceInProgress: boolean
+  stopSearchOrReplace: () => void
   getRelativePath: (filePath: string) => string | undefined
+  mode: Mode
+  fileType: SearchFileType
+  replaceType: ReplaceType
 }
 
 const noValue = 'n/a'
@@ -61,8 +73,12 @@ export function ResultsMeta({
   errors,
   startSearch,
   searchInProgress,
-  stopSearch,
+  stopSearchOrReplace,
   getRelativePath,
+  startReplace,
+  replaceInProgress,
+  replaceType,
+  setReplaceType,
 }: ResultsMetaProps) {
   const errorsToDisplay: Array<string | SearchInFileError> =
     (errors?.filter(
@@ -109,7 +125,8 @@ export function ResultsMeta({
           <PopoverTrigger>
             <Flex ml="5" color="red.500" cursor="pointer" alignItems="center">
               <Text mr="2">
-                Search failed for <b>{errorsToDisplay.length}</b> file(s)
+                Search or Replace failed for <b>{errorsToDisplay.length}</b>{' '}
+                file(s)
               </Text>
               <IoMdInformationCircleOutline />
             </Flex>
@@ -161,6 +178,10 @@ export function ResultsMeta({
                                 locationsToSelect: [location],
                               })
                             }}
+                            cursor="pointer"
+                            _hover={{
+                              textDecor: 'underline',
+                            }}
                           >
                             {relativePath}
                           </Text>
@@ -181,7 +202,7 @@ export function ResultsMeta({
       <Button
         onClick={() => {
           if (searchInProgress) {
-            stopSearch()
+            stopSearchOrReplace()
           } else {
             startSearch(true)
           }
@@ -193,10 +214,43 @@ export function ResultsMeta({
         isLoading={searchInProgress}
         loadingText="Stop"
         // isLoading disables button by default
-        disabled={false}
+        disabled={replaceInProgress}
       >
         Search!
       </Button>
+      <Flex
+        marginLeft="10px"
+        minWidth="100px"
+        zIndex={zIndices.replaceButtonMenu}
+      >
+        <ButtonWithOptionSelect
+          size="sm"
+          colorScheme="purple"
+          isLoading={replaceInProgress}
+          loadingText="Stop"
+          // isLoading disables button by default
+          disabled={searchInProgress}
+          selectedOptionValue={replaceType}
+          onClick={() => {
+            if (replaceInProgress) {
+              stopSearchOrReplace()
+            } else {
+              startReplace()
+            }
+          }}
+          onOptionSelect={setReplaceType}
+          options={[
+            {
+              label: 'Replace',
+              value: 'replace',
+            },
+            {
+              label: 'Quick Replace ⚡',
+              value: 'quick-replace',
+            },
+          ]}
+        />
+      </Flex>
     </Flex>
   )
 }

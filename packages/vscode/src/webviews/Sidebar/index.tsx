@@ -12,10 +12,20 @@ const Sidebar = () => {
   const [initialSettings, setInitialSettings] =
     useState<SearchStateShape | null>(null)
 
-  const setSettings = useCallback((settings: Partial<SearchStateShape>) => {
-    eventBusInstance.dispatch('set-search-settings', settings)
-    eventBusInstance.dispatch('start-search')
-  }, [])
+  const setSearchSettings = useCallback(
+    (settings: Partial<SearchStateShape>) => {
+      eventBusInstance.dispatch('set-search-settings', settings)
+      eventBusInstance.dispatch('start-search')
+    },
+    [],
+  )
+
+  const setReplaceSettings = useCallback(
+    (settings: Partial<SearchStateShape>) => {
+      eventBusInstance.dispatch('set-search-settings', settings)
+    },
+    [],
+  )
 
   const handleInitialSettings = useCallback(
     (data: Partial<SearchStateShape>) => {
@@ -93,7 +103,8 @@ const Sidebar = () => {
       {initialSettings && (
         <SearchSettings
           initialSettings={initialSettings}
-          setSettings={setSettings}
+          setSearchSettings={setSearchSettings}
+          setReplaceSettings={setReplaceSettings}
           resultsPanelVisible={resultsPanelVisible}
         />
       )}

@@ -7,13 +7,14 @@ import { Fragment, useEffect, useState } from 'react'
 import { codeRed } from '../../components/Highlight'
 import { useThemeType } from '../../components/useThemeType'
 
-import { SearchFileType } from '../../../types'
+import { SearchFileType, ReplaceMode } from '../../../types'
 import { Hint, QueryParseError, useParseQueryError } from './useParseQuery'
 
 type Props = {
-  query: string
-  setQuery: (query: string) => void
-  mode: Mode
+  replacement: string
+  setReplacement: (replacement: string) => void
+  searchMode: Mode
+  replaceMode: ReplaceMode
   setHasQueryError: (value: boolean) => void
   fileType: SearchFileType
 }
@@ -63,43 +64,49 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
   return map[fileType]
 }
 
-export function QueryEditor({
-  query,
-  setQuery,
+export function ReplacementEditor({
+  replacement,
+  setReplacement,
   setHasQueryError,
-  mode,
+  searchMode,
+  replaceMode,
   fileType,
 }: Props) {
-  const [queryHint, setQueryHint] = useState<Hint | null>(null)
-  const [queryError, setQueryError] = useState<QueryParseError | null>(null)
+  const [replacementHint, setReplacementHint] = useState<Hint | null>(null)
+  const [replacementError, setReplacementError] =
+    useState<QueryParseError | null>(null)
+
+  const isEditorFocusedDebounced = true
 
   useEffect(() => {
-    setHasQueryError(Boolean(queryError))
-  }, [queryError])
+    setHasQueryError(Boolean(replacementError))
+  }, [replacementError])
 
   const parseQuery = useParseQueryError()
 
   useEffect(() => {
-    setQueryError(null)
-    setQueryHint(null)
+    setReplacementError(null)
+    setReplacementHint(null)
 
-    parseQuery({
-      mode,
-      query,
-      fileType,
-    }).then(({ error, hint }) => {
-      if (error) {
-        setQueryError(error)
-      }
+    if (replaceMode === 'merge-code') {
+      parseQuery({
+        mode: searchMode,
+        query: replacement,
+        fileType,
+      }).then(({ error, hint }) => {
+        if (error) {
+          setReplacementError(error)
+        }
 
-      if (hint) {
-        setQueryHint(hint)
-      }
-    })
-  }, [mode, query, fileType])
+        if (hint) {
+          setReplacementHint(hint)
+        }
+      })
+    }
+  }, [searchMode, replacement, fileType, replaceMode])
 
-  const queryCustomHighlight = queryError?.location
-    ? [getParseErrorHighlight(queryError.location)]
+  const replacementCustomHighlight = replacementError?.location
+    ? [getParseErrorHighlight(replacementError.location)]
     : []
 
   const themeType = useThemeType()
@@ -110,38 +117,49 @@ export function QueryEditor({
     <Flex mt="4" width="50%" flexDirection="column">
       <Box position="relative" height="100%">
         <Editor
-          code={query}
-          setCode={setQuery}
+          code={replacement}
+          setCode={setReplacement}
           theme={themeType}
-          customHighlight={queryCustomHighlight}
           flex="1"
-          minHeight="13vh"
-          maxHeight="30vh"
+          customHighlight={replacementCustomHighlight}
+          minHeight={isEditorFocusedDebounced ? '13vh' : '44px'}
+          maxHeight={isEditorFocusedDebounced ? '35vh' : '44px'}
           height="100%"
           transition="0.1s max-height ease-in-out, 0.1s min-height ease-in-out"
           border="1px solid"
-          borderColor={isDarkTheme ? 'transparent' : 'gray.300'}
+          borderColor={themeType === 'dark' ? 'transparent' : 'gray.300'}
           fileExtension={getHighlightFileExtension(fileType)}
-          placeholder="Query"
+          placeholder={'Replacement'}
         />
+        {!isEditorFocusedDebounced && (
+          <Box
+            background={`linear-gradient(0deg, ${
+              isDarkTheme ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'
+            } 0%, transparent 100%)`}
+            position="absolute"
+            bottom="0px"
+            width="100%"
+            height="16px"
+          />
+        )}
       </Box>
 
       <Flex height="20px" alignItems="center" mt="2">
-        {queryHint && (
+        {replacementHint && (
           <Text as="span">
             <Text as="span" fontWeight="bold" color="blue.200">
               Hint:
             </Text>{' '}
-            {renderHint(queryHint)}
+            {renderHint(replacementHint)}
           </Text>
         )}
-        {!queryHint && queryError && (
+        {!replacementHint && replacementError && (
           <Text as="span">
             <Text as="span" fontWeight="bold" color="red">
               Parse error:
             </Text>
             <Text as="span" ml="2">
-              {queryError?.text}
+              {replacementError?.text}
             </Text>
           </Text>
         )}

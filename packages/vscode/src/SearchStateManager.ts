@@ -1,21 +1,24 @@
 import type { Mode } from '@codeque/core'
+import {
+  CaseType,
+  QueryType,
+  ReplaceMode,
+  SearchFileType,
+  ReplaceType,
+} from './types'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
-
-export type SearchFileType =
-  | 'all'
-  | 'js-ts-json'
-  | 'html'
-  | 'css'
-  | 'python'
-  | 'lua'
-export type CaseType = 'sensitive' | 'insensitive'
+import { TelemetryModule } from './telemetry'
 
 export type SearchStateShape = {
+  queryType: QueryType
   fileType: SearchFileType
   mode: Mode
+  replaceMode: ReplaceMode
+  replaceType: ReplaceType
   caseType: CaseType
   query: string
+  replacement: string
   include: string[]
   exclude: string[]
   searchIgnoredFiles: boolean
@@ -28,10 +31,14 @@ export type SearchStateShape = {
 
 export class SearchStateManager {
   private readonly defaultState: SearchStateShape = {
+    queryType: 'basic',
     fileType: 'js-ts-json',
     mode: 'include',
+    replaceMode: 'text',
+    replaceType: 'replace',
     caseType: 'insensitive',
     query: '',
+    replacement: '',
     include: [],
     exclude: [],
     searchIgnoredFiles: false,
@@ -45,10 +52,14 @@ export class SearchStateManager {
   private readonly stateKey = 'codeque-data'
   private workspaceState: vscode.ExtensionContext['workspaceState']
   private localState: SearchStateShape
+  private telemetryReporter: TelemetryModule
 
-  constructor(workspaceState: vscode.ExtensionContext['workspaceState']) {
+  constructor(
+    workspaceState: vscode.ExtensionContext['workspaceState'],
+    telemetryReporter: TelemetryModule,
+  ) {
     this.workspaceState = workspaceState
-
+    this.telemetryReporter = telemetryReporter
     const savedState = this.workspaceState.get(this.stateKey) as string
 
     let savedStateParsed: Partial<SearchStateShape> = {}
@@ -111,6 +122,22 @@ export class SearchStateManager {
     return diff
   }
 
+  private reportTelemetryForStubStateChange = (
+    data: Partial<SearchStateShape>,
+  ) => {
+    if (data.replaceMode) {
+      this.telemetryReporter.reportStubReplaceModeChange(data.replaceMode)
+    }
+
+    if (data.replaceType) {
+      this.telemetryReporter.reportStubReplaceTypeChange(data.replaceType)
+    }
+
+    if (data.replacement) {
+      this.telemetryReporter.reportStubReplacementChange()
+    }
+  }
+
   public setState = (data: Partial<SearchStateShape>) => {
     const oldState = { ...this.localState }
     const newState = this.undefinedToNull({
@@ -126,6 +153,8 @@ export class SearchStateManager {
     )
 
     this.workspaceState.update(this.stateKey, JSON.stringify(newState))
+
+    this.reportTelemetryForStubStateChange(data)
   }
 
   public getState = () => {

@@ -30,7 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   const { extensionUri } = context
 
-  const searchStateManager = new SearchStateManager(context.workspaceState)
+  const searchStateManager = new SearchStateManager(
+    context.workspaceState,
+    telemetryModule,
+  )
+
   const userStateManager = new UserStateManager(context.globalState)
 
   const openSearchResults = () =>

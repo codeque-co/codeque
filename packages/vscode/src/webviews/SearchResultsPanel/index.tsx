@@ -7,15 +7,19 @@ import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Providers } from '../components/Providers'
 import { QueryEditor } from './components/QueryEditor'
-import { SearchStateShape, SearchFileType } from '../../SearchStateManager'
+import { SearchStateShape } from '../../SearchStateManager'
+import { ReplaceMode, ReplaceType, SearchFileType } from '../../types'
+
 import { SearchResultsList } from './components/SearchResults'
-import { Flex, Spinner } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { ResultsMeta } from './components/ResultsMeta'
 import { ExtendedSearchResults } from 'types'
 import { eventBusInstance } from '../../EventBus'
 import { simpleDebounce } from '../../utils'
 import { Matches, Mode } from '@codeque/core'
+import { ReplacementEditor } from './components/ReplacementEditor'
 import { Banners } from './components/Banners'
+import { SearchInFileError } from '../../../../core/src/types'
 
 //@ts-ignore - Add typings
 const vscode = acquireVsCodeApi()
@@ -35,21 +39,32 @@ const Panel = () => {
     null,
   )
   const [query, setQuery] = useState<string | null>(null)
+  const [replacement, setReplacement] = useState<string | null>(null)
+
   const [fileType, setFileType] = useState<SearchFileType | null>(null)
+  const [replaceMode, setReplaceMode] = useState<ReplaceMode | null>(null)
+  const [replaceType, setReplaceTypeLocal] = useState<ReplaceType | null>(null)
 
   const [nextSearchIsFromSelection, setNextSearchIsFromSelection] =
     useState<boolean>(false)
 
   const [mode, setMode] = useState<Mode | null>(null)
   const [hasQueryError, setHasQueryError] = useState<boolean>(false)
+
   const [initialSettingsReceived, setInitialSettingsReceived] =
     useState<boolean>(false)
   const [results, setResults] = useState<ExtendedSearchResults | undefined>(
     undefined,
   )
+  const [replacementErrors, setReplacementErrors] = useState<
+    SearchInFileError[]
+  >([])
+
   const [time, setTime] = useState<number | undefined>(undefined)
   const [filesList, setFilesList] = useState<string[] | undefined>(undefined)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const [isReplacing, setIsReplacing] = useState(false)
+
   const [displayLimit, setDisplayLimit] = useState(50)
   const [isWorkspace, setIsWorkspace] = useState(false)
 
@@ -64,6 +79,14 @@ const Panel = () => {
       if (data.fileType !== undefined) {
         setFileType(data.fileType)
       }
+
+      if (data.replaceMode !== undefined) {
+        setReplaceMode(data.replaceMode)
+      }
+
+      if (data.replaceType !== undefined) {
+        setReplaceTypeLocal(data.replaceType)
+      }
     },
     [],
   )
@@ -76,6 +99,10 @@ const Panel = () => {
       setQuery(data.query)
     }
 
+    if (data.replacement !== undefined) {
+      setReplacement(data.replacement)
+    }
+
     handleSettingsChanged(data)
   }, [])
 
@@ -83,7 +110,7 @@ const Panel = () => {
     setResults(data.results)
     setTime(data.time)
     setFilesList(data.files)
-    setIsLoading(false)
+    setIsSearching(false)
     setDisplayLimit(defaultDisplayLimit)
     setNextSearchIsFromSelection(false)
     setIsWorkspace(data.isWorkspace)
@@ -117,11 +144,28 @@ const Panel = () => {
   }, [])
 
   const handleSearchStart = useCallback((query: string) => {
-    setIsLoading(true)
+    setIsSearching(true)
     setResults(undefined)
     setFilesList([])
     setLastSearchedQuery(query)
+    setReplacementErrors([])
   }, [])
+
+  const handleReplaceStart = useCallback(() => {
+    setIsReplacing(true)
+    setReplacementErrors([])
+  }, [])
+
+  const handleReplaceFinished = useCallback(({ time }: { time: number }) => {
+    setIsReplacing(false)
+  }, [])
+
+  const handleReplaceErrors = useCallback(
+    ({ errors }: { errors: SearchInFileError[] }) => {
+      setReplacementErrors(errors)
+    },
+    [],
+  )
 
   const startSearch = useCallback(
     (useSelectionIfAvailable = false) => {
@@ -139,6 +183,18 @@ const Panel = () => {
     [selectedText],
   )
 
+  const startReplace = useCallback(() => {
+    eventBusInstance.dispatch('start-replace')
+  }, [selectedText])
+
+  const setReplaceType = useCallback((replaceType: ReplaceType) => {
+    setReplaceTypeLocal(replaceType)
+
+    eventBusInstance.dispatch('set-search-settings', {
+      replaceType,
+    })
+  }, [])
+
   const handleQueryChangeDebounced = useMemo(
     () =>
       simpleDebounce((query: string, hasQueryError: boolean) => {
@@ -149,6 +205,14 @@ const Panel = () => {
         }
       }, 800),
     [startSearch],
+  )
+
+  const handleReplacementChangeDebounced = useMemo(
+    () =>
+      simpleDebounce((replacement: string) => {
+        eventBusInstance.dispatch('set-replacement-in-settings', replacement)
+      }, 400),
+    [],
   )
 
   useEffect(() => {
@@ -239,6 +303,30 @@ const Panel = () => {
   }, [handleSearchStart])
 
   useEffect(() => {
+    eventBusInstance.addListener('replace-started', handleReplaceStart)
+
+    return () => {
+      eventBusInstance.removeListener('replace-started', handleReplaceStart)
+    }
+  }, [handleSearchStart])
+
+  useEffect(() => {
+    eventBusInstance.addListener('replace-finished', handleReplaceFinished)
+
+    return () => {
+      eventBusInstance.removeListener('replace-finished', handleReplaceFinished)
+    }
+  }, [handleSearchStart])
+
+  useEffect(() => {
+    eventBusInstance.addListener('replace-errors', handleReplaceErrors)
+
+    return () => {
+      eventBusInstance.removeListener('replace-errors', handleReplaceErrors)
+    }
+  }, [handleSearchStart])
+
+  useEffect(() => {
     eventBusInstance.addListener('set-query-on-ui', setQuery)
 
     return () => {
@@ -278,6 +366,12 @@ const Panel = () => {
       handleQueryChangeDebounced(query, hasQueryError)
     }
   }, [lastSearchedQuery, query, hasQueryError, nextSearchIsFromSelection])
+
+  useEffect(() => {
+    if (initialSettingsReceived && replacement !== null) {
+      handleReplacementChangeDebounced(replacement)
+    }
+  }, [initialSettingsReceived, replacement])
 
   useEffect(() => {
     const handleSelectionChangeDebounced = simpleDebounce(() => {
@@ -363,38 +457,60 @@ const Panel = () => {
     [results, getWorkspace],
   )
 
-  const stopSearch = useCallback(() => {
+  const stopSearchOrReplace = useCallback(() => {
     eventBusInstance.dispatch('stop-search')
   }, [])
 
+  const allErrors = useMemo(() => {
+    return [...(results?.errors ?? []), ...replacementErrors]
+  }, [replacementErrors, results?.errors])
+
   return (
     <Providers>
-      <Flex height="98vh" flexDir="column">
-        {query !== null && fileType !== null ? (
-          <QueryEditor
-            query={query}
-            setQuery={setQuery}
+      <Flex height="98vh" flexDir="column" maxWidth="100wv">
+        <Flex width="100%">
+          {query !== null && fileType !== null ? (
+            <QueryEditor
+              query={query}
+              setQuery={setQuery}
+              mode={mode}
+              setHasQueryError={setHasQueryError}
+              fileType={fileType}
+            />
+          ) : null}
+          {replacement !== null && fileType !== null && replaceMode !== null ? (
+            <ReplacementEditor
+              replacement={replacement}
+              setReplacement={setReplacement}
+              searchMode={mode}
+              replaceMode={replaceMode}
+              setHasQueryError={setHasQueryError}
+              fileType={fileType}
+            />
+          ) : null}
+        </Flex>
+        {fileType !== null && mode !== null && replaceType !== null && (
+          <ResultsMeta
+            time={time}
+            startSearch={startSearch}
+            startReplace={startReplace}
+            filesCount={filesList?.length}
+            matchesCount={results?.matches?.length}
+            errors={allErrors}
+            matchedFilesCount={matchedFilesCount}
+            searchInProgress={isSearching}
+            replaceInProgress={isReplacing}
+            stopSearchOrReplace={stopSearchOrReplace}
+            getRelativePath={getRelativePath}
             mode={mode}
-            setHasQueryError={setHasQueryError}
             fileType={fileType}
+            replaceType={replaceType}
+            setReplaceType={setReplaceType}
           />
-        ) : null}
-        <ResultsMeta
-          time={time}
-          startSearch={startSearch}
-          filesCount={filesList?.length}
-          matchesCount={results?.matches?.length}
-          errors={results?.errors}
-          matchedFilesCount={matchedFilesCount}
-          searchInProgress={isLoading}
-          stopSearch={stopSearch}
-          getRelativePath={getRelativePath}
-        />
-
+        )}
         <Banners />
-
         <SearchResultsList
-          isLoading={isLoading}
+          isLoading={isSearching}
           matches={results?.matches ?? []}
           getRelativePath={getRelativePath}
           getWorkspace={getWorkspace}

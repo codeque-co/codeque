@@ -12,6 +12,7 @@ import { CopyButton } from '../../components/CopyButton'
 import { FileLink } from './FileLink'
 import { usePreventScrollJump } from './usePreventScrollJump'
 import { getBorderColor, getIconButtonProps, groupHeaderHeight } from './utils'
+import { zIndices } from '../../components/zIndices'
 
 type SearchResultProps = {
   match: MatchWithFileInfo
@@ -140,7 +141,7 @@ export const SearchResult = memo(function SearchResult({
         maxWidth="100%"
         ref={headingRef}
         height={groupHeaderHeight}
-        zIndex={1}
+        zIndex={zIndices.searchResult}
       >
         <IconButton
           onClick={() => {

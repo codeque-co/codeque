@@ -122,6 +122,12 @@ export class SearchResultsPanel {
     )
 
     eventBusInstance.addListener('set-query-in-settings', this.setQueryData)
+
+    eventBusInstance.addListener(
+      'set-replacement-in-settings',
+      this.setReplacementData,
+    )
+
     eventBusInstance.addListener('open-file', this.openFile)
 
     eventBusInstance.addListenerOnce('results-panel-opened', () => {
@@ -139,6 +145,11 @@ export class SearchResultsPanel {
         this.setQueryData,
       )
 
+      eventBusInstance.removeListener(
+        'set-replacement-in-settings',
+        this.setReplacementData,
+      )
+
       eventBusInstance.removeListener('open-file', this.openFile)
 
       eventBusInstance.removeTransport(postMessage)
@@ -149,6 +160,10 @@ export class SearchResultsPanel {
 
   private setQueryData = (query: string | null) => {
     this.searchStateManager.setState({ query: query ?? '' })
+  }
+
+  private setReplacementData = (replacement: string | null) => {
+    this.searchStateManager.setState({ replacement: replacement ?? '' })
   }
 
   private sendInitialDataToWebview = () => {

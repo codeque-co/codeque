@@ -1,5 +1,5 @@
 import type { Mode } from '@codeque/core'
-import { SearchFileType } from './SearchStateManager'
+import { SearchFileType } from './types'
 const jsTsJson = [/^\${2,3}$/, /^\{\}$/]
 
 const python = [/^\${2,3}$/, /^\{\}$/]

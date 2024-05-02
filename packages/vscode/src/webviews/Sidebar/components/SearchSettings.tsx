@@ -8,6 +8,8 @@ import {
   Stack,
   Text,
   Link,
+  Badge,
+  Tooltip,
 } from '@chakra-ui/react'
 import Creatable from 'react-select/creatable'
 
@@ -15,13 +17,14 @@ import { Mode } from '@codeque/core'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { eventBusInstance } from '../../../EventBus'
 import { SearchStateShape } from '../../../SearchStateManager'
-import { CaseType } from '../../../types'
+import { CaseType, ReplaceMode } from '../../../types'
 import { reactSelectStyles } from '../../components/reactSelectStyles'
 import { simpleDebounce } from '../../../utils'
 
 type SearchSettingsProps = {
   initialSettings: SearchStateShape
-  setSettings: (settings: Partial<SearchStateShape>) => void
+  setSearchSettings: (settings: Partial<SearchStateShape>) => void
+  setReplaceSettings: (settings: Pick<SearchStateShape, 'replaceMode'>) => void
   resultsPanelVisible: boolean
 }
 type Options = { value: string; label: string }[]
@@ -37,10 +40,13 @@ const getValuesFromOptions = (options: Options) =>
 
 export function SearchSettings({
   initialSettings,
-  setSettings,
+  setSearchSettings,
+  setReplaceSettings,
   resultsPanelVisible,
 }: SearchSettingsProps) {
   const [mode, setMode] = useState(initialSettings?.mode)
+  const [replaceMode, setReplaceMode] = useState(initialSettings?.replaceMode)
+
   const [fileType, setFileType] = useState(initialSettings?.fileType)
 
   const [caseType, setCase] = useState(initialSettings?.caseType)
@@ -67,6 +73,10 @@ export function SearchSettings({
   useEffect(() => {
     if (initialSettings.mode !== undefined) {
       setMode(initialSettings.mode)
+    }
+
+    if (initialSettings.replaceMode !== undefined) {
+      setReplaceMode(initialSettings.replaceMode)
     }
 
     if (initialSettings.fileType !== undefined) {
@@ -102,45 +112,72 @@ export function SearchSettings({
     }
   }, [initialSettings])
 
-  const handleModeChange = useCallback(
+  const handleSearchModeChange = useCallback(
     (mode: Mode) => {
-      setMode(mode)
+      let newReplaceMode = replaceMode
 
-      setSettings({
+      if (newReplaceMode === 'merge-code' && mode !== 'include-with-order') {
+        newReplaceMode = 'text'
+      }
+
+      setMode(mode)
+      setReplaceMode(newReplaceMode)
+
+      setSearchSettings({
         mode,
+        replaceMode: newReplaceMode,
       })
     },
-    [setSettings],
+    [setSearchSettings, replaceMode, fileType],
+  )
+
+  const handleReplaceModeChange = useCallback(
+    (replaceMode: ReplaceMode) => {
+      setReplaceMode(replaceMode)
+
+      setReplaceSettings({
+        replaceMode,
+      })
+    },
+    [setSearchSettings],
   )
 
   const handleFileTypeChange = useCallback(
     (fileType: SearchStateShape['fileType']) => {
-      let newMode = mode
+      let newSearchMode = mode
+      let newReplaceMode = replaceMode
 
       if (fileType === 'all') {
-        newMode = 'text'
+        newSearchMode = 'text'
+        newReplaceMode = 'text'
+      }
+
+      if (newReplaceMode === 'merge-code' && fileType !== 'js-ts-json') {
+        newReplaceMode = 'text'
       }
 
       setFileType(fileType)
-      setMode(newMode)
+      setMode(newSearchMode)
+      setReplaceMode(newReplaceMode)
 
-      setSettings({
+      setSearchSettings({
         fileType,
-        mode: newMode,
+        mode: newSearchMode,
+        replaceMode: newReplaceMode,
       })
     },
-    [setSettings, mode],
+    [setSearchSettings, mode, replaceMode],
   )
 
   const handleCaseChange = useCallback(
     (caseType: CaseType) => {
       setCase(caseType)
 
-      setSettings({
+      setSearchSettings({
         caseType,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleSearchNodeModulesChange = useCallback(
@@ -148,11 +185,11 @@ export function SearchSettings({
       const checked = ev.target.checked
       setSearchNodeModules(checked)
 
-      setSettings({
+      setSearchSettings({
         searchNodeModules: checked,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleSearchIgnoredFilesChange = useCallback(
@@ -160,11 +197,11 @@ export function SearchSettings({
       const checked = ev.target.checked
       setSearchIgnoredFiles(checked)
 
-      setSettings({
+      setSearchSettings({
         searchIgnoredFiles: checked,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleSearchBigFiles = useCallback(
@@ -172,11 +209,11 @@ export function SearchSettings({
       const checked = ev.target.checked
       setSearchBigFiles(checked)
 
-      setSettings({
+      setSearchSettings({
         searchBigFiles: checked,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleIncludeChange = useCallback(
@@ -184,11 +221,11 @@ export function SearchSettings({
       setInclude(options)
       const include = getValuesFromOptions(options)
 
-      setSettings({
+      setSearchSettings({
         include,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleExcludeChange = useCallback(
@@ -196,21 +233,21 @@ export function SearchSettings({
       setExclude(options)
       const exclude = getValuesFromOptions(options)
 
-      setSettings({
+      setSearchSettings({
         exclude,
       })
     },
-    [setSettings],
+    [setSearchSettings],
   )
 
   const setSettingsEntryPointDebounced = useMemo(
     () =>
       simpleDebounce((entryPoint: string) => {
-        setSettings({
+        setSearchSettings({
           entryPoint: entryPoint.length > 0 ? entryPoint : null,
         })
       }, 800),
-    [setSettings],
+    [setSearchSettings],
   )
 
   const handleEntryPointChange = useCallback(
@@ -220,7 +257,7 @@ export function SearchSettings({
       setEntryPoint(entryPoint)
       setSettingsEntryPointDebounced(entryPoint)
     },
-    [setSettings, setSettingsEntryPointDebounced],
+    [setSearchSettings, setSettingsEntryPointDebounced],
   )
 
   const showResultsPanel = () => {
@@ -235,6 +272,21 @@ export function SearchSettings({
       } as const)
     : {}
   const disabledSearchModeProps = allFileTypesSelected
+    ? ({
+        pointerEvents: 'none',
+        opacity: '0.6',
+      } as const)
+    : {}
+
+  const mergeCodeReplacementEnabled =
+    fileType === 'js-ts-json' && mode === 'include-with-order'
+
+  const mergeCodeReplacementCursorProps = !mergeCodeReplacementEnabled
+    ? ({
+        cursor: 'not-allowed',
+      } as const)
+    : {}
+  const mergeCodeReplacementProps = !mergeCodeReplacementEnabled
     ? ({
         pointerEvents: 'none',
         opacity: '0.6',
@@ -334,10 +386,10 @@ export function SearchSettings({
           </RadioGroup>
         </Flex>
         <Text fontWeight="medium" mb="1">
-          Mode:
+          Search Mode:
         </Text>
         <Flex mb="4" alignItems="center">
-          <RadioGroup value={mode} onChange={handleModeChange}>
+          <RadioGroup value={mode} onChange={handleSearchModeChange}>
             <Stack direction="row" flexWrap="wrap">
               <Radio
                 value="text"
@@ -378,6 +430,46 @@ export function SearchSettings({
                     include with order
                   </Radio>
                 </Flex>
+              </Flex>
+            </Stack>
+          </RadioGroup>
+        </Flex>
+        <Text fontWeight="medium" mb="1">
+          Replace Mode:
+        </Text>
+        <Flex mb="4" alignItems="center">
+          <RadioGroup value={replaceMode} onChange={handleReplaceModeChange}>
+            <Stack direction="row" flexWrap="wrap">
+              <Radio
+                value="text"
+                marginEnd="1rem !important"
+                marginStart="0 !important"
+                borderColor="blue.200"
+              >
+                text
+              </Radio>
+              <Flex
+                {...mergeCodeReplacementCursorProps}
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+              >
+                <Tooltip
+                  label={
+                    'Merge code replace mode is available only for include-with-order search mode for JS/TS file type'
+                  }
+                  isDisabled={mergeCodeReplacementEnabled}
+                >
+                  <span>
+                    <Flex {...mergeCodeReplacementProps}>
+                      <Radio value="merge-code" borderColor="blue.200">
+                        merge code{' '}
+                        <Badge colorScheme={'purple'} size="xxs">
+                          Alpha
+                        </Badge>
+                      </Radio>
+                    </Flex>
+                  </span>
+                </Tooltip>
               </Flex>
             </Stack>
           </RadioGroup>

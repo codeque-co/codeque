@@ -1,7 +1,6 @@
 import { Mode } from '@codeque/core'
 import TelemetryReporter from '@vscode/extension-telemetry'
-import { CaseType } from './types'
-import { SearchFileType } from './SearchStateManager'
+import { CaseType, SearchFileType } from './types'
 
 const applicationInsightsInstrumentationKey =
   '8f838c47-7173-4f6c-851a-b012d45d9ad8'
@@ -11,18 +10,39 @@ export const activateReporter = (): {
   telemetryModule: TelemetryModule
 } => {
   if (process.env.NODE_ENV !== 'production') {
+    const logTelemetryInDev = (fnName: string, args: Array<any>) => {
+      //eslint-disable-next-line
+      console.log('TelemetryDev', fnName, ...args)
+    }
+
     return {
       nativeReporter: null,
       telemetryModule: {
-        reportSearch: () => undefined,
-        reportSearchError: () => undefined,
-        reportBannerClose: () => undefined,
-        reportBannerLinkClick: () => undefined,
-        reportBannersLoad: () => undefined,
-        reportGetLicenseCmd: () => undefined,
-        reportActivateLicenseCmd: () => undefined,
-        reportLicenseActivationError: () => undefined,
-        reportSuccessfulLicenseActivation: () => undefined,
+        reportSearch: (...args) => logTelemetryInDev('reportSearch', args),
+        reportSearchError: (...args) =>
+          logTelemetryInDev('reportSearchError', args),
+        reportBannerClose: (...args) =>
+          logTelemetryInDev('reportBannerClose', args),
+        reportBannerLinkClick: (...args) =>
+          logTelemetryInDev('reportBannerLinkClick', args),
+        reportBannersLoad: (...args) =>
+          logTelemetryInDev('reportBannersLoad', args),
+        reportGetLicenseCmd: (...args) =>
+          logTelemetryInDev('reportGetLicenseCmd', args),
+        reportActivateLicenseCmd: (...args) =>
+          logTelemetryInDev('reportActivateLicenseCmd', args),
+        reportLicenseActivationError: (...args) =>
+          logTelemetryInDev('reportLicenseActivationError', args),
+        reportSuccessfulLicenseActivation: (...args) =>
+          logTelemetryInDev('reportSuccessfulLicenseActivation', args),
+        reportStubReplacementChange: (...args) =>
+          logTelemetryInDev('reportStubReplacementChange', args),
+        reportStubReplaceModeChange: (...args) =>
+          logTelemetryInDev('reportStubReplaceModeChange', args),
+        reportStubReplaceTypeChange: (...args) =>
+          logTelemetryInDev('reportStubReplaceTypeChange', args),
+        reportStubReplaceClick: (...args) =>
+          logTelemetryInDev('reportStubReplaceClick', args),
       },
     }
   }
@@ -65,6 +85,10 @@ export type TelemetryModule = {
   reportActivateLicenseCmd: () => void
   reportSuccessfulLicenseActivation: () => void
   reportLicenseActivationError: (issue: string) => void
+  reportStubReplacementChange: () => void
+  reportStubReplaceModeChange: (mode: string) => void
+  reportStubReplaceTypeChange: (type: string) => void
+  reportStubReplaceClick: () => void
 }
 
 export const telemetryModuleFactory = (
@@ -166,6 +190,36 @@ export const telemetryModuleFactory = (
         })
       } catch (e) {
         console.error('Send telemetry event error', e)
+      }
+    },
+    reportStubReplacementChange: () => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replacement_change', {})
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceModeChange: (mode: string) => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replace_mode_change', {
+          mode,
+        })
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceTypeChange: (type: string) => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replace_type_change', { type })
+      } catch (e) {
+        console.error('Send telemetry event error, e')
+      }
+    },
+    reportStubReplaceClick: () => {
+      try {
+        reporter.sendTelemetryEvent('vscode:stub_replace_click', {})
+      } catch (e) {
+        console.error('Send telemetry event error, e')
       }
     },
   }

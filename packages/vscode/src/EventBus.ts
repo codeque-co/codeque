@@ -1,5 +1,5 @@
 import { SearchStateShape } from './SearchStateManager'
-import { Match } from '@codeque/core'
+import { Match, SearchInFileError } from '@codeque/core'
 import { Banner, ExtendedSearchResults } from './types'
 import { UserStateShape } from './UserStateManager'
 
@@ -32,8 +32,15 @@ type EventTypes = {
   'have-results': ResultsEventData
   'have-partial-results': ResultsEventData
   'set-query-in-settings': string | null
+  'set-replacement-in-settings': string | null
   'set-query-on-ui': string
   'stop-search': null
+  'start-replace': null
+  'replace-started': null
+  'replace-progress': number | null
+  'replace-finished': { time: number }
+  'replace-errors': { errors: Array<SearchInFileError> }
+  'search-progress': number | null
   'fetch:banners:start': null
   'fetch:banners:response': Banner[]
   'banner:close': string
@@ -71,6 +78,13 @@ export class EventBus {
     'have-results': [],
     'have-partial-results': [],
     'stop-search': [],
+    'replace-finished': [],
+    'replace-started': [],
+    'replace-errors': [],
+    'start-replace': [],
+    'set-replacement-in-settings': [],
+    'replace-progress': [],
+    'search-progress': [],
     'set-user-settings': [],
     'initial-user-settings': [],
     'user-settings-changed': [],
@@ -124,6 +138,11 @@ export class EventBus {
     data?: EventTypes[T],
     dispatchThroughTransports = true,
   ) => {
+    if (process.env.NODE_ENV !== 'production') {
+      //eslint-disable-next-line
+      console.log('event', eventType, data)
+    }
+
     try {
       await Promise.all(
         this.listeners[eventType].map((callback) => callback(data)),

@@ -2,6 +2,7 @@ import { Flex, IconButton } from '@chakra-ui/react'
 import { useRef, useState } from 'react'
 import { HiOutlineChevronDown, HiOutlineChevronRight } from 'react-icons/hi'
 import { IoMdClose } from 'react-icons/io'
+import { zIndices } from '../../components/zIndices'
 import { darkTheme, lightTheme } from '../../components/codeHighlightThemes'
 import { DoubleClickButton } from '../../components/DoubleClickButton'
 import { useThemeType } from '../../components/useThemeType'
@@ -48,7 +49,7 @@ export function WorkspaceGroup({
         position="sticky"
         top="0px"
         backgroundColor="var(--vscode-editor-background)"
-        zIndex="3"
+        zIndex={zIndices.workspaceGroup}
         px="1"
         border="1px solid"
         borderColor={borderColor}

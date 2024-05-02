@@ -23,11 +23,7 @@ import {
 import path from 'path'
 import * as vscode from 'vscode'
 import { eventBusInstance } from './EventBus'
-import {
-  SearchStateManager,
-  SearchStateShape,
-  SearchFileType,
-} from './SearchStateManager'
+import { SearchStateManager, SearchStateShape } from './SearchStateManager'
 import {
   simpleDebounce,
   fileTypeToParserMap,
@@ -36,6 +32,7 @@ import {
 import { TelemetryModule } from './telemetry'
 import { isQueryRestricted } from './restrictedQueries'
 import { UserStateManager } from './UserStateManager'
+import { SearchFileType } from 'types'
 
 type FilesLists = {
   files: string[]
@@ -81,6 +78,7 @@ export class SearchManager {
     extensionSourceRootPath: string,
   ) {
     eventBusInstance.addListener('start-search', this.startSearch)
+    eventBusInstance.addListener('start-replace', this.startStubReplace)
     eventBusInstance.addListener('stop-search', this.stopCurrentSearch)
 
     this.initializeSearchRoots()
@@ -231,6 +229,10 @@ export class SearchManager {
     if (!isQueryRestricted(state.query, state.fileType, state.mode)) {
       this.performSearch(state)
     }
+  }
+
+  private startStubReplace = () => {
+    this.telemetryReporter.reportStubReplaceClick()
   }
 
   private stopCurrentSearch = () => {
@@ -592,6 +594,7 @@ export class SearchManager {
     this.filesListState.workspaceFoldersChangeListener?.dispose()
 
     eventBusInstance.removeListener('start-search', this.startSearch)
+    eventBusInstance.removeListener('start-replace', this.startStubReplace)
     eventBusInstance.removeListener('stop-search', this.stopCurrentSearch)
   }
 }

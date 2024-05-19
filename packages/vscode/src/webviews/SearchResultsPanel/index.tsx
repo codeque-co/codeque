@@ -500,6 +500,9 @@ const Panel = () => {
     return [...(results?.errors ?? []), ...replacementErrors]
   }, [replacementErrors, results?.errors])
 
+  const subscribeLinkRef = useRef<any>()
+  const nameLinkRef = useRef<any>()
+
   return (
     <Providers>
       <Flex height="98vh" flexDir="column" maxWidth="100wv">
@@ -544,6 +547,23 @@ const Panel = () => {
           />
         )}
         <Banners />
+        {/* This link is hidden and we click it imperatively. For some reason clicking link inside modal does not work */}
+        <Link
+          ref={subscribeLinkRef}
+          my="1"
+          href="https://jayu.dev/newsletter?utm_source=vscode_proModal"
+          display={'none'}
+        >
+          Subscribe to book 17€* early bird price 💸
+        </Link>
+        <Link
+          ref={nameLinkRef}
+          my="1"
+          href="https://twitter.com/jayu_dev"
+          display={'none'}
+        >
+          Jakub Twitter account
+        </Link>
         <SearchResultsList
           isLoading={isSearching}
           matches={results?.matches ?? []}
@@ -559,6 +579,7 @@ const Panel = () => {
           isWorkspace={isWorkspace}
         />
       </Flex>
+
       <Flex>
         <Modal isOpen={proModalVisible} onClose={closeProModal}>
           <ModalOverlay />
@@ -573,7 +594,13 @@ const Panel = () => {
             <ModalBody display="flex" flexDirection="column" gap="6px">
               <Text>
                 Hey 👋{' '}
-                <Link onClick={nameClickProModal} textDecoration="underline">
+                <Link
+                  onClick={() => {
+                    nameClickProModal()
+                    nameLinkRef.current?.click()
+                  }}
+                  textDecoration="underline"
+                >
                   Jakub
                 </Link>{' '}
                 here.
@@ -616,7 +643,14 @@ const Panel = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="purple" mr={3} onClick={ctaClickProModal}>
+              <Button
+                colorScheme="purple"
+                mr={3}
+                onClick={() => {
+                  ctaClickProModal()
+                  subscribeLinkRef.current?.click()
+                }}
+              >
                 Subscribe to book 17€* early bird price 💸
               </Button>
             </ModalFooter>

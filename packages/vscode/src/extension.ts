@@ -375,18 +375,10 @@ export function activate(context: vscode.ExtensionContext) {
   })
 
   eventBusInstance.addListener('pro-modal:subscribe_clicked', () => {
-    vscode.env.openExternal(
-      vscode.Uri.parse(
-        'https://jayu.dev/newsletter?utm_source=vscode_proModal',
-      ),
-    )
-
     telemetryModule.reportStubReplaceModalSubscribeClick()
   })
 
   eventBusInstance.addListener('pro-modal:twitter_handler_clicked', () => {
-    vscode.env.openExternal(vscode.Uri.parse('https://twitter.com/jayu_dev'))
-
     telemetryModule.reportStubReplaceModalNameClick()
   })
 

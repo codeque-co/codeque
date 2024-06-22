@@ -26,6 +26,13 @@ export const parsersSettings: ParserSettings[] = [
     nodeTypesLocation: 'src/node-types.json',
     buildWasmCommand: getWasmBuildCommand('tree-sitter-python'),
     nodeTypesToIgnore: [',', 'comment'],
+    conflictResolvers: [
+      {
+        nodeType: 'dict_pattern',
+        fields: ['key', 'children'],
+        mergeToField: 'children',
+      },
+    ],
   },
   {
     parserType: 'babel', // temporary for test

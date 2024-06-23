@@ -43,7 +43,7 @@ export const parsersSettings: ParserSettings[] = [
     nodeTypesToIgnore: [],
   },
   {
-    parserType: 'babel', // temporary for test
+    parserType: 'csharp', // temporary for test
     parserName: 'tree-sitter-c-sharp',
     repoUrl: 'https://github.com/tree-sitter/tree-sitter-c-sharp.git',
     nodeTypesLocation: 'src/node-types.json',

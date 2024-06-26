@@ -87,8 +87,7 @@ const numericLiteralUtils: NumericLiteralUtils = {
 }
 
 const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
-  isProgramNode: (node: PoorNodeType) =>
-    node.nodeType === 'namespace_declaration',
+  isProgramNode: (node: PoorNodeType) => node.nodeType === 'compilation_unit',
   isBlockNode: (node: PoorNodeType) => node.nodeType === 'block',
   programNodeBodyKey: 'children',
   blockNodeBodyKey: 'children',

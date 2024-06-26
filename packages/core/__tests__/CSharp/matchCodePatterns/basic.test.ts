@@ -72,7 +72,7 @@ describe('Basic queries', () => {
   it('Should partial match function definition', () => {
     const fileContent = `
         using System;
-        
+
         class TestClass
         {
             public static void Main(){}

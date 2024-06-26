@@ -18,7 +18,7 @@ import {
 } from './common'
 import { parseCode, parserModule } from './parseCode'
 
-const supportedExtensions = ['lua']
+const supportedExtensions = ['cs']
 
 const getProgramNodeFromRootNode = (rootNode: PoorNodeType) => rootNode // root node is program node
 
@@ -26,22 +26,10 @@ const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
   return fileNode.children as PoorNodeType[]
 }
 
-/**
- *
- * Lua has expression list, so there can be a tuple
- * For single expression return it, for multiple expressions, return expression_list node, so the original node
- */
-
 const unwrapExpressionStatement = (node: PoorNodeType) => {
-  if (node.nodeType === 'expression_list' && node.children) {
-    const children = node.children as PoorNodeType[]
-
-    if (children.length === 1) {
-      return children[0]
-    }
-  }
-
-  return node
+  return node.nodeType === 'expression_statement' && node.children
+    ? ((node.children as PoorNodeType[])[0] as PoorNodeType)
+    : node
 }
 
 const createBlockStatementNode = (
@@ -99,7 +87,8 @@ const numericLiteralUtils: NumericLiteralUtils = {
 }
 
 const programNodeAndBlockNodeUtils: ProgramNodeAndBlockNodeUtils = {
-  isProgramNode: (node: PoorNodeType) => node.nodeType === 'chunk',
+  isProgramNode: (node: PoorNodeType) =>
+    node.nodeType === 'namespace_declaration',
   isBlockNode: (node: PoorNodeType) => node.nodeType === 'block',
   programNodeBodyKey: 'children',
   blockNodeBodyKey: 'children',
@@ -163,7 +152,7 @@ const postprocessQueryNode = (queryNode: PoorNodeType) => {
   return queryNode
 }
 
-export const pythonParser: ParserSettings = {
+export const csharpParser: ParserSettings = {
   supportedExtensions,
   parseCode,
   isNode,
@@ -194,4 +183,4 @@ export const pythonParser: ParserSettings = {
   init: parserModule.init,
 }
 
-export default pythonParser
+export default csharpParser

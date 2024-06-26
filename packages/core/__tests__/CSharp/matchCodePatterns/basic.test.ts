@@ -8,6 +8,8 @@ describe('Basic queries', () => {
 
   it('Should exact match identifier', async () => {
     const fileContent = `
+        using System;
+
         Console.WriteLine("Hello");
       `
     const queries = [fileContent]
@@ -30,6 +32,8 @@ describe('Basic queries', () => {
 
   it('Should exact match function definition', () => {
     const fileContent = `
+        using System;
+
         class TestClass
         {
             public static void Main(){}
@@ -67,6 +71,8 @@ describe('Basic queries', () => {
 
   it('Should partial match function definition', () => {
     const fileContent = `
+        using System;
+        
         class TestClass
         {
             public static void Main(){}

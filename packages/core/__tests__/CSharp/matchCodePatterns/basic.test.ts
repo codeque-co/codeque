@@ -93,10 +93,13 @@ describe('Basic queries', () => {
 
     const queries = [
       `
-        void Fib(n)
+      class TestClass
+      {
+        void Fib(int n)
         {
           Console.WriteLine();
         }
+    }
       `,
     ]
 
@@ -118,6 +121,8 @@ describe('Basic queries', () => {
 
   it('Should match multiline', () => {
     const fileContent = `
+        using System;
+
         class TestClass
         {
             public static void Main(){}
@@ -138,8 +143,14 @@ describe('Basic queries', () => {
 
     const queries = [
       `
-        var init = (0, 1);
-        var (a, b) = init;
+      class TestClass
+      {
+          void Fib(int n)
+          {
+              var init = (0, 1);
+              var (a, b) = init;
+          }
+      }
       `,
     ]
 
@@ -160,10 +171,9 @@ describe('Basic queries', () => {
 
     const match = matches[0]
 
-    // TODO: fix the match.loc
     expect(match.loc).toStrictEqual({
-      start: { line: 5, column: 8, index: 73 },
-      end: { line: 6, column: 53, index: 157 },
+      start: { line: 4, column: 8, index: 32 },
+      end: { line: 19, column: 9, index: 429 },
     })
   })
 })

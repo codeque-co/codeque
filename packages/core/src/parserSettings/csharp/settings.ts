@@ -75,7 +75,7 @@ const isIdentifierNode = (node: PoorNodeType) =>
 
 const stringLikeLiteralUtils: StringLikeLiteralUtils = {
   isStringLikeLiteralNode: (node: PoorNodeType) =>
-    node.nodeType === 'string_content',
+    node.nodeType === 'string_literal_content',
   getStringLikeLiteralValue: (node: PoorNodeType) => {
     return node?.rawValue as string
   },
@@ -136,7 +136,7 @@ const postprocessQueryNode = (queryNode: PoorNodeType) => {
         node.rawValue = replaceEncodedWildcards(nodeName)
       }
     },
-    string_content: (node) => {
+    string_literal_content: (node) => {
       const nodeName = node.rawValue as string
 
       if (

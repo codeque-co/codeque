@@ -27,9 +27,22 @@ const getProgramBodyFromRootNode = (fileNode: PoorNodeType) => {
 }
 
 const unwrapExpressionStatement = (node: PoorNodeType) => {
-  return node.nodeType === 'expression_statement' && node.children
-    ? ((node.children as PoorNodeType[])[0] as PoorNodeType)
-    : node
+  if (node.nodeType === 'global_statement' && node.children) {
+    const exprChild = (node.children as PoorNodeType[])[0] as PoorNodeType
+
+    if (exprChild.nodeType === 'expression_statement' && exprChild.children) {
+      const parChild = (exprChild.children as PoorNodeType[])[0] as PoorNodeType
+
+      if (
+        parChild.nodeType === 'parenthesized_expression' &&
+        parChild.children
+      ) {
+        return (parChild.children as PoorNodeType[])[0] as PoorNodeType
+      }
+    }
+  }
+
+  return node
 }
 
 const createBlockStatementNode = (
@@ -82,7 +95,8 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
 }
 
 const numericLiteralUtils: NumericLiteralUtils = {
-  isNumericLiteralNode: (node: PoorNodeType) => node.nodeType === 'number',
+  isNumericLiteralNode: (node: PoorNodeType) =>
+    node.nodeType === 'integer_literal',
   getNumericLiteralValue: (node: PoorNodeType) => node?.rawValue as string,
 }
 

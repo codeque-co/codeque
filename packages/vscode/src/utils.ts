@@ -4,7 +4,10 @@ import { ParserType } from '@codeque/core'
 import { SearchFileType } from './types'
 
 // eslint-disable-next-line
-export function simpleDebounce<F extends (...args: any) => unknown>(func: F, timeout = 300) {
+export function simpleDebounce<F extends (...args: any) => unknown>(
+  func: F,
+  timeout = 300,
+) {
   let timer: NodeJS.Timeout
 
   return (...args: Parameters<F>) => {
@@ -62,7 +65,12 @@ export function getScrollParent(node: any): any {
 
 export type SupportedParsers = Extract<
   ParserType,
-  'babel' | 'angular-eslint-template-parser' | 'css-tree' | 'python' | 'lua'
+  | 'babel'
+  | 'angular-eslint-template-parser'
+  | 'css-tree'
+  | 'python'
+  | 'lua'
+  | 'csharp'
 >
 
 export const supportedParsers: SupportedParsers[] = [
@@ -71,6 +79,7 @@ export const supportedParsers: SupportedParsers[] = [
   'css-tree',
   'python',
   'lua',
+  'csharp',
 ]
 
 export const fileTypeToParserMap: Record<SearchFileType, SupportedParsers> = {
@@ -80,6 +89,7 @@ export const fileTypeToParserMap: Record<SearchFileType, SupportedParsers> = {
   css: 'css-tree',
   python: 'python',
   lua: 'lua',
+  csharp: 'csharp',
 }
 
 export const parserToFileTypeMap: Record<SupportedParsers, SearchFileType> = {
@@ -88,6 +98,7 @@ export const parserToFileTypeMap: Record<SupportedParsers, SearchFileType> = {
   ['css-tree']: 'css',
   ['python']: 'python',
   ['lua']: 'lua',
+  ['csharp']: 'csharp',
 }
 
 const imageExtensions = [

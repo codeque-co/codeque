@@ -14,26 +14,26 @@
 
 <p align="center">Find and lint complex code patterns effortlessly</p>
 
-___ 
+---
 
 # What is CodeQue?
 
-CodeQue is semantic code search engine that understands the code syntax. 
+CodeQue is semantic code search engine that understands the code syntax.
 
 It matches code structurally which makes it excellent for more complex queries.
 
-Query language offers wildcards, partial matching and ignores code formatting. 
+Query language offers wildcards, partial matching and ignores code formatting.
 
-Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua, C# and more soon.
 
-Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for **every language** and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground?utm_source=readme_main"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
 
-__Integrations__
+**Integrations**
 
 CodeQue is available as:
 
@@ -43,33 +43,33 @@ CodeQue is available as:
 
 <p align="center"><i>All CodeQue tools <b>work offline</b> hence code never leaves your local environment.</i></p>
 
-__Coming soon__
+**Coming soon**
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
-- Batch code refactoring 
-- Advanced ESLint rule creator 
-
+- Batch code refactoring
+- Advanced ESLint rule creator
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_main"><b>🔔 Get notified about updates 🔔 </b></a></p>
-
 
 </br>
 
 <!-- HERO END -->
-  
+
 <!-- VSCODE INTRO START -->
+
 ## Visual Studio Code Extension 🔮
+
 VScode extension aims to make your workflow more efficient.
 
-It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query.
 
-You don't need to have any Regex knowledge to query complex code patterns. 
+You don't need to have any Regex knowledge to query complex code patterns.
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 
-It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns.
 
 Advanced code search options and todo-like list of accurate search results will streamline your workflow.
 
@@ -102,14 +102,13 @@ CodeQue ESLint integration is a no-brainier for any team willing to improve thei
 
 <!-- ESLINT INTRO END -->
 
-__Installation 👇__
+**Installation 👇**
 
 ```sh
 yarn add --dev @codeque/eslint-plugin
 ```
 
-
-__Usage ✨__
+**Usage ✨**
 
 Enhance your `.eslintrc` with following setup:
 
@@ -117,25 +116,31 @@ Enhance your `.eslintrc` with following setup:
 {
   "plugins": ["@codeque"],
   "rules": {
-    "@codeque/error": ["error", [
-      {
-        "query": "fetchData()",
-        "mode": "exact",
-        "message": "Using fetchData() without parameters causes app crash!",
-      },
-    ]],
-    "@codeque/warning": ["warn", [
-      {
-        "query": "import $$$ from 'lodash';",
-        "mode": "include",
-        "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
-      },
-    ]]
+    "@codeque/error": [
+      "error",
+      [
+        {
+          "query": "fetchData()",
+          "mode": "exact",
+          "message": "Using fetchData() without parameters causes app crash!"
+        }
+      ]
+    ],
+    "@codeque/warning": [
+      "warn",
+      [
+        {
+          "query": "import $$$ from 'lodash';",
+          "mode": "include",
+          "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'"
+        }
+      ]
+    ]
   }
 }
 ```
-Find more information in [`@codeque/eslint-plugin` package readme](https://www.npmjs.com/package/@codeque/eslint-plugin)
 
+Find more information in [`@codeque/eslint-plugin` package readme](https://www.npmjs.com/package/@codeque/eslint-plugin)
 
 </br>
 
@@ -149,19 +154,20 @@ Find more information in [`@codeque/eslint-plugin` package readme](https://www.n
 ## CLI tool 🔥
 
 CodeQue CLI is a complementary tool that can be used for
+
 - Searching code patterns right from terminal including headless environments
 - Building scripts to assert that some code patterns exist or not exist
 - Enhancing git hooks to avoid committing or pushing unwanted code
 
 <!-- CLI INTRO END -->
 
-__Installation 👇__
+**Installation 👇**
 
 ```sh
 yarn global add @codeque/cli
 ```
 
-__Usage ✨__
+**Usage ✨**
 
 ```sh
 codeque
@@ -181,6 +187,7 @@ Find more information in [`@codeque/cli` package readme](https://www.npmjs.com/p
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
+
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement

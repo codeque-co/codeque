@@ -12,6 +12,7 @@ export {
   cssExtensionTester,
   pythonExtensionTester,
   luaExtensionTester,
+  csharpExtensionTester,
   pathToPosix,
   filterExtensions,
 } from './getFilesList'

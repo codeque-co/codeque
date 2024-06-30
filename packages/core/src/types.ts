@@ -78,6 +78,7 @@ export type ParserType =
   | 'css-tree'
   | 'python'
   | 'lua'
+  | 'csharp'
 
 export type FileSystemSearchArgs = {
   filePaths: string[]

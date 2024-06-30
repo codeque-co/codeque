@@ -22,26 +22,26 @@
 
 <p align="center">Find and lint complex code patterns effortlessly</p>
 
-___ 
+---
 
 # What is CodeQue?
 
-CodeQue is semantic code search engine that understands the code syntax. 
+CodeQue is semantic code search engine that understands the code syntax.
 
 It matches code structurally which makes it excellent for more complex queries.
 
-Query language offers wildcards, partial matching and ignores code formatting. 
+Query language offers wildcards, partial matching and ignores code formatting.
 
-Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua, C# and more soon.
 
-Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for **every language** and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground?utm_source=readme_vscode"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
 
-__Integrations__
+**Integrations**
 
 CodeQue is available as:
 
@@ -51,33 +51,33 @@ CodeQue is available as:
 
 <p align="center"><i>All CodeQue tools <b>work offline</b> hence code never leaves your local environment.</i></p>
 
-__Coming soon__
+**Coming soon**
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
-- Batch code refactoring 
-- Advanced ESLint rule creator 
-
+- Batch code refactoring
+- Advanced ESLint rule creator
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_vscode"><b>🔔 Get notified about updates 🔔 </b></a></p>
-
 
 </br>
 
 <!-- HERO END -->
-  
+
 <!-- VSCODE INTRO START -->
+
 ## Visual Studio Code Extension 🔮
+
 VScode extension aims to make your workflow more efficient.
 
-It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query.
 
-You don't need to have any Regex knowledge to query complex code patterns. 
+You don't need to have any Regex knowledge to query complex code patterns.
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 
-It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns.
 
 Advanced code search options and todo-like list of accurate search results will streamline your workflow.
 
@@ -93,10 +93,12 @@ Advanced code search options and todo-like list of accurate search results will 
 
 <!-- VSCODE INTRO END -->
 
-## About 
+## About
+
 One of the main strengths of CodeQue is its easy-to-use query language, but it also offers several additional features that make it a great support tool for your daily work.
 
 **Features**
+
 - [Query language](#query-language)
 - [Search modes](#search-modes)
 - [Searching by file imports](#searching-by-file-imports)
@@ -107,6 +109,7 @@ One of the main strengths of CodeQue is its easy-to-use query language, but it a
 - [Search errors](#search-errors)
 
 **Example Queries**
+
 - [All usages of `console` object](#all-usages-of-console-object)
 - [Object with given key and value](#object-with-given-key-and-value)
 - [React component with specific props combination](#react-component-with-specific-props-combination)
@@ -120,7 +123,7 @@ One of the main strengths of CodeQue is its easy-to-use query language, but it a
 ### Query language
 
 The beauty of CodeQue query language is that the query has to be valid source code.
-You don't have to learn anything new! 
+You don't have to learn anything new!
 
 Except the fact there are a few types of wildcards.
 
@@ -130,7 +133,7 @@ It matches all identifiers, JSX identifiers, types identifiers, function names a
 
 `$$$` is an statement/expression wildcard.
 
-It matches any statement or expression. Think of it as 'match anything'. 
+It matches any statement or expression. Think of it as 'match anything'.
 There a few quirks there. It's good to have general understanding of how code is represented in AST (Abstract Syntax Tree) for more complex queries.
 
 More technically `$$$` wildcard is matching any node with all it's children.
@@ -145,7 +148,7 @@ Strings have their's own wildcards
 
 #### Number wildcard
 
-`0x0`-  matches any number
+`0x0`- matches any number
 
 Here is an example of query which finds all types of logs which includes word `test` in parameter 👇
 
@@ -156,6 +159,7 @@ Here is an example of query which finds all types of logs which includes word `t
 ### Search modes
 
 CodeQue offers the following search modes
+
 - include
 - text
 - exact
@@ -163,13 +167,13 @@ CodeQue offers the following search modes
 
 <br/>
  
-The most useful mode is `include`. As the name suggest the matched code has to include the code from query, but it can also contain other statements. It performs structural comparison. 
+The most useful mode is `include`. As the name suggest the matched code has to include the code from query, but it can also contain other statements. It performs structural comparison.
 
 [Learn more about `include` search mode](https://codeque.co/docs#include-search-mode)
 
 <br/>
 
-`text` search mode is good replacement of build-in vscode search. It acts like a normal text search, but it's big advantage is that it allows for matching multiline statements. It also offers it's own types of wildcards. 
+`text` search mode is good replacement of build-in vscode search. It acts like a normal text search, but it's big advantage is that it allows for matching multiline statements. It also offers it's own types of wildcards.
 
 [Learn more about `text` search mode](https://codeque.co/docs#include-search-mode)
 
@@ -181,13 +185,13 @@ Sometimes you might want to find the code that matches exactly your query. Here 
 
 <br/>
 
-Last but not least, `include-with-order` search mode can be useful in some rare cases. Same like `include` mode it matches code structurally and allows for missing parts, but in addition, it require the order to match. 
+Last but not least, `include-with-order` search mode can be useful in some rare cases. Same like `include` mode it matches code structurally and allows for missing parts, but in addition, it require the order to match.
 
 [Learn more about `include-with-order` search mode](https://codeque.co/docs#include-w-ith-order-search-mode)
 
 <br/>
 
-Here is the example of `include` mode matching function body containing  statements from query 👇
+Here is the example of `include` mode matching function body containing statements from query 👇
 
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/vscode/readme-media/include-search-mode-example.png?raw=true" />
 
@@ -228,6 +232,7 @@ You can define glob patters to either include or exclude files from the list.
 By default CodeQue is not searching in files ignored by `.gitignore`
 
 Enable the following flags with caution, as they might significantly downgrade search performance for lager projects.
+
 - Search ignored files
 - Search `node_modules` (for most projects to search node_modules you have to also enable searching by ignored files)
 - Search files above 100kb (these are usually bundled files which are structurally heavy due to their size and amount of information)
@@ -240,7 +245,7 @@ Example files list settings 👇
 
 ### Case sensitivity
 
-You can choose whether to compare identifier persisting their original case or do case insensitive match.  
+You can choose whether to compare identifier persisting their original case or do case insensitive match.
 
 ### Search errors
 
@@ -252,7 +257,7 @@ You can check search error details in tooltip available after click the error co
 
 ## Query examples
 
-CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely  find some more complex during day to day work.
+CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely find some more complex during day to day work.
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
@@ -270,17 +275,18 @@ console.$$()
 
 CodeQue ability to match parts of the objects might be very useful, especially for searching patterns in large JSONs.
 
-This query will match part of an object literal in file or JSON (depending on file extension) regardless of how deeply nested the object is in the structure. 
+This query will match part of an object literal in file or JSON (depending on file extension) regardless of how deeply nested the object is in the structure.
 
 More specifically it will match all objects with at least one address entry with country specified to `PL` and phone number which is non empty string.
 
-
 ```ts
-({
-  addresses: [{
-    country: 'PL'
-  }],
-  phoneNumber: "$$$"
+;({
+  addresses: [
+    {
+      country: 'PL',
+    },
+  ],
+  phoneNumber: '$$$',
 })
 ```
 
@@ -291,11 +297,7 @@ More specifically it will match all objects with at least one address entry with
 I found it very useful to find props with specific props combination. Sometimes props depends on each other and we might want to refactor some of them, but how do we determine whether they are used together? We can review long list of results for basic code search, but who has time for that 😉
 
 ```tsx
-<Button
-  variant="ghost"
-  size="sm"
-  colorScheme="red"
-/>
+<Button variant="ghost" size="sm" colorScheme="red" />
 ```
 
 ### React bad patterns
@@ -305,9 +307,7 @@ This quite simple query highlights usage of object literal as a prop. It could b
 Assuming we use `include` mode, the object can have 0 or more properties with any values.
 
 ```tsx
-<$$
- $$={{}}
-/>
+<$$ $$={{}} />
 ```
 
 This query finds places where a given array is mapped directly in JSX. It could be memoized to make the array reference stable and reduce re-renders.
@@ -315,26 +315,17 @@ This query finds places where a given array is mapped directly in JSX. It could 
 > In `include` search mode query `<$$/>` will match components with and without children!
 
 ```tsx
-<$$
- $$={
-  $$$.map(() => ($$$))
- }
-/>
+<$$ $$={$$$.map(() => $$$)} />
 ```
 
 One last example is another variation of the above, this time with inline function that should be memoized using `useCallback` hook.
 
-> Note that we used `() => $$$`, not `() => {}`. 
-Triple wildcard will match both function body as a block, but also as an expression.
+> Note that we used `() => $$$`, not `() => {}`.
+> Triple wildcard will match both function body as a block, but also as an expression.
 
 ```tsx
-<$$
- $$={
-  () => $$$
- }
-/>
+<$$ $$={() => $$$} />
 ```
-
 
 ### Conditionally set parameter of a function
 
@@ -344,7 +335,7 @@ We use `$$$` to be more generic for matching parts of conditional expression.
 
 ```ts
 useRequest({
-  apiMethod: $$$ ? $$$ : $$$
+  apiMethod: $$$ ? $$$ : $$$,
 })
 ```
 
@@ -359,7 +350,7 @@ You can use the snipped below to search for all similar places across the codeba
 This is interesting example that links together two statements in the same code block, that does not necessarily have to directly follow each other.
 
 ```ts
-const { confirm } = useAsyncDialog(); 
+const { confirm } = useAsyncDialog()
 const $$ = useCallback($$$, [confirm])
 ```
 
@@ -375,6 +366,7 @@ Learn more about [telemetry](https://codeque.co/docs/telemetry#vs-code-extension
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
+
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement
@@ -385,6 +377,7 @@ to
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
+
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement

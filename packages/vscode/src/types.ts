@@ -25,6 +25,7 @@ export type SearchFileType =
   | 'css'
   | 'python'
   | 'lua'
+  | 'csharp'
 
 export type CaseType = 'sensitive' | 'insensitive'
 export type QueryType = 'basic' | 'query-builder'

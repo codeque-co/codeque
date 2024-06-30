@@ -16,6 +16,7 @@ export const htmlFamilyExtensionTester = /\.(html|htm)$/
 export const cssExtensionTester = /\.(css)$/
 export const pythonExtensionTester = /\.(py)$/
 export const luaExtensionTester = /\.(lua)$/
+export const csharpExtensionTester = /\.(cs)$/
 
 /**
  * @deprecated use `typeScriptFamilyExtensionTester` instead

@@ -382,6 +382,14 @@ export function SearchSettings({
               >
                 Lua
               </Radio>
+              <Radio
+                value="csharp"
+                marginStart="0 !important"
+                marginEnd="1rem !important"
+                borderColor="blue.200"
+              >
+                C#
+              </Radio>
             </Stack>
           </RadioGroup>
         </Flex>

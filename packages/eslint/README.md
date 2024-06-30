@@ -1,5 +1,3 @@
-
-      
 <!-- HERO START -->
 
 <p align="center">
@@ -18,26 +16,26 @@
 
 <p align="center">Find and lint complex code patterns effortlessly</p>
 
-___ 
+---
 
 # What is CodeQue?
 
-CodeQue is semantic code search engine that understands the code syntax. 
+CodeQue is semantic code search engine that understands the code syntax.
 
 It matches code structurally which makes it excellent for more complex queries.
 
-Query language offers wildcards, partial matching and ignores code formatting. 
+Query language offers wildcards, partial matching and ignores code formatting.
 
-Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua, C# and more soon.
 
-Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for **every language** and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground?utm_source=readme_eslint"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
 
-__Integrations__
+**Integrations**
 
 CodeQue is available as:
 
@@ -47,23 +45,22 @@ CodeQue is available as:
 
 <p align="center"><i>All CodeQue tools <b>work offline</b> hence code never leaves your local environment.</i></p>
 
-__Coming soon__
+**Coming soon**
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
-- Batch code refactoring 
-- Advanced ESLint rule creator 
-
+- Batch code refactoring
+- Advanced ESLint rule creator
 
 <p align="center"><a href="https://jayu.dev/newsletter?utm_source=readme_eslint"><b>🔔 Get notified about updates 🔔 </b></a></p>
-
 
 </br>
 
 <!-- HERO END -->
-  
+
 <!-- ESLINT INTRO START -->
+
 ## ESLint integration 💅
 
 Using CodeQue ESLint plugin you can create your own custom linting rules in zero time.
@@ -83,6 +80,7 @@ yarn add --dev @codeque/eslint-plugin
 ```
 
 CodeQue supports all parsers officially supported by ESLint
+
 - [Espree](https://github.com/eslint/espree)
 - [Esprima](https://www.npmjs.com/package/esprima)
 - [@babel/eslint-parser](https://www.npmjs.com/package/@babel/eslint-parser)
@@ -94,7 +92,8 @@ CodeQue supports all parsers officially supported by ESLint
 
 Add `@codeque` plugin to plugins list in your `.eslintrc`.
 
-And then add a definition for one of the rules: 
+And then add a definition for one of the rules:
+
 - `@codeque/error`
 - `@codeque/warning`
 
@@ -108,32 +107,38 @@ Learn more about writing queries from [CodeQue docs](https://codeque.co/docs)
 {
   "plugins": ["@codeque"],
   "rules": {
-    "@codeque/error": ["error", [
-      {
-        "query": "fetchData()",
-        "mode": "exact",
-        "message": "Using fetchData() without parameters causes app crash!",
-      },
-    ]],
-    "@codeque/warning": ["warn", [
-      {
-        "query": "import $$$ from 'lodash';",
-        "mode": "include",
-        "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'",
-      },
-    ]]
+    "@codeque/error": [
+      "error",
+      [
+        {
+          "query": "fetchData()",
+          "mode": "exact",
+          "message": "Using fetchData() without parameters causes app crash!"
+        }
+      ]
+    ],
+    "@codeque/warning": [
+      "warn",
+      [
+        {
+          "query": "import $$$ from 'lodash';",
+          "mode": "include",
+          "message": "Prefer to import lodash functions from separate packages like 'lodash.debounce'"
+        }
+      ]
+    ]
   }
 }
 ```
 
 The above configuration
+
 - rises an error when `fetchData()` function is called without parameters
 - reports a warning when utility is imported from main `lodash` package
 
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/getting-started.gif?raw=true" />
 </p>
-
 
 > If your config seems too big, feel free to extract your set of rules to a separate file. Change your `.eslintrc` to JS file and import rules from a separate file.
 
@@ -142,12 +147,13 @@ The above configuration
 Minimal rule config object should contain just `query` key
 
 ```js
-({
-  query: "someCode"
+;({
+  query: 'someCode',
 })
 ```
 
 The default settings are:
+
 - `mode` - `include`
 - `message` - `Restricted code pattern`
 - `caseInsensitive` - `true`
@@ -160,7 +166,7 @@ All configuration options
 type RuleConfig = {
   query: string // Content of the query
   mode: 'exact' | 'include' | 'include-with-order' // CodeQue search mode
-  message: string // Error message to display 
+  message: string // Error message to display
   caseInsensitive: boolean // Whether query should perform matches case insensitively
   includeFiles: string[] | undefined // list of glob patterns to indicate files against which given rule should be executed
   excludeFiles: string[] // list of glob patterns to indicate files against which given rule should not be executed
@@ -169,7 +175,7 @@ type RuleConfig = {
 
 ## Rule examples
 
-CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely  find some more complex during day to day work.
+CodeQue is general purpose code search tool. The examples list could be endless. Here are some of them for you to get a glimpse of what's possible. Those are relatively simple, you will definitely find some more complex during day to day work.
 
 > Don't know how to write a query? [Open an issue on GitHub](https://github.com/codeque-co/codeque/issues) !
 
@@ -185,13 +191,16 @@ This rule warns about all places in the code that can output some (usually unwan
 ```json
 {
   "rules": {
-    "@codeque/warning": ["warn", [
-      {
-        "query": "console.$$()",
-        "mode": "include",
-        "message": "Prefer to use 'Logger' util.",
-      },
-    ]]
+    "@codeque/warning": [
+      "warn",
+      [
+        {
+          "query": "console.$$()",
+          "mode": "include",
+          "message": "Prefer to use 'Logger' util."
+        }
+      ]
+    ]
   }
 }
 ```
@@ -214,14 +223,17 @@ The rule warns against using `disabled` property on `SomeLibComponent`, and sugg
 ```json
 {
   "rules": {
-    "@codeque/warning": ["warn", [
-      {
-        "query": "<SomeLibComponent disabled />",
-        "mode": "include",
-        "message": "'disabled' property does not work as expected. Use 'isDisabled' instead",
-        "includeFiles": ["**/*.tsx"]
-      },
-    ]]
+    "@codeque/warning": [
+      "warn",
+      [
+        {
+          "query": "<SomeLibComponent disabled />",
+          "mode": "include",
+          "message": "'disabled' property does not work as expected. Use 'isDisabled' instead",
+          "includeFiles": ["**/*.tsx"]
+        }
+      ]
+    ]
   }
 }
 ```
@@ -246,19 +258,21 @@ This is interesting example that links together two statements in the same code 
 ```json
 {
   "rules": {
-    "@codeque/error": ["error", [
-      {
-        "query": "const { confirm } = useAsyncDialog(); const $$ = useCallback($$$, [confirm]);",
-        "mode": "include",
-        "message": "'confirm' is known to be unstable. Using it in hook dependency array can cause render loop",
-      },
-    ]]
+    "@codeque/error": [
+      "error",
+      [
+        {
+          "query": "const { confirm } = useAsyncDialog(); const $$ = useCallback($$$, [confirm]);",
+          "mode": "include",
+          "message": "'confirm' is known to be unstable. Using it in hook dependency array can cause render loop"
+        }
+      ]
+    ]
   }
 }
 ```
 
 </details>
-
 
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/unstable-hook.gif?raw=true" />
@@ -270,33 +284,34 @@ First rule restricts usage of object literal as a prop. Object literal could be 
 
 Second rule restricts places where a given array is mapped directly in JSX. It could be memoized to make the array reference stable and reduce re-renders.
 
-
 <details>
 <summary>Show configuration</summary>
 
 ```json
 {
   "rules": {
-    "@codeque/error": ["error", [
-      {
-        "query": "<$$ $$={{}} />",
-        "mode": "include",
-        "message": "Don't use object literal in JSX props",
-        "includeFiles": ["**/*.tsx"]
-      },
-      {
-        "query": "<$$ $$={$$$.map(() => ($$$))} />",
-        "mode": "include",
-        "message": "Don't use map directly in JSX, memoize map result instead",
-        "includeFiles": ["**/*.tsx"]
-      },
-    ]]
+    "@codeque/error": [
+      "error",
+      [
+        {
+          "query": "<$$ $$={{}} />",
+          "mode": "include",
+          "message": "Don't use object literal in JSX props",
+          "includeFiles": ["**/*.tsx"]
+        },
+        {
+          "query": "<$$ $$={$$$.map(() => ($$$))} />",
+          "mode": "include",
+          "message": "Don't use map directly in JSX, memoize map result instead",
+          "includeFiles": ["**/*.tsx"]
+        }
+      ]
+    ]
   }
 }
 ```
 
 </details>
-
 
 <p align="center">
 <img src="https://github.com/codeque-co/codeque/blob/master/packages/eslint/readme-media/object-literals.gif?raw=true" />
@@ -310,9 +325,9 @@ CodeQue performs shallow matching based on strings in query, so it can filter ou
 
 Query that contains wildcards only, eg. `$$.$$()` will be looked for in every file, as query does not include any specific characters sequence.
 
-However query `console.$$()` would match only on files that contains `console` string somewhere within it's contents. 
+However query `console.$$()` would match only on files that contains `console` string somewhere within it's contents.
 
-Remember to be as specific as possible and use file filtering options eg. to not run  JSX rules on `*.js` files.
+Remember to be as specific as possible and use file filtering options eg. to not run JSX rules on `*.js` files.
 
 CodeQue will run faster for more specific patterns that occurs rarely in the codebase. If pattern is very common, it would have to do more comparisons, hence would run longer.
 
@@ -335,7 +350,7 @@ Linting code pattern specific to your code base is what CodeQue eslint integrati
 Rule from examples section that captures issue with unstable hook reference occurs rare in the codebase, but can prevent various important bugs.
 
 ```
-const { confirm } = useAsyncDialog(); 
+const { confirm } = useAsyncDialog();
 const $$ = useCallback($$$, [confirm]);
 ```
 
@@ -359,8 +374,7 @@ Rule             | Time (ms) | Relative
 @codeque/warning |    28.286 |   100.0%
 ```
 
-
-And for new introduction of the pattern while you code, it will be captures in ~30ms 
+And for new introduction of the pattern while you code, it will be captures in ~30ms
 
 ```sh
 ✖ 1 problems (0 errors, 1 warning)
@@ -370,13 +384,13 @@ Rule             | Time (ms) | Relative
 @codeque/warning |    30.553 |   100.0%
 ```
 
-It's not much comparing to the value it gives. 
+It's not much comparing to the value it gives.
 
 Consider how much time it would take to implement such rule with standard approach. No one has budget for that and instead time will be spend on fixing bugs.
 
 #### Capturing restricted imports
 
-Here is the comparison of `no-restricted-imports` ESLint rule with CodeQue rule. 
+Here is the comparison of `no-restricted-imports` ESLint rule with CodeQue rule.
 
 Both restricts importing `useCallback` from `react`.
 
@@ -397,7 +411,6 @@ Rule                  | Time (ms) | Relative
 no-restricted-imports |    30.239 |    43.9%
 ```
 
-
 #### Restricting console usage
 
 The performance result of ESLint `no-console` rule comparing to CodeQue `console.$$()` query on TypeScript codebase with ~4000 source files.
@@ -413,7 +426,6 @@ Rule             | Time (ms) | Relative
 no-console       |    21.482 |    20.9%
 ```
 
-
 ## Telemetry
 
 Plugin collects completely anonymous telemetry that helps me get insights about usage.
@@ -428,6 +440,7 @@ Learn more about [telemetry](https://codeque.co/docs/telemetry#es-lint-plugin)
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
+
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement

@@ -5,6 +5,7 @@ import {
   htmlFamilyExtensionTester,
   pythonExtensionTester,
   luaExtensionTester,
+  csharpExtensionTester,
 } from '@codeque/core'
 import { SearchFileType } from './types'
 
@@ -47,6 +48,10 @@ export const getFileTypeFromFileExtension = (
 
   if (fileExtension.match(luaExtensionTester) !== null) {
     return 'lua'
+  }
+
+  if (fileExtension.match(csharpExtensionTester) !== null) {
+    return 'csharp'
   }
 
   return 'all'

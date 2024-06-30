@@ -58,6 +58,7 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
     css: 'css',
     python: 'py',
     lua: 'lua',
+    csharp: 'csharp',
   }
 
   return map[fileType]
@@ -125,7 +126,6 @@ export function QueryEditor({
           placeholder="Query"
         />
       </Box>
-
       <Flex height="20px" alignItems="center" mt="2">
         {queryHint && (
           <Text as="span">

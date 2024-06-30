@@ -14,6 +14,7 @@ import {
   filterExtensions,
   pythonExtensionTester,
   luaExtensionTester,
+  csharpExtensionTester,
   __internal,
 } from '@codeque/core'
 import {
@@ -48,6 +49,7 @@ const extensionTesterMap: Record<SearchFileType, RegExp> = {
   css: cssExtensionTester,
   python: pythonExtensionTester,
   lua: luaExtensionTester,
+  csharp: csharpExtensionTester,
 }
 
 export class SearchManager {

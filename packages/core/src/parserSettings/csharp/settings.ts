@@ -96,7 +96,7 @@ const stringLikeLiteralUtils: StringLikeLiteralUtils = {
 
 const numericLiteralUtils: NumericLiteralUtils = {
   isNumericLiteralNode: (node: PoorNodeType) =>
-    node.nodeType === 'integer_literal',
+    node.nodeType === 'integer_literal' || node.nodeType === 'real_literal',
   getNumericLiteralValue: (node: PoorNodeType) => node?.rawValue as string,
 }
 

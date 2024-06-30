@@ -4,7 +4,7 @@ const defineRawValueForNodeTypes = [
   'identifier',
   'integer_literal',
   'string_literal_content',
-  'float',
+  'real_literal',
 ]
 
 export const parserModule = treeSitterParserModuleFactory({

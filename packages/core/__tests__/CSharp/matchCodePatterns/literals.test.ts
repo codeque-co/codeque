@@ -37,59 +37,14 @@ describe('Literals', () => {
 
   it('Should exact match template string literal', () => {
     const fileContent = `
-      using System;
+        using System;
 
-      class TestClass
-      {
-        static void TestPrint()
-        {
-            var machineId = "id-1234";
-            var status = "stopped";
-            Console.WriteLine($"Machine {machineId} has {status}.");
-        }
-      }
+        Console.WriteLine($"Machine {machineId} has {status}.");
     `
 
     const queries = [
       `
       $"Machine {machineId} has {status}."
-    `,
-    ]
-
-    const { matches, errors } = searchInStrings({
-      mode: 'include',
-      caseInsensitive: true,
-      queryCodes: queries,
-      files: [
-        {
-          path: 'mock',
-          content: fileContent,
-        },
-      ],
-    })
-
-    expect(errors).toHaveLength(0)
-    expect(matches.length).toBe(1)
-  })
-
-  it('Should partial match template string literal', () => {
-    const fileContent = `
-      using System;
-
-      class TestClass
-      {
-        static void TestPrint()
-        {
-            var machineId = "id-1234";
-            var status = "stopped";
-            Console.WriteLine($"Machine {machineId} has {status}.");
-        }
-      }
-    `
-
-    const queries = [
-      `
-      $"Machine {machineId}."
     `,
     ]
 

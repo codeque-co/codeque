@@ -59,6 +59,7 @@ const getHighlightFileExtension = (fileType: SearchFileType) => {
     css: 'css',
     python: 'py',
     lua: 'lua',
+    csharp: 'csharp',
   }
 
   return map[fileType]

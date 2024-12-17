@@ -16,26 +16,26 @@
 
 <p align="center">Find and lint complex code patterns effortlessly</p>
 
-___ 
+---
 
 # What is CodeQue?
 
-CodeQue is semantic code search engine that understands the code syntax. 
+CodeQue is semantic code search engine that understands the code syntax.
 
 It matches code structurally which makes it excellent for more complex queries.
 
-Query language offers wildcards, partial matching and ignores code formatting. 
+Query language offers wildcards, partial matching and ignores code formatting.
 
-Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua and more soon.
+Structural code search is available for JavaScript, TypesScript, HTML, CSS, Python, Lua, C# and more soon.
 
-Text code search with handy wildcards is available for __every language__ and covers common regex search use cases.
+Text code search with handy wildcards is available for **every language** and covers common regex search use cases.
 
 <p align="center"><a href="https://codeque.co/playground"><b>Give it a try in 
  playground</b></a></p>
 
 <p align="center"><i>Just paste code snippet to start searching, no installation needed!</i></p>
 
-__Integrations__
+**Integrations**
 
 CodeQue is available as:
 
@@ -45,17 +45,15 @@ CodeQue is available as:
 
 <p align="center"><i>All CodeQue tools <b>work offline</b> hence code never leaves your local environment.</i></p>
 
-__Coming soon__
+**Coming soon**
 
 CodeQue will be soon available as:
 
 - Duplicated code identification
-- Batch code refactoring 
-- Advanced ESLint rule creator 
-
+- Batch code refactoring
+- Advanced ESLint rule creator
 
 <p align="center"><a href="https://jayu.dev/newsletter"><b>🔔 Get notified about updates 🔔 </b></a></p>
-
 
 </br>
 

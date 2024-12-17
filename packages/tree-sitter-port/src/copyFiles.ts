@@ -4,7 +4,7 @@ import path from 'path'
 import { logger as log } from './log'
 import { ParserType } from '@codeque/core'
 
-const parsersToCopy: Array<ParserType> = ['python', 'lua']
+const parsersToCopy: Array<ParserType> = ['python', 'lua', 'csharp']
 
 const filteredParserSettings = parsersSettings.filter(({ parserType }) =>
   parsersToCopy.includes(parserType),

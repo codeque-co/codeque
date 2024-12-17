@@ -50,6 +50,7 @@
     "type": "as_pattern",
     "singleFieldNames": ["alias"],
     "nodeTypeToMultipleFieldName": {
+      "case_pattern": "children",
       "as_pattern": "children",
       "boolean_operator": "children",
       "comparison_operator": "children",
@@ -176,7 +177,8 @@
       "pass_statement": "children",
       "print_statement": "children",
       "raise_statement": "children",
-      "return_statement": "children"
+      "return_statement": "children",
+      "type_alias_statement": "children"
     },
     "multipleOrChildrenFieldNames": ["alternative", "children"]
   },
@@ -202,9 +204,33 @@
     "type": "case_clause",
     "singleFieldNames": ["consequence", "guard"],
     "nodeTypeToMultipleFieldName": {
-      "case_pattern": "pattern"
+      "case_pattern": "children"
     },
-    "multipleOrChildrenFieldNames": ["pattern"]
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "case_pattern": {
+    "type": "case_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "as_pattern": "children",
+      "class_pattern": "children",
+      "complex_pattern": "children",
+      "concatenated_string": "children",
+      "dict_pattern": "children",
+      "dotted_name": "children",
+      "false": "children",
+      "float": "children",
+      "integer": "children",
+      "keyword_pattern": "children",
+      "list_pattern": "children",
+      "none": "children",
+      "splat_pattern": "children",
+      "string": "children",
+      "true": "children",
+      "tuple_pattern": "children",
+      "union_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
   },
   "chevron": {
     "type": "chevron",
@@ -247,9 +273,18 @@
   },
   "class_definition": {
     "type": "class_definition",
-    "singleFieldNames": ["body", "name", "superclasses"],
+    "singleFieldNames": ["body", "name", "superclasses", "type_parameters"],
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
+  },
+  "class_pattern": {
+    "type": "class_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "case_pattern": "children",
+      "dotted_name": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
   },
   "comparison_operator": {
     "type": "comparison_operator",
@@ -293,6 +328,15 @@
       "unary_operator": "children"
     },
     "multipleOrChildrenFieldNames": ["operators", "children"]
+  },
+  "complex_pattern": {
+    "type": "complex_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "float": "children",
+      "integer": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
   },
   "concatenated_string": {
     "type": "concatenated_string",
@@ -338,6 +382,14 @@
       "true": "children",
       "tuple": "children",
       "unary_operator": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "constrained_type": {
+    "type": "constrained_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "type": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
@@ -439,6 +491,31 @@
       "expression_list": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
+  },
+  "dict_pattern": {
+    "type": "dict_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "case_pattern": "value",
+      "splat_pattern": "children",
+      "-": "children",
+      "_": "children",
+      "class_pattern": "children",
+      "complex_pattern": "children",
+      "concatenated_string": "children",
+      "dict_pattern": "children",
+      "dotted_name": "children",
+      "false": "children",
+      "float": "children",
+      "integer": "children",
+      "list_pattern": "children",
+      "none": "children",
+      "string": "children",
+      "true": "children",
+      "tuple_pattern": "children",
+      "union_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["value", "children"]
   },
   "dictionary": {
     "type": "dictionary",
@@ -797,7 +874,13 @@
   },
   "function_definition": {
     "type": "function_definition",
-    "singleFieldNames": ["body", "name", "parameters", "return_type"],
+    "singleFieldNames": [
+      "body",
+      "name",
+      "parameters",
+      "return_type",
+      "type_parameters"
+    ],
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
   },
@@ -816,6 +899,15 @@
     "nodeTypeToMultipleFieldName": {
       "for_in_clause": "children",
       "if_clause": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "generic_type": {
+    "type": "generic_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children",
+      "type_parameter": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
@@ -912,6 +1004,29 @@
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
   },
+  "keyword_pattern": {
+    "type": "keyword_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "class_pattern": "children",
+      "complex_pattern": "children",
+      "concatenated_string": "children",
+      "dict_pattern": "children",
+      "dotted_name": "children",
+      "false": "children",
+      "float": "children",
+      "identifier": "children",
+      "integer": "children",
+      "list_pattern": "children",
+      "none": "children",
+      "splat_pattern": "children",
+      "string": "children",
+      "true": "children",
+      "tuple_pattern": "children",
+      "union_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
   "keyword_separator": {
     "type": "keyword_separator",
     "singleFieldNames": [],
@@ -988,6 +1103,7 @@
     "type": "list_pattern",
     "singleFieldNames": [],
     "nodeTypeToMultipleFieldName": {
+      "case_pattern": "children",
       "attribute": "children",
       "identifier": "children",
       "list_pattern": "children",
@@ -1085,6 +1201,15 @@
     },
     "multipleOrChildrenFieldNames": ["subject"]
   },
+  "member_type": {
+    "type": "member_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children",
+      "type": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
   "module": {
     "type": "module",
     "singleFieldNames": [],
@@ -1112,7 +1237,8 @@
       "pass_statement": "children",
       "print_statement": "children",
       "raise_statement": "children",
-      "return_statement": "children"
+      "return_statement": "children",
+      "type_alias_statement": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
@@ -1450,6 +1576,22 @@
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
+  "splat_pattern": {
+    "type": "splat_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "splat_type": {
+    "type": "splat_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "identifier": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
   "string": {
     "type": "string",
     "singleFieldNames": [],
@@ -1465,6 +1607,7 @@
     "type": "string_content",
     "singleFieldNames": [],
     "nodeTypeToMultipleFieldName": {
+      "escape_interpolation": "children",
       "escape_sequence": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
@@ -1565,6 +1708,7 @@
     "type": "tuple_pattern",
     "singleFieldNames": [],
     "nodeTypeToMultipleFieldName": {
+      "case_pattern": "children",
       "attribute": "children",
       "identifier": "children",
       "list_pattern": "children",
@@ -1574,42 +1718,19 @@
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
-  "type": {
-    "type": "type",
+  "type_alias_statement": {
+    "type": "type_alias_statement",
     "singleFieldNames": [],
     "nodeTypeToMultipleFieldName": {
-      "as_pattern": "children",
-      "boolean_operator": "children",
-      "comparison_operator": "children",
-      "conditional_expression": "children",
-      "lambda": "children",
-      "named_expression": "children",
-      "not_operator": "children",
-      "attribute": "children",
-      "await": "children",
-      "binary_operator": "children",
-      "call": "children",
-      "concatenated_string": "children",
-      "dictionary": "children",
-      "dictionary_comprehension": "children",
-      "ellipsis": "children",
-      "false": "children",
-      "float": "children",
-      "generator_expression": "children",
-      "identifier": "children",
-      "integer": "children",
-      "list": "children",
-      "list_comprehension": "children",
-      "list_splat": "children",
-      "none": "children",
-      "parenthesized_expression": "children",
-      "set": "children",
-      "set_comprehension": "children",
-      "string": "children",
-      "subscript": "children",
-      "true": "children",
-      "tuple": "children",
-      "unary_operator": "children"
+      "type": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "type_parameter": {
+    "type": "type_parameter",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "type": "children"
     },
     "multipleOrChildrenFieldNames": ["children"]
   },
@@ -1634,6 +1755,36 @@
     "singleFieldNames": ["argument", "operator"],
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
+  },
+  "union_pattern": {
+    "type": "union_pattern",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "class_pattern": "children",
+      "complex_pattern": "children",
+      "concatenated_string": "children",
+      "dict_pattern": "children",
+      "dotted_name": "children",
+      "false": "children",
+      "float": "children",
+      "integer": "children",
+      "list_pattern": "children",
+      "none": "children",
+      "splat_pattern": "children",
+      "string": "children",
+      "true": "children",
+      "tuple_pattern": "children",
+      "union_pattern": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
+  },
+  "union_type": {
+    "type": "union_type",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {
+      "type": "children"
+    },
+    "multipleOrChildrenFieldNames": ["children"]
   },
   "while_statement": {
     "type": "while_statement",
@@ -1855,6 +2006,12 @@
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []
   },
+  "_": {
+    "type": "_",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
   "and": {
     "type": "and",
     "singleFieldNames": [],
@@ -1863,6 +2020,12 @@
   },
   "ellipsis": {
     "type": "ellipsis",
+    "singleFieldNames": [],
+    "nodeTypeToMultipleFieldName": {},
+    "multipleOrChildrenFieldNames": []
+  },
+  "escape_interpolation": {
+    "type": "escape_interpolation",
     "singleFieldNames": [],
     "nodeTypeToMultipleFieldName": {},
     "multipleOrChildrenFieldNames": []

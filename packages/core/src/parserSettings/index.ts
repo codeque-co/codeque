@@ -16,4 +16,5 @@ export const parserSettingsMap: Record<ParserType, () => ParserSettings> = {
   ['css-tree']: resolveParserSettings('cssTree'),
   ['python']: resolveParserSettings('python'),
   ['lua']: resolveParserSettings('lua'),
+  ['csharp']: resolveParserSettings('csharp'),
 }

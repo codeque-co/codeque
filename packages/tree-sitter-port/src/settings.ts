@@ -26,6 +26,13 @@ export const parsersSettings: ParserSettings[] = [
     nodeTypesLocation: 'src/node-types.json',
     buildWasmCommand: getWasmBuildCommand('tree-sitter-python'),
     nodeTypesToIgnore: [',', 'comment'],
+    conflictResolvers: [
+      {
+        nodeType: 'dict_pattern',
+        fields: ['key', 'children'],
+        mergeToField: 'children',
+      },
+    ],
   },
   {
     parserType: 'babel', // temporary for test
@@ -36,7 +43,7 @@ export const parsersSettings: ParserSettings[] = [
     nodeTypesToIgnore: [],
   },
   {
-    parserType: 'babel', // temporary for test
+    parserType: 'csharp',
     parserName: 'tree-sitter-c-sharp',
     repoUrl: 'https://github.com/tree-sitter/tree-sitter-c-sharp.git',
     nodeTypesLocation: 'src/node-types.json',

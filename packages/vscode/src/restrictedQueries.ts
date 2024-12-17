@@ -6,6 +6,8 @@ const python = [/^\${2,3}$/, /^\{\}$/]
 
 const lua = [/^\${2,3}$/, /^\{\}$/]
 
+const csharp = [/^\${2,3}$/, /^\{\}$/]
+
 const text = [
   // Start with multiline query
   /^\${2,3}m/,
@@ -26,6 +28,7 @@ export const restrictedQueriesByFileType: Record<SearchFileType, RegExp[]> = {
   html: html,
   python: python,
   lua,
+  csharp,
 }
 
 export const isQueryRestricted = (

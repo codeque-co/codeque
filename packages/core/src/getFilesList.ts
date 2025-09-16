@@ -179,6 +179,30 @@ export type GetFilesListArgs = {
   extensionTester?: RegExp
 }
 
+// Helper to find the repository root (directory containing .git)
+const findRepoRoot = async (
+  startDir: string,
+  fsRoot: string,
+): Promise<string> => {
+  let currentDir = path.resolve(startDir)
+  while (true) {
+    try {
+      const gitDir = path.join(currentDir, '.git')
+      const stat = await fs.lstat(gitDir)
+      if (stat.isDirectory() || stat.isFile()) {
+        return currentDir
+      }
+    } catch (_e) {
+      // .git not found, continue
+    }
+    if (currentDir === fsRoot) break
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) break
+    currentDir = parentDir
+  }
+  return startDir // fallback: treat startDir as repo root
+}
+
 export const getFilesList = async ({
   searchRoot: _searchRoot,
   entryPoint = undefined,
@@ -204,25 +228,29 @@ export const getFilesList = async ({
   } else {
     const InitialIgnore = ignoreNodeModules ? ['node_modules'] : []
 
-    // Get parent to root gitignore
+    // Get parent to root gitignore, but stop at repo root
     if (!omitGitIgnore) {
+      // Find the repo root (directory containing .git)
+      const repoRoot = await findRepoRoot(searchRoot, fsRoot)
       const searchRootSegments = searchRoot
         .replace(fsRoot, '')
         .split(pathSeparatorChar)
-
-      const pathSegmentsToSystemRoot = []
-
+      const pathSegmentsToRepoRoot = []
       for (let i = 0; i < searchRootSegments.length; i++) {
         let currentPath = searchRootSegments.slice(0, i).join(pathSeparatorChar)
-
         currentPath = fsRoot + currentPath
-
-        pathSegmentsToSystemRoot.push(currentPath)
+        // Only add if currentPath is within repoRoot
+        if (path.resolve(currentPath).startsWith(path.resolve(repoRoot))) {
+          pathSegmentsToRepoRoot.push(currentPath)
+        }
       }
-
+      // Always include the repoRoot itself
+      if (!pathSegmentsToRepoRoot.includes(repoRoot)) {
+        pathSegmentsToRepoRoot.push(repoRoot)
+      }
       const parentDirsIgnore = (
         await Promise.all(
-          pathSegmentsToSystemRoot.map((parentPath) =>
+          pathSegmentsToRepoRoot.map((parentPath) =>
             getGitIgnoreContentForDirectory(parentPath),
           ),
         )

@@ -2,7 +2,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 
 import ignore from 'ignore'
-import { asyncFilter, measureStart } from './utils'
+import { measureStart } from './utils'
 import minimatch from 'minimatch'
 import { parseDependencyTree } from 'dpdm/lib/index.js'
 import { spawnSync } from 'child_process'
@@ -179,28 +179,27 @@ export type GetFilesListArgs = {
   extensionTester?: RegExp
 }
 
-// Helper to find the repository root (directory containing .git)
-const findRepoRoot = async (
-  startDir: string,
-  fsRoot: string,
-): Promise<string> => {
-  let currentDir = path.resolve(startDir)
-  while (true) {
+const findRepoRoot = async ({
+  searchRoot,
+  fsRoot,
+}: {
+  searchRoot: string
+  fsRoot: string
+}) => {
+  let currentDir = path.resolve(searchRoot)
+  while (currentDir !== fsRoot) {
     try {
       const gitDir = path.join(currentDir, '.git')
       const stat = await fs.lstat(gitDir)
-      if (stat.isDirectory() || stat.isFile()) {
+      if (stat.isDirectory()) {
         return currentDir
       }
     } catch (_e) {
       // .git not found, continue
     }
-    if (currentDir === fsRoot) break
-    const parentDir = path.dirname(currentDir)
-    if (parentDir === currentDir) break
-    currentDir = parentDir
+    currentDir = path.dirname(currentDir)
   }
-  return startDir // fallback: treat startDir as repo root
+  return searchRoot
 }
 
 export const getFilesList = async ({
@@ -228,29 +227,20 @@ export const getFilesList = async ({
   } else {
     const InitialIgnore = ignoreNodeModules ? ['node_modules'] : []
 
-    // Get parent to root gitignore, but stop at repo root
     if (!omitGitIgnore) {
-      // Find the repo root (directory containing .git)
-      const repoRoot = await findRepoRoot(searchRoot, fsRoot)
-      const searchRootSegments = searchRoot
-        .replace(fsRoot, '')
-        .split(pathSeparatorChar)
-      const pathSegmentsToRepoRoot = []
-      for (let i = 0; i < searchRootSegments.length; i++) {
-        let currentPath = searchRootSegments.slice(0, i).join(pathSeparatorChar)
-        currentPath = fsRoot + currentPath
-        // Only add if currentPath is within repoRoot
-        if (path.resolve(currentPath).startsWith(path.resolve(repoRoot))) {
-          pathSegmentsToRepoRoot.push(currentPath)
-        }
+      const repoRoot = await findRepoRoot({ searchRoot, fsRoot })
+      const parentPaths = []
+      let currentPath = searchRoot
+
+      while (currentPath !== repoRoot) {
+        parentPaths.push(currentPath)
+        currentPath = path.dirname(currentPath)
       }
-      // Always include the repoRoot itself
-      if (!pathSegmentsToRepoRoot.includes(repoRoot)) {
-        pathSegmentsToRepoRoot.push(repoRoot)
-      }
+      parentPaths.push(repoRoot)
+
       const parentDirsIgnore = (
         await Promise.all(
-          pathSegmentsToRepoRoot.map((parentPath) =>
+          parentPaths.map((parentPath) =>
             getGitIgnoreContentForDirectory(parentPath),
           ),
         )

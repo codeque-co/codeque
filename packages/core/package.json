@@ -78,6 +78,7 @@
     "typecheck": "tsc --project tsconfig.json",
     "test": "yarn build:test && NODE_OPTIONS=--max-old-space-size=4000 yarn jest --maxWorkers=25%",
     "test:babel": "jest --selectProjects=babel",
+    "test:common": "jest --selectProjects=common",
     "test:babel:traversal": "jest --selectProjects=babel:traversal",
     "test:babel-eslint-parser": "jest --selectProjects=babel-eslint-parser",
     "test:babel-eslint-parser:traversal": "jest --selectProjects=babel-eslint-parser:traversal",

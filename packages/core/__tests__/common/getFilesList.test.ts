@@ -273,6 +273,41 @@ it('should return files for project root with omitting gitignore', async () => {
   )
 })
 
+it('should use .gitignore only within the current repository', async () => {
+  mockFs({
+    [root]: {
+      '.git': {},
+      project: {
+        'fileA.ts': 'content',
+        '.gitignore': 'packageA/*',
+        packageA: {
+          '.git': {},
+          '.env': 'content',
+          '.gitignore': `
+            .env
+          `,
+          src: {
+            'fileE.json': '',
+          },
+        },
+      },
+    },
+  })
+
+  const filesList = removeCwd(
+    await getFilesList({
+      searchRoot: toPlatformSpecificPath(`${root}/project/packageA`),
+    }),
+  )
+  mockFs.restore()
+
+  expect(filesList.sort()).toMatchObject(
+    [`${root}/project/packageA/src/fileE.json`]
+      .sort()
+      .map(toPlatformSpecificPath),
+  )
+})
+
 // We will add option to search in ignored files, so that exception is not needed
 it.skip('should return files for project root ignored by parent gitignore, but ignore the nested directories', async () => {
   mockFs({
@@ -321,6 +356,7 @@ it.skip('should return files for project root ignored by parent gitignore, but i
 it('should ignore files from parent .gitignore', async () => {
   mockFs({
     [root]: {
+      '.git': {},
       project: {
         'fileA.ts': 'content',
         'fileB.js': 'content',

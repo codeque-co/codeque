@@ -191,14 +191,17 @@ const findRepoRoot = async ({
     try {
       const gitDir = path.join(currentDir, '.git')
       const stat = await fs.lstat(gitDir)
+
       if (stat.isDirectory()) {
         return currentDir
       }
     } catch (_e) {
       // .git not found, continue
     }
+
     currentDir = path.dirname(currentDir)
   }
+
   return searchRoot
 }
 
@@ -236,6 +239,7 @@ export const getFilesList = async ({
         parentPaths.push(currentPath)
         currentPath = path.dirname(currentPath)
       }
+
       parentPaths.push(repoRoot)
 
       const parentDirsIgnore = (

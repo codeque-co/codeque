@@ -31,6 +31,7 @@ export function FileLink({
   return (
     //@ts-ignore
     <Link
+      //@ts-ignore
       onClick={(ev) => {
         ev.stopPropagation()
         onClick?.()

@@ -31,7 +31,7 @@ Bump version manually in package.json
 
 And just run 
 
-`vsce publish`
+`vsce publish -p <PAT>`
 
 `vsce` will automatically run pre-publish hooks from script `vscode:prepublish` to run checks and build package
 
@@ -41,4 +41,4 @@ You might be asked to [get new PAT](https://code.visualstudio.com/api/working-wi
 
 Same procedure as above, but run
 
-`ovsx publish`
+`ovsx publish -p <PAT>`

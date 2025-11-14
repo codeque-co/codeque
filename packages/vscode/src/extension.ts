@@ -319,6 +319,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const fileUri = vscode.Uri.file(`${storagePath}/extension.vsix`)
 
+      //@ts-ignore
       await vscode.workspace.fs.writeFile(fileUri, Buffer.from(buffer))
 
       await vscode.commands.executeCommand(

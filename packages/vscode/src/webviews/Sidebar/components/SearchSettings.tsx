@@ -294,6 +294,7 @@ export function SearchSettings({
     : {}
 
   return (
+    //@ts-ignore
     <Flex flexDir="column" height="98vh">
       {!resultsPanelVisible && (
         <Flex

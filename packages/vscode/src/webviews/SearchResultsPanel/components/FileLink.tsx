@@ -29,6 +29,7 @@ export function FileLink({
     : relativeFilePath
 
   return (
+    //@ts-ignore
     <Link
       onClick={(ev) => {
         ev.stopPropagation()

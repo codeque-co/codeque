@@ -40,6 +40,7 @@ export function ButtonWithOptionSelect<T extends string>({
   )
 
   return (
+    // @ts-ignore
     <Flex width="100%">
       <Button
         colorScheme={colorScheme}
@@ -57,6 +58,7 @@ export function ButtonWithOptionSelect<T extends string>({
       <Menu colorScheme={'purple'}>
         {({ isOpen }) => (
           <>
+            {/* @ts-ignore */}
             <MenuButton
               isActive={isOpen}
               as={Button}
@@ -64,11 +66,11 @@ export function ButtonWithOptionSelect<T extends string>({
               size={size}
               width="30px"
               paddingLeft={'3px'}
-              borderTopLeftRadius="0px"
               borderBottomLeftRadius="0px"
+              borderTopLeftRadius="0px"
               disabled={isLoading || disabled}
             >
-              {<HiOutlineChevronDown></HiOutlineChevronDown>}
+              <HiOutlineChevronDown></HiOutlineChevronDown>
             </MenuButton>
             <MenuList
               backgroundColor={colors.menuItemBgColor}

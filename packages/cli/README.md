@@ -1,3 +1,5 @@
+
+      
 <!-- HERO START -->
 
 <p align="center">
@@ -58,13 +60,11 @@ CodeQue will be soon available as:
 </br>
 
 <!-- HERO END -->
-
+  
 <!-- CLI INTRO START -->
-
 ## CLI tool 🔥
 
 CodeQue CLI is a complementary tool that can be used for
-
 - Searching code patterns right from terminal including headless environments
 - Building scripts to assert that some code patterns exist or not exist
 - Enhancing git hooks to avoid committing or pushing unwanted code
@@ -196,7 +196,14 @@ codeque [options]
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
-
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement
+
+## Made in 🇵🇱 with 🧠 by [@jayu](https://github.com/jayu)
+
+I hope that this small piece of software will help you. If this tool was useful, don't hesitate to give it a ⭐!
+
+### My other projects
+
+- [Rev-dep - High-speed linter for your dependency graph](https://rev-dep.com?utm_source=codeque-md)

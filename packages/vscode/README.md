@@ -64,20 +64,18 @@ CodeQue will be soon available as:
 </br>
 
 <!-- HERO END -->
-
+  
 <!-- VSCODE INTRO START -->
-
 ## Visual Studio Code Extension 🔮
-
 VScode extension aims to make your workflow more efficient.
 
-It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query.
+It addresses the problems of standard search by providing multiline support and offers an easy way to add gaps or use wildcards in the query. 
 
-You don't need to have any Regex knowledge to query complex code patterns.
+You don't need to have any Regex knowledge to query complex code patterns. 
 
 With CodeQue, you can easily navigate and modify your codebase, making your development process faster and more efficient.
 
-It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns.
+It will help you with code refactoring, speed up project discovery, and make it easy to find duplicated or similar code patterns. 
 
 Advanced code search options and todo-like list of accurate search results will streamline your workflow.
 
@@ -377,7 +375,14 @@ to
 
 Feel free to use [Github Issues](https://github.com/codeque-co/codeque/issues)
 to
-
 - ask for help with writing a query
 - report a bug or doubt
 - suggest feature or improvement
+
+## Made in 🇵🇱 with 🧠 by [@jayu](https://github.com/jayu)
+
+I hope that this small piece of software will help you. If this tool was useful, don't hesitate to give it a ⭐!
+
+### My other projects
+
+- [Rev-dep - High-speed linter for your dependency graph](https://rev-dep.com?utm_source=codeque-md)

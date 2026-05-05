@@ -2,7 +2,7 @@
   "name": "codeque",
   "publisher": "CodeQue",
   "displayName": "Multiline & Structural Code Search",
-  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML, CSS, Python and Lua",
+  "description": "Multiline code search for every language. Structural code search for JavaScript, TypeScript, HTML, CSS, Python, Lua and C#",
   "repository": {
     "type": "git",
     "url": "https://github.com/codeque-co/codeque"
@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/codeque-co/codeque/issues"
   },
-  "version": "0.37.0",
+  "version": "0.37.1",
   "engines": {
     "vscode": "^1.68.0",
     "node": ">=14"
@@ -146,7 +146,8 @@
     "package:extension": "webpack --config webpack.extension.config.js --mode production ",
     "watch:webviews": "webpack --config webpack.webviews.config.js --watch",
     "package:webviews": "webpack --config webpack.webviews.config.js --mode production",
-    "package": "yarn package:extension && yarn package:webviews",
+    "package:check-tree-sitter": "node ./check-tree-sitter.js",
+    "package": "yarn package:check-tree-sitter && yarn package:extension && yarn package:webviews",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "lint": "eslint src --ext ts",
